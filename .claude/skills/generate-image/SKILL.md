@@ -1,15 +1,14 @@
 ---
-name: nano-banana-image-generate
+name: generate-image
 description: >
-  Use when: "nano banana", "generate image", "banana image", "create image",
-  "AI image", "aistudio image", "gemini image", "imagen",
-  "/nano-banana-image-generate", "generate banana", "nano banana image".
-  Triggers on: nano banana, image generation, AI Studio, gemini image gen.
+  Use when: "generate image", "create image", "AI image", "aistudio image",
+  "gemini image", "imagen", "/generate-image", "nano banana".
+  Triggers on: image generation, AI Studio, gemini image gen.
 metadata:
-  version: 1.1.0
+  version: 1.2.0
 ---
 
-# /nano-banana-image-generate — AI Image Generation via Google AI Studio
+# /generate-image — AI Image Generation via Google AI Studio
 
 Generate images using Google's Nano Banana (Gemini) model through the Google AI Studio web interface, automated via Playwright.
 
@@ -18,7 +17,7 @@ Generate images using Google's Nano Banana (Gemini) model through the Google AI 
 ## Usage
 
 ```
-/nano-banana-image-generate <prompt> [options]
+/generate-image <prompt> [options]
 ```
 
 **Arguments:**
@@ -29,9 +28,9 @@ Generate images using Google's Nano Banana (Gemini) model through the Google AI 
 
 **Examples:**
 ```
-/nano-banana-image-generate a cute cat wearing a hat
-/nano-banana-image-generate cyberpunk cityscape pro
-/nano-banana-image-generate fantasy dragon free
+/generate-image a cute cat wearing a hat
+/generate-image cyberpunk cityscape pro
+/generate-image fantasy dragon free
 ```
 
 ---

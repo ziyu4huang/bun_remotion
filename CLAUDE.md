@@ -111,11 +111,12 @@ Claude Code's Bash tool persists the working directory across calls. Once you `c
 All memory — project knowledge, user feedback, preferences — lives here. This replaces the separate `~/.claude-glm/` auto memory. Checked into git so it persists across machines.
 
 ### project/
-- [project-overview](.agent/memory/project-overview.md) - Tech stack, structure, commands, Remotion concepts
+- [project-overview](.agent/memory/project/project-overview.md) - Tech stack, structure, commands, Remotion concepts
+- [google-free-tier-apis](.agent/memory/project/google-free-tier-apis.md) - Google AI Studio free tier APIs: TTS, embedding, chat, image gen status
 
 ### feedback/
-- [skill-creation](.agent/memory/feedback_skill_creation.md) - User prefers structured SKILL.md with references/ and scripts/ subdirectories
-- [no-cd-in-bash](.agent/memory/feedback_no_cd.md) - Never cd in Bash tool — CWD persists across calls causing silent failures
+- [skill-creation](.agent/memory/feedback/skill-creation.md) - User prefers structured SKILL.md with references/ and scripts/ subdirectories
+- [no-cd-in-bash](.agent/memory/feedback/no-cd-in-bash.md) - Never cd in Bash tool — CWD persists across calls causing silent failures
 
 ## Convention
 
