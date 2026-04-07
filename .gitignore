@@ -4,4 +4,4 @@ dist/
 .bun/
 **/out/
 **/dist/
-tests/output/
+**/output/
