@@ -63,13 +63,21 @@ src/
 - `trustedDependencies` needed for Remotion's native compositor binaries
 - tsconfig: `moduleResolution: "bundler"`, `jsx: "react-jsx"`, target ES2022
 
-## Knowledge Files
+## Memory (project-based, in `.agent/memory/`)
+
+All memory — project knowledge, user feedback, preferences — lives here. This replaces the separate `~/.claude-glm/` auto memory. Checked into git so it persists across machines.
 
 ### project/
 - [project-overview](.agent/memory/project-overview.md) - Tech stack, structure, commands, Remotion concepts
 
+### feedback/
+- [skill-creation](.agent/memory/feedback_skill_creation.md) - User prefers structured SKILL.md with references/ and scripts/ subdirectories
+
 ## Convention
 
-- Each note: self-contained, category in folder name
+- All memory stored in `.agent/memory/` (project-based, checked into git)
+- Each note: self-contained, with YAML frontmatter (name, description, type)
+- Types: `project`, `feedback`, `user`, `reference`
 - New categories: `.agent/memory/<category>/<kebab-case-name>.md`
 - Update this index when adding new files
+- Do NOT use `~/.claude-glm/.../memory/` — this project uses project-based memory only
