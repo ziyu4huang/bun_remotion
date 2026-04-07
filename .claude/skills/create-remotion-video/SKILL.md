@@ -6,18 +6,18 @@ description: >
   "remotion setup", "add composition", "add scene", "new video composition",
   or wants to scaffold, create, extend, or manage a Remotion video project using Bun.
 metadata:
-  version: 1.0.0
+  version: 2.0.0
 ---
 
 # /create-remotion-video — Scaffold & Manage Remotion Videos with Bun
 
-Create, scaffold, and manage [Remotion](https://remotion.dev/) video projects using [Bun](https://bun.sh/) as the runtime. This skill handles project initialization, composition creation, scene management, and rendering.
+Create, scaffold, and manage [Remotion](https://remotion.dev/) video projects using [Bun](https://bun.sh/) as the runtime. This skill handles project initialization, composition creation, scene management, and rendering within the bun-remotion workspace monorepo.
 
 ## Quick Invocation
 
 ```
 /create-remotion-video                        # Show this guide
-/create-remotion-video init                   # Scaffold a new Remotion + Bun project
+/create-remotion-video init my-video          # Scaffold a new Remotion app in apps/my-video
 /create-remotion-video add-comp MyVideo       # Add a new composition to Root.tsx
 /create-remotion-video add-scene MyComp SceneName  # Add scene to existing composition
 /create-remotion-video render                 # Render all compositions to MP4
@@ -31,90 +31,103 @@ Create, scaffold, and manage [Remotion](https://remotion.dev/) video projects us
 1. **Bun** installed (v1.0+). Install: `curl -fsSL https://bun.sh/install | bash` (macOS/Linux) or download from [github.com/oven-sh/bun/releases](https://github.com/oven-sh/bun/releases) (Windows)
 2. **FFmpeg** available in PATH (required by Remotion for rendering)
 
-## Project Structure Convention
+## Monorepo Structure
+
+This project uses Bun workspaces. Each video is an app in `apps/`, shared components live in `packages/shared/`.
 
 ```
-project/
-  package.json                  # Remotion + Bun deps
-  tsconfig.json                 # ES2022, react-jsx, bundler resolution
-  src/
-    index.ts                    # registerRoot(RemotionRoot)
-    Root.tsx                    # <Composition> declarations
-    components/                 # Reusable animation primitives
-    <video-name>/               # One folder per composition
-      <VideoName>.tsx           # Main composition component
-      scenes/                   # Scene components used by Sequence
+bun-remotion/
+  package.json                  # Root: workspaces config + shared deps
+  tsconfig.json                 # Base tsconfig (extended by workspaces)
+  packages/
+    shared/                     # @bun-remotion/shared — reusable components
+      src/
+        index.ts                # Barrel export
+  apps/
+    claude-code-intro/          # Example app
+      package.json
+      tsconfig.json
+      src/
+        index.ts                # registerRoot(RemotionRoot)
+        Root.tsx                # <Composition> declarations
+        <CompositionName>.tsx   # Main composition component
+        scenes/                 # Scene components used by Sequence
+    my-video/                   # Your new app goes here
 ```
 
 ## Commands Reference
 
-### init — Scaffold New Project
+### init — Scaffold New App in Monorepo
 
-Create a new Remotion + Bun project from scratch:
+Create a new Remotion video app inside the workspace:
 
 ```bash
-# Create project directory
-mkdir my-video && cd my-video
+# From the monorepo root:
+# 1. Create the app directory
+mkdir -p apps/my-video/src/scenes
 
-# Initialize package.json
-bun init -y
+# 2. Create apps/my-video/package.json
+# (see template below)
 
-# Install Remotion (pin versions together)
-bun add remotion@latest @remotion/cli@latest react react-dom
-bun add -d @types/react @types/react-dom typescript
+# 3. Create apps/my-video/tsconfig.json
+# (extends root tsconfig)
 
-# Add trusted dependencies for native compositor
-# (add to package.json trustedDependencies array)
+# 4. Create src/index.ts, src/Root.tsx, composition, scenes
 
-# Create tsconfig.json
-# Create src/index.ts, src/Root.tsx, src/components/
-
-# Install and verify
+# 5. Install dependencies
 bun install
-bun start  # Opens Remotion Studio at localhost:3000
+
+# 6. Open Studio
+cd apps/my-video && bun start
 ```
 
-**Required package.json fields:**
+**Required package.json for new app:**
 
 ```json
 {
+  "name": "@bun-remotion/my-video",
+  "version": "1.0.0",
+  "private": true,
   "scripts": {
     "start": "remotion studio",
-    "build": "remotion render <CompositionId> out/<filename>.mp4",
+    "build": "remotion render MyVideo out/my-video.mp4",
     "upgrade": "remotion upgrade"
   },
-  "trustedDependencies": [
-    "@remotion/compositor-linux-arm64-gnu",
-    "@remotion/compositor-linux-arm64-musl",
-    "@remotion/compositor-linux-x64-gnu",
-    "@remotion/compositor-linux-x64-musl",
-    "@remotion/compositor-win32-x64-msvc",
-    "@remotion/compositor-darwin-arm64",
-    "@remotion/compositor-darwin-x64"
-  ]
+  "dependencies": {
+    "@bun-remotion/shared": "workspace:*",
+    "@remotion/cli": "4.0.290",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.18",
+    "@types/react-dom": "18.3.5"
+  }
 }
 ```
 
-**Required tsconfig.json:**
+**Required tsconfig.json for new app:**
 
 ```json
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "lib": ["dom", "esnext"],
-    "target": "ES2022",
-    "module": "ES2022",
-    "moduleResolution": "bundler",
-    "strict": true,
-    "jsx": "react-jsx",
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "rootDir": "./src"
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"]
 }
 ```
 
+After creating, add a convenience script to root `package.json`:
+```json
+"start:my-video": "cd apps/my-video && bun start",
+"build:my-video": "cd apps/my-video && bun run build"
+```
+
 ### Boilerplate Files
 
-**src/index.ts:**
+**apps/my-video/src/index.ts:**
 ```typescript
 import { registerRoot } from "remotion";
 import { RemotionRoot } from "./Root";
@@ -122,10 +135,10 @@ import { RemotionRoot } from "./Root";
 registerRoot(RemotionRoot);
 ```
 
-**src/Root.tsx:**
+**apps/my-video/src/Root.tsx:**
 ```typescript
 import { Composition } from "remotion";
-import { MyVideo } from "./my-video/MyVideo";
+import { MyVideo } from "./MyVideo";
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -144,7 +157,7 @@ export const RemotionRoot: React.FC = () => {
 };
 ```
 
-**src/my-video/MyVideo.tsx (minimal starter):**
+**apps/my-video/src/MyVideo.tsx (minimal starter):**
 ```typescript
 import { AbsoluteFill, useCurrentFrame, interpolate } from "remotion";
 
@@ -170,39 +183,64 @@ export const MyVideo: React.FC = () => {
 
 ### add-comp — Add New Composition
 
-Add a new video composition to an existing project:
+Add a new video composition to an existing app:
 
-1. Create `src/<comp-name>/<CompName>.tsx` with the component
-2. Import and register in `src/Root.tsx` as a new `<Composition>`
-3. Update `package.json` build script if needed
+1. Create `apps/<app>/src/<CompName>.tsx` with the component
+2. Import and register in `apps/<app>/src/Root.tsx` as a new `<Composition>`
+3. Update `apps/<app>/package.json` build script if needed
 
 ### add-scene — Add Scene to Composition
 
 Add a scene (used within `<Sequence>`) to an existing composition:
 
-1. Create `src/<comp-name>/scenes/<SceneName>.tsx`
+1. Create `apps/<app>/src/scenes/<SceneName>.tsx`
 2. Import in the composition file
 3. Add `<Sequence from={N} durationInFrames={M}><SceneName /></Sequence>`
 
 ### render — Render Video to MP4
 
 ```bash
-# Render all compositions (needs explicit build script per comp)
+# Render from root (uses per-app build scripts)
 bun run build
+bun run build:stock
 
-# Render specific composition directly
-bunx remotion render <CompositionId> out/<filename>.mp4
+# Render specific composition directly from app directory
+cd apps/my-video && bun run build
+cd apps/my-video && bunx remotion render MyVideo out/video.mp4
 
 # Custom settings
-bunx remotion render <CompId> out/video.mp4 --fps=60 --width=3840 --height=2160
+bunx remotion render MyVideo out/video.mp4 --fps=60 --width=3840 --height=2160
 ```
 
 ### studio — Dev Preview
 
 ```bash
-bun start
+# From root
+bun start              # ClaudeCodeIntro
+bun start:stock        # TaiwanStockMarket
+
+# From app directory
+cd apps/my-video && bun start
 # Opens http://localhost:3000 — Remotion Studio with timeline, scrubber, and preview
 ```
+
+## Using Shared Components
+
+Import from `@bun-remotion/shared` in any app:
+
+```typescript
+import { FadeText, Candle, CandleChart } from "@bun-remotion/shared";
+```
+
+Available components:
+- `FadeText` — Fade-in text with translateY animation
+- `Candle` — Candlestick chart element
+- `CandleChart` — K-line chart container
+- `CandleData` — TypeScript interface for candle data
+
+To add a new shared component:
+1. Create the component in `packages/shared/src/`
+2. Export it from `packages/shared/src/index.ts`
 
 ## Remotion Animation API Cheat Sheet
 
@@ -280,12 +318,13 @@ const scale = interpolate(frame, [0, 25], [0.6, 1], {
 
 | Error | Cause | Fix |
 |-------|-------|-----|
-| `Cannot find module 'remotion'` | Not installed | `bun install` |
+| `Cannot find module 'remotion'` | Not installed | `bun install` from root |
+| `Cannot find module '@bun-remotion/shared'` | Workspace not resolved | Run `bun install` from root |
 | FFmpeg not found | Missing system dependency | Install FFmpeg, ensure in PATH |
 | White/blank video | Component returns null or no content | Check component renders visible content |
 | Wrong duration | fps x durationInFrames mismatch | Recalculate: seconds * fps = durationInFrames |
 | Remotion version mismatch | remotion and @remotion/cli different versions | Pin both to same version |
-| Trusted dependency error | Missing trustedDependencies | Add compositor entries to package.json |
+| Trusted dependency error | Missing trustedDependencies | Add compositor entries to root package.json |
 
 ## References
 

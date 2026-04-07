@@ -1,21 +1,21 @@
 {
   "name": "bun-remotion",
   "version": "1.0.0",
-  "description": "Use bun run remotion to generate AI video",
+  "private": true,
+  "workspaces": ["packages/*", "apps/*"],
   "scripts": {
-    "start": "remotion studio",
-    "build": "remotion render ClaudeCodeIntro out/claude-code-intro.mp4",
+    "start": "pwsh scripts/dev.ps1 studio claude-code-intro",
+    "start:claude": "pwsh scripts/dev.ps1 studio claude-code-intro",
+    "start:stock": "pwsh scripts/dev.ps1 studio taiwan-stock-market",
+    "build": "pwsh scripts/dev.ps1 render claude-code-intro",
+    "build:stock": "pwsh scripts/dev.ps1 render taiwan-stock-market",
+    "build:all": "pwsh scripts/dev.ps1 render-all",
     "upgrade": "remotion upgrade"
   },
   "dependencies": {
-    "@remotion/cli": "4.0.290",
-    "remotion": "4.0.290",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "remotion": "4.0.290"
   },
   "devDependencies": {
-    "@types/react": "18.3.18",
-    "@types/react-dom": "18.3.5",
     "typescript": "5.8.3"
   },
   "trustedDependencies": ["@remotion/compositor-linux-arm64-gnu", "@remotion/compositor-linux-arm64-musl", "@remotion/compositor-linux-x64-gnu", "@remotion/compositor-linux-x64-musl", "@remotion/compositor-win32-x64-msvc", "@remotion/compositor-darwin-arm64", "@remotion/compositor-darwin-x64"]

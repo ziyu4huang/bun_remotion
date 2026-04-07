@@ -6,7 +6,8 @@
     "moduleResolution": "bundler",
     "strict": true,
     "jsx": "react-jsx",
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "composite": true
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx"]
+  "include": []
 }

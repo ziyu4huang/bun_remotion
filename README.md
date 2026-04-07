@@ -19,7 +19,26 @@ bun start
 bun run build
 ```
 
-Output: `out/claude-code-intro.mp4` (1920x1080, 30fps, 22s)
+## Setup After Cloning
+
+### Prerequisites
+
+- [Bun](https://bun.sh/) v1.0+
+- [FFmpeg](https://ffmpeg.org/download.html) (required for rendering to MP4)
+
+### One-time setup
+
+**PowerShell (Windows):**
+```powershell
+.\scripts\setup.ps1
+```
+
+**Bash (macOS/Linux):**
+```bash
+bun install
+```
+
+The script checks for Bun and FFmpeg, then installs all workspace dependencies.
 
 ## How It Works
 
@@ -34,36 +53,47 @@ React components → Remotion renders each frame → FFmpeg encodes → MP4
 
 ## Project Structure
 
+This is a Bun workspace monorepo. Each video project lives in `apps/`, shared components in `packages/shared/`.
+
 ```
-src/
-  index.ts                  # Entry point — registerRoot()
-  Root.tsx                  # Video composition declarations
-  components/               # Reusable animation components
-    FadeText.tsx            # Fade-in text effect
-    Candle.tsx              # Candlestick chart element
-    CandleChart.tsx         # K-line chart container
-  claude-code-intro/        # Claude Code intro video
-    ClaudeCodeIntro.tsx     # Main composition (660 frames, 22s)
-    scenes/
-      TitleScene.tsx        # Opening title animation
-      FeaturesScene.tsx     # Feature showcase with spring animations
-      TerminalScene.tsx     # Terminal simulation
-      OutroScene.tsx        # End screen
-  scenes/                   # Additional scene components
-    TitleScene.tsx          # Title scene
-    KLineScene.tsx          # K-line/candlestick scene
-    PriceVolumeScene.tsx    # Price & volume scene
-    SupportResistanceScene.tsx  # Support & resistance scene
-    MovingAverageScene.tsx  # Moving average scene
-    TradingHoursScene.tsx   # Trading hours scene
-    LimitScene.tsx          # Price limit scene
+bun-remotion/
+  package.json                        # Root: workspaces config + shared deps
+  tsconfig.json                       # Base tsconfig (extended by workspaces)
+  packages/
+    shared/                           # @bun-remotion/shared
+      src/
+        FadeText.tsx                  # Fade-in text effect
+        Candle.tsx                    # Candlestick chart element
+        CandleChart.tsx               # K-line chart container
+  apps/
+    claude-code-intro/                # Claude Code intro video (22s)
+      src/
+        ClaudeCodeIntro.tsx           # Main composition (660 frames)
+        scenes/                       # Title, Features, Terminal, Outro
+    taiwan-stock-market/              # Taiwan Stock Market educational video (56s)
+      src/
+        TaiwanStockMarket.tsx         # Main composition (1680 frames)
+        scenes/                       # 7 financial education scenes
 ```
+
+## Commands
+
+| Command | What It Does |
+|---------|-------------|
+| `bun install` | Install all workspace dependencies |
+| `bun start` | Open ClaudeCodeIntro in Remotion Studio |
+| `bun start:claude` | Open ClaudeCodeIntro in Remotion Studio |
+| `bun start:stock` | Open TaiwanStockMarket in Remotion Studio |
+| `bun run build` | Render ClaudeCodeIntro to MP4 |
+| `bun run build:stock` | Render TaiwanStockMarket to MP4 |
+| `bun run build:all` | Render all projects |
+| `bun run upgrade` | Update Remotion packages |
 
 ## Tech Stack
 
 | Layer | Tool |
 |-------|------|
-| Runtime | Bun |
+| Runtime | Bun (workspace monorepo) |
 | Video Framework | Remotion v4.0.290 |
 | UI | React 18 + TypeScript |
 | Output | MP4 via FFmpeg |
@@ -79,18 +109,10 @@ src/
 | `interpolate()` | Map values with easing and clamping |
 | `Easing` | Cubic, back, elastic, bounce easing functions |
 
-## Commands
-
-| Command | What It Does |
-|---------|-------------|
-| `bun install` | Install dependencies |
-| `bun start` | Open Remotion Studio (localhost:3000) |
-| `bun run build` | Render to `out/claude-code-intro.mp4` |
-| `bun run upgrade` | Update Remotion to latest version |
-
 ## Why Bun Instead of npm
 
 - **~25x faster** `bun install` vs `npm install`
 - Built-in TypeScript support (no ts-node needed)
 - Built-in `bun run` for scripts
+- Native workspace monorepo support
 - `bun.lock` is faster to read/write than `package-lock.json`

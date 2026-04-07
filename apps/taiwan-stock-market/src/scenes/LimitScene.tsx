@@ -1,5 +1,5 @@
 import { interpolate, useCurrentFrame } from "remotion";
-import { FadeText } from "../components/FadeText";
+import { FadeText } from "@bun-remotion/shared";
 
 export const LimitScene: React.FC = () => {
   const frame = useCurrentFrame();
