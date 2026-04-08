@@ -1,0 +1,302 @@
+{
+  "version": "1.0",
+  "title": "最後一盞燈",
+  "silence_ms": 500,
+  "output_format": "flac",
+  "metadata": {
+    "source": "chinese_story.txt",
+    "created": "2026-04-06T14:48:02",
+    "author": "",
+    "language": "zh"
+  },
+  "segments": [
+    {
+      "id": "seg_1",
+      "character": "Narrator",
+      "text": "那是一九四九年的冬天，上海的街道像一條冰封的河。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_2",
+      "character": "Narrator",
+      "text": "林書瑤站在外灘的石欄邊，望著黃浦江上漂流的碎冰。她的手裡握著一封信——那封她讀了三十七遍、卻始終無法回覆的信。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_3",
+      "character": "Narrator",
+      "text": "信是陳懷遠寄來的。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_4",
+      "character": "陳懷遠",
+      "text": "我明日就要去了",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_5",
+      "character": "Narrator",
+      "text": "他在信中寫道",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_6",
+      "character": "在信中",
+      "text": "去一個我不知道能不能回來的地方。但在離開之前，我必須讓妳知道：那棟弄堂裡的舊書店，每天下午三點半，當陽光斜照進來的那一刻，我都在想著妳。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "calm",
+      "speed": 0.92
+    },
+    {
+      "id": "seg_7",
+      "character": "Narrator",
+      "text": "林書瑤認識陳懷遠，是在三年前那個梅雨季節。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_8",
+      "character": "Narrator",
+      "text": "她去書店躲雨，他正蹲在角落修一盞壞掉的檯燈。書店老闆笑著說",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_9",
+      "character": "書店老闆",
+      "text": "他每星期都來修這盞燈，也每星期都修壞它。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_10",
+      "character": "Narrator",
+      "text": "後來她才明白，那盞燈從來沒有真正壞過。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_11",
+      "character": "Narrator",
+      "text": "他們就這樣，用一盞假裝壞掉的燈，撐過了三年的亂世。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_12",
+      "character": "Narrator",
+      "text": "然而戰爭從不等人。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_13",
+      "character": "Narrator",
+      "text": "一九四九年的冬天，整個城市都在流動。有人南下，有人北上，有人消失在人群裡再也找不到。陳懷遠選擇了一條林書瑤無法跟隨的路。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_14",
+      "character": "陳懷遠",
+      "text": "妳不能去",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_15",
+      "character": "Narrator",
+      "text": "他說",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_16",
+      "character": "書店老闆",
+      "text": "妳還有母親，還有弟弟，還有這座城市需要妳。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_17",
+      "character": "Narrator",
+      "text": "她想反駁，卻發現所有的話都堵在喉嚨裡，像那盞燈——壞掉的樣子，其實是精心偽裝的完整。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_18",
+      "character": "Narrator",
+      "text": "他走的那天，她沒有去送他。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_19",
+      "character": "Narrator",
+      "text": "不是因為不想，而是因為她知道，如果她去了，她會抓住他的袖子，一輩子不放手。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_20",
+      "character": "Narrator",
+      "text": "那樣對他不公平。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_21",
+      "character": "Narrator",
+      "text": "冬去春來，書店換了老闆，舊燈被換成了新的電燈泡。林書瑤偶爾還是會走進去，在那個角落站一會兒，聽著窗外黃浦江的水聲。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_22",
+      "character": "Narrator",
+      "text": "許多年後，她的女兒問她",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_23",
+      "character": "陳懷遠",
+      "text": "媽，妳這輩子有沒有後悔過什麼事？",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_24",
+      "character": "Narrator",
+      "text": "林書瑤想了很久。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_25",
+      "character": "書店老闆",
+      "text": "後悔",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_26",
+      "character": "Narrator",
+      "text": "她說",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_27",
+      "character": "陳懷遠",
+      "text": "有一次，我應該開口說的話，我沒有說。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_28",
+      "character": "書店老闆",
+      "text": "那是什麼話？",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_29",
+      "character": "Narrator",
+      "text": "她微微笑了。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_30",
+      "character": "陳懷遠",
+      "text": "就是『帶我走』三個字。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_31",
+      "character": "Narrator",
+      "text": "窗外，上海的燈火一盞一盞亮起來。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_32",
+      "character": "Narrator",
+      "text": "那光，和六十年前弄堂書店裡的燈光，顏色一模一樣。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    }
+  ]
+}

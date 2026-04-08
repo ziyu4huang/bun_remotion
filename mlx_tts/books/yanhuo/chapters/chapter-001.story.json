@@ -1,0 +1,329 @@
+{
+  "version": "1.0",
+  "title": "煙火人間 — 第一章　灶腳的火",
+  "silence_ms": 500,
+  "output_format": "flac",
+  "metadata": {
+    "source": "chapter-001.txt",
+    "created": "2026-04-06T17:00:00",
+    "author": "",
+    "language": "zh"
+  },
+  "segments": [
+    {
+      "id": "seg_1",
+      "character": "Narrator",
+      "text": "台北的夜市，是一鍋永遠煮不滾的湯。火在底下燒著，人在上面浮著，誰也不知道什麼時候會被撈起來。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_2",
+      "character": "Narrator",
+      "text": "士林夜市大南路盡頭，有一攤賣了四十年的滷肉飯。攤位的招牌早已褪色，只隱約看得見「老張滷肉飯」四個字。每天下午四點，一個瘦高的老人會準時出現在攤位後面，把前一晚醃好的豬肉倒進那口黑得發亮的大鍋裡。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_3",
+      "character": "Narrator",
+      "text": "他叫張福全，六十七歲，大家都叫他全叔。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_4",
+      "character": "阿娥",
+      "text": "全叔，今天滷蛋夠不夠？",
+      "voice": "zf_xiaobei",
+      "lang": "zh",
+      "emotion": "neutral",
+      "speed": 1.0
+    },
+    {
+      "id": "seg_5",
+      "character": "Narrator",
+      "text": "隔壁賣蚵仔煎的阿娥探過頭來問。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_6",
+      "character": "Narrator",
+      "text": "全叔頭也不抬，手裡的鍋鏟翻攪著鍋裡的肉塊，聲音低沉——",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_7",
+      "character": "全叔",
+      "text": "不夠。昨天多賣了三十碗，蛋不夠了。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "neutral",
+      "speed": 0.95
+    },
+    {
+      "id": "seg_8",
+      "character": "阿娥",
+      "text": "要不要我幫你從市場帶一些？我等等要去補貨。",
+      "voice": "zf_xiaobei",
+      "lang": "zh",
+      "emotion": "neutral",
+      "speed": 1.0
+    },
+    {
+      "id": "seg_9",
+      "character": "全叔",
+      "text": "不用了，我自己去。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "neutral",
+      "speed": 0.95
+    },
+    {
+      "id": "seg_10",
+      "character": "Narrator",
+      "text": "全叔把火轉小，擦了擦手上的油漬，從攤位下面拿出一個紅色塑料袋。他走出夜市的時候，經過了那家新開的日式拉麵店。店門口排著長長的隊伍，年輕人舉著手機拍照，蒸汽從店裡飄出來，帶著一股濃濃的豚骨味。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_11",
+      "character": "Narrator",
+      "text": "全叔停下腳步，看了一會兒。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "calm",
+      "speed": 0.92
+    },
+    {
+      "id": "seg_12",
+      "character": "Narrator",
+      "text": "四十年前，他的攤位前面也是這樣的。那時候沒有人排隊，但總有一群老鄰居圍在攤子旁邊，一邊吃飯一邊聊天，從天亮聊到天黑。現在那些老鄰居有的搬走了，有的走了，只剩下他一個人還守著這口鍋。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "calm",
+      "speed": 0.92
+    },
+    {
+      "id": "seg_13",
+      "character": "Narrator",
+      "text": "他繼續往前走。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_14",
+      "character": "蛋行老闆",
+      "text": "全叔，又來買蛋啊？你那個孫子呢？以前都是他來跑腿的。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "neutral",
+      "speed": 1.0
+    },
+    {
+      "id": "seg_15",
+      "character": "Narrator",
+      "text": "市場裡的蛋行老闆看見他，笑著說。全叔的臉上閃過一絲不易察覺的變化，但很快就恢復了平靜。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_16",
+      "character": "全叔",
+      "text": "他在忙。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "neutral",
+      "speed": 0.95
+    },
+    {
+      "id": "seg_17",
+      "character": "蛋行老闆",
+      "text": "忙什麼？不是在國外讀書嗎？讀完了沒有？",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "neutral",
+      "speed": 1.0
+    },
+    {
+      "id": "seg_18",
+      "character": "全叔",
+      "text": "讀完了，在台北上班。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "neutral",
+      "speed": 0.95
+    },
+    {
+      "id": "seg_19",
+      "character": "Narrator",
+      "text": "全叔挑了三十個蛋，放進塑料袋裡。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_20",
+      "character": "蛋行老闆",
+      "text": "那就好，那就好。讀書人有出息，不像我們這些賣菜的，一輩子就在這裡。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "neutral",
+      "speed": 1.0
+    },
+    {
+      "id": "seg_21",
+      "character": "Narrator",
+      "text": "全叔付了錢，沒有接話。回到家裡，也就是攤位後面那間十幾坪的小公寓，他把蛋放進冰箱，然後坐在客廳那張藤椅上發呆。牆上掛著一張照片，照片裡是一個年輕女人，穿著碎花洋裝，站在攤位前面笑。她的笑容很明亮，像是夜市裡最亮的那盞燈。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "calm",
+      "speed": 0.92
+    },
+    {
+      "id": "seg_22",
+      "character": "Narrator",
+      "text": "那是他的妻子，林秀蓮。十五年前走了。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "sad",
+      "speed": 0.85
+    },
+    {
+      "id": "seg_23",
+      "character": "全叔",
+      "text": "秀蓮，小哲說他這個週末會回來吃飯。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "calm",
+      "speed": 0.90
+    },
+    {
+      "id": "seg_24",
+      "character": "Narrator",
+      "text": "他頓了頓。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "calm",
+      "speed": 0.92
+    },
+    {
+      "id": "seg_25",
+      "character": "全叔",
+      "text": "不知道他會不會帶那個女朋友來。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "calm",
+      "speed": 0.90
+    },
+    {
+      "id": "seg_26",
+      "character": "Narrator",
+      "text": "客廳裡沒有人回答他。只有牆上那個老時鐘在滴答滴答地走著，像是在計算著什麼。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "sad",
+      "speed": 0.85
+    },
+    {
+      "id": "seg_27",
+      "character": "Narrator",
+      "text": "全叔從口袋裡掏出手機，打開了微信。他不太會用這個東西，但孫子教過他怎麼看消息。螢幕上最新的消息是三天前小哲發的：",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_28",
+      "character": "張哲",
+      "text": "阿公，這個週末我會回來。有件事想跟你說。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "neutral",
+      "speed": 1.0
+    },
+    {
+      "id": "seg_29",
+      "character": "Narrator",
+      "text": "全叔看著這條消息，想了很久，然後打了兩個字：",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_30",
+      "character": "全叔",
+      "text": "好的。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "neutral",
+      "speed": 0.95
+    },
+    {
+      "id": "seg_31",
+      "character": "Narrator",
+      "text": "他不知道孫子要說什麼，但他有一種預感。這幾年來，他看著夜市一家一家的老攤子收了，換成了一間一間的連鎖店。士林夜市不再是那個他認識的士林夜市了。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.95
+    },
+    {
+      "id": "seg_32",
+      "character": "Narrator",
+      "text": "他低頭看著自己的手。那雙手布滿了燙傷的痕跡，指節粗大，皮膚粗糙得像砂紙。這雙手翻了四十年的滷肉飯，養大了一個兒子，又養大了一個孫子。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "sad",
+      "speed": 0.88
+    },
+    {
+      "id": "seg_33",
+      "character": "Narrator",
+      "text": "全叔站起來，走進廚房。他從冰箱裡拿出那些蛋，一個一個放進滷汁裡。蛋殼在深褐色的滷汁裡浮沉，像是一群小船在暗河上漂流。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "calm",
+      "speed": 0.92
+    },
+    {
+      "id": "seg_34",
+      "character": "Narrator",
+      "text": "明天又是新的一天。下午四點，他會準時出現在攤位後面，把豬肉倒進鍋裡，把火點起來。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "calm",
+      "speed": 0.92
+    },
+    {
+      "id": "seg_35",
+      "character": "Narrator",
+      "text": "因為這就是他會做的唯一一件事。也是他唯一不願意放手的事。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "sad",
+      "speed": 0.85
+    }
+  ]
+}

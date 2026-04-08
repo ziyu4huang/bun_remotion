@@ -1,0 +1,5 @@
+Hello! Welcome to the MLX TTS generator.
+This system runs entirely on your Apple Silicon chip.
+No cloud, no API keys, no internet required after the first download.
+The Kokoro model weighs only about three hundred megabytes.
+On an M1, it generates speech faster than real time.

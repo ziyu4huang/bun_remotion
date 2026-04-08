@@ -1,0 +1,1328 @@
+{
+  "version": "1.0",
+  "title": "第五章　守夜",
+  "silence_ms": 500,
+  "output_format": "flac",
+  "metadata": {
+    "source": "chapter-005.txt",
+    "created": "2026-04-06T18:57:31",
+    "author": "",
+    "language": "zh"
+  },
+  "segments": [
+    {
+      "id": "seg_1",
+      "character": "Narrator",
+      "text": "消息傳得很快。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_2",
+      "character": "Narrator",
+      "text": "第二天下午，張哲在攤位後面切黃瓜的時候，聽見阿娥在跟隔壁賣四神湯的陳太太說話。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_3",
+      "character": "張哲",
+      "text": "聽說了沒有？宏盛開發的人下禮拜要來跟我們開會。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_4",
+      "character": "張哲",
+      "text": "什麼會？不就是叫我們走嗎？",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_5",
+      "character": "Narrator",
+      "text": "陳太太的聲音裡帶著怒氣",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_6",
+      "character": "張哲",
+      "text": "我在這裡賣了三十年的四神湯，他們說一句話就要我走？",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_7",
+      "character": "張哲",
+      "text": "別急別急，先聽聽他們怎麼說。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_8",
+      "character": "Narrator",
+      "text": "張哲放下刀，走到攤位前面。大南路上，幾個攤販正聚在一起議論紛紛。他看見了那個熟悉的身影——市場裡賣水果的老王、賣鞋的林老闆、還有幾個他不認識的年輕攤販。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_9",
+      "character": "張哲",
+      "text": "全叔，你知道這件事嗎？",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_10",
+      "character": "Narrator",
+      "text": "張哲回去問。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_11",
+      "character": "Narrator",
+      "text": "全叔正在攪拌滷汁，手上的動作沒有停。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_12",
+      "character": "全叔",
+      "text": "知道。上個月他們就來過一次，給每家發了一份拆遷補償方案。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_13",
+      "character": "張哲",
+      "text": "補償方案？多少錢？",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_14",
+      "character": "全叔",
+      "text": "一個攤位八萬塊。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_15",
+      "character": "Narrator",
+      "text": "張哲的手握緊了。八萬塊。四十年，八萬塊。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_16",
+      "character": "張哲",
+      "text": "阿公，這不合理。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_17",
+      "character": "全叔",
+      "text": "合不合理不是我們說了算的。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_18",
+      "character": "Narrator",
+      "text": "全叔把火調小",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_19",
+      "character": "全叔",
+      "text": "地是他們的，規矩是他們定的。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_20",
+      "character": "Narrator",
+      "text": "張哲沒有再說話。他拿出手機，開始搜尋關於攤販拆遷的法律條文。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_21",
+      "character": "Narrator",
+      "text": "那天晚上收攤後，張哲沒有回公寓。他沿著大南路走了一圈，把每一家攤位的名字記下來。大南路東側一共有二十三個攤位，其中十二個是超過二十年的老攤子。這些攤子養活了不知道多少家庭，現在全部要在一紙公文下面消失。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_22",
+      "character": "Narrator",
+      "text": "他走到巷子盡頭的時候，碰見了一個人。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_23",
+      "character": "Narrator",
+      "text": "那是一個三十歲左右的女人，穿著一件灰色西裝外套，手裡拿著一個平板電腦。她正站在路燈下面，對著攤位拍照。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_24",
+      "character": "全叔",
+      "text": "你好",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_25",
+      "character": "Narrator",
+      "text": "張哲走過去",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_26",
+      "character": "張哲",
+      "text": "你是宏盛開發的人嗎？",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_27",
+      "character": "Narrator",
+      "text": "女人抬起頭，露出一張略帶疲憊的臉。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_28",
+      "character": "全叔",
+      "text": "我叫許文琪，是宏盛的專案經理。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_29",
+      "character": "Narrator",
+      "text": "她禮貌地微笑",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_30",
+      "character": "張哲",
+      "text": "你是……攤商家屬？",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_31",
+      "character": "全叔",
+      "text": "我是老張滷肉飯的。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_32",
+      "character": "Narrator",
+      "text": "許文琪的表情變了一下，像是聽到了一個她認識的名字。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_33",
+      "character": "張哲",
+      "text": "老張滷肉飯……就是那家賣了四十年的？",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_34",
+      "character": "全叔",
+      "text": "對。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_35",
+      "character": "Narrator",
+      "text": "她沉默了一會兒，然後說",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_36",
+      "character": "張哲",
+      "text": "張先生，我理解你們的心情。但這個開發案已經通過了都市更新審議，我們也是按照程序走的。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_37",
+      "character": "全叔",
+      "text": "程序？三個月叫程序？",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_38",
+      "character": "張哲",
+      "text": "補償方案是經過評估的——",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_39",
+      "character": "全叔",
+      "text": "八萬塊買四十年，你覺得合理嗎？",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_40",
+      "character": "Narrator",
+      "text": "許文琪沒有回答。她把平板收起來，看了看手錶。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_41",
+      "character": "張哲",
+      "text": "張先生，下禮拜二的協調會你們可以派代表參加。如果有不同意見，可以在會上提出來。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_42",
+      "character": "Narrator",
+      "text": "張哲站在原地，看著她的背影消失在巷子口。他注意到她走路的時候微微低著頭，不像是一個勝券在握的人，倒像是一個不太情願做這件事的人。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_43",
+      "character": "Narrator",
+      "text": "隔天，張哲做了一件他從來沒做過的事——他去敲了每一個攤位的門。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_44",
+      "character": "Narrator",
+      "text": "他跟老王聊了半小時，知道了市場的歷史；跟陳太太聊了四神湯的配方傳承；跟賣鞋子林老闆聊了他父親當年怎麼從一個擦鞋童變成攤商。每一個攤位背後都有一個故事，每一個故事都跟這條路綁在一起。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_45",
+      "character": "Narrator",
+      "text": "最後他去找阿娥。阿娥正在洗蚵仔，聽完他的想法後，把手上的水擦了擦。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_46",
+      "character": "阿娥",
+      "text": "你想把我們組織起來？",
+      "voice": "zf_xiaobei",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_47",
+      "character": "張哲",
+      "text": "對。二十三個攤位，如果能夠統一發聲，力量比各自為政大得多。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_48",
+      "character": "Narrator",
+      "text": "阿娥看了他一眼，眼裡有一種張哲看不懂的東西。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_49",
+      "character": "張哲",
+      "text": "小哲，你知道阿娥我賣蚵仔煎賣了多少年嗎？",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_50",
+      "character": "張哲",
+      "text": "三十五年了。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_51",
+      "character": "張哲",
+      "text": "三十五年。我二十歲嫁來台北，就在這裡擺攤。我老公走得早，我一個人把兩個孩子拉扯大，靠的就是這個攤子。你問我怕不怕？我怕。我怕得要死。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "calm",
+      "speed": 0.92
+    },
+    {
+      "id": "seg_52",
+      "character": "Narrator",
+      "text": "她頓了頓。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_53",
+      "character": "張哲",
+      "text": "但你阿公比你更怕，你知道嗎？他只是不說。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_54",
+      "character": "Narrator",
+      "text": "張哲沉默了。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_55",
+      "character": "張哲",
+      "text": "全叔這輩子最怕的事情不是收攤，是讓你阿嬤失望。那個攤子是你阿嬤跟他一起建起來的，對他來說，收攤就是放手。你明白嗎？",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_56",
+      "character": "Narrator",
+      "text": "張哲點了點頭。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_57",
+      "character": "Narrator",
+      "text": "那天晚上，他在公寓裡的餐桌上攤開了所有資料——拆遷令、補償方案、都市更新條例、攤商訪談記錄。他把這些東西整理成一份報告，標題寫著",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_58",
+      "character": "張哲",
+      "text": "大南路夜市攤商權益報告",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_59",
+      "character": "Narrator",
+      "text": "。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_60",
+      "character": "Narrator",
+      "text": "寫到凌晨兩點的時候，他聽見全叔房間裡傳來聲音。他走過去，門是半開的。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_61",
+      "character": "Narrator",
+      "text": "全叔坐在床邊，手裡拿著那張黑白照片——年輕的全叔和秀蓮站在",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_62",
+      "character": "全叔",
+      "text": "張記滷肉飯",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_63",
+      "character": "Narrator",
+      "text": "的招牌前面。老人把照片貼在胸口，閉著眼睛，嘴唇微微動著。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_64",
+      "character": "Narrator",
+      "text": "張哲沒有進去。他站在門口看了一會兒，然後輕輕地把門帶上。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_65",
+      "character": "Narrator",
+      "text": "回到餐桌上，他在報告的最後一頁加了一行字：",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_66",
+      "character": "張哲",
+      "text": "這不只是一塊地的事。這是一群人的家。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_67",
+      "character": "Narrator",
+      "text": "禮拜二很快就到了。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_68",
+      "character": "Narrator",
+      "text": "協調會在大南路底區民活動中心舉行。二十三個攤位來了十九個，每個人都帶著自己的故事和不安。會場裡的燈光是慘白的日光燈，照在每個人疲憊的臉上。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_69",
+      "character": "Narrator",
+      "text": "宏盛開發那邊來了三個人，帶頭的是許文琪。她穿著正式的黑套裝，手裡拿著一疊文件，表情職業化但不太自然。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_70",
+      "character": "Narrator",
+      "text": "會議開始後，許文琪簡報了開發案的內容：一棟十二層的商場，地下三層停車場，預計兩年完工。攤商的補償方案是每攤八萬到十五萬不等，根據營業年限計算。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_71",
+      "character": "Narrator",
+      "text": "簡報結束後，會場沉默了幾秒。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_72",
+      "character": "Narrator",
+      "text": "然後老王第一個站起來。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_73",
+      "character": "全叔",
+      "text": "許小姐，我在這裡賣了四十年的水果。你們的商場蓋好了以後，能不能讓我進去繼續賣？",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_74",
+      "character": "Narrator",
+      "text": "許文琪猶豫了一下。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_75",
+      "character": "張哲",
+      "text": "這個……商場的招商是由管理公司負責的，租金可能會比較高——",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_76",
+      "character": "全叔",
+      "text": "多高？",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_77",
+      "character": "張哲",
+      "text": "這個我需要回去確認。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_78",
+      "character": "Narrator",
+      "text": "陳太太也站起來了。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_79",
+      "character": "全叔",
+      "text": "我不需要你們的錢。我需要一個地方繼續煮湯。我的客人在這裡，他們每天下班都來喝一碗。你把我的攤子拆了，他們去哪裡找我？",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_80",
+      "character": "Narrator",
+      "text": "會場開始騷動。有人開始抱怨，有人開始罵，有人沉默地坐著。許文琪的臉色越來越難看。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_81",
+      "character": "Narrator",
+      "text": "張哲站了起來。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_82",
+      "character": "Narrator",
+      "text": "會場安靜了一些。他不是最老的人，也不是最大聲的人，但他是唯一一個手裡拿著一份完整報告的人。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_83",
+      "character": "張哲",
+      "text": "許小姐，我想請問三個問題。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_84",
+      "character": "Narrator",
+      "text": "他翻開報告。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_85",
+      "character": "全叔",
+      "text": "第一，根據都市更新條例第三十六條，實施者應與原有合法建築物所有權人及使用人協議。但我們收到的通知上，沒有任何協議的內容，只有一個期限和一個數字。這是程序問題。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "calm",
+      "speed": 0.92
+    },
+    {
+      "id": "seg_86",
+      "character": "Narrator",
+      "text": "許文琪的眉頭皺了一下。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_87",
+      "character": "張哲",
+      "text": "第二，大南路夜市有超過二十年的歷史，根據台北市市場管理自治條例，具有文化保存價值的傳統市集，主管機關得另定輔導方案。我們是不是應該先申請文化保存評估？",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "calm",
+      "speed": 0.92
+    },
+    {
+      "id": "seg_88",
+      "character": "Narrator",
+      "text": "會場裡開始有人交頭接耳。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_89",
+      "character": "全叔",
+      "text": "第三，補償金額的計算基準是什麼？我們調查了二十三個攤位的平均月營收，以四十年的攤位來算，八萬塊大約是三個月的營業額。這個數字，是怎麼評估出來的？",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "calm",
+      "speed": 0.92
+    },
+    {
+      "id": "seg_90",
+      "character": "Narrator",
+      "text": "許文琪沉默了很久。她低頭翻了翻手裡的文件，然後抬起頭。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_91",
+      "character": "張哲",
+      "text": "張先生，你提的這些問題我需要帶回去跟法務確認。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_92",
+      "character": "全叔",
+      "text": "多久？",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_93",
+      "character": "張哲",
+      "text": "一個禮拜。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_94",
+      "character": "全叔",
+      "text": "好。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_95",
+      "character": "Narrator",
+      "text": "張哲合上報告",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_96",
+      "character": "張哲",
+      "text": "我們等你們一個禮拜。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_97",
+      "character": "Narrator",
+      "text": "他轉身面對所有攤商。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_98",
+      "character": "全叔",
+      "text": "各位叔叔阿姨，我們不鬧事，不堵路，不罷工。我們就是好好做我們的事，同時把我們的權利講清楚。他們要拆可以，但要按照規矩來。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "calm",
+      "speed": 0.92
+    },
+    {
+      "id": "seg_99",
+      "character": "Narrator",
+      "text": "會場裡響起了一陣掌聲。不響亮，但很實在。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_100",
+      "character": "Narrator",
+      "text": "散會後，張哲走出活動中心。夜風吹過來，帶著夜市收攤後的餘香——殘留的油煙味、洗潔精的味道、還有淡淡的潮濕。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_101",
+      "character": "Narrator",
+      "text": "許文琪從後面追上來。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_102",
+      "character": "張哲",
+      "text": "張先生。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_103",
+      "character": "Narrator",
+      "text": "張哲轉身。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_104",
+      "character": "Narrator",
+      "text": "她站定了，猶豫了一下，然後說了一句張哲沒想到的話。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_105",
+      "character": "張哲",
+      "text": "你的報告寫得很好。老實說……我也覺得這個補償方案不合理。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_106",
+      "character": "Narrator",
+      "text": "張哲看著她。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_107",
+      "character": "張哲",
+      "text": "但這不是我能決定的。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_108",
+      "character": "Narrator",
+      "text": "許文琪的聲音低了一些",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_109",
+      "character": "張哲",
+      "text": "我只是執行的人。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_110",
+      "character": "張哲",
+      "text": "那誰能決定？",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_111",
+      "character": "張哲",
+      "text": "董事會。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_112",
+      "character": "Narrator",
+      "text": "她頓了頓",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_113",
+      "character": "張哲",
+      "text": "下個月底開會。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_114",
+      "character": "Narrator",
+      "text": "張哲點了點頭。他從口袋裡掏出一張紙，遞給她。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_115",
+      "character": "張哲",
+      "text": "這是我們二十三個攤位的聯絡方式。如果你們有任何新的方案，隨時可以聯絡我們。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_116",
+      "character": "Narrator",
+      "text": "許文琪接過紙，看了一眼，然後折好放進口袋。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_117",
+      "character": "張哲",
+      "text": "謝謝你。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_118",
+      "character": "張哲",
+      "text": "謝什麼？",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_119",
+      "character": "張哲",
+      "text": "謝謝你沒有罵我。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_120",
+      "character": "Narrator",
+      "text": "張哲看著她離開的背影，忽然覺得這個世界沒有他想像的那麼簡單。拆遷不是好人和壞人的故事，是每個人都在自己的位置上做著不得不做的事。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_121",
+      "character": "Narrator",
+      "text": "他走回大南路。遠遠地，他看見攤位那邊還亮著一盞燈。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_122",
+      "character": "Narrator",
+      "text": "是全叔。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_123",
+      "character": "Narrator",
+      "text": "老人坐在攤位後面的板凳上，面前放著一碗滷肉飯。碗裡的飯已經涼了，但他沒有吃，只是看著街的盡頭發呆。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_124",
+      "character": "Narrator",
+      "text": "張哲走過去，在他旁邊坐下。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_125",
+      "character": "張哲",
+      "text": "阿公，怎麼還不睡？",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_126",
+      "character": "張哲",
+      "text": "等你。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_127",
+      "character": "Narrator",
+      "text": "全叔把那碗涼了的滷肉飯推到孫子面前。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_128",
+      "character": "全叔",
+      "text": "吃。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_129",
+      "character": "Narrator",
+      "text": "張哲端起碗，挖了一口。涼了的滷肉飯味道不一樣了——油脂凝固在米飯表面，形成一層薄薄的白膜。但那個味道還是在的，鹹、甜、香，全都在。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_130",
+      "character": "張哲",
+      "text": "好吃嗎？",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_131",
+      "character": "全叔",
+      "text": "好吃。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_132",
+      "character": "Narrator",
+      "text": "全叔沉默了一會兒，然後說",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_133",
+      "character": "全叔",
+      "text": "小哲，你今天在會上說的那些話，很了不起。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_134",
+      "character": "全叔",
+      "text": "我只是把事實講出來。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_135",
+      "character": "全叔",
+      "text": "不。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_136",
+      "character": "Narrator",
+      "text": "全叔搖了搖頭",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_137",
+      "character": "全叔",
+      "text": "很多人知道事實，但不敢講。你講了。這和你聰不聰明沒有關係，和你有沒有膽量有關係。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_138",
+      "character": "Narrator",
+      "text": "他停了一下。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_139",
+      "character": "全叔",
+      "text": "你阿嬤也是這樣的人。她不怕，什麼都不怕。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_140",
+      "character": "Narrator",
+      "text": "張哲看著阿公的側臉。路燈的光打在老人的臉上，那些皺紋像是一張被摺疊了無數次的地圖，每條紋路都是一段旅程。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_141",
+      "character": "張哲",
+      "text": "阿公",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_142",
+      "character": "全叔",
+      "text": "不管最後怎麼樣，我不會讓你一個人扛。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.83
+    },
+    {
+      "id": "seg_143",
+      "character": "Narrator",
+      "text": "全叔沒有說話。他伸出手，拍了拍孫子的肩膀。那隻手粗糙、溫暖，帶著滷汁和歲月的氣味。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_144",
+      "character": "Narrator",
+      "text": "祖孫兩個人就這樣坐在空蕩蕩的大南路上，面前是一碗涼了的滷肉飯，頭頂是台北灰濛濛的夜空。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    },
+    {
+      "id": "seg_145",
+      "character": "Narrator",
+      "text": "遠處傳來清潔車的聲音，夜市的地面被水沖洗乾淨，像是什麼都沒有發生過。但他們都知道，明天下午四點，火會再次點起來，鍋會再次燒熱，人會再次回來。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_146",
+      "character": "Narrator",
+      "text": "因為這條路的記憶，不是混凝土可以覆蓋的。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.9
+    }
+  ]
+}

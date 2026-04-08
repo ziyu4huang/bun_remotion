@@ -1,0 +1,592 @@
+{
+  "version": "1.0",
+  "title": "煙火人間 - 第四章 學藝",
+  "silence_ms": 500,
+  "output_format": "flac",
+  "metadata": {
+    "source": "chapter-004.txt",
+    "created": "2026-04-06T18:30:00",
+    "author": "",
+    "language": "zh",
+    "book": "yanhuo",
+    "chapter": 4
+  },
+  "segments": [
+    {
+      "id": "seg_1",
+      "character": "Narrator",
+      "text": "清晨五點，士林夜市的巷子裡只有流浪貓和垃圾桶的氣味。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_2",
+      "character": "Narrator",
+      "text": "張哲跟著全叔走進市場的時候，天色還是灰濛濛的。市場裡的燈已經亮了，攤販們正在搬貨、理菜、磨刀，各種聲音混在一起，像一首沒有指揮的交響樂。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_3",
+      "character": "全叔",
+      "text": "來，跟緊。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "neutral",
+      "speed": 1.0
+    },
+    {
+      "id": "seg_4",
+      "character": "Narrator",
+      "text": "全叔的腳步很快，在窄小的走道裡穿梭自如。他在一個豬肉攤前停下來，攤主是一個壯碩的中年男人，圍裙上沾滿了血水。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_5",
+      "character": "豬肉攤老闆",
+      "text": "全叔！今天要多少？",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "neutral",
+      "speed": 1.0
+    },
+    {
+      "id": "seg_6",
+      "character": "全叔",
+      "text": "三斤五花肉，一斤胛心。要肥瘦均勻的。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.95
+    },
+    {
+      "id": "seg_7",
+      "character": "豬肉攤老闆",
+      "text": "你孫子啊？長這麼大了。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "happy",
+      "speed": 1.05
+    },
+    {
+      "id": "seg_8",
+      "character": "Narrator",
+      "text": "全叔點點頭，接過肉。張哲掏錢要付，被全叔擋住了。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_9",
+      "character": "全叔",
+      "text": "我來。你先學會挑肉再說。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "neutral",
+      "speed": 1.0
+    },
+    {
+      "id": "seg_10",
+      "character": "Narrator",
+      "text": "他們接著去買了紅蔥頭、醬油、冰糖、五香粉、白胡椒粉。每買一樣東西，全叔都會多停一會兒，告訴張哲怎麼挑。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_11",
+      "character": "全叔",
+      "text": "你看這個紅蔥頭，皮要乾但不能裂，聞起來有甜味。太辣的不好，炒出來會苦。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "calm",
+      "speed": 0.92
+    },
+    {
+      "id": "seg_12",
+      "character": "全叔",
+      "text": "醬油要看色水。不是越黑越好，太黑了是加了焦糖。要那種透著紅棕色的，搖一下，泡沫細而慢的。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "calm",
+      "speed": 0.92
+    },
+    {
+      "id": "seg_13",
+      "character": "Narrator",
+      "text": "張哲在手機上記筆記。全叔瞥了一眼，沒說什麼，但嘴角微微動了一下。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "calm",
+      "speed": 0.92
+    },
+    {
+      "id": "seg_14",
+      "character": "Narrator",
+      "text": "回到公寓，全叔把圍裙解下來，遞給張哲。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_15",
+      "character": "全叔",
+      "text": "穿上。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "neutral",
+      "speed": 1.0
+    },
+    {
+      "id": "seg_16",
+      "character": "Narrator",
+      "text": "圍裙很大，張哲繫上之後幾乎要繞兩圈。這條圍裙不知道用了多少年，上面佈滿了洗不掉的油漬，有些地方已經磨破了。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_17",
+      "character": "全叔",
+      "text": "先切蔥。洗乾淨，把外皮剝掉，然後切片。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.95
+    },
+    {
+      "id": "seg_18",
+      "character": "Narrator",
+      "text": "張哲開始剝蔥。他的動作笨拙，剝一顆要花半分鐘。全叔不催他，自顧自地把五花肉切成兩指寬的條狀。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_19",
+      "character": "張哲",
+      "text": "阿公，要切多細？",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "neutral",
+      "speed": 1.0
+    },
+    {
+      "id": "seg_20",
+      "character": "全叔",
+      "text": "不是多細，是多厚。蔥頭片要厚薄一致，大約一個硬幣的厚度。太薄了容易焦，太厚了炒不出香氣。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.95
+    },
+    {
+      "id": "seg_21",
+      "character": "Narrator",
+      "text": "張哲調整了一下刀法，切了幾片，拿給全叔看。全叔看了兩秒。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_22",
+      "character": "全叔",
+      "text": "可以。繼續。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "neutral",
+      "speed": 1.0
+    },
+    {
+      "id": "seg_23",
+      "character": "Narrator",
+      "text": "切完蔥頭，開始炒。全叔把鍋燒熱，倒入半碗油，等油開始冒煙的時候，把蔥頭片倒了進去。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_24",
+      "character": "全叔",
+      "text": "這一步最重要。炒紅蔥頭不能急，也不能慢。火要中小火，一直翻，聽聲音。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.95
+    },
+    {
+      "id": "seg_25",
+      "character": "張哲",
+      "text": "什麼聲音？",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "neutral",
+      "speed": 1.0
+    },
+    {
+      "id": "seg_26",
+      "character": "全叔",
+      "text": "你聽。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.88
+    },
+    {
+      "id": "seg_27",
+      "character": "Narrator",
+      "text": "鍋裡發出細密的滋滋聲，像是無數小雨滴落在熱鐵板上。蔥頭片在油裡翻滾，顏色從白色慢慢變成金黃，整個廚房被一股甜膩的香氣填滿。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "calm",
+      "speed": 0.92
+    },
+    {
+      "id": "seg_28",
+      "character": "全叔",
+      "text": "聞到了嗎？這個時候就要起鍋了。再炒十秒就焦了。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.95
+    },
+    {
+      "id": "seg_29",
+      "character": "Narrator",
+      "text": "全叔用漏勺把蔥頭撈出來，瀝乾油，平鋪在盤子上。那些金黃色的薄片在燈光下閃著光澤，像是一片片小小的琉璃瓦。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_30",
+      "character": "全叔",
+      "text": "這就是油蔥酥。你阿嬤說，這是一碗滷肉飯的靈魂。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "sad",
+      "speed": 0.88
+    },
+    {
+      "id": "seg_31",
+      "character": "Narrator",
+      "text": "張哲看著那盤油蔥酥，突然理解了為什麼阿嬤要在每一張食譜上畫一朵小花。那些食譜不是記錄，是情書。每一個步驟都藏著她對全叔、對這個家、對這碗飯的愛。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "calm",
+      "speed": 0.92
+    },
+    {
+      "id": "seg_32",
+      "character": "Narrator",
+      "text": "接下來是炒肉。全叔把切好的五花肉倒進鍋裡，大火翻炒，直到肉塊表面微微焦黃。然後加入醬油、冰糖、米酒、五香粉，翻炒均勻後倒入水，大火煮開，轉小火慢燉。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_33",
+      "character": "全叔",
+      "text": "滷肉飯的秘密不在火候，在耐心。你阿嬤以前說，好吃的東西都是等出來的。你越急，它越不好吃。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "calm",
+      "speed": 0.92
+    },
+    {
+      "id": "seg_34",
+      "character": "Narrator",
+      "text": "鍋裡的滷汁咕嘟咕嘟地冒著泡，香氣越來越濃。張哲站在旁邊，看著阿公的側臉。陽光從窗戶照進來，落在老人花白的頭髮上，也落在那雙佈滿疤痕的手上。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "calm",
+      "speed": 0.92
+    },
+    {
+      "id": "seg_35",
+      "character": "Narrator",
+      "text": "下午三點半，他們把大鍋搬上了三輪車，推到攤位。全叔把鍋架好，點火，又從保溫箱裡拿出早上煮好的滷蛋和白飯。四點整，第一個客人來了。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_36",
+      "character": "Narrator",
+      "text": "是一個穿制服的女高中生，背著書包，頭髮亂蓬蓬的，一看就是剛補完習。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_37",
+      "character": "女高中生",
+      "text": "老張，一碗滷肉飯，加蛋。",
+      "voice": "zf_xiaobei",
+      "lang": "zh",
+      "emotion": "neutral",
+      "speed": 1.0
+    },
+    {
+      "id": "seg_38",
+      "character": "Narrator",
+      "text": "全叔正要動手，張哲搶先一步。他舀了一勺滷肉，想了想，又多舀了半勺，淋在白飯上，放上切好的滷蛋和幾片黃瓜。全叔在旁邊看著，沒有說話。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_39",
+      "character": "女高中生",
+      "text": "你誰啊？老張呢？",
+      "voice": "zf_xiaobei",
+      "lang": "zh",
+      "emotion": "neutral",
+      "speed": 1.0
+    },
+    {
+      "id": "seg_40",
+      "character": "全叔",
+      "text": "他孫子。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "neutral",
+      "speed": 1.0
+    },
+    {
+      "id": "seg_41",
+      "character": "女高中生",
+      "text": "哦。跟老張做的味道一樣。",
+      "voice": "zf_xiaobei",
+      "lang": "zh",
+      "emotion": "neutral",
+      "speed": 1.0
+    },
+    {
+      "id": "seg_42",
+      "character": "Narrator",
+      "text": "她付了錢走了。張哲看著她的背影，心裡湧起一股奇怪的感覺——不是驕傲，是一種踏實。就好像他第一次覺得，自己真的屬於這個地方。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "calm",
+      "speed": 0.92
+    },
+    {
+      "id": "seg_43",
+      "character": "Narrator",
+      "text": "客人陸續來了。有下班的白領，有帶孩子的年輕媽媽，有一對牽手的老夫婦。張哲一碗一碗地盛飯、舀肉、切蛋，動作越來越順手。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_44",
+      "character": "全叔",
+      "text": "那個客人要多一點汁。這個客人不要黃瓜。那個小弟弟飯少一點，他吃不完。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "neutral",
+      "speed": 1.0
+    },
+    {
+      "id": "seg_45",
+      "character": "Narrator",
+      "text": "張哲發現，全叔記得每一個客人的喜好。這不是生意，是人情。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "calm",
+      "speed": 0.92
+    },
+    {
+      "id": "seg_46",
+      "character": "Narrator",
+      "text": "七點多的時候，阿娥端著一盤蚵仔煎走過來，放在攤位上。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_47",
+      "character": "阿娥",
+      "text": "來，吃。今天蚵仔特別肥。",
+      "voice": "zf_xiaobei",
+      "lang": "zh",
+      "emotion": "happy",
+      "speed": 1.05
+    },
+    {
+      "id": "seg_48",
+      "character": "阿娥",
+      "text": "全叔，你孫子今天來幫忙啊？我看他手腳還行。",
+      "voice": "zf_xiaobei",
+      "lang": "zh",
+      "emotion": "happy",
+      "speed": 1.05
+    },
+    {
+      "id": "seg_49",
+      "character": "全叔",
+      "text": "馬馬虎虎。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "neutral",
+      "speed": 1.0
+    },
+    {
+      "id": "seg_50",
+      "character": "阿娥",
+      "text": "什麼叫馬馬虎虎？你年輕的時候第一次上場，把醬油當成醋倒了進去，你忘了？",
+      "voice": "zf_xiaobei",
+      "lang": "zh",
+      "emotion": "happy",
+      "speed": 1.08
+    },
+    {
+      "id": "seg_51",
+      "character": "Narrator",
+      "text": "全叔的耳根紅了。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "calm",
+      "speed": 0.92
+    },
+    {
+      "id": "seg_52",
+      "character": "Narrator",
+      "text": "張哲一邊吃蚵仔煎，一邊聽阿娥講阿公年輕時候的事。他從來沒有見過阿公年輕的樣子，在他的記憶裡，全叔一直就是一個老人。但阿娥口中的全叔，是一個會害羞、會犯錯、會為了一碗飯跟老婆吵架的年輕人。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "calm",
+      "speed": 0.92
+    },
+    {
+      "id": "seg_53",
+      "character": "阿娥",
+      "text": "你阿嬤才是真正厲害的人。那時候全叔的生意不好，差點就要收攤了。是你阿嬤一個人去夜市門口發傳單，一張一張地發，逢人就說「來吃吃看，不好吃不要錢」。你知道她發了多少張嗎？",
+      "voice": "zf_xiaobei",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.95
+    },
+    {
+      "id": "seg_54",
+      "character": "Narrator",
+      "text": "張哲搖頭。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_55",
+      "character": "阿娥",
+      "text": "三百張。發了一整個下午，站到腳都腫了。那天晚上來了二十幾個客人，從那以後，生意就越來越好了。",
+      "voice": "zf_xiaobei",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.95
+    },
+    {
+      "id": "seg_56",
+      "character": "Narrator",
+      "text": "張哲看著攤位上那鍋冒著熱氣的滷肉，突然覺得那鍋肉的重量不一樣了。那不只是一鍋滷肉，那是兩個人一輩子的心血，是一個家庭的全部記憶。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "sad",
+      "speed": 0.88
+    },
+    {
+      "id": "seg_57",
+      "character": "Narrator",
+      "text": "收攤的時候，已經快十一點了。張哲幫全叔洗碗、擦桌子、把鍋搬回公寓。兩個人都很累，但誰也沒有先開口說話。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_58",
+      "character": "Narrator",
+      "text": "直到全叔把最後一個碗放好的時候，他突然說了一句——",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_59",
+      "character": "全叔",
+      "text": "明天還來不來？",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "neutral",
+      "speed": 1.0
+    },
+    {
+      "id": "seg_60",
+      "character": "Narrator",
+      "text": "張哲愣了一下。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_61",
+      "character": "張哲",
+      "text": "來。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.95
+    },
+    {
+      "id": "seg_62",
+      "character": "Narrator",
+      "text": "全叔沒有再說話。他走到客廳，在林秀蓮的照片前站了一會兒，然後低聲說了一句什麼。張哲沒有聽清楚，但他覺得阿公在說：「妳看，他回來了。」",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "sad",
+      "speed": 0.88
+    },
+    {
+      "id": "seg_63",
+      "character": "Narrator",
+      "text": "那天晚上，張哲躺在那張舊床上，給公司發了一封郵件。郵件的標題是「辭職信」。他寫完之後看了很久，深吸一口氣，按下了發送鍵。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.95
+    },
+    {
+      "id": "seg_64",
+      "character": "Narrator",
+      "text": "窗外，士林夜市最後一盞燈也熄滅了。但張哲知道，明天下午四點，他會和阿公一起，把火重新點起來。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "calm",
+      "speed": 0.90
+    }
+  ]
+}

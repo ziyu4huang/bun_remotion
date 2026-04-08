@@ -1,0 +1,392 @@
+{
+  "version": "1.0",
+  "title": "煙火人間 — 第二章　歸人",
+  "silence_ms": 500,
+  "output_format": "flac",
+  "metadata": {
+    "source": "chapter-002.txt",
+    "created": "2026-04-06T17:00:00",
+    "author": "",
+    "language": "zh"
+  },
+  "segments": [
+    {
+      "id": "seg_1",
+      "character": "Narrator",
+      "text": "張哲在台北車站下了高鐵，背著一個黑色雙肩包，站在人潮中愣了好一會兒。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_2",
+      "character": "Narrator",
+      "text": "他是全叔的孫子，二十六歲，在新竹科學園區一家半導體公司做工程師。三年前大學畢業後就搬到了新竹，每隔一兩個月回台北一次。每次回來，他都會去夜市幫阿公收攤，順便吃一碗滷肉飯。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_3",
+      "character": "Narrator",
+      "text": "但這次不一樣。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.95
+    },
+    {
+      "id": "seg_4",
+      "character": "Narrator",
+      "text": "他摸了摸口袋裡的那封信。信是上週收到的，來自一間律師事務所。信上說，士林夜市大南路那片土地的業主——一個叫「宏盛開發」的公司——已經向法院聲請了拆遷令。所有攤位必須在三個月內遷出。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.95
+    },
+    {
+      "id": "seg_5",
+      "character": "Narrator",
+      "text": "三個月。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.90
+    },
+    {
+      "id": "seg_6",
+      "character": "Narrator",
+      "text": "張哲深吸一口氣，走出了車站。外頭的空氣濕熱，帶著台北特有的那種悶。他叫了一輛計程車，報了地址。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_7",
+      "character": "計程車司機",
+      "text": "士林夜市？現在的夜市都是觀光客去的啦，東西又貴又不好吃。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "neutral",
+      "speed": 1.0
+    },
+    {
+      "id": "seg_8",
+      "character": "Narrator",
+      "text": "司機從後視鏡裡看了他一眼。張哲沒有回答。他看著窗外飛逝的街景，心裡在想該怎麼跟阿公開口。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_9",
+      "character": "Narrator",
+      "text": "計程車停在夜市入口。張哲付了錢，下車，順著大南路往裡走。下午五點多，攤位陸續開張了，空氣裡瀰漫著各種食物的氣味——炸雞排的油香、珍珠奶茶的甜膩、炭烤的焦香。這些味道他從小聞到大，閉著眼睛都能分辨出來。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "calm",
+      "speed": 0.92
+    },
+    {
+      "id": "seg_10",
+      "character": "Narrator",
+      "text": "遠遠地，他看見了那個熟悉的攤位。全叔正低著頭切滷蛋，動作嫺熟得像是在做一件永遠不需要思考的事。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "calm",
+      "speed": 0.92
+    },
+    {
+      "id": "seg_11",
+      "character": "張哲",
+      "text": "阿公。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "neutral",
+      "speed": 1.0
+    },
+    {
+      "id": "seg_12",
+      "character": "Narrator",
+      "text": "全叔抬頭，看見孫子，臉上的皺紋舒展開了一些。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_13",
+      "character": "全叔",
+      "text": "來了啊。吃飯了沒有？",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "neutral",
+      "speed": 0.95
+    },
+    {
+      "id": "seg_14",
+      "character": "張哲",
+      "text": "還沒。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "neutral",
+      "speed": 1.0
+    },
+    {
+      "id": "seg_15",
+      "character": "Narrator",
+      "text": "全叔二話不說，從鍋裡舀了一大勺滷肉，淋在白飯上，又切了一顆滷蛋、幾片黃瓜，推到張哲面前。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_16",
+      "character": "全叔",
+      "text": "吃。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "neutral",
+      "speed": 0.95
+    },
+    {
+      "id": "seg_17",
+      "character": "Narrator",
+      "text": "張哲端起碗，挖了一大口。那個味道——醬油的鹹香、豬油的濃郁、米飯的軟糯——瞬間填滿了他的整個口腔。他在新竹吃遍了各式各樣的餐廳，但沒有一家的味道比得上這碗飯。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "calm",
+      "speed": 0.92
+    },
+    {
+      "id": "seg_18",
+      "character": "張哲",
+      "text": "還是阿公做的最好吃。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "happy",
+      "speed": 1.05
+    },
+    {
+      "id": "seg_19",
+      "character": "Narrator",
+      "text": "全叔哼了一聲，但嘴角微微上揚。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "calm",
+      "speed": 0.92
+    },
+    {
+      "id": "seg_20",
+      "character": "全叔",
+      "text": "你說有事要跟我說，什麼事？",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "neutral",
+      "speed": 0.95
+    },
+    {
+      "id": "seg_21",
+      "character": "Narrator",
+      "text": "張哲放下筷子，從口袋裡掏出那封信，遞過去。全叔接過信，戴上老花眼鏡，一個字一個字地看。他看得很慢，像是在讀一個他不想知道結局的故事。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.95
+    },
+    {
+      "id": "seg_22",
+      "character": "Narrator",
+      "text": "整個攤位安靜了下來。隔壁阿娥的蚵仔煎攤傳來滋滋的油聲，遠處有人在叫賣芭樂，但這些聲音彷彿都被一道無形的牆隔開了。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.93
+    },
+    {
+      "id": "seg_23",
+      "character": "Narrator",
+      "text": "全叔把信放下，摘下眼鏡。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_24",
+      "character": "全叔",
+      "text": "我知道了。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "neutral",
+      "speed": 0.92
+    },
+    {
+      "id": "seg_25",
+      "character": "張哲",
+      "text": "阿公——",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.95
+    },
+    {
+      "id": "seg_26",
+      "character": "全叔",
+      "text": "我說我知道了。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.93
+    },
+    {
+      "id": "seg_27",
+      "character": "Narrator",
+      "text": "全叔的聲音很平靜，平靜得不正常。他拿起鍋鏟，繼續攪拌鍋裡的滷肉。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.95
+    },
+    {
+      "id": "seg_28",
+      "character": "張哲",
+      "text": "阿公，我們可以找律師——",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.95
+    },
+    {
+      "id": "seg_29",
+      "character": "全叔",
+      "text": "找律師幹什麼？這塊地本來就不是我們的。四十年前是人家讓我們擺攤的，現在人要收回去了，我們就得走。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.93
+    },
+    {
+      "id": "seg_30",
+      "character": "張哲",
+      "text": "可是——",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.95
+    },
+    {
+      "id": "seg_31",
+      "character": "全叔",
+      "text": "小哲，你知道你阿嬤走的那天跟我說了什麼嗎？",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "calm",
+      "speed": 0.90
+    },
+    {
+      "id": "seg_32",
+      "character": "Narrator",
+      "text": "全叔第一次回頭看著他，眼睛裡有一種張哲從未見過的東西。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.95
+    },
+    {
+      "id": "seg_33",
+      "character": "Narrator",
+      "text": "張哲搖頭。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_34",
+      "character": "全叔",
+      "text": "她說：「老張，別怕。你這輩子最厲害的不是滷肉飯，是你從來不怕從頭來過。」",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "calm",
+      "speed": 0.88
+    },
+    {
+      "id": "seg_35",
+      "character": "Narrator",
+      "text": "全叔把火關掉，轉身面對孫子。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_36",
+      "character": "全叔",
+      "text": "你阿嬤說得對。我二十歲從嘉義上來台北的時候，身上只有三千塊。擺攤的第一天，一個客人都沒有。後來你阿嬤來了，她說我做的飯好吃，但光好吃不夠，要讓人吃了會想再來。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "calm",
+      "speed": 0.90
+    },
+    {
+      "id": "seg_37",
+      "character": "Narrator",
+      "text": "他頓了頓。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "calm",
+      "speed": 0.92
+    },
+    {
+      "id": "seg_38",
+      "character": "全叔",
+      "text": "所以她幫我設計了那個配方。你知道我們的滷肉為什麼跟別人不一樣嗎？因為裡面加了一點冰糖和紅蔥頭。這是你阿嬤想的。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "calm",
+      "speed": 0.88
+    },
+    {
+      "id": "seg_39",
+      "character": "Narrator",
+      "text": "張哲看著阿公的背影，突然覺得那個背影比記憶中的小了許多。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "sad",
+      "speed": 0.88
+    },
+    {
+      "id": "seg_40",
+      "character": "張哲",
+      "text": "阿公，我不會讓這個攤子就這樣沒了的。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "serious",
+      "speed": 0.93
+    },
+    {
+      "id": "seg_41",
+      "character": "Narrator",
+      "text": "全叔沒有回答。他重新把火打開，往鍋裡加了一瓢水。",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "emotion": "calm",
+      "speed": 0.92
+    },
+    {
+      "id": "seg_42",
+      "character": "全叔",
+      "text": "先把飯吃完。涼了就不好吃了。",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "emotion": "calm",
+      "speed": 0.90
+    }
+  ]
+}

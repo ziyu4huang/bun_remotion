@@ -1,0 +1,17 @@
+# MLX TTS — Apple Silicon only (Python 3.11+)
+mlx-audio>=0.4.0
+misaki[en]>=0.9.4      # G2P engine required by Kokoro (includes num2words for English)
+jieba>=0.42.1          # Chinese word segmentation
+
+# Web servers (webui.py / story_studio.py)
+fastapi>=0.100.0
+uvicorn>=0.20.0
+python-multipart>=0.0.9  # required by FastAPI for form data
+
+# AI content generation (optional — needs ANTHROPIC_API_KEY)
+anthropic>=0.89.0
+
+# Tests only
+playwright>=1.40.0
+pytest>=8.0.0
+pytest-asyncio>=0.23.0

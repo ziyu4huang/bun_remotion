@@ -1,0 +1,109 @@
+{
+  "version": "1.0",
+  "title": "煙火人間",
+  "author": "",
+  "language": "zh",
+  "genre": "literary fiction",
+  "created": "2026-04-06T16:45:35",
+  "modified": "2026-04-06T19:47:57",
+  "settings": {
+    "silence_ms": 500,
+    "output_format": "flac"
+  },
+  "characters": {
+    "Narrator": {
+      "gender": "male",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "role": "narrator"
+    },
+    "全叔": {
+      "gender": "male",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "role": "protagonist"
+    },
+    "張哲": {
+      "gender": "male",
+      "voice": "zm_yunjian",
+      "lang": "zh",
+      "role": "protagonist"
+    },
+    "阿娥": {
+      "gender": "female",
+      "voice": "zf_xiaobei",
+      "lang": "zh",
+      "role": "supporting"
+    },
+    "林秀蓮": {
+      "gender": "female",
+      "voice": "zf_xiaoni",
+      "lang": "zh",
+      "role": "supporting"
+    },
+    "蛋行老闆": {
+      "gender": "male",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "role": "minor"
+    },
+    "計程車司機": {
+      "gender": "male",
+      "voice": "zm_yunxi",
+      "lang": "zh",
+      "role": "minor"
+    }
+  },
+  "chapters": [
+    {
+      "number": 1,
+      "title": "Chapter 1",
+      "source": "chapter-001.txt",
+      "story_json": "chapter-001.story.json",
+      "audio": "chapter-001.flac",
+      "status": "produced",
+      "segments": 0,
+      "duration_s": null
+    },
+    {
+      "number": 2,
+      "title": "Chapter 2",
+      "source": "chapter-002.txt",
+      "story_json": "chapter-002.story.json",
+      "audio": "chapter-002.flac",
+      "status": "produced",
+      "segments": 0,
+      "duration_s": null
+    },
+    {
+      "number": 3,
+      "title": "Chapter 3",
+      "source": "chapter-003.txt",
+      "story_json": "chapter-003.story.json",
+      "audio": "chapter-003.flac",
+      "status": "produced",
+      "segments": 0,
+      "duration_s": null
+    },
+    {
+      "number": 4,
+      "title": "Chapter 4",
+      "source": "chapter-004.txt",
+      "story_json": "chapter-004.story.json",
+      "audio": "chapter-004.flac",
+      "status": "produced",
+      "segments": 0,
+      "duration_s": null
+    },
+    {
+      "number": 5,
+      "title": "Chapter 5",
+      "source": "chapter-005.txt",
+      "story_json": "chapter-005.story.json",
+      "audio": "chapter-005.flac",
+      "status": "produced",
+      "segments": 0,
+      "duration_s": null
+    }
+  ]
+}

@@ -113,6 +113,7 @@ All memory — project knowledge, user feedback, preferences — lives here. Thi
 ### project/
 - [project-overview](.agent/memory/project/project-overview.md) - Tech stack, structure, commands, Remotion concepts
 - [google-free-tier-apis](.agent/memory/project/google-free-tier-apis.md) - Google AI Studio free tier APIs: TTS, embedding, chat, image gen status
+- [mlx-tts-integration](.agent/memory/project/mlx-tts-integration.md) - mlx_tts Python TTS engine at mlx_tts/: setup.sh, voices, story pipeline, model details
 
 ### feedback/
 - [skill-creation](.agent/memory/feedback/skill-creation.md) - User prefers structured SKILL.md with references/ and scripts/ subdirectories
