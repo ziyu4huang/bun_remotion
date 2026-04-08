@@ -17,6 +17,9 @@
 $ErrorActionPreference = "Stop"
 $RepoRoot = Split-Path -Parent $PSScriptRoot
 
+# Use system Chrome instead of per-app downloaded chrome-headless-shell
+$env:REMOTION_CHROME_EXECUTABLE_PATH = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+
 $Apps = @{
     "claude-code-intro"    = @{ comp = "ClaudeCodeIntro";    out = "out/claude-code-intro.mp4" }
     "taiwan-stock-market"  = @{ comp = "TaiwanStockMarket";  out = "out/taiwan-stock-market.mp4" }
