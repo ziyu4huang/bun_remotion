@@ -20,6 +20,7 @@ $RepoRoot = Split-Path -Parent $PSScriptRoot
 $Apps = @{
     "claude-code-intro"    = @{ comp = "ClaudeCodeIntro";    out = "out/claude-code-intro.mp4" }
     "taiwan-stock-market"  = @{ comp = "TaiwanStockMarket";  out = "out/taiwan-stock-market.mp4" }
+    "three-little-pigs"    = @{ comp = "ThreeLittlePigs";    out = "out/three-little-pigs.mp4" }
 }
 
 function Show-Usage {

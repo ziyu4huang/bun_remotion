@@ -5,7 +5,7 @@ description: >
   "gemini image", "imagen", "/generate-image", "nano banana".
   Triggers on: image generation, AI Studio, gemini image gen.
 metadata:
-  version: 1.2.0
+  version: 2.0.0
 ---
 
 # /generate-image — AI Image Generation via Google AI Studio
@@ -25,12 +25,13 @@ Generate images using Google's Nano Banana (Gemini) model through the Google AI 
 - `free` — Use free tier (Nano Banana / gemini-2.5-flash-image). Default.
 - `pro` — Use paid tier (Nano Banana Pro).
 - `pro2` — Use paid tier (Nano Banana 2, newest).
+- `--output <path>` — Save image to specific path instead of `./output/`
 
 **Examples:**
 ```
 /generate-image a cute cat wearing a hat
 /generate-image cyberpunk cityscape pro
-/generate-image fantasy dragon free
+/generate-image fantasy dragon free --output assets/hero.png
 ```
 
 ---
@@ -47,11 +48,12 @@ Generate images using Google's Nano Banana (Gemini) model through the Google AI 
 
 ## Execution Steps
 
-Follow these steps **in order**. Each step uses Playwright MCP tools.
+Follow these steps **in order**.
 
 ### Step 1: Check browser state
 - If no browser is open or not on Google AI Studio, navigate to: `https://aistudio.google.com/prompts/new_chat`
 - If user is not logged in, **STOP** and tell the user to log in first. Wait for them to confirm login.
+- Dismiss any "Terms of Service" dialog by clicking "Dismiss"
 
 ### Step 2: Select model
 1. Take a snapshot to see current page state
@@ -61,33 +63,112 @@ Follow these steps **in order**. Each step uses Playwright MCP tools.
    - `free`: Click button with heading "Nano Banana" that does NOT have a "Paid" badge nearby
    - `pro`: Click button with heading "Nano Banana Pro" (has "Paid" badge)
    - `pro2`: Click button with heading "Nano Banana 2" (has "Paid" badge)
-5. Dismiss the "Selected Nano Banana" confirmation toast if it appears (click "Dismiss")
-6. Verify the URL contains the correct model parameter
+5. Verify the URL contains the correct model parameter (e.g. `model=gemini-2.5-flash-image`)
 
-### Step 3: Enter prompt and generate
-1. Dismiss any dialogs (guided tour, terms of service, confirmation toasts) by clicking their close/dismiss buttons
-2. Find the prompt textbox (`textbox "Enter a prompt"`)
-3. Type the user's prompt into the textbox using `browser_type`
-4. Press `Alt+Enter` to append the prompt to the chat (there is no "Add" button)
-5. Take a snapshot to confirm the prompt appears in the chat area as a user message
-6. Click "Run the prompt" button — use the button ref directly, not a container ref. If first click doesn't trigger, take a new snapshot and try again
-7. Wait for "Response ready." text using `browser_wait_for` with `text: "Response ready."` (up to 30s). If timeout, take a snapshot to check for errors
+### Step 3: Generate and download image (use `browser_run_code`)
 
-### Step 4: Download the image
-1. Right-click on the generated image (`img "Generated Image..."`)
-2. This reveals overlay controls including a "Download" button — take a snapshot to confirm
-3. Click the "Download" button
-4. The file downloads to `.playwright-mcp/`. Note: colons in the original filename are replaced with underscores (e.g., `Generated-Image-April-08-2026---5-31AM.png`). Use `ls -t .playwright-mcp/*.png | head -1` to find the most recent download
+Use `browser_run_code` to execute the entire generate-and-download workflow atomically. This is faster and more reliable than individual MCP tool calls.
 
-### Step 5: Save to output folder
-1. Ensure `./output/` directory exists: `mkdir -p ./output`
-2. Copy the downloaded file from `.playwright-mcp/` to `./output/` with a descriptive name
-3. Naming convention: `./output/<descriptive-slug>.png` (e.g., `cute-cat-hat.png`)
-4. Generate the slug from the prompt: lowercase, spaces to hyphens, max 5 words
+**Single image:**
+```js
+async (page) => {
+  const prompt = 'YOUR_PROMPT_HERE';
+  const outputPath = '/absolute/path/to/output.png';
 
-### Step 6: Confirm and show result
-1. Verify the file exists in `./output/`
-2. Read/display the image to the user
+  // 1. Fill prompt and append to chat
+  const textbox = page.getByRole('textbox', { name: 'Enter a prompt' });
+  await textbox.fill(prompt);
+  await page.keyboard.press('Alt+Enter');
+  await page.waitForTimeout(500);
+
+  // 2. Click "Run the prompt" — MUST use evaluate() to bypass overlay interception
+  await page.evaluate(() => {
+    document.querySelector('[aria-label="Run the prompt"]')?.click();
+  });
+
+  // 3. Wait for generation to complete
+  await page.locator('text=Response ready.').last().waitFor({ timeout: 40000 });
+
+  // 4. Download the last generated image
+  const [download] = await Promise.all([
+    page.waitForEvent('download', { timeout: 15000 }),
+    (async () => {
+      await page.getByRole('img', { name: /Generated Image/ }).last().click();
+      await page.waitForTimeout(800);
+      await page.locator('button:has-text("Download")').first().click();
+    })()
+  ]);
+
+  await download.saveAs(outputPath);
+
+  // 5. Dismiss overlay
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(500);
+
+  return `Saved: ${outputPath}`;
+}
+```
+
+**Multiple images (batch):**
+```js
+async (page) => {
+  const images = [
+    { file: 'name1.png', prompt: 'prompt 1' },
+    { file: 'name2.png', prompt: 'prompt 2' },
+    // ...
+  ];
+  const baseDir = '/absolute/path/to/output/dir';
+  const results = [];
+
+  for (const { file, prompt } of images) {
+    try {
+      // Ensure overlay is dismissed and textbox is accessible
+      await page.keyboard.press('Escape');
+      await page.waitForTimeout(500);
+
+      // Fill prompt and append
+      const textbox = page.getByRole('textbox', { name: 'Enter a prompt' });
+      await textbox.waitFor({ state: 'visible', timeout: 5000 });
+      await textbox.fill(prompt);
+      await page.keyboard.press('Alt+Enter');
+      await page.waitForTimeout(500);
+
+      // Run the prompt — MUST use evaluate() to bypass overlay interception
+      await page.evaluate(() => {
+        document.querySelector('[aria-label="Run the prompt"]')?.click();
+      });
+
+      // Wait for response
+      await page.locator('text=Response ready.').last().waitFor({ timeout: 40000 });
+      await page.waitForTimeout(1000); // Extra buffer for image rendering
+
+      // Download
+      const [download] = await Promise.all([
+        page.waitForEvent('download', { timeout: 15000 }),
+        (async () => {
+          await page.getByRole('img', { name: /Generated Image/ }).last().click();
+          await page.waitForTimeout(800);
+          await page.locator('button:has-text("Download")').first().click();
+        })()
+      ]);
+
+      await download.saveAs(`${baseDir}/${file}`);
+      results.push(`${file}: OK`);
+    } catch (err) {
+      results.push(`${file}: FAILED - ${err.message}`);
+      // Try to recover by pressing Escape
+      await page.keyboard.press('Escape').catch(() => {});
+      await page.waitForTimeout(1000);
+    }
+  }
+
+  return results.join('\n');
+}
+```
+
+### Step 4: Confirm and show result
+1. Verify the file exists using Bash `ls -la`
+2. Display the image to the user using the Read tool
 3. Report: filename, file size, and the prompt used
 
 ---
@@ -97,6 +178,20 @@ Follow these steps **in order**. Each step uses Playwright MCP tools.
 - Default output directory: `./output/`
 - `output/` is in `.gitignore` (won't be committed)
 - Image format: PNG
+- Use `--output <path>` to save to a custom location
+
+---
+
+## Key Selectors
+
+| Element | Selector | Notes |
+|---------|----------|-------|
+| Prompt textbox | `page.getByRole('textbox', { name: 'Enter a prompt' })` | Must be visible (no overlay) |
+| Run the prompt | `page.evaluate(() => document.querySelector('[aria-label="Run the prompt"]')?.click())` | **MUST use evaluate()** — locator.click() fails due to overlay interception |
+| Generated image | `page.getByRole('img', { name: /Generated Image/ }).last()` | Use `.last()` for latest |
+| Download button | `page.locator('button:has-text("Download")').first()` | Only visible after clicking image |
+| Response ready | `page.locator('text=Response ready.').last()` | Wait for this before downloading |
+| Image overlay dismiss | `page.keyboard.press('Escape')` | MUST press before next prompt |
 
 ---
 
@@ -107,9 +202,11 @@ Follow these steps **in order**. Each step uses Playwright MCP tools.
 | User not logged in | Stop and ask user to log in |
 | Model button not found | Take screenshot, ask user to verify page state |
 | Run button disabled | Check if prompt was entered correctly |
-| Image generation fails | Check for error messages in the response, retry once |
-| Download not triggered | Try right-clicking the image again |
+| Textbox not visible | Press Escape to dismiss any overlay, retry |
+| Image generation fails | Check for error messages, retry once |
+| Download not triggered | Try clicking the image again, wait longer |
 | Playwright not connected | Tell user to ensure Playwright MCP plugin is running |
+| `textbox.fill()` timeout | Overlay is blocking — press Escape first |
 
 ---
 
@@ -123,6 +220,10 @@ Follow these steps **in order**. Each step uses Playwright MCP tools.
 
 ## Tips
 
-- **Snapshot refs are ephemeral** — always take a fresh snapshot before clicking if the page may have changed. Never reuse a ref from a previous snapshot.
-- **Prefer button names over refs** — use descriptive button text (e.g., `"Run the prompt"`) when clicking, not raw refs like `e277`, to avoid targeting container elements instead of actual buttons.
-- **Google UI changes frequently** — if button text doesn't match, take a screenshot and ask the user to verify.
+- **Always use `browser_run_code`** for multi-step operations — it's 5-10x faster than individual MCP tool calls
+- **CRITICAL: Use `page.evaluate()` to click "Run the prompt"** — `locator.click()` and even `locator.click({ force: true })` fail because `<div class="chat-session-content">` intercepts pointer events. Only `page.evaluate(() => document.querySelector('[aria-label="Run the prompt"]').click())` works.
+- **For batch: use new chat per image** — `page.goto(new_chat_url)` is more reliable than multi-turn in one chat
+- **Always press Escape after download** — the image overlay blocks the textbox
+- **Use `.last()` selectors** — in multi-turn chats, always target the last occurrence
+- **Wait for "Response ready."** — don't use fixed timeouts; wait for the actual signal
+- **The image is a data URL** — if download fails, you can extract `src` attribute (base64) as fallback
