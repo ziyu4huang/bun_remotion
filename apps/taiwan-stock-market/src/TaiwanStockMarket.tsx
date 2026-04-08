@@ -7,37 +7,40 @@ import { MovingAverageScene } from "./scenes/MovingAverageScene";
 import { TradingHoursScene } from "./scenes/TradingHoursScene";
 import { LimitScene } from "./scenes/LimitScene";
 
-export const TaiwanStockMarket: React.FC = () => {
+export type Props = {
+  /** Duration in frames for each scene, computed from audio length by calculateMetadata. */
+  sceneDurations: number[];
+};
+
+const DEFAULT_DURATION = 240; // 8s fallback when audio not generated yet
+
+export const TaiwanStockMarket: React.FC<Props> = ({ sceneDurations }) => {
+  const d = (i: number) => sceneDurations[i] ?? DEFAULT_DURATION;
+
+  // Cumulative start offsets
+  const starts = sceneDurations.reduce<number[]>((acc, _, i) => {
+    acc.push(i === 0 ? 0 : acc[i - 1] + d(i - 1));
+    return acc;
+  }, []);
+
+  const scenes = [
+    { Scene: TitleScene,             audio: "audio/01-title.wav" },
+    { Scene: KLineScene,             audio: "audio/02-kline.wav" },
+    { Scene: PriceVolumeScene,       audio: "audio/03-price-volume.wav" },
+    { Scene: SupportResistanceScene, audio: "audio/04-support-resistance.wav" },
+    { Scene: MovingAverageScene,     audio: "audio/05-moving-average.wav" },
+    { Scene: TradingHoursScene,      audio: "audio/06-trading-hours.wav" },
+    { Scene: LimitScene,             audio: "audio/07-limit.wav" },
+  ];
+
   return (
     <AbsoluteFill style={{ backgroundColor: "#0d1117" }}>
-      <Sequence from={0} durationInFrames={240}>
-        <TitleScene />
-        <Audio src={staticFile("audio/01-title.wav")} volume={1} />
-      </Sequence>
-      <Sequence from={240} durationInFrames={240}>
-        <KLineScene />
-        <Audio src={staticFile("audio/02-kline.wav")} volume={1} />
-      </Sequence>
-      <Sequence from={480} durationInFrames={240}>
-        <PriceVolumeScene />
-        <Audio src={staticFile("audio/03-price-volume.wav")} volume={1} />
-      </Sequence>
-      <Sequence from={720} durationInFrames={240}>
-        <SupportResistanceScene />
-        <Audio src={staticFile("audio/04-support-resistance.wav")} volume={1} />
-      </Sequence>
-      <Sequence from={960} durationInFrames={240}>
-        <MovingAverageScene />
-        <Audio src={staticFile("audio/05-moving-average.wav")} volume={1} />
-      </Sequence>
-      <Sequence from={1200} durationInFrames={240}>
-        <TradingHoursScene />
-        <Audio src={staticFile("audio/06-trading-hours.wav")} volume={1} />
-      </Sequence>
-      <Sequence from={1440} durationInFrames={240}>
-        <LimitScene />
-        <Audio src={staticFile("audio/07-limit.wav")} volume={1} />
-      </Sequence>
+      {scenes.map(({ Scene, audio }, i) => (
+        <Sequence key={i} from={starts[i]} durationInFrames={d(i)}>
+          <Scene />
+          <Audio src={staticFile(audio)} volume={1} />
+        </Sequence>
+      ))}
     </AbsoluteFill>
   );
 };

@@ -20,3 +20,12 @@ Claude Code's Bash tool persists the working directory across calls. Once you `c
 - Use wrapper scripts (`scripts/dev.ps1`) that handle directory changes internally with `Push-Location`/`Pop-Location`
 - For this project specifically: `bun start`, `bun run build`, etc. all work from root via `dev.ps1`
 - If you must change directory, use `cd /path && command` in a single Bash call so CWD reverts after
+
+## Remotion Studio — macOS Launch
+`bun run start` inside an app fails when called from outside because `remotion` isn't on PATH.
+Instead use the full binary path with the absolute entrypoint:
+```bash
+/Users/huangziyu/proj/bun_remotion/apps/<name>/node_modules/.bin/remotion studio \
+  /Users/huangziyu/proj/bun_remotion/apps/<name>/src/index.ts
+```
+Must run `bun install` from repo root first if `node_modules` is missing.

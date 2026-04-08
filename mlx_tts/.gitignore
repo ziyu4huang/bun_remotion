@@ -1,5 +1,6 @@
 .venv/
 outputs/
+models/
 __pycache__/
 *.pyc
 *.pyo

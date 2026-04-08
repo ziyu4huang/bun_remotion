@@ -1,112 +1,92 @@
 ---
 name: mlx-tts-integration
-description: mlx_tts Python TTS engine integrated into bun-remotion — setup, voices, story pipeline
+description: mlx_tts Python TTS engine — Qwen3-TTS (default) + Kokoro-82M, setup, voices, story pipeline
 type: project
 ---
 
 # mlx_tts Integration
 
-Python TTS engine (Kokoro-82M on Apple Silicon MLX) integrated at `mlx_tts/` within the bun-remotion repo.
+Python TTS engine (Qwen3-TTS + Kokoro on Apple Silicon MLX) integrated at `mlx_tts/` within the bun-remotion repo.
 
 **Why:** Provides local, offline, high-quality TTS for narrating Remotion videos. No API key needed; runs fully on-device via Metal.
-
 **How to apply:** When generating audio narration for videos, or when using the `/story-to-voice` or `/generate-tts` skills.
 
 ## Location
 
 ```
 bun-remotion/
-  mlx_tts/                   # Python TTS engine (copied from dev_mlx/mlx_tts)
-    setup.sh                 # Bootstrap: creates .venv + installs deps + downloads model
-    requirements.txt         # All deps including misaki[en], jieba, fastapi, uvicorn
-    story_to_voice.py        # CLI: produce, parse-chapter, init-book, produce-book
-    webui.py                 # TTS Studio server (port 7860)
-    story_studio.py          # Story Studio server (port 7861)
-    book_manager.py          # Book project CRUD
-    mlx_tts/                 # Core library package
-      generator.py           # TTSGenerator class wrapping Kokoro-82M
-      voices.py              # Voice catalog, emotions, languages
-      cli.py                 # Basic CLI
-    stories/                 # Single-story .story.json files
-    books/                   # Multi-chapter book projects
-  output/                    # Generated audio output (gitignored via **/output/)
+  mlx_tts/
+    .venv/                    # Python 3.11 venv (REQUIRED — Python 3.9 incompatible)
+    models/                   # Locally cached models
+      Qwen3-TTS-12Hz-0.6B-CustomVoice-8bit/  # Default model
+    setup.sh
+    requirements.txt
+    story_to_voice.py
+    webui.py
+    story_studio.py
+    book_manager.py
+    mlx_tts/
+      generator.py             # TTSGenerator — supports Kokoro + Qwen3 backends
+      voices.py                # Voice catalog for both models
+      cli.py
+    stories/
+    books/
+  output/                      # Generated audio (gitignored)
 ```
 
-## Setup (fresh machine)
+## Setup
 
 ```bash
 cd mlx_tts
-./setup.sh              # creates .venv, installs deps, pre-downloads model
-# or skip model download:
-./setup.sh --no-model
+python3.11 -m venv .venv
+source .venv/bin/activate
+pip install mlx-audio mlx-lm einops soundfile sounddevice
 ```
 
-**Requirements:** macOS Apple Silicon (M1/M2/M3/M4), Python 3.11+
+**Requirements:** macOS Apple Silicon (M1+), Python 3.11+ (3.9 incompatible due to type union syntax)
 
-## Key Dependencies
+## Default Model
 
-| Package | Purpose |
-|---------|---------|
-| `mlx-audio>=0.4.0` | Kokoro-82M TTS engine on MLX |
-| `misaki[en]>=0.9.4` | G2P engine (MUST use `[en]` extra — includes `num2words`) |
-| `jieba>=0.42.1` | Chinese word segmentation |
-| `fastapi` + `uvicorn` | WebUI servers |
-| `anthropic` | AI story/content generation (needs `ANTHROPIC_API_KEY`) |
-
-## Model
-
-- **ID:** `mlx-community/Kokoro-82M-bf16`
-- **Size:** ~350 MB, cached in `~/.cache/huggingface/hub/`
-- **Auto-downloads** on first use; also downloads `en_core_web_sm` spacy model on first EN generation
-- **Sample rate:** 24000 Hz
-
-## Voice Catalog
-
-### Chinese (Mandarin)
-| Voice | Gender | Style |
-|-------|--------|-------|
-| `zm_yunjian` | Male | Deep, broadcast — Narrator |
-| `zm_yunxi` | Male | Warm, natural — Male protagonist |
-| `zf_xiaobei` | Female | Lively, bright — Female protagonist |
-| `zf_xiaoni` | Female | Gentle, soft — Motherly |
-
-### English (British)
-| Voice | Gender | Style |
-|-------|--------|-------|
-| `bm_george` | Male | Classic, rich — default EN narrator |
-| `bm_lewis` | Male | Calm, steady |
-| `bf_emma` | Female | Elegant |
-
-### English (American)
-| Voice | Gender | Style |
-|-------|--------|-------|
-| `am_adam` | Male | Deep, resonant |
-| `af_heart` | Female | Warm, emotional |
-| `af_bella` | Female | Bright, energetic |
+**Qwen3-TTS-12Hz-0.6B-CustomVoice-8bit** — set as `DEFAULT_MODEL` in `generator.py`
+- Better Chinese quality than Kokoro
+- 9 preset voices + voice cloning
+- ~1.2 GB, ~4 GB peak memory
 
 ## Produce Audio
 
 ```bash
-# Single story JSON → audio
-.venv/bin/python story_to_voice.py produce path/to/story.json --output path/to/out.flac
-
-# Multi-chapter book
-.venv/bin/python story_to_voice.py produce-book books/<name>/
+source mlx_tts/.venv/bin/activate
+cd mlx_tts
+python -m mlx_tts save "text" -o output.wav --voice serena --lang zh
+python -m mlx_tts speak "text" --voice serena
 ```
 
-## Story JSON Format
+## Speech Rate (Qwen3-TTS)
 
-Output to `output/` (gitignored). Key fields per segment:
-- `voice`: voice ID (e.g. `bm_george`, `zm_yunxi`, `zf_xiaobei`)
-- `lang`: `"en-gb"`, `"en-us"`, `"zh"`, `"ja"`, `"es"`
-- `emotion`: `neutral` | `happy` | `excited` | `sad` | `calm` | `serious` | `whispery` | `storytelling`
-- `speed`: float (emotion table defaults: calm=0.92, sad=0.85, whispery=0.88, storytelling=0.97)
+- **~3 Chinese chars/sec** at default speed (speed = 1.0 or 0.97)
+- 8-second scene → max ~24 chars of Chinese narration text
+- 12-second scene → max ~36 chars
+- Each `python -m mlx_tts save` invocation **reloads the model** (~4.2s overhead)
+  - For 7 scenes: ~29s overhead on top of generation time
+  - Use `batch` command or `stv.sh produce` to load model once if generating many segments
 
-## Performance (M-series Apple Silicon)
+## Remotion Integration Pattern
 
-- RTF ~0.13–0.32x (produces audio 3–8x faster than real-time)
-- 54s story → produced in ~7.6s
+When using mlx_tts for Remotion per-scene audio:
+1. Generate per-scene WAV files via `python -m mlx_tts save` (from `generate-tts.ts`)
+2. Use `calculateMetadata` + `ffprobe` in Root.tsx to measure actual audio durations
+3. Pass `sceneDurations: number[]` as props → each `<Sequence>` adapts to audio length
+4. Story.json at `mlx_tts/stories/<name>.story.json` serves as spec + full preview audiobook
+   - Run `scripts/stv.sh produce` for a concatenated preview; per-scene files come from generate-tts.ts
+
+## Story JSON Voice Assignment (Qwen3-TTS)
+
+- Narrator (male): `uncle_fu`
+- Male protagonist: `ryan`
+- Female protagonist: `serena`
+- **Never use dialect voices** (`eric`, `dylan`) unless user explicitly requests
+- Language auto-detected by Qwen3-TTS — `lang` field is informational
 
 ## Skill
 
-`/story-to-voice` skill at `.claude/skills/story-to-voice/SKILL.md` — full instructions for single stories and multi-chapter books.
+`/story-to-voice` at `.claude/skills/story-to-voice/SKILL.md`

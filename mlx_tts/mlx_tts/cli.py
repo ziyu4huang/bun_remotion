@@ -90,7 +90,7 @@ def build_parser():
 
     # Shared options injected into sub-commands
     shared = argparse.ArgumentParser(add_help=False)
-    shared.add_argument("--model", default=DEFAULT_MODEL, help="HuggingFace model ID or local path")
+    shared.add_argument("--model", default=DEFAULT_MODEL, help="HuggingFace model ID or local path (Kokoro or Qwen3-TTS)")
     shared.add_argument("--voice", default=DEFAULT_VOICE, help=f"Voice ID (default: {DEFAULT_VOICE})")
     shared.add_argument("--speed", type=float, default=1.0, help="Speech speed multiplier (default: 1.0)")
     shared.add_argument("--lang", default="en-us", help="Language code (default: en-us)")

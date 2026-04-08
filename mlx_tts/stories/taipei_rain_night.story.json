@@ -14,7 +14,7 @@
       "id": "seg_1",
       "character": "Narrator",
       "text": "台北的雨，總是來得毫無預兆。那晚的忠孝東路，路燈在雨幕中暈成一團一團的橘色光暈。",
-      "voice": "zm_yunjian",
+      "voice": "uncle_fu",
       "lang": "zh",
       "emotion": "storytelling",
       "speed": 0.97
@@ -23,7 +23,7 @@
       "id": "seg_2",
       "character": "Narrator",
       "text": "陳柏翰站在便利商店的屋簷下，看著雨勢越來越大，手裡那杯美式咖啡已經涼了。",
-      "voice": "zm_yunjian",
+      "voice": "uncle_fu",
       "lang": "zh",
       "emotion": "calm",
       "speed": 0.92
@@ -32,7 +32,7 @@
       "id": "seg_3",
       "character": "陳柏翰",
       "text": "真倒楣，出門前明明查過天氣，說是百分之十的降雨機率。",
-      "voice": "zm_yunxi",
+      "voice": "ryan",
       "lang": "zh",
       "emotion": "neutral",
       "speed": 1.0
@@ -41,7 +41,7 @@
       "id": "seg_4",
       "character": "Narrator",
       "text": "他正打算用手機叫計程車，身後傳來一個清脆的女聲。",
-      "voice": "zm_yunjian",
+      "voice": "uncle_fu",
       "lang": "zh",
       "emotion": "storytelling",
       "speed": 0.97
@@ -50,7 +50,7 @@
       "id": "seg_5",
       "character": "林雨萱",
       "text": "欸，你也沒帶傘嗎？看樣子我們是一樣的倒楣鬼。",
-      "voice": "zf_xiaoni",
+      "voice": "serena",
       "lang": "zh",
       "emotion": "happy",
       "speed": 1.05
@@ -59,7 +59,7 @@
       "id": "seg_6",
       "character": "陳柏翰",
       "text": "對啊，氣象局這次真的不太可靠。妳要去哪裡？往復興南路方向的話，可以一起叫車。",
-      "voice": "zm_yunxi",
+      "voice": "ryan",
       "lang": "zh",
       "emotion": "neutral",
       "speed": 1.0
@@ -68,7 +68,7 @@
       "id": "seg_7",
       "character": "林雨萱",
       "text": "我住國父紀念館附近，剛好順路！太好了，我已經在這裡等半小時了，Uber要加價一點五倍，太誇張。",
-      "voice": "zf_xiaoni",
+      "voice": "serena",
       "lang": "zh",
       "emotion": "excited",
       "speed": 1.08
@@ -77,7 +77,7 @@
       "id": "seg_8",
       "character": "Narrator",
       "text": "兩人一起擠在狹窄的屋簷下等車。雨聲嘩嘩地打在柏油路上，空氣裡瀰漫著潮濕的泥土氣味。",
-      "voice": "zm_yunjian",
+      "voice": "uncle_fu",
       "lang": "zh",
       "emotion": "calm",
       "speed": 0.92
@@ -86,7 +86,7 @@
       "id": "seg_9",
       "character": "林雨萱",
       "text": "你是附近上班的嗎？看起來像科技業的，對不對？",
-      "voice": "zf_xiaoni",
+      "voice": "serena",
       "lang": "zh",
       "emotion": "neutral",
       "speed": 1.0
@@ -95,7 +95,7 @@
       "id": "seg_10",
       "character": "陳柏翰",
       "text": "哈哈，這麼明顯嗎？對，我在內湖科學園區做軟體工程師。妳呢？",
-      "voice": "zm_yunxi",
+      "voice": "ryan",
       "lang": "zh",
       "emotion": "happy",
       "speed": 1.05
@@ -104,7 +104,7 @@
       "id": "seg_11",
       "character": "林雨萱",
       "text": "我是插畫家，在家工作。所以今天出門沒看天氣，完全沒想到會下雨。",
-      "voice": "zf_xiaoni",
+      "voice": "serena",
       "lang": "zh",
       "emotion": "neutral",
       "speed": 1.0
@@ -113,7 +113,7 @@
       "id": "seg_12",
       "character": "Narrator",
       "text": "計程車終於來了。車窗外的台北在雨中變得朦朧而溫柔，像一幅還沒畫完的水彩。",
-      "voice": "zm_yunjian",
+      "voice": "uncle_fu",
       "lang": "zh",
       "emotion": "storytelling",
       "speed": 0.97
@@ -122,7 +122,7 @@
       "id": "seg_13",
       "character": "陳柏翰",
       "text": "這場雨下得真大，不過台北的雨夜有一種特別的氛圍，對吧？讓人覺得整個城市都安靜了下來。",
-      "voice": "zm_yunxi",
+      "voice": "ryan",
       "lang": "zh",
       "emotion": "calm",
       "speed": 0.92
@@ -131,7 +131,7 @@
       "id": "seg_14",
       "character": "林雨萱",
       "text": "對呀，我最喜歡下雨天了。雨聲像白噪音，很適合畫畫。我有一個系列作品，全部都是台北的雨景。",
-      "voice": "zf_xiaoni",
+      "voice": "serena",
       "lang": "zh",
       "emotion": "happy",
       "speed": 1.05
@@ -140,7 +140,7 @@
       "id": "seg_15",
       "character": "陳柏翰",
       "text": "真的嗎？那改天有機會的話，希望能看看妳的作品。",
-      "voice": "zm_yunxi",
+      "voice": "ryan",
       "lang": "zh",
       "emotion": "whispery",
       "speed": 0.88
@@ -149,7 +149,7 @@
       "id": "seg_16",
       "character": "Narrator",
       "text": "車子在國父紀念館停了下來。林雨萱打開車門，雨絲飄進車廂。",
-      "voice": "zm_yunjian",
+      "voice": "uncle_fu",
       "lang": "zh",
       "emotion": "storytelling",
       "speed": 0.97
@@ -158,7 +158,7 @@
       "id": "seg_17",
       "character": "林雨萱",
       "text": "謝謝你！对了，你叫什麼名字？",
-      "voice": "zf_xiaoni",
+      "voice": "serena",
       "lang": "zh",
       "emotion": "happy",
       "speed": 1.05
@@ -167,7 +167,7 @@
       "id": "seg_18",
       "character": "陳柏翰",
       "text": "我叫陳柏翰。妳呢？",
-      "voice": "zm_yunxi",
+      "voice": "ryan",
       "lang": "zh",
       "emotion": "neutral",
       "speed": 1.0
@@ -176,7 +176,7 @@
       "id": "seg_19",
       "character": "林雨萱",
       "text": "林雨萱。柏翰，下次再遇到下雨天，記得帶傘喔！",
-      "voice": "zf_xiaoni",
+      "voice": "serena",
       "lang": "zh",
       "emotion": "happy",
       "speed": 1.05
@@ -185,7 +185,7 @@
       "id": "seg_20",
       "character": "Narrator",
       "text": "車門關上，她的身影消失在雨幕中。柏翰看著手機，發現她剛才趁他不注意時，留了一張紙條在車窗縫裡。",
-      "voice": "zm_yunjian",
+      "voice": "uncle_fu",
       "lang": "zh",
       "emotion": "storytelling",
       "speed": 0.97
@@ -194,7 +194,7 @@
       "id": "seg_21",
       "character": "陳柏翰",
       "text": "「這是我的作品集網站——台北雨夜系列，專為沒帶傘的人而畫。」",
-      "voice": "zm_yunxi",
+      "voice": "ryan",
       "lang": "zh",
       "emotion": "whispery",
       "speed": 0.88
@@ -203,7 +203,7 @@
       "id": "seg_22",
       "character": "Narrator",
       "text": "他望向窗外。台北的雨還在下，但似乎沒有那麼冷了。",
-      "voice": "zm_yunjian",
+      "voice": "uncle_fu",
       "lang": "zh",
       "emotion": "calm",
       "speed": 0.90

@@ -29,6 +29,30 @@ Book:     books/my_novel/ ──► [LLM per chapter] ──► chapter-xxx.stor
                            existing character voices                    with new characters
 ```
 
+## CLI Wrapper (no cd needed)
+
+**IMPORTANT:** Use `scripts/stv.sh` for all CLI/server commands. Never `cd` into mlx_tts.
+All paths are resolved relative to `mlx_tts/` (script location), not CWD. Safe to run from anywhere.
+
+```bash
+scripts/stv.sh produce stories/my.story.json     # produce audio → mlx_tts/outputs/story_studio/
+scripts/stv.sh produce-book books/my_novel/       # produce book → mlx_tts/books/<name>/chapters/
+scripts/stv.sh voices zh                          # list Chinese voices
+scripts/stv.sh webui                              # start TTS Studio
+scripts/stv.sh studio                             # start Story Studio
+```
+
+## TTS Model Reference
+
+Current model: **Qwen3-TTS-12Hz-0.6B-CustomVoice-8bit** (default). Fallback: Kokoro-82M. See:
+**[references/mlx-tts-models.md](references/mlx-tts-models.md)** — load on demand when user asks about model options or voice variety.
+
+### Qwen3-TTS Notes
+- **Emotion `speed` field is ignored** by Qwen3-TTS — it has no speed parameter. Keep the field in JSON for Kokoro compatibility but it won't affect Qwen3 output.
+- **Language is auto-detected** from text — the `lang` field is informational only.
+- **Memory:** Peak ~6.2 GB GPU. First segment has cold-start spike (~1 GB RSS). Close heavy apps before generation on M1 8GB.
+- **Segment length:** Keep narration segments under ~15s of output (roughly 2-3 sentences). Longer segments work but use more memory and take proportionally longer.
+
 ## WebUI Servers
 
 Two FastAPI servers are available for interactive use:
@@ -41,13 +65,11 @@ Two FastAPI servers are available for interactive use:
 ### Start servers
 
 ```bash
-cd mlx_tts
-
 # TTS Studio (simple TTS + book browser)
-.venv/bin/python webui.py                          # http://localhost:7860
+scripts/stv.sh webui                          # http://localhost:7860
 
 # Story Studio (advanced multi-character production)
-.venv/bin/python story_studio.py                    # http://localhost:7861
+scripts/stv.sh studio                         # http://localhost:7861
 ```
 
 ### WebUI Key Routes
@@ -103,7 +125,7 @@ Start the appropriate WebUI server (if not already running) and open it in Playw
 1. Check if the server is already running: `lsof -ti:<port>`
 2. If not running, start it in background:
    ```bash
-   cd /Users/huangziyu/proj/bun_remotion/mlx_tts && .venv/bin/python <server>.py
+   .claude/skills/story-to-voice/scripts/stv.sh <webui|studio>
    ```
 3. Wait for ready: `sleep 3 && curl -s -o /dev/null -w "%{http_code}" http://localhost:<port>/`
 4. Verify routes: `curl -s http://localhost:<port>/openapi.json | python3 -c "import sys,json; ..."`
@@ -112,15 +134,21 @@ Start the appropriate WebUI server (if not already running) and open it in Playw
 
 **IMPORTANT:** Always use `.venv/bin/python` (never bare `python` or `python3`).
 
-#### `play <book_name> <chapter>`
+#### `play <path_or_book> [chapter]`
 
-Play a chapter's audio file using `afplay`.
+Play audio using `afplay`. Supports two modes:
 
+**Single story** — find the latest `.flac` in `outputs/story_studio/`:
 ```bash
-afplay /Users/huangziyu/proj/bun_remotion/mlx_tts/books/<book_name>/chapters/chapter-<NNN>.flac
+afplay "$(ls -t mlx_tts/outputs/story_studio/*.flac 2>/dev/null | head -1)"
 ```
 
-Run in background so the user can listen while continuing to chat.
+**Book chapter** — play a specific chapter:
+```bash
+afplay mlx_tts/books/<book_name>/chapters/chapter-<NNN>.flac
+```
+
+**NOTE:** Always quote paths containing Chinese characters. `afplay` on modern macOS supports FLAC natively.
 
 ---
 
@@ -170,7 +198,18 @@ Split the story into segments. Each segment should be a natural speech unit (1-3
 
 Assign distinct voices based on character gender and personality:
 
-**Chinese (Mandarin) voices:**
+**IMPORTANT — Dialect Rule:** Qwen3-TTS has two dialect voices (`eric` = Sichuan, `dylan` = Beijing). **Do NOT use dialect voices unless the user explicitly requests a specific dialect.** Always default to standard Mandarin voices.
+
+**Chinese (Mandarin) voices (Qwen3-TTS, default):**
+| Voice | Gender | Personality | Best For |
+|-------|--------|-------------|----------|
+| `uncle_fu` | Male | Uncle-style, warm | Narrator, older male characters |
+| `ryan` | Male | Natural, conversational | Male protagonists, young adults |
+| `aiden` | Male | American English | English-speaking characters |
+| `serena` | Female | Warm, expressive | Female protagonists, narrators |
+| `vivian` | Female | Clear | Supporting female characters |
+
+**Chinese (Mandarin) voices (Kokoro-82M, fallback):**
 | Voice | Gender | Personality | Best For |
 |-------|--------|-------------|----------|
 | `zm_yunjian` | Male | Deep, broadcast | Narrator, authoritative figures |
@@ -205,12 +244,13 @@ Assign distinct voices based on character gender and personality:
 | `jf_alpha` | Female | Expressive | Female leads |
 | `jf_gongitsune` | Female | Storyteller | Narrator, older women |
 
-**Voice assignment strategy:**
-1. Narrator: `bm_george` (EN), `zm_yunjian` (ZH), `jm_kumo` (JA)
-2. Male protagonist: `am_adam` (EN), `zm_yunxi` (ZH)
-3. Female protagonist: `af_heart` (EN), `zf_xiaobei` (ZH)
+**Voice assignment strategy (Qwen3-TTS default):**
+1. Narrator: `uncle_fu` (ZH male), `serena` (ZH female), `aiden` (EN)
+2. Male protagonist: `ryan` (ZH), `aiden` (EN)
+3. Female protagonist: `serena` (ZH), `vivian` (ZH)
 4. Supporting characters: pick from remaining same-gender pool based on personality fit
 5. Each named character gets a unique voice
+6. **Never use `eric` (Sichuan) or `dylan` (Beijing) unless explicitly requested**
 
 ### 4. Determine Language Code
 
@@ -257,7 +297,7 @@ Write the file to `mlx_tts/stories/<slug>.story.json` where `<slug>` is the stor
 
 **CLI (fastest, no server needed):**
 ```bash
-cd mlx_tts && .venv/bin/python story_to_voice.py produce stories/<slug>.story.json
+scripts/stv.sh produce stories/<slug>.story.json
 ```
 
 **Story Studio WebUI (visual editing + production):**
@@ -310,7 +350,7 @@ This is the quality bar. Characters are properly identified, emotions follow the
       "id": "seg_1",
       "character": "Narrator",
       "text": "那是一九四九年的冬天，上海的街道像一條冰封的河。",
-      "voice": "zm_yunjian",
+      "voice": "uncle_fu",
       "lang": "zh",
       "emotion": "storytelling",
       "speed": 0.97
@@ -319,7 +359,7 @@ This is the quality bar. Characters are properly identified, emotions follow the
       "id": "seg_4",
       "character": "陳懷遠",
       "text": "我明日就要去了，去一個我不知道能不能回來的地方。但在離開之前，我必須讓妳知道：那棟弄堂裡的舊書店，每天下午三點半，當陽光斜照進來的那一刻，我都在想著妳。",
-      "voice": "zm_yunxi",
+      "voice": "ryan",
       "lang": "zh",
       "emotion": "sad",
       "speed": 0.85
@@ -328,7 +368,7 @@ This is the quality bar. Characters are properly identified, emotions follow the
       "id": "seg_18",
       "character": "林書瑤",
       "text": "就是「帶我走」三個字。",
-      "voice": "zf_xiaobei",
+      "voice": "serena",
       "lang": "zh",
       "emotion": "whispery",
       "speed": 0.85
@@ -346,7 +386,7 @@ When the argument is a directory (e.g., `books/my_novel/`):
 ### B1. Initialize or Load Book
 
 - If `book.json` exists in the directory, read it to get existing characters, language, and settings.
-- If not, run: `cd mlx_tts && .venv/bin/python story_to_voice.py init-book <name> --lang zh --title "Title"`
+- If not, run: `scripts/stv.sh init-book <name> --lang zh --title "Title"`
 - The `book.json` contains a `characters` registry that maps character names to voice assignments. **This is the single source of truth for voice consistency across all chapters.**
 
 ### B2. Scan for Chapters
@@ -358,7 +398,7 @@ List all `chapter-*.txt` files in the `chapters/` subdirectory. If `--chapter NN
 Run the `parse-chapter` command to auto-generate `.story.json` from chapter `.txt` files:
 
 ```bash
-cd mlx_tts && .venv/bin/python story_to_voice.py parse-chapter books/<name>/ [--chapter NNN]
+scripts/stv.sh parse-chapter books/<name>/ [--chapter NNN]
 ```
 
 This handles:
@@ -382,13 +422,13 @@ This ensures that 陳懷遠 always speaks with `zm_yunxi` across all 30 chapters
 **CLI (batch production):**
 ```bash
 # All chapters:
-cd mlx_tts && .venv/bin/python story_to_voice.py produce-book books/<name>/
+scripts/stv.sh produce-book books/<name>/
 
 # Specific chapter:
-cd mlx_tts && .venv/bin/python story_to_voice.py produce-book books/<name>/ --chapter 003
+scripts/stv.sh produce-book books/<name>/ --chapter 003
 
 # Re-produce already produced chapters:
-cd mlx_tts && .venv/bin/python story_to_voice.py produce-book books/<name>/ --force
+scripts/stv.sh produce-book books/<name>/ --force
 ```
 
 **WebUI (visual production):**
@@ -426,9 +466,9 @@ Tell the user:
     "output_format": "flac"
   },
   "characters": {
-    "Narrator": {"gender": "male", "voice": "zm_yunjian", "lang": "zh", "role": "narrator"},
-    "陳懷遠":   {"gender": "male", "voice": "zm_yunxi",    "lang": "zh", "role": "protagonist"},
-    "林書瑤":   {"gender": "female", "voice": "zf_xiaobei", "lang": "zh", "role": "protagonist"}
+    "Narrator": {"gender": "male", "voice": "uncle_fu", "lang": "zh", "role": "narrator"},
+    "陳懷遠":   {"gender": "male", "voice": "ryan",    "lang": "zh", "role": "protagonist"},
+    "林書瑤":   {"gender": "female", "voice": "serena", "lang": "zh", "role": "protagonist"}
   },
   "chapters": [
     {

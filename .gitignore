@@ -8,3 +8,5 @@ dist/
 **/public/audio/*.wav
 **/public/audio/*.mp3
 .playwright-mcp/
+.DS_Store
+**/.DS_Store

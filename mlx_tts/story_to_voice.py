@@ -20,6 +20,8 @@ import time
 from pathlib import Path
 from typing import Optional
 
+SCRIPT_DIR = Path(__file__).parent
+
 # ── Voice assignment tables ────────────────────────────────────────────────────
 
 NARRATOR_VOICE = "bm_george"
@@ -552,7 +554,7 @@ def _make_segment(idx: int, character: str, text: str, voice: str,
 
 # ── Produce (CLI audio generation) ─────────────────────────────────────────────
 
-def produce(story_json_path: str, output_path: str = None):
+def produce(story_json_path: str, output_path: str = None, model_id: str = None, repo_id: str = None):
     """Read a .story.json file and generate audio directly (no web server needed)."""
     import numpy as np
     import soundfile as sf
@@ -565,6 +567,8 @@ def produce(story_json_path: str, output_path: str = None):
     SAMPLE_RATE = 24000
 
     src = Path(story_json_path)
+    if not src.is_absolute():
+        src = SCRIPT_DIR / src
     if not src.exists():
         print(f"Error: {src} not found", file=sys.stderr)
         sys.exit(1)
@@ -584,7 +588,8 @@ def produce(story_json_path: str, output_path: str = None):
     print(f"Segments: {n}")
     print(f"Loading model...")
 
-    gen = TTSGenerator(verbose=False)
+    from mlx_tts.generator import DEFAULT_MODEL
+    gen = TTSGenerator(verbose=False, model_id=model_id or DEFAULT_MODEL, repo_id=repo_id)
     gen._load()
 
     silence = np.zeros(int(SAMPLE_RATE * silence_ms / 1000), dtype=np.float32)
@@ -646,7 +651,7 @@ def produce(story_json_path: str, output_path: str = None):
     else:
         ts = time.strftime("%Y%m%d_%H%M%S")
         slug = title.lower().replace(" ", "_")[:30]
-        out_dir = Path("outputs/story_studio")
+        out_dir = SCRIPT_DIR / "outputs" / "story_studio"
         out_dir.mkdir(parents=True, exist_ok=True)
         out_path = out_dir / f"{slug}_{ts}.{output_format}"
 
@@ -677,7 +682,7 @@ def produce(story_json_path: str, output_path: str = None):
 def _run_init_book(name: str, title: str, lang: str, author: str, genre: str):
     """Create a new book project scaffold."""
     from book_manager import BookManager
-    bm = BookManager()
+    bm = BookManager(SCRIPT_DIR / "books")
     bm.init_book(name, title=title or name, language=lang, author=author, genre=genre)
     book_dir = bm.get_book_dir(name)
     print(f"  Created: {book_dir}/")
@@ -692,10 +697,10 @@ def _run_init_book(name: str, title: str, lang: str, author: str, genre: str):
 def _run_parse_chapter(book_dir: str, chapter_num: Optional[int] = None):
     """Parse chapter .txt → .story.json using book.json character registry."""
     from book_manager import BookManager
-    bm = BookManager()
+    bm = BookManager(SCRIPT_DIR / "books")
     book_path = Path(book_dir)
-
-    # Resolve book name
+    if not book_path.is_absolute():
+        book_path = SCRIPT_DIR / book_path
     if book_path.is_dir() and (book_path / "book.json").exists():
         name = book_path.name
     else:
@@ -833,10 +838,10 @@ def _guess_gender(char_name: str) -> str:
 def _run_produce_book(book_dir: str, chapter_num: Optional[int] = None, force: bool = False):
     """Produce audio for book chapters."""
     from book_manager import BookManager
-    bm = BookManager()
+    bm = BookManager(SCRIPT_DIR / "books")
     book_path = Path(book_dir)
-
-    # Resolve book name from directory
+    if not book_path.is_absolute():
+        book_path = SCRIPT_DIR / book_path
     if book_path.is_dir() and (book_path / "book.json").exists():
         name = book_path.name
     else:
@@ -927,6 +932,8 @@ Examples:
     p_prod = sub.add_parser("produce", help="Generate audio from .story.json")
     p_prod.add_argument("input", help="Path to .story.json file")
     p_prod.add_argument("-o", "--output", default=None, help="Output audio path")
+    p_prod.add_argument("--model", default=None, help="Model ID (default: mlx-community/Kokoro-82M-bf16)")
+    p_prod.add_argument("--repo-id", default=None, help="HuggingFace repo_id for voice resolution")
 
     # init-book subcommand
     p_init = sub.add_parser("init-book", help="Create a new multi-chapter book project")
@@ -953,7 +960,7 @@ Examples:
     args = parser.parse_args()
 
     if args.command == "produce":
-        produce(args.input, output_path=args.output)
+        produce(args.input, output_path=args.output, model_id=args.model, repo_id=args.repo_id)
     elif args.command == "parse":
         _run_parse(args.input, args.output, args.lang)
     elif args.command == "init-book":
@@ -972,6 +979,8 @@ Examples:
 
 def _run_parse(input_path: str, output_path: Optional[str], lang: str):
     src = Path(input_path)
+    if not src.is_absolute():
+        src = SCRIPT_DIR / src
     if not src.exists():
         print(f"Error: {src} not found", file=sys.stderr)
         sys.exit(1)

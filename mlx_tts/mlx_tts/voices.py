@@ -92,6 +92,24 @@ KOKORO_VOICES = {v["id"]: v for v in VOICE_CATALOG if v["lang_code"] in ("a", "b
 
 DEFAULT_VOICE = "af_heart"
 
+# ---------------------------------------------------------------------------
+# Qwen3-TTS voices (preset speakers built into the CustomVoice model)
+# ---------------------------------------------------------------------------
+
+QWEN3_VOICES: dict[str, dict] = {
+    "serena":    {"lang": "zh", "gender": "female", "accent": "mandarin", "note": "warm female (default Chinese)"},
+    "vivian":    {"lang": "zh", "gender": "female", "accent": "mandarin", "note": "clear female"},
+    "aiden":     {"lang": "en", "gender": "male",   "accent": "american", "note": "American male"},
+    "ono_anna":  {"lang": "ja", "gender": "female", "accent": "japanese", "note": "Japanese female"},
+    "sohee":     {"lang": "ko", "gender": "female", "accent": "korean",   "note": "Korean female"},
+    "eric":      {"lang": "zh", "gender": "male",   "accent": "sichuan",  "note": "Sichuan dialect male"},
+    "dylan":     {"lang": "zh", "gender": "male",   "accent": "beijing",  "note": "Beijing dialect male"},
+    "uncle_fu":  {"lang": "zh", "gender": "male",   "accent": "mandarin", "note": "uncle-style male"},
+    "ryan":      {"lang": "en", "gender": "male",   "accent": "american", "note": "American male"},
+}
+
+QWEN3_DEFAULT_VOICE = "serena"
+
 LANGUAGES = {
     "en-us": {"name": "English (US)",       "code": "a", "default_voice": "af_heart"},
     "en-gb": {"name": "English (UK)",       "code": "b", "default_voice": "bm_george"},
@@ -102,6 +120,13 @@ LANGUAGES = {
     "hi":    {"name": "Hindi",              "code": "h", "default_voice": "af_heart"},
     "it":    {"name": "Italian",            "code": "i", "default_voice": "af_heart"},
     "pt-br": {"name": "Portuguese (BR)",    "code": "p", "default_voice": "af_heart"},
+    "ko":    {"name": "Korean",             "code": "k", "default_voice": "sohee",       "qwen3": True},
+    "de":    {"name": "German",             "code": "d", "default_voice": "aiden",        "qwen3": True},
+    "ru":    {"name": "Russian",            "code": "r", "default_voice": "aiden",        "qwen3": True},
+    "it-q":  {"name": "Italian (Qwen3)",    "code": "i", "default_voice": "aiden",        "qwen3": True},
+    "pt":    {"name": "Portuguese",         "code": "p", "default_voice": "aiden",        "qwen3": True},
+    "es-q":  {"name": "Spanish (Qwen3)",    "code": "e", "default_voice": "aiden",        "qwen3": True},
+    "fr-q":  {"name": "French (Qwen3)",     "code": "f", "default_voice": "aiden",        "qwen3": True},
 }
 
 # Emotion presets — adjust speed and optionally transform text

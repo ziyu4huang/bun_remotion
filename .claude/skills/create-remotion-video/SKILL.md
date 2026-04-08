@@ -370,7 +370,7 @@ export const narrations: NarrationScript[] = [
 
 **Guidelines:**
 - One narration entry per scene/Sequence
-- Text length should match scene duration (~150 Chinese chars/min for speech pace)
+- **Qwen3-TTS speech rate:** ~3 chars/sec (180 chars/min). For an 8s scene: max ~24 chars. **Use `calculateMetadata` to let audio drive scene length** rather than trying to match text to a fixed frame count.
 - Language should match the visual content
 
 #### Step 2: Create TTS generation script (`scripts/generate-tts.ts`)

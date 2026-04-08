@@ -1,0 +1,185 @@
+{
+  "version": "1.0",
+  "title": "夜市牛肉麵",
+  "silence_ms": 500,
+  "output_format": "flac",
+  "metadata": {
+    "source": "original",
+    "created": "2026-04-08T21:30:00",
+    "author": "",
+    "language": "zh-TW"
+  },
+  "segments": [
+    {
+      "id": "seg_1",
+      "character": "Narrator",
+      "text": "永康街的巷子裡，有一家不起眼的牛肉麵店。招牌已經褪色，木頭門框被歲月磨得發亮。",
+      "voice": "uncle_fu",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_2",
+      "character": "Narrator",
+      "text": "老闆娘王阿嬤今年七十八歲，每天凌晨三點起床熬湯頭，這一熬就是五十年。",
+      "voice": "uncle_fu",
+      "lang": "zh",
+      "emotion": "calm",
+      "speed": 0.92
+    },
+    {
+      "id": "seg_3",
+      "character": "王阿嬤",
+      "text": "這碗麵的秘方，是我婆婆教我的。她說，好的湯頭要用時間換，急不得的。",
+      "voice": "serena",
+      "lang": "zh",
+      "emotion": "calm",
+      "speed": 0.92
+    },
+    {
+      "id": "seg_4",
+      "character": "Narrator",
+      "text": "週五的傍晚，店裡照常坐滿了人。一個年輕女孩推門進來，眼眶微紅。",
+      "voice": "uncle_fu",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_5",
+      "character": "小雨",
+      "text": "阿嬤，老樣子，一碗紅燒牛肉麵，不要蔥花。",
+      "voice": "vivian",
+      "lang": "zh",
+      "emotion": "neutral",
+      "speed": 1.0
+    },
+    {
+      "id": "seg_6",
+      "character": "王阿嬤",
+      "text": "小雨啊，好久沒來了。工作很忙嗎？",
+      "voice": "serena",
+      "lang": "zh",
+      "emotion": "calm",
+      "speed": 0.92
+    },
+    {
+      "id": "seg_7",
+      "character": "小雨",
+      "text": "嗯……最近發生了一些事。阿嬤，我跟男朋友分手了。",
+      "voice": "vivian",
+      "lang": "zh",
+      "emotion": "sad",
+      "speed": 0.85
+    },
+    {
+      "id": "seg_8",
+      "character": "Narrator",
+      "text": "王阿嬤沒有多問，只是點了點頭，轉身進了廚房。過了一會兒，端出一碗熱騰騰的牛肉麵。",
+      "voice": "uncle_fu",
+      "lang": "zh",
+      "emotion": "calm",
+      "speed": 0.92
+    },
+    {
+      "id": "seg_9",
+      "character": "王阿嬤",
+      "text": "多吃一點。我多加了一些牛肉，年輕人要吃飽才有力氣面對明天的事。",
+      "voice": "serena",
+      "lang": "zh",
+      "emotion": "calm",
+      "speed": 0.92
+    },
+    {
+      "id": "seg_10",
+      "character": "小雨",
+      "text": "謝謝阿嬤。說真的，每次來這裡吃麵，都覺得心裡比較踏實。",
+      "voice": "vivian",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.88
+    },
+    {
+      "id": "seg_11",
+      "character": "Narrator",
+      "text": "小雨低頭吃著麵，眼淚掉進碗裡，混著紅燒湯汁，她沒有擦，只是繼續吃。",
+      "voice": "uncle_fu",
+      "lang": "zh",
+      "emotion": "sad",
+      "speed": 0.85
+    },
+    {
+      "id": "seg_12",
+      "character": "王阿嬤",
+      "text": "阿嬤年輕的時候也失戀過。那時候我躲在房間裡哭了三天，我婆婆就煮了一碗麵端進來，跟我說了一句話。",
+      "voice": "serena",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    },
+    {
+      "id": "seg_13",
+      "character": "小雨",
+      "text": "她說什麼？",
+      "voice": "vivian",
+      "lang": "zh",
+      "emotion": "neutral",
+      "speed": 1.0
+    },
+    {
+      "id": "seg_14",
+      "character": "王阿嬤",
+      "text": "她說：「碗空了就可以再裝。」後來我才懂，人的心也是一樣。",
+      "voice": "serena",
+      "lang": "zh",
+      "emotion": "whispery",
+      "speed": 0.88
+    },
+    {
+      "id": "seg_15",
+      "character": "Narrator",
+      "text": "小雨把碗裡的湯喝得一乾二淨。她放下筷子，深吸了一口氣。",
+      "voice": "uncle_fu",
+      "lang": "zh",
+      "emotion": "calm",
+      "speed": 0.92
+    },
+    {
+      "id": "seg_16",
+      "character": "小雨",
+      "text": "阿嬤，這碗麵真的好好吃。我下禮拜再來，好不好？",
+      "voice": "vivian",
+      "lang": "zh",
+      "emotion": "happy",
+      "speed": 1.05
+    },
+    {
+      "id": "seg_17",
+      "character": "王阿嬤",
+      "text": "好，阿嬤等你。記得，不管發生什麼事，這裡永遠有你的位置。",
+      "voice": "serena",
+      "lang": "zh",
+      "emotion": "happy",
+      "speed": 1.05
+    },
+    {
+      "id": "seg_18",
+      "character": "Narrator",
+      "text": "小雨走出店門，台北的夜風吹過來，帶著點涼意。但她的心裡，好像被什麼溫暖的東西填滿了一點。",
+      "voice": "uncle_fu",
+      "lang": "zh",
+      "emotion": "calm",
+      "speed": 0.90
+    },
+    {
+      "id": "seg_19",
+      "character": "Narrator",
+      "text": "巷子裡的燈還亮著，牛肉麵的香氣飄散在永康街的空氣中，和這座城市一樣，永遠不會打烊。",
+      "voice": "uncle_fu",
+      "lang": "zh",
+      "emotion": "storytelling",
+      "speed": 0.97
+    }
+  ]
+}
