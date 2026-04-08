@@ -5,7 +5,8 @@
   "scripts": {
     "start": "remotion studio",
     "build": "remotion render TaiwanStockMarket out/taiwan-stock-market.mp4",
-    "upgrade": "remotion upgrade"
+    "upgrade": "remotion upgrade",
+    "generate-tts": "bun run scripts/generate-tts.ts"
   },
   "dependencies": {
     "@bun-remotion/shared": "workspace:*",

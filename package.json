@@ -10,7 +10,8 @@
     "build": "pwsh scripts/dev.ps1 render claude-code-intro",
     "build:stock": "pwsh scripts/dev.ps1 render taiwan-stock-market",
     "build:all": "pwsh scripts/dev.ps1 render-all",
-    "upgrade": "remotion upgrade"
+    "upgrade": "remotion upgrade",
+    "generate-tts:stock": "cd apps/taiwan-stock-market && bun run generate-tts"
   },
   "dependencies": {
     "remotion": "4.0.290"

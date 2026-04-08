@@ -20,6 +20,7 @@ Create, scaffold, and manage [Remotion](https://remotion.dev/) video projects us
 /create-remotion-video init my-video          # Scaffold a new Remotion app in apps/my-video
 /create-remotion-video add-comp MyVideo       # Add a new composition to Root.tsx
 /create-remotion-video add-scene MyComp SceneName  # Add scene to existing composition
+/create-remotion-video add-tts my-video       # Add TTS narration to an existing app
 /create-remotion-video render                 # Render all compositions to MP4
 /create-remotion-video render MyVideo         # Render specific composition
 /create-remotion-video studio                 # Open Remotion Studio for preview
@@ -325,6 +326,116 @@ const scale = interpolate(frame, [0, 25], [0.6, 1], {
 | Wrong duration | fps x durationInFrames mismatch | Recalculate: seconds * fps = durationInFrames |
 | Remotion version mismatch | remotion and @remotion/cli different versions | Pin both to same version |
 | Trusted dependency error | Missing trustedDependencies | Add compositor entries to root package.json |
+
+## TTS Narration Integration
+
+Add spoken narration to any Remotion video using Gemini TTS (free tier). Audio is generated via a script in the project folder and embedded into the video via Remotion's `<Audio>` component.
+
+### Prerequisites
+
+- `GOOGLE_API_KEY` env var set (Google AI Studio free key)
+- Uses `gemini-2.5-flash-preview-tts` model (no billing required)
+
+### File Structure
+
+```
+apps/<my-video>/
+  scripts/
+    narration.ts          # Narration text per scene
+    generate-tts.ts       # TTS generation script
+  public/
+    audio/
+      .gitkeep            # tracked (keeps dir in git)
+      01-scene.wav        # generated (gitignored)
+  src/
+    <Composition>.tsx     # <Audio> added to each <Sequence>
+```
+
+### add-tts — Add Narration to Existing App
+
+#### Step 1: Create narration scripts (`scripts/narration.ts`)
+
+```typescript
+export interface NarrationScript {
+  scene: string;    // matches scenes/<Name>.tsx
+  file: string;     // output filename in public/audio/
+  text: string;     // narration text
+}
+
+export const narrations: NarrationScript[] = [
+  { scene: "TitleScene", file: "01-title.wav", text: "歡迎觀看..." },
+  { scene: "SceneTwo", file: "02-scene-two.wav", text: "第二段內容..." },
+];
+```
+
+**Guidelines:**
+- One narration entry per scene/Sequence
+- Text length should match scene duration (~150 Chinese chars/min for speech pace)
+- Language should match the visual content
+
+#### Step 2: Create TTS generation script (`scripts/generate-tts.ts`)
+
+Copy from `apps/taiwan-stock-market/scripts/generate-tts.ts` as a template. Key points:
+- Imports narrations from `./narration.ts`
+- Calls Gemini TTS API for each scene
+- Writes WAV files (PCM 24kHz, 16-bit, mono) to `public/audio/`
+- Adds proper WAV headers to raw PCM data
+- 1-second delay between requests to avoid rate limiting
+
+#### Step 3: Add `<Audio>` to composition
+
+Import `Audio` and `staticFile` from `remotion`, then add inside each `<Sequence>`:
+
+```typescript
+import { Audio, staticFile } from "remotion";
+
+// Inside composition:
+<Sequence from={0} durationInFrames={240}>
+  <TitleScene />
+  <Audio src={staticFile("audio/01-title.wav")} volume={1} />
+</Sequence>
+```
+
+Audio plays only during its Sequence's time window. Remotion automatically embeds audio into the rendered MP4.
+
+#### Step 4: Add npm script
+
+```json
+// apps/<my-video>/package.json
+"generate-tts": "bun run scripts/generate-tts.ts"
+
+// Root package.json
+"generate-tts:<name>": "cd apps/<my-video> && bun run generate-tts"
+```
+
+#### Step 5: Generate and render
+
+```bash
+# Generate audio files
+bun run generate-tts:<name>
+
+# Preview with audio
+bun start:<name>
+
+# Render video with embedded audio
+bun run build:<name>
+```
+
+### Gitignore
+
+Generated audio files are gitignored via root `.gitignore`:
+```
+**/public/audio/*.wav
+**/public/audio/*.mp3
+```
+The `public/audio/` directory is kept in git via `.gitkeep`.
+
+### Example: Taiwan Stock Market
+
+See `apps/taiwan-stock-market/` for a complete working example:
+- `scripts/narration.ts` — 7 scenes of Traditional Chinese narration
+- `scripts/generate-tts.ts` — TTS generation with Gemini API
+- `src/TaiwanStockMarket.tsx` — `<Audio>` in each `<Sequence>`
 
 ## References
 

@@ -46,6 +46,15 @@ type: reference
 - Voice selection via instruction: `Speak with the voice named Kore.`
 - Voices: Kore, Fenrir, Charon, Orus, Puck, Leda, Zephyr, Aoede
 
+### TTS Free Tier Rate Limits
+
+- **Daily quota: 10 requests/day** per project for `gemini-2.5-flash-tts`
+- HTTP 429 with `RESOURCE_EXHAUSTED` when exceeded
+- Quota resets daily (not per-hour)
+- When rate limited, just wait — be patient, don't retry aggressively
+- For batch generation (e.g. 7 scenes), spread across multiple days if needed
+- The `generate-tts.ts` script has built-in retry with backoff, but daily quota is a hard cap
+
 ## AQA Details
 
 - Endpoint: `POST /v1beta/models/aqa:generateAnswer`

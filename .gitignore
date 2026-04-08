@@ -5,3 +5,5 @@ dist/
 **/out/
 **/dist/
 **/output/
+**/public/audio/*.wav
+**/public/audio/*.mp3
