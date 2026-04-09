@@ -20,6 +20,52 @@ const {fps} = useVideoConfig();
 </Sequence>
 ```
 
+## Always set the `name` prop
+
+Without a `name` prop, Remotion Studio displays `<Sequence>` for every segment in the timeline — making it impossible to tell scenes apart at a glance. Always provide a short, human-readable label:
+
+```tsx
+// ❌ Shows as "<Sequence>" in the Studio timeline
+<Sequence from={0} durationInFrames={180}>
+  <TitleScene />
+</Sequence>
+
+// ✅ Shows as "Title" in the Studio timeline
+<Sequence from={0} durationInFrames={180} name="Title">
+  <TitleScene />
+</Sequence>
+```
+
+This is especially important when mapping over scene arrays:
+
+```tsx
+const scenes = [
+  { Scene: TitleScene,    audio: "audio/01-title.mp3",    name: "Title" },
+  { Scene: FeaturesScene, audio: "audio/02-features.mp3", name: "Features" },
+  { Scene: TerminalScene, audio: "audio/03-terminal.mp3", name: "Terminal" },
+];
+
+{scenes.map(({ Scene, audio, name }, i) => (
+  <Sequence key={i} from={starts[i]} durationInFrames={d(i)} name={name}>
+    <Scene />
+    <Audio src={staticFile(audio)} volume={1} />
+  </Sequence>
+))}
+```
+
+The `name` also works on `<Series.Sequence>`:
+
+```tsx
+<Series>
+  <Series.Sequence durationInFrames={45} name="Intro">
+    <Intro />
+  </Series.Sequence>
+  <Series.Sequence durationInFrames={60} name="Main Content">
+    <MainContent />
+  </Series.Sequence>
+</Series>
+```
+
 This will by default wrap the component in an absolute fill element.  
 If the items should not be wrapped, use the `layout` prop:
 

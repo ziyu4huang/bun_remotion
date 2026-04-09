@@ -6,7 +6,7 @@ import { ClaudeCodeIntro } from "./ClaudeCodeIntro";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const sceneDurationsData: number[] = (() => {
   try { return require("../public/audio/durations.json"); }
-  catch { return Array(4).fill(210); }
+  catch { return Array(5).fill(210); }
 })();
 
 export type Props = { sceneDurations: number[] };

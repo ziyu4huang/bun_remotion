@@ -25,4 +25,9 @@ export const narrations: NarrationScript[] = [
     file: "04-outro.mp3",
     text: "Ready to get started? Install Claude Code and start building smarter today.",
   },
+  {
+    scene: "FusionScene",
+    file: "05-fusion.mp3",
+    text: "Claude Code doesn't just write code — it reshapes what's possible. The future of AI and creativity, fused together. Shocking the world.",
+  },
 ];

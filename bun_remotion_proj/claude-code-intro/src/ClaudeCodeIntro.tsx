@@ -3,13 +3,15 @@ import { TitleScene } from "./scenes/TitleScene";
 import { FeaturesScene } from "./scenes/FeaturesScene";
 import { TerminalScene } from "./scenes/TerminalScene";
 import { OutroScene } from "./scenes/OutroScene";
+import { FusionScene } from "./scenes/FusionScene";
 import type { Props } from "./Root";
 
 const scenes = [
-  { Scene: TitleScene,    audio: "audio/01-title.mp3" },
-  { Scene: FeaturesScene, audio: "audio/02-features.mp3" },
-  { Scene: TerminalScene, audio: "audio/03-terminal.mp3" },
-  { Scene: OutroScene,    audio: "audio/04-outro.mp3" },
+  { Scene: TitleScene,    audio: "audio/01-title.mp3",    name: "Title" },
+  { Scene: FeaturesScene, audio: "audio/02-features.mp3", name: "Features" },
+  { Scene: TerminalScene, audio: "audio/03-terminal.mp3", name: "Terminal" },
+  { Scene: OutroScene,    audio: "audio/04-outro.mp3",    name: "Outro" },
+  { Scene: FusionScene,   audio: "audio/05-fusion.mp3",   name: "Fusion" },
 ];
 
 export const ClaudeCodeIntro: React.FC<Props> = ({ sceneDurations }) => {
@@ -21,8 +23,8 @@ export const ClaudeCodeIntro: React.FC<Props> = ({ sceneDurations }) => {
 
   return (
     <AbsoluteFill style={{ backgroundColor: "#0d0d0d" }}>
-      {scenes.map(({ Scene, audio }, i) => (
-        <Sequence key={i} from={starts[i]} durationInFrames={d(i)}>
+      {scenes.map(({ Scene, audio, name }, i) => (
+        <Sequence key={i} from={starts[i]} durationInFrames={d(i)} name={name}>
           <Scene />
           <Audio src={staticFile(audio)} volume={1} />
         </Sequence>

@@ -1,5 +1,7 @@
 # TODO — ClaudeCodeIntro Improvements
 
+> **Purpose:** This project is a testbed for Remotion best practices. See `README.md` for overview.
+
 Reflection after first voice-enabled render (31.9s, 957 frames, edge-tts en-US-AriaNeural).
 
 ---
@@ -80,10 +82,8 @@ Reflection after first voice-enabled render (31.9s, 957 frames, edge-tts en-US-A
 
 ## Infrastructure
 
-- [ ] **`durations.json` in gitignore?** — currently committed (not gitignored). Committing it
-  means the repo builds without regenerating audio, which is convenient. But it becomes stale
-  if narration text changes. Decision: keep committed, document in README that regenerating
-  audio requires re-running `bun run generate-tts:claude`.
+- [x] **`durations.json` in gitignore?** — keep committed; documented in README that regenerating
+  audio requires re-running `bun run generate-tts:claude` when narration text changes.
 
 - [ ] **`--skip-existing` vs full regen** — add a `--force` flag to `generate-tts.ts` as an
   alias for a full regeneration (vs `--skip-existing` which is the safe default).

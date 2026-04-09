@@ -1,4 +1,4 @@
-import { interpolate, useCurrentFrame, Easing } from "remotion";
+import { Img, interpolate, useCurrentFrame, Easing, staticFile } from "remotion";
 
 export const TitleScene: React.FC = () => {
   const frame = useCurrentFrame();
@@ -81,34 +81,19 @@ export const TitleScene: React.FC = () => {
         />
       ))}
 
-      {/* Claude logo mark — stylized "C" in circle */}
-      <div
+      {/* Claude Code logo */}
+      <Img
+        src={staticFile("claude-code-logo.png")}
         style={{
           opacity: logoOpacity,
           transform: `scale(${logoScale})`,
           width: 120,
           height: 120,
-          borderRadius: "50%",
-          border: "3px solid #D97757",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
+          borderRadius: "20%",
           marginBottom: 32,
           boxShadow: "0 0 60px rgba(217, 119, 87, 0.25), 0 0 120px rgba(217, 119, 87, 0.1)",
         }}
-      >
-        <span
-          style={{
-            fontSize: 64,
-            fontWeight: 700,
-            color: "#D97757",
-            fontFamily: "'Georgia', serif",
-            fontStyle: "italic",
-          }}
-        >
-          C
-        </span>
-      </div>
+      />
 
       {/* Title */}
       <div

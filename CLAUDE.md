@@ -141,6 +141,7 @@ All memory — project knowledge, user feedback, preferences — lives here. Thi
 - [skill-creation](.agent/memory/feedback/skill-creation.md) - Skill structure: v2 load-on-demand (SKILL.md + engines/ + platforms/ + env-check.md) vs v1 (references/ + scripts/)
 - [no-cd-in-bash](.agent/memory/feedback/no-cd-in-bash.md) - Never cd in Bash tool — CWD persists across calls causing silent failures
 - [generate-image-skill](.agent/memory/feedback/generate-image-skill.md) - Lessons learned: use browser_run_code for batch, Escape overlay before next prompt, aria-label selectors
+- [remotion-sequence-name](.agent/memory/feedback/remotion-sequence-name.md) - Always use name prop on Sequence for readable Studio timeline
 - [graphify-windows-lessons](.agent/memory/feedback/graphify-windows-lessons.md) - graphify v0.3.20 on Windows: extension patching, tree-sitter API, encoding, Verilog AST
 
 ## Convention

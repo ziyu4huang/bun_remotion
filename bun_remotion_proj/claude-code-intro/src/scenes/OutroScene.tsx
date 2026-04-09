@@ -1,4 +1,4 @@
-import { interpolate, useCurrentFrame, Easing } from "remotion";
+import { Img, interpolate, useCurrentFrame, Easing, staticFile } from "remotion";
 
 export const OutroScene: React.FC = () => {
   const frame = useCurrentFrame();
@@ -60,34 +60,19 @@ export const OutroScene: React.FC = () => {
         }}
       />
 
-      {/* Logo */}
-      <div
+      {/* Claude Code logo */}
+      <Img
+        src={staticFile("claude-code-logo.png")}
         style={{
           opacity: logoOpacity,
           transform: `scale(${logoScale})`,
           width: 90,
           height: 90,
-          borderRadius: "50%",
-          border: "2px solid #D97757",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
+          borderRadius: "20%",
           marginBottom: 28,
           boxShadow: "0 0 40px rgba(217, 119, 87, 0.2)",
         }}
-      >
-        <span
-          style={{
-            fontSize: 48,
-            fontWeight: 700,
-            color: "#D97757",
-            fontFamily: "'Georgia', serif",
-            fontStyle: "italic",
-          }}
-        >
-          C
-        </span>
-      </div>
+      />
 
       {/* Tagline */}
       <div
