@@ -1,5 +1,5 @@
 ---
-name: graphify-windows
+name: graphify-windows-local
 description: any input (code, docs, papers, images) to knowledge graph to clustered communities to HTML + JSON + audit report (Windows-enhanced with unsupported language support)
 trigger: /graphify-windows
 ---
@@ -30,14 +30,79 @@ python -c "from pathlib import Path; Path('.test_enc.txt').write_text('test: ≤
 /graphify-windows <path> --no-viz                     # skip visualization, just report + JSON
 /graphify-windows <path> --svg                        # also export graph.svg
 /graphify-windows <path> --graphml                    # export graph.graphml (Gephi, yEd)
+/graphify-windows <path> --summarize                  # skip pipeline, regenerate CODEBASE_MAP.md only
+/graphify-windows <path> --claudemd                   # generate compact CLAUDE.md section from existing graph
+/graphify-windows <path> --diff                       # compare current run vs previous (saves baseline)
+/graphify-windows <path> --quick                      # skip unchanged files via cache, merge only new
 /graphify-windows query "<question>"                  # BFS traversal
 /graphify-windows path "NodeA" "NodeB"                # shortest path
-/graphify-windows explain "NodeName"                  # node explanation
+/graphify-windows explain "NodeName"                  # node explanation (fuzzy search, one-shot script)
 ```
 
 ## What You Must Do When Invoked
 
 If no path was given, use `.` (current directory). Do not ask the user for a path.
+
+**Early exit for `--summarize`:** If `--summarize` was given, skip Steps 1-8. Go directly to generating CODEBASE_MAP.md:
+
+```bash
+export PYTHONUTF8=1
+SKILL_DIR=.claude/skills/graphify-windows-local
+python $SKILL_DIR/scripts/codebase_map.py graphify-out/graph.json --labels graphify-out/.labels.json --output graphify-out/CODEBASE_MAP.md
+# Also save to agent memory
+cp graphify-out/CODEBASE_MAP.md .agent/memory/project/codebase-map.md
+```
+
+Then show the contents of CODEBASE_MAP.md and stop.
+
+**Early exit for `--claudemd`:** If `--claudemd` was given, skip Steps 1-8. Generate a compact section for CLAUDE.md:
+
+```bash
+export PYTHONUTF8=1
+SKILL_DIR=.claude/skills/graphify-windows-local
+python $SKILL_DIR/scripts/codebase_map.py graphify-out/graph.json --labels graphify-out/.labels.json --claudemd
+```
+
+Show the output and suggest the user paste it into CLAUDE.md. Stop.
+
+**Early exit for `--diff`:** If `--diff` was given, compare current graph against the previous run's baseline:
+
+```bash
+export PYTHONUTF8=1
+SKILL_DIR=.claude/skills/graphify-windows-local
+BASELINE=graphify-out/graph.json.bak
+CURRENT=graphify-out/graph.json
+if [ ! -f "$BASELINE" ]; then
+    echo "No previous baseline found. Copying current graph as baseline."
+    cp "$CURRENT" "$BASELINE"
+    echo "Run --diff again after making code changes to see what changed."
+else
+    python $SKILL_DIR/scripts/graph_diff.py "$BASELINE" "$CURRENT" --labels graphify-out/.labels.json
+    # Update baseline for next diff
+    cp "$CURRENT" "$BASELINE"
+fi
+```
+
+Show the diff report. If there are CLAUDE.md update suggestions, offer to apply them. Stop.
+
+**`--quick` flag:** If `--quick` was given, modify Step 3 to use the cache module. Before Part B (semantic extraction), check which files have changed:
+
+```bash
+python -c "
+import json
+from graphify.cache import cached_files, file_hash
+from pathlib import Path
+
+detect = json.loads(Path('.graphify_detect.json').read_text())
+all_files = [f for files in detect['files'].values() for f in files]
+cached = cached_files()
+changed = [f for f in all_files if file_hash(Path(f)) != cached.get(f)]
+Path('.graphify_uncached.txt').write_text('\n'.join(changed))
+print(f'Quick mode: {len(changed)}/{len(all_files)} files changed, {len(all_files)-len(changed)} cached')
+"
+```
+
+If all files are cached, skip directly to Step 4 using the existing `.graphify_extract.json` (if it exists). Otherwise, run extraction only on changed files and merge with cached results.
 
 Follow these steps in order. Do not skip steps.
 
@@ -170,7 +235,7 @@ else:
 **If there ARE unsupported files** (e.g. `.v`, `.sv`), use the standalone extraction script:
 
 ```bash
-SKILL_DIR=.claude/skills/graphify-windows
+SKILL_DIR=.claude/skills/graphify-windows-local
 python $SKILL_DIR/scripts/extract_enhanced.py .graphify_detect.json -o .graphify_ast.json
 ```
 
@@ -411,6 +476,7 @@ questions = suggest_questions(G, communities, labels)
 report = generate(G, communities, cohesion, labels, analysis['gods'], analysis['surprises'], detection, tokens, 'INPUT_PATH', suggested_questions=questions)
 Path('graphify-out/GRAPH_REPORT.md').write_text(report, encoding='utf-8')
 Path('.graphify_labels.json').write_text(json.dumps({str(k): v for k, v in labels.items()}), encoding='utf-8')
+Path('graphify-out/.labels.json').write_text(json.dumps({str(k): v for k, v in labels.items()}), encoding='utf-8')
 print('Report updated with community labels')
 "
 ```
@@ -495,13 +561,25 @@ rm -f .graphify_detect.json .graphify_extract.json .graphify_ast.json .graphify_
 rm -f graphify-out/.needs_update
 ```
 
+**Generate CODEBASE_MAP.md** (compact agent-readable summary):
+
+```bash
+export PYTHONUTF8=1
+SKILL_DIR=.claude/skills/graphify-windows-local
+python $SKILL_DIR/scripts/codebase_map.py graphify-out/graph.json --labels graphify-out/.labels.json --output graphify-out/CODEBASE_MAP.md
+# Also save to agent memory for auto-loading
+mkdir -p .agent/memory/project
+cp graphify-out/CODEBASE_MAP.md .agent/memory/project/codebase-map.md
+```
+
 Tell the user:
 ```
 Graph complete. Outputs in PATH_TO_DIR/graphify-out/
 
   graph.html            - interactive graph, open in browser
-  GRAPH_REPORT.md       - audit report
+  GRAPH_REPORT.md       - full audit report
   graph.json            - raw graph data
+  CODEBASE_MAP.md       - compact agent-readable summary (also in .agent/memory/project/)
 ```
 
 Then paste these sections from GRAPH_REPORT.md:
@@ -515,19 +593,296 @@ Then immediately offer to explore the most interesting question.
 
 ## For --update (incremental re-extraction)
 
-Same as stock graphify, but with the same extension patching in Step 2 and the same UTF-8 encoding on all writes.
+Re-extracts only files that changed since the last run. Uses `graphify.cache` (SHA256-based) to skip unchanged files entirely — no Claude tokens spent on them.
 
-## For /graphify query, /graphify path, /graphify explain
+**How it works:**
+1. Run detection (Step 2) to get the current file list
+2. Check cache — each file's SHA256 is compared against `graphify-out/cache/{hash}.json`
+3. Unchanged files: load their cached nodes/edges directly (instant, free)
+4. Changed/new files: run AST + semantic extraction (same as Step 3, but only on the delta)
+5. Merge cached + new, then continue with Steps 4-9 (build, cluster, report)
 
-Identical to stock graphify. See the upstream skill-windows.md for full implementations.
+**Instructions:**
 
-## For /graphify add
+### Update Step 1 — Detect + cache check
 
-Identical to stock graphify.
+Run Step 1 and Step 2 from the main pipeline (install check, file detection). Then:
+
+```bash
+export PYTHONUTF8=1
+SKILL_DIR=.claude/skills/graphify-windows-local
+python $SKILL_DIR/scripts/graph_update.py .graphify_detect.json --output-prefix .graphify
+```
+
+This outputs:
+- `.graphify_cached.json` — nodes/edges from unchanged files
+- `.graphify_uncached.txt` — files that need fresh extraction
+- `NEEDS_EXTRACTION=false` if all files are cached
+
+### Update Step 2 — Extract only changed files
+
+If `NEEDS_EXTRACTION=false` was printed, skip to Update Step 3.
+
+Otherwise, extract only the files in `.graphify_uncached.txt`:
+
+**Part A — AST extraction** (code files only):
+
+```bash
+python -c "
+import sys, json
+from graphify.extract import collect_files, extract
+from pathlib import Path
+
+uncached = Path('.graphify_uncached.txt').read_text().strip().split('\n') if Path('.graphify_uncached.txt').exists() else []
+code_files = [Path(f) for f in uncached if Path(f).exists() and any(f.endswith(ext) for ext in
+    {'.py','.js','.jsx','.ts','.tsx','.go','.rs','.java','.c','.h','.cpp','.cc','.rb','.swift','.kt','.cs','.scala','.php','.lua','.zig','.ps1','.ex','.exs','.v','.sv','.vhd','.vhdl'})]
+
+if code_files:
+    result = extract(code_files)
+    Path('.graphify_ast_new.json').write_text(json.dumps(result, indent=2), encoding='utf-8')
+    print(f'AST: {len(result[\"nodes\"])} nodes, {len(result[\"edges\"])} edges from {len(code_files)} files')
+else:
+    Path('.graphify_ast_new.json').write_text(json.dumps({'nodes':[],'edges':[],'input_tokens':0,'output_tokens':0}), encoding='utf-8')
+    print('No code files to extract')
+"
+```
+
+**Part B — Semantic extraction** (docs/papers/images only):
+
+Follow the same subagent dispatch as Step 3B in the main pipeline, but ONLY for files listed in `.graphify_uncached.txt`. Split into chunks of 20-25 files each. Merge results into `.graphify_semantic_new.json`.
+
+### Update Step 3 — Merge cached + new, then build
+
+```bash
+python -c "
+import json
+from pathlib import Path
+
+# Load cached extractions
+cached = json.loads(Path('.graphify_cached.json').read_text(encoding='utf-8'))
+
+# Load new AST extraction
+ast = json.loads(Path('.graphify_ast_new.json').read_text(encoding='utf-8')) if Path('.graphify_ast_new.json').exists() else {'nodes':[],'edges':[]}
+
+# Load new semantic extraction
+sem = json.loads(Path('.graphify_semantic_new.json').read_text(encoding='utf-8')) if Path('.graphify_semantic_new.json').exists() else {'nodes':[],'edges':[],'hyperedges':[]}
+
+# Deduplicate nodes by id
+seen = {n['id'] for n in ast['nodes']}
+merged_nodes = list(ast['nodes'])
+for n in cached['nodes'] + sem.get('nodes', []):
+    if n['id'] not in seen:
+        merged_nodes.append(n)
+        seen.add(n['id'])
+
+merged_edges = ast['edges'] + cached['edges'] + sem.get('edges', [])
+merged_hyperedges = cached.get('hyperedges', []) + sem.get('hyperedges', [])
+
+merged = {
+    'nodes': merged_nodes,
+    'edges': merged_edges,
+    'hyperedges': merged_hyperedges,
+    'input_tokens': sem.get('input_tokens', 0),
+    'output_tokens': sem.get('output_tokens', 0),
+}
+Path('.graphify_extract.json').write_text(json.dumps(merged, indent=2), encoding='utf-8'))
+print(f'Merged: {len(merged_nodes)} nodes, {len(merged_edges)} edges ({len(cached[\"nodes\"])} cached + {len(ast[\"nodes\"])} AST + {len(sem.get(\"nodes\", []))} semantic)')
+"
+```
+
+Then continue with **Steps 4-9** from the main pipeline (build graph, cluster, label, HTML, cleanup, CODEBASE_MAP.md).
+
+**To clear cache and force full re-extraction:**
+
+```bash
+python -c "from graphify.cache import clear_cache; clear_cache(); print('Cache cleared')"
+```
+
+## For /graphify explain "<NodeName>"
+
+Explain a specific node using the one-shot script.
+
+```bash
+export PYTHONUTF8=1
+SKILL_DIR=.claude/skills/graphify-windows-local
+python $SKILL_DIR/scripts/explain.py graphify-out/graph.json "NODE_NAME" --labels graphify-out/.labels.json
+```
+
+This outputs a structured explanation with:
+- Node metadata (ID, community, file, connection count)
+- **Verified** connections (EXTRACTED, confidence=1.0) — methods, imports
+- **Hypotheses** (INFERRED, confidence<1.0) — explicitly marked "verify before relying on these"
+- Source file hint — "Read X for ground truth"
+
+**After running the script:** If the node has a `source_file`, read it to add semantic depth. The graph shows structure; the source shows semantics. Present both.
+
+## For /graphify query "<question>"
+
+BFS traversal to answer a question about the graph. Uses graphify's built-in query.
+
+```bash
+python -c "
+import json
+from graphify.build import build_from_json
+from graphify.query import bfs_query
+from pathlib import Path
+
+extraction = json.loads(Path('graphify-out/graph.json').read_text(encoding='utf-8'))
+# graph.json is node_link format; need to convert back to extraction format
+# Use the raw extraction if available, otherwise parse from node_link
+labels_raw = json.loads(Path('graphify-out/.labels.json').read_text(encoding='utf-8')) if Path('graphify-out/.labels.json').exists() else {}
+"
+```
+
+**Fallback:** If graphify's query module doesn't work with node_link format, read graph.json directly and do manual BFS:
+
+```bash
+python -c "
+import json
+from pathlib import Path
+from collections import deque
+
+data = json.loads(Path('graphify-out/graph.json').read_text(encoding='utf-8'))
+nodes_map = {n['id']: n for n in data['nodes']}
+adj = {}
+for e in data.get('links', []):
+    adj.setdefault(e['source'], []).append(e['target'])
+    adj.setdefault(e['target'], []).append(e['source'])
+
+# BFS from a starting node
+START = 'START_NODE_ID'
+visited = set()
+queue = deque([START])
+while queue:
+    node = queue.popleft()
+    if node in visited: continue
+    visited.add(node)
+    for neighbor in adj.get(node, []):
+        if neighbor not in visited:
+            queue.append(neighbor)
+
+print(f'Reachable from {START}: {len(visited)} nodes')
+for nid in sorted(visited):
+    n = nodes_map.get(nid, {})
+    print(f'  {n.get(\"label\", nid)} [{nid}]')
+"
+```
+
+## For /graphify path "NodeA" "NodeB"
+
+Shortest path between two nodes.
+
+```bash
+python -c "
+import json
+from pathlib import Path
+from collections import deque
+
+data = json.loads(Path('graphify-out/graph.json').read_text(encoding='utf-8'))
+nodes_map = {n['id']: n for n in data['nodes']}
+adj = {}
+for e in data.get('links', []):
+    adj.setdefault(e['source'], []).append((e['target'], e.get('relation','')))
+    adj.setdefault(e['target'], []).append((e['source'], e.get('relation','')))
+
+SOURCE = 'SOURCE_NODE_ID'
+TARGET = 'TARGET_NODE_ID'
+
+# BFS shortest path
+visited = {SOURCE: None}
+queue = deque([SOURCE])
+while queue and TARGET not in visited:
+    node = queue.popleft()
+    for neighbor, rel in adj.get(node, []):
+        if neighbor not in visited:
+            visited[neighbor] = (node, rel)
+            queue.append(neighbor)
+
+if TARGET in visited:
+    path = []
+    cur = TARGET
+    while cur is not None:
+        info = visited[cur]
+        if info:
+            path.append((cur, info[1]))
+            cur = info[0]
+        else:
+            path.append((cur, None))
+            cur = None
+    path.reverse()
+    print(f'Shortest path ({len(path)} hops):')
+    for i, (nid, rel) in enumerate(path):
+        n = nodes_map.get(nid, {})
+        arrow = f' --[{rel}]--> ' if rel else ''
+        print(f'  {n.get(\"label\", nid)} {arrow}')
+else:
+    print(f'No path found between {SOURCE} and {TARGET}')
+"
+```
+
+## For /graphify add <path>
+
+Add files to an existing graph. Requires `graphify-out/graph.json` to exist.
+
+```bash
+python -c "
+import json
+from graphify.build import build_from_json, add_to_graph
+from graphify.export import to_json, to_html
+from pathlib import Path
+
+data = json.loads(Path('graphify-out/graph.json').read_text(encoding='utf-8'))
+# ... incrementally add new files and re-export
+"
+```
+
+**Note:** graphify's incremental API may vary by version. If `add_to_graph` doesn't exist, re-run the full pipeline on the target path.
 
 ## For --watch, --cluster-only, --neo4j, --neo4j-push, --mcp, --svg, --graphml
 
-Identical to stock graphify.
+These flags modify Step 4/7 behavior. They are NOT standalone commands — they are modifiers to the main pipeline:
+
+- `--watch`: Not implemented (would need file watcher)
+- `--cluster-only`: Skip Steps 1-3, load existing `.graphify_extract.json`, re-cluster with different parameters
+- `--neo4j` / `--neo4j-push`: Add `from graphify.export import to_cypher` in Step 7
+- `--mcp`: Run `python -m graphify.serve graphify-out/graph.json` after Step 9
+- `--svg`: Add `from graphify.export import to_svg` in Step 7
+- `--graphml`: Add `from graphify.export import to_graphml` in Step 7
+
+---
+
+## graph.json Format Reference
+
+**CRITICAL:** The exported JSON uses NetworkX `node_link_data()` format:
+
+```json
+{
+  "directed": true,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [{"id": "...", "label": "...", "community": 0, "source_file": "..."}],
+  "links": [{"source": "node_id", "target": "node_id", "relation": "...", "confidence": "EXTRACTED", "confidence_score": 1.0, "weight": 1.0}],
+  "hyperedges": []
+}
+```
+
+- Key for edges is **`links`**, NOT `edges`
+- Node `community` is an integer (map to label via `.labels.json` if saved)
+- `confidence_score`: 1.0 = EXTRACTED (AST truth), 0.6-0.9 = INFERRED, 0.1-0.3 = AMBIGUOUS
+
+### Node ID Convention
+
+A source file produces multiple graph nodes with compound IDs:
+
+| Node type | ID pattern | Example |
+|-----------|-----------|---------|
+| File | `<filestem>` | `book_manager` |
+| Class | `<filestem>_<classname>` | `book_manager_bookmanager` |
+| Method | `<filestem>_<classname>_<method>` | `book_manager_bookmanager_init` |
+| Function | `<filestem>_<funcname>` | `cli_main` |
+| Docstring/rationale | `<filestem>_rationale_<line>` | `book_manager_rationale_1` |
+
+**When looking up a node by name, prefer class/function nodes** (they have the most connections). File nodes are containers with few edges; rationale nodes are docstring fragments.
 
 ---
 
