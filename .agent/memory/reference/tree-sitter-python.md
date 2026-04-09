@@ -44,3 +44,4 @@ Naming pattern: `tree-sitter-<language>` (with hyphens)
 
 - `tree-sitter-languages` (bundled multi-language package) has NO Windows wheels — use individual packages instead
 - All individual `tree-sitter-<lang>` packages work on Windows
+- **PYTHONUTF8=1** — set this env var to fix cp950/cp1252 Unicode encoding. Added to PowerShell profile on 2026-04-09. Eliminates need for `encoding='utf-8'` on every `Path.write_text()` call.

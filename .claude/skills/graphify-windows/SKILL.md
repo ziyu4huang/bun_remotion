@@ -1,38 +1,38 @@
 ---
 name: graphify-windows
 description: any input (code, docs, papers, images) to knowledge graph to clustered communities to HTML + JSON + audit report (Windows-enhanced with unsupported language support)
-trigger: /graphify
+trigger: /graphify-windows
 ---
 
-# /graphify (Windows-Enhanced)
+# /graphify-windows (Windows-Enhanced)
 
 Enhanced version of graphify for Windows. Adds:
-- **UTF-8 encoding fix** on all file writes (prevents cp950/cp1252 UnicodeEncodeError)
-- **Unsupported language support** (.v, .sv, .vhd, .vhdl, etc.) via tree-sitter
+- **PYTHONUTF8=1** — set this env var to fix cp950/cp1252 encoding globally (eliminates need for `encoding='utf-8'` on every write)
+- **Unsupported language support** (.v, .sv, .vhd, .vhdl, etc.) via direct tree-sitter extraction
 - **Bash commands** (not PowerShell) — matches this project's shell config
+- **Standalone extraction script** at `scripts/extract_enhanced.py` — avoids heredoc quoting issues
 
-All graphify features work identically. This skill only patches the Windows-specific pain points.
+## Prerequisites
+
+```bash
+# Ensure PYTHONUTF8 is set (fixes Windows Unicode encoding globally)
+# Add to PowerShell profile ($PROFILE) or set system-wide:
+#   $env:PYTHONUTF8 = "1"
+#   setx PYTHONUTF8 1
+python -c "from pathlib import Path; Path('.test_enc.txt').write_text('test: ≤ ≥ →'); print('UTF-8 OK')" && rm .test_enc.txt
+```
 
 ## Usage
 
 ```
-/graphify                                             # full pipeline on current directory
-/graphify <path>                                      # full pipeline on specific path
-/graphify <path> --mode deep                          # thorough extraction, richer INFERRED edges
-/graphify <path> --update                             # incremental - re-extract only new/changed files
-/graphify <path> --cluster-only                       # rerun clustering on existing graph
-/graphify <path> --no-viz                             # skip visualization, just report + JSON
-/graphify <path> --svg                                # also export graph.svg
-/graphify <path> --graphml                            # export graph.graphml (Gephi, yEd)
-/graphify <path> --neo4j                              # generate cypher.txt for Neo4j
-/graphify <path> --neo4j-push bolt://localhost:7687   # push directly to Neo4j
-/graphify <path> --mcp                                # start MCP stdio server
-/graphify <path> --watch                              # watch folder, auto-rebuild on code changes
-/graphify add <url>                                   # fetch URL, save to ./raw, update graph
-/graphify query "<question>"                          # BFS traversal - broad context
-/graphify query "<question>" --dfs                    # DFS - trace a specific path
-/graphify path "AuthModule" "Database"                # shortest path between two concepts
-/graphify explain "SwinTransformer"                   # plain-language explanation of a node
+/graphify-windows <path>                              # full pipeline on specific path
+/graphify-windows <path> --mode deep                  # thorough extraction, richer INFERRED edges
+/graphify-windows <path> --no-viz                     # skip visualization, just report + JSON
+/graphify-windows <path> --svg                        # also export graph.svg
+/graphify-windows <path> --graphml                    # export graph.graphml (Gephi, yEd)
+/graphify-windows query "<question>"                  # BFS traversal
+/graphify-windows path "NodeA" "NodeB"                # shortest path
+/graphify-windows explain "NodeName"                  # node explanation
 ```
 
 ## What You Must Do When Invoked
@@ -41,15 +41,17 @@ If no path was given, use `.` (current directory). Do not ask the user for a pat
 
 Follow these steps in order. Do not skip steps.
 
-### Step 1 - Ensure graphify is installed
+### Step 1 - Ensure graphify is installed and PYTHONUTF8 is set
 
 ```bash
 python -c "import graphify" 2>/dev/null
 if [ $? -ne 0 ]; then pip install graphifyy -q 2>&1 | tail -3; fi
-python -c "import sys; open('.graphify_python', 'w').write(sys.executable)"
+
+# Verify UTF-8 mode — if this fails, set PYTHONUTF8=1 in your environment
+python -c "from pathlib import Path; Path('/dev/null').write_text('test: ≤')" 2>/dev/null || echo "WARNING: PYTHONUTF8 not set — Unicode errors likely. Set: export PYTHONUTF8=1"
 ```
 
-If the import succeeds, print nothing and move straight to Step 2.
+If the import succeeds and UTF-8 check passes, print nothing and move to Step 2.
 
 ### Step 2 - Detect files + patch unsupported extensions
 
@@ -165,223 +167,18 @@ else:
 "
 ```
 
-**If there ARE unsupported files** (e.g. `.v`, `.sv`), run this enhanced extraction that uses tree-sitter directly for unsupported languages and graphify's built-in for the rest:
+**If there ARE unsupported files** (e.g. `.v`, `.sv`), use the standalone extraction script:
 
 ```bash
-python << 'PYEOF'
-import sys, json, importlib
-from pathlib import Path
-
-# ── Config: map unsupported extensions to tree-sitter modules ──
-# Format: extension -> (ts_module_name, LanguageConfig kwargs)
-# ts_module_name: pip package name (e.g. "tree_sitter_verilog")
-EXT_TO_PARSER = {
-    '.v': {
-        'ts_module': 'tree_sitter_verilog',
-        'ts_language_fn': 'language',
-        'class_types': frozenset({'module_declaration'}),
-        'function_types': frozenset({'always_construct', 'assign', 'initial_construct',
-                                     'function_declaration', 'task_declaration'}),
-        'import_types': frozenset(),
-        'call_types': frozenset({'module_instantiation'}),
-        'name_field': 'simple_identifier',
-    },
-    '.sv': {
-        'ts_module': 'tree_sitter_verilog',  # tree-sitter-verilog also handles SV
-        'ts_language_fn': 'language',
-        'class_types': frozenset({'module_declaration', 'class_declaration', 'interface_declaration'}),
-        'function_types': frozenset({'always_construct', 'assign', 'initial_construct',
-                                     'function_declaration', 'task_declaration'}),
-        'import_types': frozenset(),
-        'call_types': frozenset({'module_instantiation'}),
-        'name_field': 'simple_identifier',
-    },
-}
-
-def find_nodes(node, node_type):
-    """Recursively find all nodes of a given type."""
-    results = []
-    if node.type == node_type:
-        results.append(node)
-    for child in node.children:
-        results.extend(find_nodes(child, node_type))
-    return results
-
-def find_child_text(node, child_type, source_bytes):
-    """Recursively find first child of given type and return its text."""
-    for child in node.children:
-        if child.type == child_type:
-            return source_bytes[child.start_byte:child.end_byte].decode('utf-8', errors='replace')
-        result = find_child_text(child, child_type, source_bytes)
-        if result is not None:
-            return result
-    return None
-
-def extract_unsupported_file(fpath, config):
-    """Extract nodes/edges from an unsupported language file using tree-sitter directly."""
-    try:
-        mod = importlib.import_module(config['ts_module'])
-    except ImportError:
-        print(f'  WARNING: {config["ts_module"]} not installed. Run: pip install {config["ts_module"]}')
-        return {'nodes': [], 'edges': []}
-
-    from tree_sitter import Language, Parser
-    lang_fn = getattr(mod, config['ts_language_fn'], None)
-    if not lang_fn:
-        return {'nodes': [], 'edges': []}
-
-    language = Language(lang_fn())
-    parser = Parser(language)
-    source_bytes = fpath.read_bytes()
-    source_file = str(fpath)
-    stem = fpath.stem
-    tree = parser.parse(source_bytes)
-
-    nodes = []
-    edges = []
-
-    # Extract class/module declarations
-    for cls_type in config['class_types']:
-        for cls_node in find_nodes(tree.root_node, cls_type):
-            cls_name = find_child_text(cls_node, config['name_field'], source_bytes)
-            if not cls_name:
-                continue
-            nodes.append({
-                'id': cls_name, 'label': f'{cls_name} ({cls_type})',
-                'file_type': 'code', 'source_file': source_file,
-                'source_location': f'L{cls_node.start_point[0]+1}',
-            })
-
-    # Extract function-like constructs
-    for func_type in config['function_types']:
-        for func_node in find_nodes(tree.root_node, func_type):
-            # Find parent module to scope the ID
-            parent_mod = None
-            for cls_type in config['class_types']:
-                for cls_node in find_nodes(tree.root_node, cls_type):
-                    if (cls_node.start_byte <= func_node.start_byte <= cls_node.end_byte):
-                        mod_name = find_child_text(cls_node, config['name_field'], source_bytes)
-                        if mod_name:
-                            parent_mod = mod_name
-                            break
-                if parent_mod:
-                    break
-
-            prefix = f'{parent_mod}_' if parent_mod else f'{stem}_'
-            fid = f'{prefix}{func_type}_{func_node.start_point[0]}'
-            nodes.append({
-                'id': fid, 'label': f'{func_type} @{func_node.start_point[0]+1}',
-                'file_type': 'code', 'source_file': source_file,
-                'source_location': f'L{func_node.start_point[0]+1}',
-            })
-            if parent_mod:
-                edges.append({
-                    'source': parent_mod, 'target': fid,
-                    'relation': 'contains', 'confidence': 'EXTRACTED',
-                    'confidence_score': 1.0, 'source_file': source_file, 'weight': 1.0,
-                })
-
-    # Extract call/instantiation edges
-    for call_type in config['call_types']:
-        for call_node in find_nodes(tree.root_node, call_type):
-            target_name = find_child_text(call_node, config['name_field'], source_bytes)
-            inst_name = find_child_text(call_node, 'instance_identifier', source_bytes)
-            if target_name:
-                # Find parent module
-                parent_mod = None
-                for cls_type in config['class_types']:
-                    for cls_node in find_nodes(tree.root_node, cls_type):
-                        if (cls_node.start_byte <= call_node.start_byte <= cls_node.end_byte):
-                            mod_name = find_child_text(cls_node, config['name_field'], source_bytes)
-                            if mod_name:
-                                parent_mod = mod_name
-                                break
-                    if parent_mod:
-                        break
-
-                nid = f'{stem}_{target_name}_inst'
-                label = f'{inst_name} ({target_name})' if inst_name else f'{target_name} inst'
-                nodes.append({
-                    'id': nid, 'label': label, 'file_type': 'code',
-                    'source_file': source_file,
-                    'source_location': f'L{call_node.start_point[0]+1}',
-                })
-                edges.append({
-                    'source': nid, 'target': target_name,
-                    'relation': 'instantiates', 'confidence': 'EXTRACTED',
-                    'confidence_score': 1.0, 'source_file': source_file, 'weight': 1.0,
-                })
-                if parent_mod:
-                    edges.append({
-                        'source': parent_mod, 'target': nid,
-                        'relation': 'contains', 'confidence': 'EXTRACTED',
-                        'confidence_score': 1.0, 'source_file': source_file, 'weight': 1.0,
-                    })
-
-    return {'nodes': nodes, 'edges': edges}
-
-
-# ── Main: extract all files ──
-from graphify.extract import collect_files, extract
-
-detect = json.loads(Path('.graphify_detect.json').read_text())
-all_code_files = []
-for f in detect.get('files', {}).get('code', []):
-    p = Path(f)
-    if p.is_dir():
-        all_code_files.extend(sorted(p.rglob('*')))
-    else:
-        all_code_files.append(p)
-
-_BUILTIN_EXTS = {'.py','.js','.jsx','.ts','.tsx','.go','.rs','.java','.c','.h',
-    '.cpp','.cc','.cxx','.hpp','.rb','.swift','.kt','.kts','.cs','.scala',
-    '.php','.lua','.toc','.zig','.ps1','.ex','.exs','.m','.mm','.jl'}
-
-unsupported_files = [f for f in all_code_files if f.suffix.lower() not in _BUILTIN_EXTS]
-supported_files = [f for f in all_code_files if f.suffix.lower() in _BUILTIN_EXTS]
-
-all_nodes = []
-all_edges = []
-
-# 1. Built-in extraction via graphify
-if supported_files:
-    result = extract(supported_files)
-    all_nodes.extend(result.get('nodes', []))
-    all_edges.extend(result.get('edges', []))
-    print(f'Built-in AST: {len(result.get("nodes",[]))} nodes, {len(result.get("edges",[]))} edges')
-
-# 2. Direct tree-sitter for unsupported languages
-if unsupported_files:
-    # Group by extension for efficiency
-    by_ext = {}
-    for f in unsupported_files:
-        by_ext.setdefault(f.suffix.lower(), []).append(f)
-
-    for ext, files in sorted(by_ext.items()):
-        config = EXT_TO_PARSER.get(ext)
-        if not config:
-            print(f'  WARNING: No parser config for {ext} - skipping {len(files)} files')
-            print(f'    To add support: pip install tree-sitter-{ext[1:]} and update EXT_TO_PARSER in skill')
-            continue
-        for f in files:
-            result = extract_unsupported_file(f, config)
-            all_nodes.extend(result['nodes'])
-            all_edges.extend(result['edges'])
-            print(f'  {f.name}: {len(result["nodes"])} nodes, {len(result["edges"])} edges')
-
-# Deduplicate nodes by id
-seen = {}
-deduped = []
-for n in all_nodes:
-    if n['id'] not in seen:
-        seen[n['id']] = True
-        deduped.append(n)
-
-ast_result = {'nodes': deduped, 'edges': all_edges, 'input_tokens': 0, 'output_tokens': 0}
-Path('.graphify_ast.json').write_text(json.dumps(ast_result, indent=2), encoding='utf-8')
-print(f'\nTotal AST: {len(deduped)} nodes, {len(all_edges)} edges')
-PYEOF
+SKILL_DIR=.claude/skills/graphify-windows
+python $SKILL_DIR/scripts/extract_enhanced.py .graphify_detect.json -o .graphify_ast.json
 ```
+
+The script automatically:
+- Separates supported files (graphify built-in) from unsupported files (direct tree-sitter)
+- Runs graphify's `extract()` for supported languages
+- Runs tree-sitter directly for unsupported languages via `EXT_TO_PARSER` config
+- Deduplicates nodes and writes the merged AST result
 
 #### Part B - Semantic extraction (parallel subagents)
 
@@ -738,27 +535,35 @@ Identical to stock graphify.
 
 ### UnicodeEncodeError on report generation
 
-**Cause:** Windows default encoding (cp950/cp1252) can't handle Unicode chars in graphify's report (arrows, <=, etc).
+**Best fix:** Set `PYTHONUTF8=1` environment variable globally. This enables Python UTF-8 mode on Windows, making all `write_text()` calls default to UTF-8.
 
-**Fix:** This skill already adds `encoding='utf-8'` to all `write_text()` calls. If you see this error, the stock graphify skill is being used instead of this one.
+```bash
+# One-time: add to PowerShell profile
+echo '$env:PYTHONUTF8 = "1"' >> "$HOME/Documents/PowerShell/Microsoft.PowerShell_profile.ps1"
+
+# Or system-wide (requires restart)
+setx PYTHONUTF8 1
+```
+
+**Fallback:** If PYTHONUTF8 is not set, this skill passes `encoding='utf-8'` explicitly on all writes.
 
 ### Unsupported language (.v, .sv, .vhd) not detected
 
-**Cause:** graphify v0.3.20 has a hardcoded `CODE_EXTENSIONS` set that doesn't include these.
+**Cause:** graphify v0.3.20 has a hardcoded `CODE_EXTENSIONS` set.
 
-**Fix:** This skill patches `graphify.detect.CODE_EXTENSIONS` in Step 2 before detection. Also installs the corresponding `tree-sitter-<lang>` pip package if needed.
+**Fix:** Step 2 patches `graphify.detect.CODE_EXTENSIONS` before detection. The extraction script (`scripts/extract_enhanced.py`) handles unsupported languages via direct tree-sitter.
 
 ### tree-sitter-languages doesn't work on Windows
 
 **Cause:** No wheels available for Windows.
 
-**Fix:** Use individual `tree-sitter-<lang>` packages instead (e.g. `tree-sitter-verilog`). This skill handles this automatically via the `EXT_TO_PARSER` config.
+**Fix:** Use individual `tree-sitter-<lang>` packages instead (e.g. `tree-sitter-verilog`).
 
-### extra_walk_fn in LanguageConfig doesn't work
+### Python heredoc fails in Bash tool on Windows
 
-**Cause:** graphify v0.3.20 defines `extra_walk_fn` in `LanguageConfig` but never calls it in `_extract_generic()`. Only hardcoded language-specific walkers are invoked.
+**Cause:** Complex Python code in bash heredocs (`<< 'PYEOF'`) hits quoting issues with f-strings and single quotes.
 
-**Fix:** This skill bypasses `_extract_generic()` entirely for unsupported languages, using tree-sitter directly with a standalone extraction function.
+**Fix:** Write Python scripts to files first, then execute. The extraction script at `scripts/extract_enhanced.py` avoids this entirely.
 
 ## Honesty Rules
 

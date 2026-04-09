@@ -29,11 +29,27 @@ type: feedback
 
 **How to apply:** Do not rely on extra_walk_fn. Either write a standalone extraction function or monkey-patch the module-level hardcoded checks.
 
-## Rule: Windows write_text() needs explicit encoding='utf-8'
+## Rule: Windows write_text() needs UTF-8 — use PYTHONUTF8=1
 
 **Why:** Windows default encoding is cp950 (Traditional Chinese) or cp1252. graphify's report generation uses Unicode characters (≤, ≥, →) that cp950 cannot encode. Causes `UnicodeEncodeError`.
 
-**How to apply:** Always pass `encoding='utf-8'` to `Path.write_text()` on Windows. This affects GRAPH_REPORT.md and any other text output files.
+**Best fix:** Set `PYTHONUTF8=1` environment variable (Python 3.7+). This enables Python's UTF-8 mode globally — `sys.stdout.encoding` becomes `utf-8`, and `Path.write_text()` defaults to UTF-8. No need for `encoding='utf-8'` on every call.
+
+Set it permanently via PowerShell profile (`$PROFILE`): `$env:PYTHONUTF8 = "1"`, or system-wide: `setx PYTHONUTF8 1`.
+
+**Fallback:** If `PYTHONUTF8` is not set, pass `encoding='utf-8'` explicitly to every `Path.write_text()` call on Windows.
+
+## Rule: Skill tool loads from ~/.claude-glm/skills/ before project-local .claude/skills/
+
+**Why:** The Claude Code Skill tool resolves `skill: "graphify-windows"` by matching the `name` field in frontmatter. When both `~/.claude-glm/skills/graphify/SKILL.md` (stock) and `.claude/skills/graphify-windows/SKILL.md` (enhanced) exist, the auto-memory path (`~/.claude-glm/`) can take priority depending on trigger matching.
+
+**How to apply:** Use unique trigger names. Don't give two skills the same `trigger` field. The enhanced skill should use `trigger: /graphify-windows` (not `/graphify`).
+
+## Rule: Python heredocs with <<'PYEOF' break in Bash tool on Windows
+
+**Why:** The Bash tool passes commands through bash on Windows. Python heredocs (`<< 'PYEOF'`) with complex Python code containing f-strings, single quotes, or backslashes can cause quoting issues.
+
+**How to apply:** Write Python scripts to files first (using Write tool), then execute with `python script.py`. Or use the `scripts/` subdirectory in the skill for reusable extraction scripts.
 
 ## Rule: Verilog AST node names are nested, not direct children
 
