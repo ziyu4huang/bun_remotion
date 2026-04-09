@@ -37,6 +37,12 @@ python -c "from pathlib import Path; Path('.test_enc.txt').write_text('test: ≤
 /graphify-windows query "<question>"                  # BFS traversal
 /graphify-windows path "NodeA" "NodeB"                # shortest path
 /graphify-windows explain "NodeName"                  # node explanation (fuzzy search, one-shot script)
+/graphify-windows explain-how-it-works                # full pipeline overview
+/graphify-windows explain-how-it-works cache          # how SHA256 change detection works
+/graphify-windows explain-how-it-works extract        # AST vs semantic extraction
+/graphify-windows explain-how-it-works cluster        # Leiden community detection
+/graphify-windows explain-how-it-works analyze        # god nodes, surprises, diff
+/graphify-windows explain-how-it-works graphjson      # node_link format reference
 ```
 
 ## What You Must Do When Invoked
@@ -64,6 +70,18 @@ python $SKILL_DIR/scripts/codebase_map.py graphify-out/graph.json --labels graph
 ```
 
 Show the output and suggest the user paste it into CLAUDE.md. Stop.
+
+**Early exit for `explain-how-it-works`:** If the argument is `explain-how-it-works` (with optional topic), show internal documentation and stop:
+
+```bash
+export PYTHONUTF8=1
+SKILL_DIR=.claude/skills/graphify-windows-local
+TOPIC="${ARGUMENT#explain-how-it-works }"  # extract topic after "explain-how-it-works "
+python $SKILL_DIR/scripts/explain_how_it_works.py $TOPIC
+```
+
+Topics: `pipeline` (default), `cache`, `extract`, `cluster`, `analyze`, `build`, `export`, `graphjson`.
+Shows the output and stop. No pipeline steps needed.
 
 **Early exit for `--diff`:** If `--diff` was given, compare current graph against the previous run's baseline:
 
