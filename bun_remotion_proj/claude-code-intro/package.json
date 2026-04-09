@@ -1,0 +1,9 @@
+{
+  "name": "@bun-remotion/claude-code-intro",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "remotion studio",
+    "build": "remotion render ClaudeCodeIntro out/claude-code-intro.mp4"
+  }
+}

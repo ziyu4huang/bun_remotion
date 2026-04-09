@@ -1,5 +1,5 @@
 import { interpolate, useCurrentFrame } from "remotion";
-import { FadeText } from "@bun-remotion/shared";
+import { FadeText } from "../../../shared/src";
 
 // 20 price points
 const rawPrices = [98,100,103,101,99,102,105,108,107,110,112,109,111,114,116,113,115,118,120,117];

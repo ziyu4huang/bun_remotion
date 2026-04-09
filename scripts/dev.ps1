@@ -50,7 +50,7 @@ function Invoke-App {
         exit 1
     }
 
-    $AppDir = Join-Path $RepoRoot "apps" $AppName
+    $AppDir = Join-Path $RepoRoot "bun_remotion_proj" $AppName
 
     if (-not (Test-Path $AppDir)) {
         Write-Host "ERROR: App directory not found: $AppDir" -ForegroundColor Red

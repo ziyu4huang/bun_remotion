@@ -1,5 +1,5 @@
 import { interpolate, useCurrentFrame } from "remotion";
-import { FadeText } from "@bun-remotion/shared";
+import { FadeText } from "../../../shared/src";
 
 const volumeBars = [
   { vol: 3200, price: "up"   },

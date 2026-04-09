@@ -1,5 +1,5 @@
 import { interpolate, useCurrentFrame } from "remotion";
-import { FadeText } from "@bun-remotion/shared";
+import { FadeText } from "../../../shared/src";
 
 // Price data that bounces off support and hits resistance
 const prices = [106,103,100,98,100,103,106,109,107,105,102,100,101,104,107,110,108,106,103,100];

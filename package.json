@@ -2,7 +2,6 @@
   "name": "bun-remotion",
   "version": "1.0.0",
   "private": true,
-  "workspaces": ["packages/*", "apps/*"],
   "scripts": {
     "start": "pwsh scripts/dev.ps1 studio claude-code-intro",
     "start:claude": "pwsh scripts/dev.ps1 studio claude-code-intro",
@@ -13,13 +12,18 @@
     "build:pigs": "pwsh scripts/dev.ps1 render three-little-pigs",
     "build:all": "pwsh scripts/dev.ps1 render-all",
     "upgrade": "remotion upgrade",
-    "generate-tts:stock": "cd apps/taiwan-stock-market && bun run generate-tts",
-    "generate-tts:pigs": "cd apps/three-little-pigs && bun run generate-tts"
+    "generate-tts:stock": "cd bun_remotion_proj/taiwan-stock-market && bun run generate-tts",
+    "generate-tts:pigs": "cd bun_remotion_proj/three-little-pigs && bun run generate-tts"
   },
   "dependencies": {
-    "remotion": "4.0.290"
+    "@remotion/cli": "4.0.290",
+    "remotion": "4.0.290",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@types/react": "18.3.18",
+    "@types/react-dom": "18.3.5",
     "typescript": "5.8.3"
   },
   "trustedDependencies": ["@remotion/compositor-linux-arm64-gnu", "@remotion/compositor-linux-arm64-musl", "@remotion/compositor-linux-x64-gnu", "@remotion/compositor-linux-x64-musl", "@remotion/compositor-win32-x64-msvc", "@remotion/compositor-darwin-arm64", "@remotion/compositor-darwin-x64"]

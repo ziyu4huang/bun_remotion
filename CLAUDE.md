@@ -4,15 +4,15 @@ Knowledge base is organized in `.agent/memory/` by category. Read relevant files
 
 ## Quick Reference
 
-- **Project:** bun-remotion — AI video generation using Remotion + Bun (workspace monorepo)
-- **Tech stack:** Bun workspaces + Remotion v4.0.290 + React 18 + TypeScript 5.8
+- **Project:** bun-remotion — AI video generation using Remotion + Bun
+- **Tech stack:** Bun + Remotion v4.0.290 + React 18 + TypeScript 5.8
 - **Output:** MP4 (1920x1080, 30fps) via FFmpeg
 - **JS runtime:** Always use Bun (not npm). `bun install`, `bun run`
 - **No config needed:** No remotion.config.ts — defaults work with Bun
 
 ## Commands
 
-All commands run from the **repo root**. Do NOT `cd` into `apps/` — scripts handle directory changes internally via `scripts/dev.ps1`.
+All commands run from the **repo root**. Do NOT `cd` into `bun_remotion_proj/` — scripts handle directory changes internally via `scripts/dev.ps1`.
 
 | Command | What It Does |
 |---------|-------------|
@@ -36,16 +36,15 @@ pwsh scripts/dev.ps1 render-all
 
 ```
 bun-remotion/
-  package.json                        # Root: workspaces config + shared deps
-  tsconfig.json                       # Base tsconfig (extended by workspaces)
-  packages/
+  package.json                        # Root: shared deps (remotion, react, typescript)
+  tsconfig.json                       # Base tsconfig (extended by each app)
+  bun_remotion_proj/
     shared/                           # @bun-remotion/shared
       src/
         index.ts                      # Barrel export
         FadeText.tsx                  # Fade-in text with translateY
         Candle.tsx                    # Candlestick chart element
         CandleChart.tsx               # K-line chart container
-  apps/
     claude-code-intro/                # @bun-remotion/claude-code-intro
       src/
         index.ts                      # registerRoot()
@@ -69,25 +68,25 @@ bun-remotion/
           MovingAverageScene.tsx      # Moving average scene
           TradingHoursScene.tsx       # Trading hours scene
           LimitScene.tsx              # Price limit scene
+    three-little-pigs/                # @bun-remotion/three-little-pigs
 ```
 
 ## CRITICAL: Never `cd` into subdirectories
 
-Claude Code's Bash tool persists the working directory across calls. Once you `cd apps/xxx`, **all subsequent commands run from that directory** — including `bun run build:stock` which expects to be at the repo root. This causes silent failures and wrong-context bugs.
+Claude Code's Bash tool persists the working directory across calls. Once you `cd bun_remotion_proj/xxx`, **all subsequent commands run from that directory** — including `bun run build:stock` which expects to be at the repo root. This causes silent failures and wrong-context bugs.
 
 **Rules:**
-- NEVER run `cd apps/<name>` or `cd packages/<name>` in Bash commands
+- NEVER run `cd bun_remotion_proj/<name>` in Bash commands
 - ALWAYS run commands from the repo root
 - Use `scripts/dev.ps1` for app-specific operations (it uses `Push-Location`/`Pop-Location` internally and restores CWD)
 - For file operations, use absolute paths or Read/Write/Edit tools instead of `cd`
 
 ## Workspace Conventions
 
-- **Root** holds shared deps (`remotion`, `typescript`) and workspace config
-- **`packages/shared/`** — reusable components, imported as `@bun-remotion/shared`
-- **`apps/<name>/`** — each Remotion video project is self-contained with its own `package.json`, `tsconfig.json`, `src/index.ts`, `src/Root.tsx`
-- Each app has its own `node_modules` via hoisting from root
-- To add a new video project: create `apps/<name>/` with `package.json` (use `@bun-remotion/shared` as `workspace:*`), `tsconfig.json`, `src/index.ts`, `src/Root.tsx`
+- **Root** holds shared deps (`remotion`, `react`, `typescript`) in `package.json`
+- **`bun_remotion_proj/shared/`** — reusable components, imported as `@bun-remotion/shared`
+- **`bun_remotion_proj/<name>/`** — each Remotion video project is self-contained with its own `package.json`, `tsconfig.json`, `src/index.ts`, `src/Root.tsx`
+- To add a new video project: create `bun_remotion_proj/<name>/` with `package.json`, `tsconfig.json`, `src/index.ts`, `src/Root.tsx`
 
 ## Key Remotion APIs
 

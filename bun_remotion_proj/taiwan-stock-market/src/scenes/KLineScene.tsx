@@ -1,5 +1,5 @@
 import { interpolate, useCurrentFrame } from "remotion";
-import { CandleChart, FadeText } from "@bun-remotion/shared";
+import { CandleChart, FadeText } from "../../../shared/src";
 
 // Sample K-line data showing classic patterns
 const candles = [

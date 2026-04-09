@@ -5,60 +5,15 @@
     "": {
       "name": "tw-stock-knowledge",
       "dependencies": {
+        "@remotion/cli": "4.0.290",
+        "react": "^18.3.1",
+        "react-dom": "^18.3.1",
         "remotion": "4.0.290",
       },
       "devDependencies": {
+        "@types/react": "18.3.18",
+        "@types/react-dom": "18.3.5",
         "typescript": "5.8.3",
-      },
-    },
-    "apps/claude-code-intro": {
-      "name": "@bun-remotion/claude-code-intro",
-      "version": "1.0.0",
-      "dependencies": {
-        "@bun-remotion/shared": "workspace:*",
-        "@remotion/cli": "4.0.290",
-        "react": "^18.3.1",
-        "react-dom": "^18.3.1",
-      },
-      "devDependencies": {
-        "@types/react": "18.3.18",
-        "@types/react-dom": "18.3.5",
-      },
-    },
-    "apps/taiwan-stock-market": {
-      "name": "@bun-remotion/taiwan-stock-market",
-      "version": "1.0.0",
-      "dependencies": {
-        "@bun-remotion/shared": "workspace:*",
-        "@remotion/cli": "4.0.290",
-        "react": "^18.3.1",
-        "react-dom": "^18.3.1",
-      },
-      "devDependencies": {
-        "@types/react": "18.3.18",
-        "@types/react-dom": "18.3.5",
-      },
-    },
-    "apps/three-little-pigs": {
-      "name": "@bun-remotion/three-little-pigs",
-      "version": "1.0.0",
-      "dependencies": {
-        "@bun-remotion/shared": "workspace:*",
-        "@remotion/cli": "4.0.290",
-        "react": "^18.3.1",
-        "react-dom": "^18.3.1",
-      },
-      "devDependencies": {
-        "@types/react": "18.3.18",
-        "@types/react-dom": "18.3.5",
-      },
-    },
-    "packages/shared": {
-      "name": "@bun-remotion/shared",
-      "version": "1.0.0",
-      "peerDependencies": {
-        "react": "^18.3.1",
-        "remotion": "4.0.290",
       },
     },
   },
@@ -73,14 +28,6 @@
   ],
   "packages": {
     "@babel/parser": ["@babel/parser@7.24.1", "", { "bin": "./bin/babel-parser.js" }, "sha512-Zo9c7N3xdOIQrNip7Lc9wvRPzlRtovHVE4lkz8WEDr7uYh/GMQhSiIgFxGIArRHYdJE5kxtZjAf8rT0xhdLCzg=="],
-
-    "@bun-remotion/claude-code-intro": ["@bun-remotion/claude-code-intro@workspace:apps/claude-code-intro"],
-
-    "@bun-remotion/shared": ["@bun-remotion/shared@workspace:packages/shared"],
-
-    "@bun-remotion/taiwan-stock-market": ["@bun-remotion/taiwan-stock-market@workspace:apps/taiwan-stock-market"],
-
-    "@bun-remotion/three-little-pigs": ["@bun-remotion/three-little-pigs@workspace:apps/three-little-pigs"],
 
     "@esbuild/aix-ppc64": ["@esbuild/aix-ppc64@0.25.0", "", { "os": "aix", "cpu": "ppc64" }, "sha512-O7vun9Sf8DFjH2UtqK8Ku3LkquL9SZL8OLY1T5NZkA34+wG3OQF7cl4Ql8vdNzM6fzBbYfLaiRLIOZ+2FOCgBQ=="],
 

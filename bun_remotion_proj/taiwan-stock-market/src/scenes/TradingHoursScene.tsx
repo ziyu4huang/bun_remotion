@@ -1,5 +1,5 @@
 import { interpolate, useCurrentFrame } from "remotion";
-import { FadeText } from "@bun-remotion/shared";
+import { FadeText } from "../../../shared/src";
 
 const timelineItems = [
   { time: "08:30",  label: "盤前試撮",    desc: "集合競價，試算開盤參考價",   color: "#64B5F6",  frame: 20 },
