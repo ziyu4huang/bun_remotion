@@ -47,6 +47,28 @@ const TEST_TEXTS = [
 // Known voice names for Gemini TTS
 const VOICES = ["Kore", "Fenrir", "Charon", "Orus", "Puck", "Leda", "Zephyr", "Aoede"];
 
+// Gemini returns raw PCM (24000 Hz, 16-bit, mono) — wrap with WAV RIFF header
+// so the output is playable on Windows without FFmpeg.
+function pcmToWav(pcmData: Buffer, sampleRate = 24000, channels = 1, bitsPerSample = 16): Buffer {
+  const byteRate = (sampleRate * channels * bitsPerSample) / 8;
+  const blockAlign = (channels * bitsPerSample) / 8;
+  const header = Buffer.alloc(44);
+  header.write("RIFF", 0);
+  header.writeUInt32LE(36 + pcmData.length, 4);
+  header.write("WAVE", 8);
+  header.write("fmt ", 12);
+  header.writeUInt32LE(16, 16);
+  header.writeUInt16LE(1, 20);
+  header.writeUInt16LE(channels, 22);
+  header.writeUInt32LE(sampleRate, 24);
+  header.writeUInt32LE(byteRate, 28);
+  header.writeUInt16LE(blockAlign, 32);
+  header.writeUInt16LE(bitsPerSample, 34);
+  header.write("data", 36);
+  header.writeUInt32LE(pcmData.length, 40);
+  return Buffer.concat([header, pcmData]);
+}
+
 interface TTSResponse {
   candidates?: Array<{
     content?: {
@@ -107,14 +129,29 @@ async function synthesize(model: string, text: string, voice?: string): Promise<
   }
 
   const { mimeType, data: b64 } = audioPart.inlineData;
-  const ext = mimeType.includes("mp3") ? "mp3" : mimeType.includes("wav") ? "wav" : "pcm";
   const voiceTag = voice ? `_${voice}` : "";
   const safeText = text.slice(0, 30).replace(/[^a-zA-Z0-9]/g, "_");
-  const filename = `${model.replace(/[^a-zA-Z0-9]/g, "_")}${voiceTag}_${safeText}.${ext}`;
+  const modelTag = model.replace(/[^a-zA-Z0-9]/g, "_");
+
+  let outBuf: Buffer;
+  let ext: string;
+  if (mimeType.includes("mp3")) {
+    ext = "mp3";
+    outBuf = Buffer.from(b64, "base64");
+  } else if (mimeType.includes("wav")) {
+    ext = "wav";
+    outBuf = Buffer.from(b64, "base64");
+  } else {
+    // Raw PCM — add WAV header so it's playable on Windows
+    ext = "wav";
+    outBuf = pcmToWav(Buffer.from(b64, "base64"));
+  }
+
+  const filename = `${modelTag}${voiceTag}_${safeText}.${ext}`;
   const filepath = join(OUTPUT_DIR, filename);
 
-  writeFileSync(filepath, Buffer.from(b64, "base64"));
-  const size = (Buffer.from(b64, "base64").length / 1024).toFixed(1);
+  writeFileSync(filepath, outBuf);
+  const size = (outBuf.length / 1024).toFixed(1);
 
   return { ok: true, file: `${filepath} (${size}KB, ${Date.now() - t0}ms)` };
 }

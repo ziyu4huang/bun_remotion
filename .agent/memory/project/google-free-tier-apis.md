@@ -41,19 +41,18 @@ type: reference
 
 - Response: `candidates[0].content.parts[].inlineData.data` (base64)
 - Audio format: `audio/L16;codec=pcm;rate=24000` (raw PCM, no WAV header)
-- Must add 44-byte WAV header manually for playback
+- **Must add 44-byte WAV RIFF header** for the file to be playable — raw PCM is not a valid audio file
+- WAV header: RIFF/WAVE, fmt chunk (PCM=1, ch=1, rate=24000, bits=16), data chunk
 - Language auto-detected from text; can prepend instructions like `請用繁體中文台灣口音朗讀：`
 - Voice selection via instruction: `Speak with the voice named Kore.`
 - Voices: Kore, Fenrir, Charon, Orus, Puck, Leda, Zephyr, Aoede
 
-### TTS Free Tier Rate Limits
+### TTS Free Tier Rate Limits (confirmed 2026-04-10 from 429 error body)
 
-- **Daily quota: 10 requests/day** per project for `gemini-2.5-flash-tts`
-- HTTP 429 with `RESOURCE_EXHAUSTED` when exceeded
-- Quota resets daily (not per-hour)
-- When rate limited, just wait — be patient, don't retry aggressively
-- For batch generation (e.g. 7 scenes), spread across multiple days if needed
-- The `generate-tts.ts` script has built-in retry with backoff, but daily quota is a hard cap
+- **3 requests/minute** per project for `gemini-2.5-flash-tts` (QuotaId: `GenerateRequestsPerMinutePerProjectPerModel-FreeTier`)
+- Daily quota also applies (resets at midnight PT)
+- HTTP 429 body includes `retryDelay` field (e.g. `43s`) — use that value to wait
+- For batch >3 items: use edge-tts instead (no rate limit) or add 25s delay between requests
 
 ## AQA Details
 
@@ -75,5 +74,5 @@ type: reference
 
 ## Skills
 
-- `/generate-tts` — Generate speech audio using free tier Gemini TTS
+- `/generate-tts` — Multi-engine TTS: auto-selects edge-tts (Python, no API key) or Gemini (fallback)
 - `/generate-image` — Generate images via Google AI Studio (Playwright)

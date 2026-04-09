@@ -45,10 +45,38 @@ if (!audioPart?.inlineData) {
 }
 
 const { mimeType, data: b64 } = audioPart.inlineData;
-const buf = Buffer.from(b64, "base64");
-const filepath = join(OUTPUT_DIR, "zh_tw_story.pcm");
-writeFileSync(filepath, buf);
+const pcm = Buffer.from(b64, "base64");
 
-console.log(`Saved: ${filepath} (${(buf.length / 1024).toFixed(1)}KB, ${Date.now() - t0}ms)`);
+// Gemini returns raw PCM (24000 Hz, 16-bit, mono) — wrap with WAV RIFF header
+// so it can be opened directly on Windows without FFmpeg.
+function pcmToWav(pcmData: Buffer, sampleRate = 24000, channels = 1, bitsPerSample = 16): Buffer {
+  const byteRate = (sampleRate * channels * bitsPerSample) / 8;
+  const blockAlign = (channels * bitsPerSample) / 8;
+  const header = Buffer.alloc(44);
+  header.write("RIFF", 0);
+  header.writeUInt32LE(36 + pcmData.length, 4);
+  header.write("WAVE", 8);
+  header.write("fmt ", 12);
+  header.writeUInt32LE(16, 16);           // PCM chunk size
+  header.writeUInt16LE(1, 20);            // AudioFormat = PCM
+  header.writeUInt16LE(channels, 22);
+  header.writeUInt32LE(sampleRate, 24);
+  header.writeUInt32LE(byteRate, 28);
+  header.writeUInt16LE(blockAlign, 32);
+  header.writeUInt16LE(bitsPerSample, 34);
+  header.write("data", 36);
+  header.writeUInt32LE(pcmData.length, 40);
+  return Buffer.concat([header, pcmData]);
+}
+
+const wav = pcmToWav(pcm);
+const filepath = join(OUTPUT_DIR, "zh_tw_story.wav");
+writeFileSync(filepath, wav);
+
+// Also save raw PCM for reference
+writeFileSync(join(OUTPUT_DIR, "zh_tw_story.pcm"), pcm);
+
+console.log(`Saved: ${filepath} (${(wav.length / 1024).toFixed(1)}KB, ${Date.now() - t0}ms)`);
 console.log(`Mime type: ${mimeType}`);
-console.log("\nPlaying audio...");
+console.log("\nTo play on Windows: start " + filepath);
+console.log("To play with FFmpeg: ffplay -f s16le -ar 24000 -ac 1 " + join(OUTPUT_DIR, "zh_tw_story.pcm"));

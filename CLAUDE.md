@@ -112,7 +112,8 @@ All memory — project knowledge, user feedback, preferences — lives here. Thi
 
 ### project/
 - [project-overview](.agent/memory/project/project-overview.md) - Tech stack, structure, commands, Remotion concepts
-- [google-free-tier-apis](.agent/memory/project/google-free-tier-apis.md) - Google AI Studio free tier APIs: TTS, embedding, chat, image gen status
+- [google-free-tier-apis](.agent/memory/project/google-free-tier-apis.md) - Google AI Studio free tier APIs: TTS (3 req/min, PCM→WAV), embedding, chat, image gen status
+- [edge-tts](.agent/memory/project/edge-tts.md) - Microsoft Edge TTS via Python: free, no API key, zh-TW neural voices, MP3 output, Windows-tested
 - [mlx-tts-integration](.agent/memory/project/mlx-tts-integration.md) - mlx_tts Python TTS engine at mlx_tts/: setup.sh, voices, story pipeline, model details
 - [mlx-tts-models](.agent/memory/project/mlx-tts-models.md) - MLX-compatible TTS models for M1 8GB: Kokoro-82M-zh, Qwen3-TTS, Spark-TTS, edge-tts comparison
 
@@ -120,7 +121,7 @@ All memory — project knowledge, user feedback, preferences — lives here. Thi
 - [tree-sitter-python](.agent/memory/reference/tree-sitter-python.md) - tree-sitter v0.25+ Python API, grammar packages, Windows-specific notes
 
 ### feedback/
-- [skill-creation](.agent/memory/feedback/skill-creation.md) - User prefers structured SKILL.md with references/ and scripts/ subdirectories
+- [skill-creation](.agent/memory/feedback/skill-creation.md) - Skill structure: v2 load-on-demand (SKILL.md + engines/ + platforms/ + env-check.md) vs v1 (references/ + scripts/)
 - [no-cd-in-bash](.agent/memory/feedback/no-cd-in-bash.md) - Never cd in Bash tool — CWD persists across calls causing silent failures
 - [generate-image-skill](.agent/memory/feedback/generate-image-skill.md) - Lessons learned: use browser_run_code for batch, Escape overlay before next prompt, aria-label selectors
 - [graphify-windows-lessons](.agent/memory/feedback/graphify-windows-lessons.md) - graphify v0.3.20 on Windows: extension patching, tree-sitter API, encoding, Verilog AST
