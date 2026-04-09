@@ -116,10 +116,14 @@ All memory — project knowledge, user feedback, preferences — lives here. Thi
 - [mlx-tts-integration](.agent/memory/project/mlx-tts-integration.md) - mlx_tts Python TTS engine at mlx_tts/: setup.sh, voices, story pipeline, model details
 - [mlx-tts-models](.agent/memory/project/mlx-tts-models.md) - MLX-compatible TTS models for M1 8GB: Kokoro-82M-zh, Qwen3-TTS, Spark-TTS, edge-tts comparison
 
+### reference/
+- [tree-sitter-python](.agent/memory/reference/tree-sitter-python.md) - tree-sitter v0.25+ Python API, grammar packages, Windows-specific notes
+
 ### feedback/
 - [skill-creation](.agent/memory/feedback/skill-creation.md) - User prefers structured SKILL.md with references/ and scripts/ subdirectories
 - [no-cd-in-bash](.agent/memory/feedback/no-cd-in-bash.md) - Never cd in Bash tool — CWD persists across calls causing silent failures
 - [generate-image-skill](.agent/memory/feedback/generate-image-skill.md) - Lessons learned: use browser_run_code for batch, Escape overlay before next prompt, aria-label selectors
+- [graphify-windows-lessons](.agent/memory/feedback/graphify-windows-lessons.md) - graphify v0.3.20 on Windows: extension patching, tree-sitter API, encoding, Verilog AST
 
 ## Convention
 
