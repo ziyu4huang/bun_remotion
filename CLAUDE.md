@@ -76,10 +76,28 @@ bun-remotion/
 Claude Code's Bash tool persists the working directory across calls. Once you `cd bun_remotion_proj/xxx`, **all subsequent commands run from that directory** — including `bun run build:stock` which expects to be at the repo root. This causes silent failures and wrong-context bugs.
 
 **Rules:**
-- NEVER run `cd bun_remotion_proj/<name>` in Bash commands
+- NEVER run `cd bun_remotion_proj/<name>` in Bash commands — not standalone, not with `&&`
 - ALWAYS run commands from the repo root
-- Use `scripts/dev.ps1` for app-specific operations (it uses `Push-Location`/`Pop-Location` internally and restores CWD)
+- Use `scripts/dev.ps1` for studio/render (uses `Push-Location`/`Pop-Location` internally)
+- For sub-app scripts, use `bun run --cwd bun_remotion_proj/<name> <script>` — sets CWD only for the spawned process, agent CWD stays at repo root
 - For file operations, use absolute paths or Read/Write/Edit tools instead of `cd`
+
+**Approved patterns:**
+```bash
+# ✅ studio/render
+pwsh scripts/dev.ps1 studio claude-code-intro
+pwsh scripts/dev.ps1 render claude-code-intro
+
+# ✅ sub-app scripts (generate-tts, etc.)
+bun run --cwd bun_remotion_proj/claude-code-intro generate-tts
+bun run generate-tts:claude   # root package.json shortcut (also uses --cwd)
+
+# ✅ direct script by path (no cd needed; __dirname resolves correctly)
+bun bun_remotion_proj/claude-code-intro/scripts/generate-tts.ts
+
+# ❌ never — persists CWD
+cd bun_remotion_proj/claude-code-intro && bun run generate-tts
+```
 
 ## Workspace Conventions
 

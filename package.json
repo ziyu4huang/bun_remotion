@@ -12,8 +12,9 @@
     "build:pigs": "pwsh scripts/dev.ps1 render three-little-pigs",
     "build:all": "pwsh scripts/dev.ps1 render-all",
     "upgrade": "remotion upgrade",
-    "generate-tts:stock": "cd bun_remotion_proj/taiwan-stock-market && bun run generate-tts",
-    "generate-tts:pigs": "cd bun_remotion_proj/three-little-pigs && bun run generate-tts"
+    "generate-tts:claude": "bun run --cwd bun_remotion_proj/claude-code-intro generate-tts",
+    "generate-tts:stock": "bun run --cwd bun_remotion_proj/taiwan-stock-market generate-tts",
+    "generate-tts:pigs": "bun run --cwd bun_remotion_proj/three-little-pigs generate-tts"
   },
   "dependencies": {
     "@remotion/cli": "4.0.290",

@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "start": "remotion studio",
-    "build": "remotion render ClaudeCodeIntro out/claude-code-intro.mp4"
+    "build": "remotion render ClaudeCodeIntro out/claude-code-intro.mp4",
+    "generate-tts": "bun run scripts/generate-tts.ts",
+    "generate-tts:skip": "bun run scripts/generate-tts.ts --skip-existing"
   }
 }

@@ -7,7 +7,14 @@ metadata:
 
 ## When to use
 
-Use this skills whenever you are dealing with Remotion code to obtain the domain-specific knowledge.
+Use this skill whenever you are dealing with Remotion code — scaffolding projects, animations,
+audio, TTS voiceover, transitions, fonts, and more.
+
+## Scaffolding / new projects
+
+When initializing a new Remotion app, adding a composition, or adding a scene, load
+[./rules/scaffolding.md](./rules/scaffolding.md) for the monorepo structure, file templates,
+and the `durations.json` pattern for TTS-driven dynamic duration.
 
 ## Captions
 
@@ -58,4 +65,5 @@ Read individual rule files for detailed explanations and code examples:
 - [rules/videos.md](rules/videos.md) - Embedding videos in Remotion - trimming, volume, speed, looping, pitch
 - [rules/parameters.md](rules/parameters.md) - Make a video parametrizable by adding a Zod schema
 - [rules/maps.md](rules/maps.md) - Add a map using Mapbox and animate it
-- [rules/voiceover.md](rules/voiceover.md) - Adding AI-generated voiceover to Remotion compositions using ElevenLabs TTS
+- [rules/voiceover.md](rules/voiceover.md) - Adding AI-generated voiceover (edge-tts/Gemini/mlx_tts) with dynamic duration via durations.json
+- [rules/scaffolding.md](rules/scaffolding.md) - Scaffold new apps, add compositions/scenes, monorepo structure, common errors
