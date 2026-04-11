@@ -151,7 +151,7 @@ After creating, add convenience scripts to root `package.json`:
 ```json
 "start:my-video": "pwsh scripts/dev.ps1 studio my-video",
 "build:my-video": "pwsh scripts/dev.ps1 render my-video",
-"generate-tts:my-video": "cd bun_remotion_proj/my-video && bun run generate-tts"
+"generate-tts:my-video": "bun run --cwd bun_remotion_proj/my-video generate-tts"
 ```
 
 Then run `bun install` from repo root to link the new workspace.

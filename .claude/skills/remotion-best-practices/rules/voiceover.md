@@ -94,6 +94,11 @@ export const narrations: NarrationScript[] = [
 - **Let audio drive scene length via `durations.json`** — don't guess frame counts.
 - Leave a 1–2s visual lead-in before narration starts (use `Audio startFrom` or `from` offset).
 
+**CRITICAL: Narration text MUST match dialog/subtitle content.**
+When a scene has both TTS audio and on-screen dialog text (e.g., galgame dialog boxes),
+the narration text in `narration.ts` must be the **actual dialog lines read aloud**, not a summary.
+If the voice says something different from what's shown on screen, the viewer perceives them as out of sync.
+
 ### Step 2: `scripts/generate-tts.ts` (edge-tts)
 
 ```typescript
@@ -245,7 +250,7 @@ Audio plays only during its `<Sequence>` window. Remotion embeds audio into the 
 // root package.json
 {
   "scripts": {
-    "generate-tts:<name>": "cd bun_remotion_proj/<my-video> && bun run generate-tts"
+    "generate-tts:<name>": "bun run --cwd bun_remotion_proj/<my-video> generate-tts"
   }
 }
 ```

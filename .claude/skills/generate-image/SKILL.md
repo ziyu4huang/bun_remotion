@@ -122,24 +122,25 @@ async (page) => {
 
   for (const { file, prompt } of images) {
     try {
-      // Ensure overlay is dismissed and textbox is accessible
-      await page.keyboard.press('Escape');
+      // Use NEW CHAT for each image — more reliable than multi-turn
+      await page.goto('https://aistudio.google.com/prompts/new_chat?model=gemini-2.5-flash-image');
+      await page.waitForTimeout(2000);
+      await page.keyboard.press('Escape'); // dismiss toast
       await page.waitForTimeout(500);
 
-      // Fill prompt and append
+      // Fill prompt
       const textbox = page.getByRole('textbox', { name: 'Enter a prompt' });
-      await textbox.waitFor({ state: 'visible', timeout: 5000 });
+      await textbox.waitFor({ state: 'visible', timeout: 10000 });
       await textbox.fill(prompt);
-      await page.keyboard.press('Alt+Enter');
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(300);
 
-      // Run the prompt — MUST use evaluate() to bypass overlay interception
-      await page.evaluate(() => {
-        document.querySelector('[aria-label="Run the prompt"]')?.click();
-      });
+      // Click Run button — use text selector, NOT aria-label
+      const runButton = page.locator('button:has-text("Run"):not([disabled])').first();
+      await runButton.waitFor({ state: 'visible', timeout: 5000 });
+      await runButton.click();
 
       // Wait for response
-      await page.locator('text=Response ready.').last().waitFor({ timeout: 40000 });
+      await page.locator('text=Response ready.').last().waitFor({ timeout: 60000 });
       await page.waitForTimeout(1000); // Extra buffer for image rendering
 
       // Download
@@ -187,7 +188,7 @@ async (page) => {
 | Element | Selector | Notes |
 |---------|----------|-------|
 | Prompt textbox | `page.getByRole('textbox', { name: 'Enter a prompt' })` | Must be visible (no overlay) |
-| Run the prompt | `page.evaluate(() => document.querySelector('[aria-label="Run the prompt"]')?.click())` | **MUST use evaluate()** — locator.click() fails due to overlay interception |
+| Run the prompt | `page.locator('button:has-text("Run"):not([disabled])').first()` | **Use text selector** — aria-label "Run the prompt" is unreliable |
 | Generated image | `page.getByRole('img', { name: /Generated Image/ }).last()` | Use `.last()` for latest |
 | Download button | `page.locator('button:has-text("Download")').first()` | Only visible after clicking image |
 | Response ready | `page.locator('text=Response ready.').last()` | Wait for this before downloading |
@@ -221,9 +222,86 @@ async (page) => {
 ## Tips
 
 - **Always use `browser_run_code`** for multi-step operations — it's 5-10x faster than individual MCP tool calls
-- **CRITICAL: Use `page.evaluate()` to click "Run the prompt"** — `locator.click()` and even `locator.click({ force: true })` fail because `<div class="chat-session-content">` intercepts pointer events. Only `page.evaluate(() => document.querySelector('[aria-label="Run the prompt"]').click())` works.
-- **For batch: use new chat per image** — `page.goto(new_chat_url)` is more reliable than multi-turn in one chat
+- **CRITICAL: Use text-based Run button selector** — `page.locator('button:has-text("Run"):not([disabled])').first()` is reliable. The `aria-label="Run the prompt"` selector is NOT always present.
+- **For batch: ALWAYS use new chat per image** — `page.goto('https://aistudio.google.com/prompts/new_chat?model=gemini-2.5-flash-image')` is more reliable than multi-turn in one chat
 - **Always press Escape after download** — the image overlay blocks the textbox
 - **Use `.last()` selectors** — in multi-turn chats, always target the last occurrence
 - **Wait for "Response ready."** — don't use fixed timeouts; wait for the actual signal
 - **The image is a data URL** — if download fails, you can extract `src` attribute (base64) as fallback
+
+---
+
+## Galgame / Visual Novel Character Images
+
+When generating character sprites for galgame-style Remotion videos, **always include these in the prompt**:
+
+```
+half-body portrait (waist up), transparent PNG background, no background,
+school uniform, facing viewer, high quality anime illustration
+```
+
+### CRITICAL: AI models CANNOT produce transparent backgrounds
+
+**Nano Banana (and most AI image generators) will always produce a SOLID background**, even when you explicitly ask for "transparent PNG background". The output will have alpha=255 everywhere.
+
+**You MUST post-process with rembg to remove backgrounds:**
+
+```bash
+# Install (one-time)
+pip3 install --break-system-packages "rembg[cpu]"
+
+# Remove background from a character sprite
+python3 -c "
+from rembg import remove
+from PIL import Image
+img = Image.open('character.png')
+result = remove(img)
+result.save('character.png')
+print('Done')
+"
+```
+
+**Batch removal for multiple characters:**
+```python
+from rembg import remove
+from PIL import Image
+import os
+
+for f in ['xiaoxue.png', 'xiaoyue.png', 'xiaoying.png']:
+    img = Image.open(f)
+    result = remove(img)
+    result.save(f)
+    print(f'{f}: background removed')
+```
+
+**Verification:** Always check transparency after removal:
+```python
+from PIL import Image; import numpy as np
+a = np.array(Image.open('character.png'))
+print(f'Transparent pixels: {(a[:,:,3]==0).sum()}/{a.size}')
+```
+
+### Why include "transparent background" in prompts?
+
+Even though AI can't actually produce transparency, asking for "no background" / simple backgrounds makes rembg's job easier:
+- Solid/simple backgrounds are easier to remove than complex scenes
+- The subject is more cleanly separated from the background
+- Fewer artifacts around hair and clothing edges
+
+### Prompt template:
+```
+anime style [gender] character, [appearance details], [outfit],
+half-body portrait waist up, facing viewer, no background,
+high quality anime illustration
+```
+
+**Example batch for a school galgame:**
+```js
+const characters = [
+  { file: 'xiaoming.png', prompt: 'anime style boy, brown messy hair, cheerful smile, white shirt red tie blue sweater vest school uniform, half-body portrait waist up, facing viewer, no background, high quality anime illustration' },
+  { file: 'xiaomei.png', prompt: 'anime style girl, long brown hair pink bows, gentle smile, white shirt pink bow tie gray pleated skirt school uniform, half-body portrait waist up, facing viewer, no background, high quality anime illustration' },
+  { file: 'teacher.png', prompt: 'anime style male teacher, short dark hair glasses, white shirt blue gold tie formal attire, half-body portrait waist up, facing viewer, no background, high quality anime illustration' },
+];
+```
+
+See `/remotion-best-practices` → `rules/galgame.md` for full galgame rendering patterns.

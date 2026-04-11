@@ -32,6 +32,10 @@ When needing to visualize audio (spectrum bars, waveforms, bass-reactive effects
 
 When needing to use sound effects, load the [./rules/sound-effects.md](./rules/sound-effects.md) file for more information.
 
+## Galgame / Visual Novel style
+
+When building a galgame (visual novel) style video, load [./rules/galgame.md](./rules/galgame.md) for character sprite rendering, dialog box patterns, multi-character layout, and **critical image generation guidelines** (always generate half-body + transparent background).
+
 ## How to use
 
 Read individual rule files for detailed explanations and code examples:
@@ -46,6 +50,7 @@ Read individual rule files for detailed explanations and code examples:
 - [rules/compositions.md](rules/compositions.md) - Defining compositions, stills, folders, default props and dynamic metadata
 - [rules/extract-frames.md](rules/extract-frames.md) - Extract frames from videos at specific timestamps using Mediabunny
 - [rules/fonts.md](rules/fonts.md) - Loading Google Fonts and local fonts in Remotion
+- [rules/galgame.md](rules/galgame.md) - Galgame / visual novel style — character sprites, dialog boxes, multi-character layout, image generation guidelines
 - [rules/get-audio-duration.md](rules/get-audio-duration.md) - Getting the duration of an audio file in seconds with Mediabunny
 - [rules/get-video-dimensions.md](rules/get-video-dimensions.md) - Getting the width and height of a video file with Mediabunny
 - [rules/get-video-duration.md](rules/get-video-duration.md) - Getting the duration of a video file in seconds with Mediabunny

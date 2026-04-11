@@ -8,10 +8,12 @@
     "start:stock": "pwsh scripts/dev.ps1 studio taiwan-stock-market",
     "start:pigs": "pwsh scripts/dev.ps1 studio three-little-pigs",
     "start:youth": "pwsh scripts/dev.ps1 studio galgame-youth-jokes",
+    "start:meme": "pwsh scripts/dev.ps1 studio galgame-meme-theater",
     "build": "pwsh scripts/dev.ps1 render claude-code-intro",
     "build:stock": "pwsh scripts/dev.ps1 render taiwan-stock-market",
     "build:pigs": "pwsh scripts/dev.ps1 render three-little-pigs",
     "build:youth": "pwsh scripts/dev.ps1 render galgame-youth-jokes",
+    "build:meme": "pwsh scripts/dev.ps1 render galgame-meme-theater",
     "build:all": "pwsh scripts/dev.ps1 render-all",
     "upgrade": "remotion upgrade",
     "agent": "bun apps/bun-pi-agent/src/index.ts",
@@ -20,10 +22,12 @@
     "generate-tts:claude": "bun run --cwd bun_remotion_proj/claude-code-intro generate-tts",
     "generate-tts:stock": "bun run --cwd bun_remotion_proj/taiwan-stock-market generate-tts",
     "generate-tts:pigs": "bun run --cwd bun_remotion_proj/three-little-pigs generate-tts",
-    "generate-tts:youth": "cd apps/galgame-youth-jokes && bun run generate-tts"
+    "generate-tts:youth": "cd apps/galgame-youth-jokes && bun run generate-tts",
+    "generate-tts:meme": "bun run --cwd bun_remotion_proj/galgame-meme-theater generate-tts"
   },
   "dependencies": {
     "@remotion/cli": "4.0.290",
+    "@remotion/google-fonts": "4.0.290",
     "@remotion/lottie": "4.0.290",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
