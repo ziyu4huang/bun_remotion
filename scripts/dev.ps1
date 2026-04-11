@@ -21,9 +21,12 @@ $RepoRoot = Split-Path -Parent $PSScriptRoot
 $env:REMOTION_CHROME_EXECUTABLE_PATH = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 
 $Apps = @{
-    "claude-code-intro"    = @{ comp = "ClaudeCodeIntro";    out = "out/claude-code-intro.mp4" }
-    "taiwan-stock-market"  = @{ comp = "TaiwanStockMarket";  out = "out/taiwan-stock-market.mp4" }
-    "three-little-pigs"    = @{ comp = "ThreeLittlePigs";    out = "out/three-little-pigs.mp4" }
+    "claude-code-intro"    = @{ comp = "ClaudeCodeIntro";        out = "out/claude-code-intro.mp4" }
+    "taiwan-stock-market"  = @{ comp = "TaiwanStockMarket";      out = "out/taiwan-stock-market.mp4" }
+    "three-little-pigs"    = @{ comp = "ThreeLittlePigs";        out = "out/three-little-pigs.mp4" }
+    "galgame-youth-jokes"  = @{ comp = "GalgameYouthJokes";      out = "out/galgame-youth-jokes.mp4" }
+    "galgame-meme-theater" = @{ comp = "GalgameMemeTheater";     out = "out/galgame-meme-theater.mp4" }
+    "galgame-meme-theater-ep2" = @{ comp = "GalgameMemeTheaterEp2"; out = "out/galgame-meme-theater-ep2.mp4" }
 }
 
 function Show-Usage {

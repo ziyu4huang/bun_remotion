@@ -4,16 +4,20 @@ description: Lessons learned from using /generate-image skill with Playwright + 
 type: feedback
 ---
 
-## Rule: Use `page.evaluate()` to click "Run the prompt" — `locator.click()` fails due to overlay interception
+## Rule: Use `page.getByRole('button', { name: 'Run', exact: true }).click()` — NOT `page.evaluate()`
 
-**Why:** The `locator.click()` and even `locator.click({ force: true })` timeout because `<div class="chat-session-content">` intercepts pointer events. Only `page.evaluate(() => document.querySelector('[aria-label="Run the prompt"]').click())` works reliably.
+**Why:** `page.evaluate(() => document.querySelector('[aria-label="Run the prompt"]').click())` silently fails to trigger generation — no error thrown, but the prompt never submits. The Run button must be clicked via Playwright's locator API, not DOM evaluate. Use `page.getByRole('button', { name: 'Run', exact: true }).click()` which reliably triggers the generation.
 
-**How to apply:** Always use `page.evaluate()` for clicking the Run button:
+**How to apply:**
 ```js
-await page.evaluate(() => {
-  const btn = document.querySelector('[aria-label="Run the prompt"]');
-  if (btn) btn.click();
-});
+// Type prompt first
+const textarea = page.locator('textarea').first();
+await textarea.click();
+await textarea.fill(prompt);
+await page.waitForTimeout(1000);
+
+// Click Run via role locator (NOT evaluate)
+await page.getByRole('button', { name: 'Run', exact: true }).click();
 ```
 
 ## Rule: For batch generation, use new chat per image (`page.goto()`)
@@ -36,21 +40,25 @@ for (const { file, prompt } of images) {
 
 **How to apply:** Always use `browser_run_code` for multi-step browser automation. Only use individual MCP tools for simple single-step actions like navigation.
 
-## Rule: Download images via Playwright download event, not file system
+## Rule: Download images via Playwright download event — click image first to open overlay
 
-**Why:** The "right-click → Download button" approach from the original skill is fragile. Use `page.waitForEvent('download')` with clicking the image then the Download button — this reliably captures the download event and lets you `saveAs()` to any path.
+**Why:** The download button only appears in an overlay after clicking the generated image. You must: (1) click the image to open the overlay, (2) then click the Download button while listening for the download event. Clicking Download without the overlay open doesn't trigger a download event.
 
 **How to apply:**
 ```js
+// First click the generated image to open the overlay
+await page.getByRole('img', { name: /Generated Image/ }).last().click();
+await page.waitForTimeout(1500);
+
+// Then download with event listener
 const [download] = await Promise.all([
   page.waitForEvent('download', { timeout: 15000 }),
-  (async () => {
-    await page.getByRole('img', { name: /Generated Image/ }).last().click();
-    await page.waitForTimeout(1000);
-    await page.locator('button:has-text("Download")').first().click();
-  })()
+  page.locator('button:has-text("Download")').first().click(),
 ]);
 await download.saveAs('/absolute/path/to/output.png');
+
+// Close overlay before next image
+await page.locator('button:has-text("Close")').first().click();
 ```
 
 ## Rule: Wait for "Response ready." text, not fixed timeout

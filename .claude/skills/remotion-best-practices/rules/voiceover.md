@@ -99,6 +99,12 @@ When a scene has both TTS audio and on-screen dialog text (e.g., galgame dialog 
 the narration text in `narration.ts` must be the **actual dialog lines read aloud**, not a summary.
 If the voice says something different from what's shown on screen, the viewer perceives them as out of sync.
 
+**CRITICAL: Voice MUST match character gender.**
+For multi-character dialog scenes, each character needs a voice matching their gender.
+Define a `voice` field in the character config and select the TTS voice per line.
+Using a male narrator voice for female characters is jarring and breaks immersion.
+See [./galgame.md](./galgame.md) for voice selection by provider and per-line switching patterns.
+
 ### Step 2: `scripts/generate-tts.ts` (edge-tts)
 
 ```typescript

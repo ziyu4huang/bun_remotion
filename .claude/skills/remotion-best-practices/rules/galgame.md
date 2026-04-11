@@ -274,6 +274,106 @@ export const CHARACTERS: Record<Character, CharacterConfig> = {
 
 ---
 
+## TTS Voice — MUST match character gender
+
+Each character needs a voice matching their gender. Never use a male voice for female characters.
+
+**Character config with voice field:**
+```tsx
+export interface CharacterConfig {
+  name: string;
+  color: string;
+  bgColor: string;
+  position: "left" | "center" | "right";
+  voice: string;  // TTS voice name — must match gender
+}
+
+export const CHARACTERS: Record<Character, CharacterConfig> = {
+  xiaoxue: { name: "小雪", color: "#F472B6", bgColor: "rgba(244,114,182,0.25)", position: "left", voice: "xiaoxuan" },
+  xiaoyue: { name: "小月", color: "#818CF8", bgColor: "rgba(129,140,248,0.25)", position: "right", voice: "xiaoyu" },
+  xiaoying: { name: "小樱", color: "#FB923C", bgColor: "rgba(251,146,60,0.25)", position: "center", voice: "xiaomei" },
+};
+```
+
+**Voice selection by provider:**
+
+| Provider | Female voices | Male voices |
+|----------|--------------|-------------|
+| mlx_tts | xiaoxuan, xiaomei, xiaoyu | uncle_fu |
+| Gemini TTS | Kore, Aoede | Charon, Fenrir |
+| edge-tts | zh-TW-HsiaoChenNeural | zh-TW-YunJheNeural |
+
+**Per-line voice switching:** If the TTS engine can't switch voices mid-audio, generate separate audio files per character line and concatenate them with `sox` or ffmpeg. Never use a single narrator voice for multi-character dialog.
+
+---
+
+## Scene Transitions — prevent black frame gaps
+
+The container `<AbsoluteFill>` has a dark background color. When one scene fades out and the next hasn't faded in yet, that dark background becomes visible as "black seconds."
+
+**Rule:** Every scene must have both a fade-in AND a fade-out that overlap with adjacent scenes.
+
+```tsx
+// In EVERY scene component:
+const { durationInFrames } = useVideoConfig();
+const FADE_FRAMES = 15; // 0.5s
+
+const globalFade = interpolate(
+  frame,
+  // Fade in during first FADE_FRAMES, fade out during last FADE_FRAMES
+  [0, FADE_FRAMES, durationInFrames - FADE_FRAMES, durationInFrames],
+  [0, 1, 1, 0],
+  { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
+);
+
+return (
+  <AbsoluteFill style={{ opacity: globalFade }}>
+    {/* ... scene content */}
+  </AbsoluteFill>
+);
+```
+
+This ensures scene A's fade-out overlaps with scene B's fade-in, creating a smooth cross-dissolve through the container background.
+
+---
+
+## Title Scene — must be visually impactful
+
+A title scene with only floating particles and fade text is NOT enough. The opening is the first impression.
+
+**Minimum requirements for a galgame title:**
+1. **Bold typography** — spring-animated scale-in, not just a simple fade
+2. **At least one "hook" element** — character silhouette reveal, dramatic flash, screen shake, or bloom glow
+3. **Audio stinger** — a short impactful sound (not just narration) in the first 1-2 seconds
+4. **No dead air** — something should always be moving on screen
+
+**Pattern: dramatic anime-style title:**
+```tsx
+// Scale-in with spring easing — feels like an anime OP
+const titleScale = interpolate(frame, [10, 40], [2.5, 1], {
+  extrapolateLeft: "clamp",
+  extrapolateRight: "clamp",
+  ...Easing.out(Easing.back({ overshoot: 0.3 })),
+});
+
+const titleOpacity = interpolate(frame, [10, 20], [0, 1], {
+  extrapolateLeft: "clamp", extrapolateRight: "clamp",
+});
+
+// Subtitle slides in after title
+const subtitleY = interpolate(frame, [30, 50], [30, 0], {
+  extrapolateLeft: "clamp", extrapolateRight: "clamp",
+  ...Easing.out(Easing.cubic),
+});
+
+// Brief flash/bloom at the peak moment
+const flashOpacity = interpolate(frame, [8, 15, 25], [0, 0.8, 0], {
+  extrapolateLeft: "clamp", extrapolateRight: "clamp",
+});
+```
+
+---
+
 ## Common Mistakes
 
 | Mistake | Why it's wrong | Fix |
@@ -285,3 +385,6 @@ export const CHARACTERS: Record<Character, CharacterConfig> = {
 | Showing only one character at a time | Breaks immersion, not how VNs work | Show all characters, highlight speaker |
 | Heavy particle effects on backgrounds | Distracting, clashes with character focus | Clean backgrounds with subtle overlay only |
 | Post-processing background removal | Fragile, jagged edges, white shirts blend with light BG | Generate transparent from the start |
+| Male voice for female characters | Jarring mismatch, breaks immersion | Match voice to character gender in config |
+| No fade-in on scenes after title | Dark container background visible between scenes (black seconds) | Every scene must fade-in AND fade-out with overlap |
+| Title = just particles + text | Underwhelming first impression | Use spring scale-in, flash/bloom, audio stinger |

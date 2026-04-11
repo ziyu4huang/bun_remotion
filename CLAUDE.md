@@ -12,7 +12,7 @@ Knowledge base is organized in `.agent/memory/` by category. Read relevant files
 
 ## Commands
 
-All commands run from the **repo root**. Do NOT `cd` into `bun_remotion_proj/` — scripts handle directory changes internally via `scripts/dev.ps1`.
+All commands run from the **repo root**. Do NOT `cd` into `bun_remotion_proj/` — scripts handle directory changes internally via `scripts/dev.sh` (macOS/Linux) or `scripts/dev.ps1` (Windows).
 
 | Command | What It Does |
 |---------|-------------|
@@ -27,9 +27,9 @@ All commands run from the **repo root**. Do NOT `cd` into `bun_remotion_proj/` �
 
 Direct script usage (bypasses package.json):
 ```
-pwsh scripts/dev.ps1 studio <app-name>
-pwsh scripts/dev.ps1 render <app-name>
-pwsh scripts/dev.ps1 render-all
+bash scripts/dev.sh studio <app-name>
+bash scripts/dev.sh render <app-name>
+bash scripts/dev.sh render-all
 ```
 
 ## Project Structure
@@ -69,6 +69,9 @@ bun-remotion/
           TradingHoursScene.tsx       # Trading hours scene
           LimitScene.tsx              # Price limit scene
     three-little-pigs/                # @bun-remotion/three-little-pigs
+    galgame-youth-jokes/              # Galgame youth jokes video
+    galgame-meme-theater/             # Galgame meme theater ep1
+    galgame-meme-theater-ep2/         # Galgame meme theater ep2 — gaming memes
 ```
 
 ## CRITICAL: Never `cd` into subdirectories
@@ -78,15 +81,15 @@ Claude Code's Bash tool persists the working directory across calls. Once you `c
 **Rules:**
 - NEVER run `cd bun_remotion_proj/<name>` in Bash commands — not standalone, not with `&&`
 - ALWAYS run commands from the repo root
-- Use `scripts/dev.ps1` for studio/render (uses `Push-Location`/`Pop-Location` internally)
+- Use `scripts/dev.sh` for studio/render (macOS) or `scripts/dev.ps1` (Windows)
 - For sub-app scripts, use `bun run --cwd bun_remotion_proj/<name> <script>` — sets CWD only for the spawned process, agent CWD stays at repo root
 - For file operations, use absolute paths or Read/Write/Edit tools instead of `cd`
 
 **Approved patterns:**
 ```bash
 # ✅ studio/render
-pwsh scripts/dev.ps1 studio claude-code-intro
-pwsh scripts/dev.ps1 render claude-code-intro
+bash scripts/dev.sh studio claude-code-intro
+bash scripts/dev.sh render claude-code-intro
 
 # ✅ sub-app scripts (generate-tts, etc.)
 bun run --cwd bun_remotion_proj/claude-code-intro generate-tts
