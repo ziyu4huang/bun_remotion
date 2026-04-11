@@ -1,0 +1,10 @@
+# MLX Music — Apple Silicon only (Python 3.11+)
+mlx>=0.17
+numpy
+torch                  # CPU only — T5 text encoder + weight loading
+transformers
+huggingface-hub
+omegaconf
+soundfile
+tqdm
+sounddevice            # Audio playback

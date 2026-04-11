@@ -129,6 +129,7 @@ All memory — project knowledge, user feedback, preferences — lives here. Thi
 
 ### project/
 - [project-overview](.agent/memory/project/project-overview.md) - Tech stack, structure, commands, Remotion concepts
+- [bun-pi-agent](.agent/memory/project/bun-pi-agent.md) - Coding assistant agent: pi-agent-core/ai/coding-agent, CLI+HTTP SSE, z.ai provider
 - [google-free-tier-apis](.agent/memory/project/google-free-tier-apis.md) - Google AI Studio free tier APIs: TTS (3 req/min, PCM→WAV), embedding, chat, image gen status
 - [edge-tts](.agent/memory/project/edge-tts.md) - Microsoft Edge TTS via Python: free, no API key, zh-TW neural voices, MP3 output, Windows-tested
 - [mlx-tts-integration](.agent/memory/project/mlx-tts-integration.md) - mlx_tts Python TTS engine at mlx_tts/: setup.sh, voices, story pipeline, model details
@@ -136,6 +137,7 @@ All memory — project knowledge, user feedback, preferences — lives here. Thi
 
 ### reference/
 - [tree-sitter-python](.agent/memory/reference/tree-sitter-python.md) - tree-sitter v0.25+ Python API, grammar packages, Windows-specific notes
+- [zai-provider](.agent/memory/reference/zai-provider.md) - z.ai API provider: Z_AI_API_KEY alias, model IDs (glm-4.5/4.6), pi-ai compat
 
 ### feedback/
 - [skill-creation](.agent/memory/feedback/skill-creation.md) - Skill structure: v2 load-on-demand (SKILL.md + engines/ + platforms/ + env-check.md) vs v1 (references/ + scripts/)
