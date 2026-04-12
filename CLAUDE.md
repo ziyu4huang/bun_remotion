@@ -76,6 +76,8 @@ bun-remotion/
     galgame-meme-theater-ep4/         # Galgame meme theater ep4 — Student golden age
     xianxia-system-meme-ep1/          # System novel meme ep1 — Fail mission = erased (chibi + battle FX)
     xianxia-system-meme-ep2/          # System novel meme ep2 — EnergyWave + KamehamehaBeam battle FX
+    weapon-forger-ch1-ep1/             # Weapon forger ch1 ep1 — Sect entrance exam (12-ep series)
+    weapon-forger-ch1-ep2/             # Weapon forger ch1 ep2 — Results announced (zh_TW, manga SFX, shape effects)
 ```
 
 ## CRITICAL: Never `cd` into subdirectories
@@ -142,6 +144,7 @@ All memory — project knowledge, user feedback, preferences — lives here. Thi
 - [edge-tts](.agent/memory/project/edge-tts.md) - Microsoft Edge TTS via Python: free, no API key, zh-TW neural voices, MP3 output, Windows-tested
 - [mlx-tts-integration](.agent/memory/project/mlx-tts-integration.md) - mlx_tts Python TTS engine at mlx_tts/: setup.sh, voices, story pipeline, model details
 - [mlx-tts-models](.agent/memory/project/mlx-tts-models.md) - MLX-compatible TTS models for M1 8GB: Kokoro-82M-zh, Qwen3-TTS, Spark-TTS, edge-tts comparison
+- [weapon-forger-series](.agent/memory/project/weapon-forger-series.md) - Weapon-forger (誰讓他煉器的) 12-ep series: characters, zh_TW, style consistency rules
 
 ### reference/
 - [tree-sitter-python](.agent/memory/reference/tree-sitter-python.md) - tree-sitter v0.25+ Python API, grammar packages, Windows-specific notes
@@ -160,6 +163,7 @@ All memory — project knowledge, user feedback, preferences — lives here. Thi
 - [galimage-gen](.agent/memory/feedback/galimage-gen.md) - Galgame char images: always generate transparent BG + half-body upfront, never post-process
 - [galgame-video-lessons](.agent/memory/feedback/galgame-video-lessons.md) - AI can't make transparent PNGs (use rembg), TTS must match dialog text, solid BGs cause black frames, Run button selector fix
 - [battle-effects-ep2](.agent/memory/feedback/battle-effects-ep2.md) - Battle FX improvements: AnimatedLine primitive, EnergyWave (multi-line arcs), KamehamehaBeam (charge→fire→impact), ScreenShake
+- [weapon-forger-ep2-lessons](.agent/memory/feedback/weapon-forger-ep2-lessons.md) - ScreenShake undefined delay = black frames, fadeOut use durationInFrames, elder image prop, remotion still verify
 
 ## Convention
 

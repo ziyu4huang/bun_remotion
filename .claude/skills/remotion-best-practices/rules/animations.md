@@ -23,5 +23,28 @@ export const FadeIn = () => {
 };
 ```
 
-CSS transitions or animations are FORBIDDEN - they will not render correctly.  
+CSS transitions or animations are FORBIDDEN - they will not render correctly.
 Tailwind animation class names are FORBIDDEN - they will not render correctly.
+
+## Wrapper Effects with Optional Delay
+
+When creating wrapper components (ScreenShake, ScreenFlash, etc.) that accept an optional `delay` prop:
+
+```tsx
+// CORRECT: handle undefined delay
+const ScreenShake: React.FC<{ delay?: number; children: React.ReactNode }> = ({ delay, children }) => {
+  const frame = useCurrentFrame();
+  if (delay === undefined) return <>{children}</>; // ← CRITICAL: no-op when not triggered
+  const f = Math.max(0, frame - delay);
+  if (f >= duration) return <>{children}</>;     // ← early exit when effect is done
+  // ... apply effect
+};
+
+// WRONG: default delay to 0 makes effect permanently active
+const ScreenShake: React.FC<{ delay?: number; children: React.ReactNode }> = ({ delay = 0, children }) => {
+  // Math.max(0, frame - undefined) = Math.max(0, NaN) = 0 → always active!
+  // This pushes ALL content off-screen → black frames in render
+};
+```
+
+**Why this matters:** `Math.max(0, NaN)` returns `0`, not `NaN`. An undefined delay makes `f=0` permanently, keeping the effect at full intensity forever.

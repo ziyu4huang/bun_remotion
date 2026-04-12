@@ -1,0 +1,8 @@
+{
+  "file": "examiner-chibi.png",
+  "type": "chibi",
+  "character": "examiner",
+  "facing": "LEFT",
+  "prompt": "chibi anime style female cultivation examiner, cute small version, green-tea themed mini robes, stern expression with tiny crossed arms, neat bun hair with jade pin, holding a mini jade tablet, simple cute design, half-body, transparent background",
+  "backgroundStrategy": "solid magenta #FF00FF, remove with rembg"
+}

@@ -521,6 +521,40 @@ const flashOpacity = interpolate(frame, [8, 15, 25], [0, 0.8, 0], {
 | Title = just particles + text | Underwhelming first impression | Use spring scale-in, flash/bloom, screen shake |
 | Forgetting to update dev.sh | `build:<alias>` fails with "Unknown app" | Add app to ALL_APPS + get_comp_id() in scripts/dev.sh |
 | Scaling name plate fontSize without adjusting `top` offset | Name badge overlaps dialog text — the negative `top` value anchors the badge above the box | Recalculate `top` ≈ `-(fontSize × 0.75 + padding)` and increase text `marginTop` proportionally |
+| ScreenShake/ScreenFlash wrapper with `delay=undefined` | `Math.max(0, frame - undefined)` = `Math.max(0, NaN)` = `0` → shake/flash is permanently active, pushes content off-screen → BLACK FRAMES in render | Handle `undefined` delay explicitly: `if (delay === undefined) return <>{children}</>;` |
+| Fade-out with hardcoded frame numbers | Outro/ending goes blank early when scene duration changes across episodes | Use `durationInFrames` from `useVideoConfig()`: `interpolate(frame, [durationInFrames - 60, durationInFrames - 10], [1, 0])` |
+| New character without image prop or image file | CharacterSprite falls through to placeholder (colored box with first char of name) | Every character MUST have `image="<name>.png"` prop + PNG file in `public/images/` |
+| Not verifying renders with `remotion still` | Studio preview (DOM) can look different from actual render (canvas). ScreenShake noise was small in DOM but catastrophic in canvas. | After scene changes, run `bunx remotion still <CompId> --frame=N --output /tmp/test.png` and check mean brightness > 50 |
+
+---
+
+## Multi-Episode Consistency
+
+When creating a new episode in an existing series, **MUST maintain visual consistency**:
+
+### Style Lock Checklist
+- **Title scene**: Same gradient colors, same spring configs, same glow effect. Only change episode number and subtitle text.
+- **Font loading**: Use the same font imports (NotoSansTC, MaShanZheng, ZCOOLKuaiLe, ZhiMangXing for xianxia series).
+- **Dialog box**: Same white semi-transparent background, same border, same name plate style, same typewriter speed.
+- **Character colors**: Each character has a fixed theme color across ALL episodes.
+- **Background**: Same background images (sect-gate.png) with same overlay gradients.
+- **Transition types**: Vary between episodes but use the same TransitionSeries pattern.
+
+### Character Addition Pattern
+When adding a new character to an existing episode:
+1. Add to `characters.ts` — type, config, voice
+2. Generate image → `public/images/<name>.png` (1024x1024 RGBA)
+3. Pass `image="<name>.png"` in **EVERY** `<CharacterSprite>` instance across **ALL** scenes
+4. Add voice to TTS narration script
+5. Test with `remotion still` to verify sprite renders (not placeholder)
+
+### Verify with Still Renders
+```bash
+# From the project directory:
+bunx remotion still <CompId> --frame=<mid-scene-frame> --output /tmp/test.png
+python3 -c "from PIL import Image; a=Image.open('/tmp/test.png'); print(f'Mean brightness: {a.convert(\"RGB\").mean():.1f}')"
+# Content scenes should have mean > 50. If < 30, something is wrong (black frame bug).
+```
 
 ---
 

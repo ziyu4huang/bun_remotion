@@ -38,7 +38,13 @@
     "generate-tts:meme3": "bun run --cwd bun_remotion_proj/galgame-meme-theater-ep3 generate-tts",
     "generate-tts:meme4": "bun run --cwd bun_remotion_proj/galgame-meme-theater-ep4 generate-tts",
     "generate-tts:xianxia1": "bun run --cwd bun_remotion_proj/xianxia-system-meme-ep1 generate-tts",
-    "generate-tts:xianxia2": "bun run --cwd bun_remotion_proj/xianxia-system-meme-ep2 generate-tts"
+    "generate-tts:xianxia2": "bun run --cwd bun_remotion_proj/xianxia-system-meme-ep2 generate-tts",
+    "start:wf-ch1-ep1": "bash scripts/dev.sh studio weapon-forger-ch1-ep1",
+    "build:wf-ch1-ep1": "bash scripts/dev.sh render weapon-forger-ch1-ep1",
+    "generate-tts:wf-ch1-ep1": "bun run --cwd bun_remotion_proj/weapon-forger-ch1-ep1 generate-tts",
+    "start:wf-ch1-ep2": "bash scripts/dev.sh studio weapon-forger-ch1-ep2",
+    "build:wf-ch1-ep2": "bash scripts/dev.sh render weapon-forger-ch1-ep2",
+    "generate-tts:wf-ch1-ep2": "bun run --cwd bun_remotion_proj/weapon-forger-ch1-ep2 generate-tts"
   },
   "dependencies": {
     "@remotion/cli": "4.0.290",

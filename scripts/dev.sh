@@ -15,7 +15,7 @@ REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 # Use system Chrome instead of per-app downloaded chrome-headless-shell
 export REMOTION_CHROME_EXECUTABLE_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 
-ALL_APPS="claude-code-intro taiwan-stock-market three-little-pigs galgame-youth-jokes galgame-meme-theater galgame-meme-theater-ep2 galgame-meme-theater-ep3 galgame-meme-theater-ep4 xianxia-system-meme-ep1 xianxia-system-meme-ep2"
+ALL_APPS="claude-code-intro taiwan-stock-market three-little-pigs galgame-youth-jokes galgame-meme-theater galgame-meme-theater-ep2 galgame-meme-theater-ep3 galgame-meme-theater-ep4 xianxia-system-meme-ep1 xianxia-system-meme-ep2 weapon-forger-ch1-ep1 weapon-forger-ch1-ep2"
 
 # Resolve composition ID from app directory name
 get_comp_id() {
@@ -30,6 +30,8 @@ get_comp_id() {
         galgame-meme-theater-ep4) echo "GalgameMemeTheaterEp4" ;;
         xianxia-system-meme-ep1) echo "XianxiaSystemMemeEp1" ;;
         xianxia-system-meme-ep2) echo "XianxiaSystemMemeEp2" ;;
+        weapon-forger-ch1-ep1)    echo "WeaponForgerCh1Ep1" ;;
+        weapon-forger-ch1-ep2)    echo "WeaponForgerCh1Ep2" ;;
         *) return 1 ;;
     esac
 }
