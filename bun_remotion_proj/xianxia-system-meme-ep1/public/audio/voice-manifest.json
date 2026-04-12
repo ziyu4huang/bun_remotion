@@ -1,0 +1,508 @@
+[
+  {
+    "scene": "TitleScene",
+    "file": "01-title.wav",
+    "segments": [
+      {
+        "character": "narrator",
+        "voice": "uncle_fu",
+        "voiceDescription": {
+          "voice": "uncle_fu",
+          "gender": "male",
+          "accent": "standard Mandarin"
+        },
+        "text": "歡迎來到系統文小說梗第一集。今天的主題是不完成任務就抹除。"
+      },
+      {
+        "character": "narrator",
+        "voice": "uncle_fu",
+        "voiceDescription": {
+          "voice": "uncle_fu",
+          "gender": "male",
+          "accent": "standard Mandarin"
+        },
+        "text": "一個廢柴修仙者被系統綁定，新手任務竟然是要在十秒內向師姐表白，否則直接抹除。"
+      },
+      {
+        "character": "narrator",
+        "voice": "uncle_fu",
+        "voiceDescription": {
+          "voice": "uncle_fu",
+          "gender": "male",
+          "accent": "standard Mandarin"
+        },
+        "text": "Q版戰鬥、系統倒數、師姐的反轉，每一幕都是系統文的經典梗。"
+      },
+      {
+        "character": "system",
+        "voice": "serena",
+        "voiceDescription": {
+          "voice": "serena",
+          "gender": "female",
+          "accent": "standard Mandarin"
+        },
+        "text": "任務開始。"
+      }
+    ]
+  },
+  {
+    "scene": "JokeScene1",
+    "file": "02-joke1.wav",
+    "segments": [
+      {
+        "character": "xiuxiu",
+        "voice": "uncle_fu",
+        "voiceDescription": {
+          "voice": "uncle_fu",
+          "gender": "male",
+          "accent": "standard Mandarin"
+        },
+        "text": "啊頭好痛，剛才打坐的時候到底發生了什麼。"
+      },
+      {
+        "character": "system",
+        "voice": "serena",
+        "voiceDescription": {
+          "voice": "serena",
+          "gender": "female",
+          "accent": "standard Mandarin"
+        },
+        "text": "叮，修仙系統已成功綁定宿主。"
+      },
+      {
+        "character": "xiuxiu",
+        "voice": "uncle_fu",
+        "voiceDescription": {
+          "voice": "uncle_fu",
+          "gender": "male",
+          "accent": "standard Mandarin"
+        },
+        "text": "誰在說話，系統，什麼系統。"
+      },
+      {
+        "character": "system",
+        "voice": "serena",
+        "voiceDescription": {
+          "voice": "serena",
+          "gender": "female",
+          "accent": "standard Mandarin"
+        },
+        "text": "本系統將協助宿主完成修仙之路，請查收新手任務。"
+      },
+      {
+        "character": "xiuxiu",
+        "voice": "uncle_fu",
+        "voiceDescription": {
+          "voice": "uncle_fu",
+          "gender": "male",
+          "accent": "standard Mandarin"
+        },
+        "text": "等等等等，我連築基都還沒完成，你綁定我幹嘛。"
+      },
+      {
+        "character": "system",
+        "voice": "serena",
+        "voiceDescription": {
+          "voice": "serena",
+          "gender": "female",
+          "accent": "standard Mandarin"
+        },
+        "text": "新手任務，在十秒內向師姐表白，失敗懲罰，抹除。"
+      },
+      {
+        "character": "xiuxiu",
+        "voice": "uncle_fu",
+        "voiceDescription": {
+          "voice": "uncle_fu",
+          "gender": "male",
+          "accent": "standard Mandarin"
+        },
+        "text": "抹除，抹除是什麼意思，我不要被抹除啊。"
+      },
+      {
+        "character": "system",
+        "voice": "serena",
+        "voiceDescription": {
+          "voice": "serena",
+          "gender": "female",
+          "accent": "standard Mandarin"
+        },
+        "text": "倒數計時開始，十、九、八。"
+      },
+      {
+        "character": "xiuxiu",
+        "voice": "uncle_fu",
+        "voiceDescription": {
+          "voice": "uncle_fu",
+          "gender": "male",
+          "accent": "standard Mandarin"
+        },
+        "text": "這個系統是認真的嗎。"
+      }
+    ]
+  },
+  {
+    "scene": "JokeScene2",
+    "file": "03-joke2.wav",
+    "segments": [
+      {
+        "character": "system",
+        "voice": "serena",
+        "voiceDescription": {
+          "voice": "serena",
+          "gender": "female",
+          "accent": "standard Mandarin"
+        },
+        "text": "七、六、五。"
+      },
+      {
+        "character": "xiuxiu",
+        "voice": "uncle_fu",
+        "voiceDescription": {
+          "voice": "uncle_fu",
+          "gender": "male",
+          "accent": "standard Mandarin"
+        },
+        "text": "師姐，我有話想對妳說。"
+      },
+      {
+        "character": "shijie",
+        "voice": "vivian",
+        "voiceDescription": {
+          "voice": "vivian",
+          "gender": "female",
+          "accent": "standard Mandarin"
+        },
+        "text": "什麼事，你的臉怎麼這麼紅。"
+      },
+      {
+        "character": "xiuxiu",
+        "voice": "uncle_fu",
+        "voiceDescription": {
+          "voice": "uncle_fu",
+          "gender": "male",
+          "accent": "standard Mandarin"
+        },
+        "text": "我、我、那個、就是。"
+      },
+      {
+        "character": "system",
+        "voice": "serena",
+        "voiceDescription": {
+          "voice": "serena",
+          "gender": "female",
+          "accent": "standard Mandarin"
+        },
+        "text": "三、二、一。"
+      },
+      {
+        "character": "xiuxiu",
+        "voice": "uncle_fu",
+        "voiceDescription": {
+          "voice": "uncle_fu",
+          "gender": "male",
+          "accent": "standard Mandarin"
+        },
+        "text": "我喜歡妳。"
+      },
+      {
+        "character": "shijie",
+        "voice": "vivian",
+        "voiceDescription": {
+          "voice": "vivian",
+          "gender": "female",
+          "accent": "standard Mandarin"
+        },
+        "text": "哦，真的假的。"
+      },
+      {
+        "character": "system",
+        "voice": "serena",
+        "voiceDescription": {
+          "voice": "serena",
+          "gender": "female",
+          "accent": "standard Mandarin"
+        },
+        "text": "叮，任務完成，獎勵靈力恢復一點。"
+      },
+      {
+        "character": "xiuxiu",
+        "voice": "uncle_fu",
+        "voiceDescription": {
+          "voice": "uncle_fu",
+          "gender": "male",
+          "accent": "standard Mandarin"
+        },
+        "text": "就一點，我剛才差點死了好嗎。"
+      }
+    ]
+  },
+  {
+    "scene": "JokeScene3",
+    "file": "04-joke3.wav",
+    "segments": [
+      {
+        "character": "xiuxiu",
+        "voice": "uncle_fu",
+        "voiceDescription": {
+          "voice": "uncle_fu",
+          "gender": "male",
+          "accent": "standard Mandarin"
+        },
+        "text": "等等，剛才那個表白不算數吧。"
+      },
+      {
+        "character": "shijie",
+        "voice": "vivian",
+        "voiceDescription": {
+          "voice": "vivian",
+          "gender": "female",
+          "accent": "standard Mandarin"
+        },
+        "text": "怎麼，說了就說了，修仙之人豈能出爾反爾。告訴你一個秘密。"
+      },
+      {
+        "character": "system",
+        "voice": "serena",
+        "voiceDescription": {
+          "voice": "serena",
+          "gender": "female",
+          "accent": "standard Mandarin"
+        },
+        "text": "叮，觸發隱藏任務，與師姐進行修仙對決。"
+      },
+      {
+        "character": "xiuxiu",
+        "voice": "uncle_fu",
+        "voiceDescription": {
+          "voice": "uncle_fu",
+          "gender": "male",
+          "accent": "standard Mandarin"
+        },
+        "text": "什麼，我打不過師姐啊。"
+      },
+      {
+        "character": "system",
+        "voice": "serena",
+        "voiceDescription": {
+          "voice": "serena",
+          "gender": "female",
+          "accent": "standard Mandarin"
+        },
+        "text": "任務獎勵，晉升一個境界，失敗懲罰，退回煉氣期。"
+      },
+      {
+        "character": "xiuxiu",
+        "voice": "uncle_fu",
+        "voiceDescription": {
+          "voice": "uncle_fu",
+          "gender": "male",
+          "accent": "standard Mandarin"
+        },
+        "text": "我連煉氣期都還沒離開，退回去是什麼，變回凡人嗎。"
+      },
+      {
+        "character": "shijie",
+        "voice": "vivian",
+        "voiceDescription": {
+          "voice": "vivian",
+          "gender": "female",
+          "accent": "standard Mandarin"
+        },
+        "text": "來吧師弟，讓我看看你有多少斤兩。"
+      },
+      {
+        "character": "xiuxiu",
+        "voice": "uncle_fu",
+        "voiceDescription": {
+          "voice": "uncle_fu",
+          "gender": "male",
+          "accent": "standard Mandarin"
+        },
+        "text": "接招，修修超究極奧義。"
+      },
+      {
+        "character": "shijie",
+        "voice": "vivian",
+        "voiceDescription": {
+          "voice": "vivian",
+          "gender": "female",
+          "accent": "standard Mandarin"
+        },
+        "text": "就這。"
+      },
+      {
+        "character": "xiuxiu",
+        "voice": "uncle_fu",
+        "voiceDescription": {
+          "voice": "uncle_fu",
+          "gender": "male",
+          "accent": "standard Mandarin"
+        },
+        "text": "我的靈力，用完了。"
+      }
+    ]
+  },
+  {
+    "scene": "JokeScene4",
+    "file": "05-joke4.wav",
+    "segments": [
+      {
+        "character": "shijie",
+        "voice": "vivian",
+        "voiceDescription": {
+          "voice": "vivian",
+          "gender": "female",
+          "accent": "standard Mandarin"
+        },
+        "text": "師弟，你今天的表現讓我很滿意。"
+      },
+      {
+        "character": "xiuxiu",
+        "voice": "uncle_fu",
+        "voiceDescription": {
+          "voice": "uncle_fu",
+          "gender": "male",
+          "accent": "standard Mandarin"
+        },
+        "text": "師姐，剛才那些不是我在演戲，我是真的害怕啊。"
+      },
+      {
+        "character": "shijie",
+        "voice": "vivian",
+        "voiceDescription": {
+          "voice": "vivian",
+          "gender": "female",
+          "accent": "standard Mandarin"
+        },
+        "text": "告訴你一個秘密。"
+      },
+      {
+        "character": "xiuxiu",
+        "voice": "uncle_fu",
+        "voiceDescription": {
+          "voice": "uncle_fu",
+          "gender": "male",
+          "accent": "standard Mandarin"
+        },
+        "text": "什麼秘密。"
+      },
+      {
+        "character": "shijie",
+        "voice": "vivian",
+        "voiceDescription": {
+          "voice": "vivian",
+          "gender": "female",
+          "accent": "standard Mandarin"
+        },
+        "text": "這個修仙系統啊，是我安裝的。"
+      },
+      {
+        "character": "xiuxiu",
+        "voice": "uncle_fu",
+        "voiceDescription": {
+          "voice": "uncle_fu",
+          "gender": "male",
+          "accent": "standard Mandarin"
+        },
+        "text": "什麼，師姐妳。"
+      },
+      {
+        "character": "shijie",
+        "voice": "vivian",
+        "voiceDescription": {
+          "voice": "vivian",
+          "gender": "female",
+          "accent": "standard Mandarin"
+        },
+        "text": "我只是想聽你親口說那句話而已。"
+      },
+      {
+        "character": "xiuxiu",
+        "voice": "uncle_fu",
+        "voiceDescription": {
+          "voice": "uncle_fu",
+          "gender": "male",
+          "accent": "standard Mandarin"
+        },
+        "text": "妳知不知道我差點被抹除啊。"
+      },
+      {
+        "character": "shijie",
+        "voice": "vivian",
+        "voiceDescription": {
+          "voice": "vivian",
+          "gender": "female",
+          "accent": "standard Mandarin"
+        },
+        "text": "放心，抹除是假的，但下次的任務是真的喔。"
+      },
+      {
+        "character": "system",
+        "voice": "serena",
+        "voiceDescription": {
+          "voice": "serena",
+          "gender": "female",
+          "accent": "standard Mandarin"
+        },
+        "text": "叮，新任務發布，在師姐面前做一百個伏地挺身。"
+      },
+      {
+        "character": "xiuxiu",
+        "voice": "uncle_fu",
+        "voiceDescription": {
+          "voice": "uncle_fu",
+          "gender": "male",
+          "accent": "standard Mandarin"
+        },
+        "text": "我的靈力還沒恢復啊。"
+      }
+    ]
+  },
+  {
+    "scene": "OutroScene",
+    "file": "06-outro.wav",
+    "segments": [
+      {
+        "character": "narrator",
+        "voice": "uncle_fu",
+        "voiceDescription": {
+          "voice": "uncle_fu",
+          "gender": "male",
+          "accent": "standard Mandarin"
+        },
+        "text": "哈哈哈，是不是每個梗都讓你想起系統文小說的經典套路。"
+      },
+      {
+        "character": "narrator",
+        "voice": "uncle_fu",
+        "voiceDescription": {
+          "voice": "uncle_fu",
+          "gender": "male",
+          "accent": "standard Mandarin"
+        },
+        "text": "感謝收看系統文小說梗第一集，不完成任務就抹除。"
+      },
+      {
+        "character": "narrator",
+        "voice": "uncle_fu",
+        "voiceDescription": {
+          "voice": "uncle_fu",
+          "gender": "male",
+          "accent": "standard Mandarin"
+        },
+        "text": "記住，系統永遠不會放過你，表白要趁早不然系統會幫你，Q版戰鬥是認真的，師姐永遠是最大的BOSS。"
+      },
+      {
+        "character": "narrator",
+        "voice": "uncle_fu",
+        "voiceDescription": {
+          "voice": "uncle_fu",
+          "gender": "male",
+          "accent": "standard Mandarin"
+        },
+        "text": "我們下集見。"
+      }
+    ]
+  }
+]

@@ -154,7 +154,22 @@ After creating, add convenience scripts to root `package.json`:
 "generate-tts:my-video": "bun run --cwd bun_remotion_proj/my-video generate-tts"
 ```
 
+**Also update `scripts/dev.sh`** — add the app to `ALL_APPS` and `get_comp_id()`:
+```bash
+# In scripts/dev.sh:
+ALL_APPS="... my-video"
+
+get_comp_id() {
+    ...
+    my-video) echo "MyVideo" ;;
+}
+```
+
 Then run `bun install` from repo root to link the new workspace.
+
+**After scaffolding, automatically run the build pipeline in background:**
+1. `bun run generate-tts:<alias>` — run in background
+2. On TTS completion → `bun run build:<alias>` — run in background immediately
 
 ---
 

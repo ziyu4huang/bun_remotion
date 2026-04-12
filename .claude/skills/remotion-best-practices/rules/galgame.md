@@ -12,35 +12,62 @@ for authentic Japanese VN aesthetics.
 
 ---
 
-## Image Generation — CRITICAL: generate with transparent background + half-body
+## Image Generation — CRITICAL: transparent background + half-body + facing LEFT
 
 When generating character images (via `/generate-image` or any AI image tool),
 **always include these requirements in the prompt**:
 
 ```
 anime style, half-body portrait (waist up), transparent background (PNG with alpha),
-school uniform, facing forward, no background
+facing LEFT, solid magenta #FF00FF background, no background detail
 ```
 
-**Why:** Post-processing background removal (color-key, flood fill) is fragile — white shirts
-blend with light backgrounds, edges get jagged, and it wastes time. Generating with
-transparent background from the start produces clean results.
+### CRITICAL CONVENTION: ALL character images MUST face LEFT by default
 
-**Prompt template for character generation:**
+This applies to **every** character image — normal sprites, chibi (Q版), battle poses, etc.
+A consistent base direction makes Remotion flipping deterministic:
+
+- Raw image → character **always** faces LEFT
+- `side="left"` → `scaleX(-1)` flip to face RIGHT toward partner
+- `side="right"` → no flip, already facing LEFT toward partner
+- `side="center"` → no flip (facing audience)
+
+**Background strategy:** Use `solid magenta #FF00FF background` in prompts — rembg removes
+magenta cleanly. AI models cannot produce true transparent PNGs, so use a color key that's
+easy to separate.
+
+### Why include "transparent background" in prompts?
+
+Even though AI can't actually produce transparency, asking for "no background" / simple backgrounds
+makes rembg's job easier:
+- Solid/simple backgrounds are easier to remove than complex scenes
+- The subject is more cleanly separated from the background
+- Fewer artifacts around hair and clothing edges
+
+**Prompt template for normal sprites:**
 ```
-anime style character portrait, [character description], half-body from waist up,
-school uniform, facing viewer, transparent PNG background, clean edges,
-no background, high quality anime illustration
+anime style character portrait, [character description], facing LEFT,
+[outfit details], half-body from waist up, solid magenta #FF00FF background,
+clean edges, no background detail, high quality anime illustration
 ```
 
-**Batch generation example:**
+**Prompt template for chibi (Q版) sprites:**
+```
+chibi SD super deformed anime style [character description], facing LEFT,
+[outfit details], very round head, tiny body, chibi proportions (head 2/3 of body),
+half-body portrait, solid magenta #FF00FF background, clean edges,
+no background detail, high quality chibi anime illustration
+```
+
+**Batch generation example (normal + chibi):**
 ```js
 // browser_run_code for /generate-image batch
 async (page) => {
   const characters = [
-    { file: 'xiaoming.png', prompt: 'anime style boy, brown messy hair, cheerful smile, white shirt red tie blue sweater vest, half-body portrait waist up, school uniform, facing viewer, transparent PNG background, no background, high quality anime illustration' },
-    { file: 'xiaomei.png', prompt: 'anime style girl, long brown hair pink bows, gentle smile, white shirt pink bow tie gray skirt, half-body portrait waist up, school uniform, facing viewer, transparent PNG background, no background, high quality anime illustration' },
-    { file: 'teacher.png', prompt: 'anime style male teacher, short dark hair glasses, white shirt blue gold tie, half-body portrait waist up, formal attire, facing viewer, transparent PNG background, no background, high quality anime illustration' },
+    { file: 'xiaoming.png', prompt: 'anime style boy, brown messy hair, cheerful smile, white shirt red tie blue sweater vest school uniform, facing LEFT, half-body portrait waist up, solid magenta #FF00FF background, no background detail, high quality anime illustration' },
+    { file: 'xiaoming-chibi.png', prompt: 'chibi SD super deformed anime style boy, brown messy hair, cheerful smile, white shirt red tie blue sweater vest school uniform, facing LEFT, very round head tiny body, chibi proportions head 2/3 body, half-body portrait, solid magenta #FF00FF background, no background detail, high quality chibi anime illustration' },
+    { file: 'xiaomei.png', prompt: 'anime style girl, long brown hair pink bows, gentle smile, white shirt pink bow tie gray pleated skirt school uniform, facing LEFT, half-body portrait waist up, solid magenta #FF00FF background, no background detail, high quality anime illustration' },
+    { file: 'xiaomei-chibi.png', prompt: 'chibi SD super deformed anime style girl, long brown hair pink bows, gentle smile, white shirt pink bow tie gray pleated skirt school uniform, facing LEFT, very round head tiny body, chibi proportions head 2/3 body, half-body portrait, solid magenta #FF00FF background, no background detail, high quality chibi anime illustration' },
   ];
   // ... (standard generate-image batch pattern)
 }
@@ -48,14 +75,67 @@ async (page) => {
 
 ### Image specs
 
-| Property | Value |
-|----------|-------|
-| Format | PNG with alpha (RGBA) |
-| Composition | Half-body, waist up |
-| Pose | Facing viewer, neutral/slight expression |
-| Background | Transparent (no background) |
-| Resolution | 800-1200px wide |
-| Placement | `public/images/<character>.png` |
+| Property | Normal | Chibi |
+|----------|--------|-------|
+| Format | PNG with alpha (RGBA) | PNG with alpha (RGBA) |
+| Composition | Half-body, waist up | Half-body, waist up |
+| Pose | **Facing LEFT**, neutral expression | **Facing LEFT**, cute expression |
+| Background | Solid magenta `#FF00FF` (removed by rembg) | Solid magenta `#FF00FF` (removed by rembg) |
+| Resolution | 800-1200px wide | 600-800px wide |
+| Placement | `public/images/<name>.png` | `public/images/<name>-chibi.png` |
+| Height in scene | 75% screen, max 900px | 40% screen, max 480px |
+| Position | Bottom-anchored | Floats above dialog |
+
+### Background removal (required for ALL images)
+
+```bash
+# Install (one-time)
+pip3 install --break-system-packages "rembg[cpu]"
+
+# Remove background — single image
+python3 -c "
+from rembg import remove
+from PIL import Image
+img = Image.open('character.png')
+result = remove(img)
+result.save('character.png')
+print('Done')
+"
+
+# Batch removal
+python3 -c "
+from rembg import remove
+from PIL import Image
+import glob
+for f in glob.glob('public/images/*.png'):
+    img = Image.open(f)
+    result = remove(img)
+    result.save(f)
+    print(f'{f}: done')
+"
+```
+
+**Verify transparency after removal:**
+```python
+from PIL import Image; import numpy as np
+a = np.array(Image.open('character.png'))
+print(f'Transparent pixels: {(a[:,:,3]==0).sum()}/{a.size}')
+```
+
+### Image naming
+
+| Type | Pattern | Example |
+|------|---------|---------|
+| Normal sprite | `<name>.png` | `xiuxiu.png` |
+| Chibi sprite | `<name>-chibi.png` | `xiuxiu-chibi.png` |
+
+### Remotion flip logic in CharacterSprite
+
+```tsx
+// Convention: ALL raw images face LEFT
+const faceMirror = side === "left" ? -1 : 1;
+// Applied as: transform: `scaleX(${faceMirror})`
+```
 
 ---
 
@@ -119,9 +199,12 @@ Classic Japanese galgame dialog box pattern:
 
 **Name plate:**
 - Colored background matching character theme color
-- Positioned above the box border: `top: -18, left: 24`
+- Positioned above the box border using `position: absolute; top: <negative offset>`
 - White text, bold, with subtle shadow
 - Spring animation for entrance
+- **CRITICAL: `top` offset must scale with `fontSize`** — the name plate sits above the dialog box via a negative `top` value. If you change `fontSize`, you MUST recalculate `top` and `marginTop` on the text below, otherwise the name plate overlaps the dialog text.
+  - Formula: `top` ≈ `-(fontSize * 0.75 + padding)` (e.g., fontSize 48 + padding 12 → `top: -42`)
+  - Also increase dialog text `marginTop` proportionally (e.g., fontSize 48 → `marginTop: 20`)
 
 **Text:**
 - Large: `fontSize: 42` (for 1080p)
@@ -144,6 +227,8 @@ Classic Japanese galgame dialog box pattern:
     minHeight: 140,
   }}>
     {/* Name plate - above border */}
+    {/* NOTE: top offset MUST be recalculated when changing fontSize! */}
+    {/* fontSize 24 → top: -18 | fontSize 48 → top: -42 */}
     <div style={{
       position: "absolute",
       top: -18, left: 24,
@@ -307,33 +392,78 @@ export const CHARACTERS: Record<Character, CharacterConfig> = {
 
 ---
 
-## Scene Transitions — prevent black frame gaps
+## Scene Transitions — use TransitionSeries for proper effects
 
-The container `<AbsoluteFill>` has a dark background color. When one scene fades out and the next hasn't faded in yet, that dark background becomes visible as "black seconds."
+**Preferred approach:** Use `@remotion/transitions` with `TransitionSeries` for varied, polished scene transitions (fade, slide, wipe, clockWipe). This replaces the manual fade-in/fade-out pattern which only produces crossfade.
 
-**Rule:** Every scene must have both a fade-in AND a fade-out that overlap with adjacent scenes.
+```bash
+# Add dependency
+bun add @remotion/transitions@4.0.290
+```
 
 ```tsx
-// In EVERY scene component:
-const { durationInFrames } = useVideoConfig();
-const FADE_FRAMES = 15; // 0.5s
+import { TransitionSeries, linearTiming } from "@remotion/transitions";
+import { fade } from "@remotion/transitions/fade";
+import { slide } from "@remotion/transitions/slide";
+import { wipe } from "@remotion/transitions/wipe";
+import { clockWipe } from "@remotion/transitions/clock-wipe";
 
-const globalFade = interpolate(
-  frame,
-  // Fade in during first FADE_FRAMES, fade out during last FADE_FRAMES
-  [0, FADE_FRAMES, durationInFrames - FADE_FRAMES, durationInFrames],
+const TRANSITION_FRAMES = 15; // 0.5s
+
+<AbsoluteFill style={{ backgroundColor: "#0a051e" }}>
+  <TransitionSeries>
+    <TransitionSeries.Sequence durationInFrames={d(0)}>
+      <TitleScene />
+      <Audio src={staticFile("audio/01-title.wav")} />
+    </TransitionSeries.Sequence>
+
+    <TransitionSeries.Transition
+      presentation={fade()}
+      timing={linearTiming({ durationInFrames: TRANSITION_FRAMES })}
+    />
+
+    <TransitionSeries.Sequence durationInFrames={d(1)}>
+      <JokeScene1 />
+      <Audio src={staticFile("audio/02-joke1.wav")} />
+    </TransitionSeries.Sequence>
+
+    {/* Vary transition types for visual interest: */}
+    <TransitionSeries.Transition presentation={slide({ direction: "from-right" })} timing={linearTiming({ durationInFrames: TRANSITION_FRAMES })} />
+    <TransitionSeries.Sequence durationInFrames={d(2)}>...</TransitionSeries.Sequence>
+
+    <TransitionSeries.Transition presentation={wipe({ direction: "from-right" })} timing={linearTiming({ durationInFrames: TRANSITION_FRAMES })} />
+    <TransitionSeries.Sequence durationInFrames={d(3)}>...</TransitionSeries.Sequence>
+
+    <TransitionSeries.Transition presentation={clockWipe({ width: 1920, height: 1080 })} timing={linearTiming({ durationInFrames: TRANSITION_FRAMES })} />
+    <TransitionSeries.Sequence durationInFrames={d(4)}>...</TransitionSeries.Sequence>
+  </TransitionSeries>
+</AbsoluteFill>
+```
+
+**Duration calculation with TransitionSeries:**
+```tsx
+// In Root.tsx — transitions overlap, so subtract them from total
+const NUM_TRANSITIONS = scenes.length - 1;
+const totalDuration =
+  sceneDurationsData.reduce((sum, d) => sum + d, 0) -
+  NUM_TRANSITIONS * TRANSITION_FRAMES;
+```
+
+**API notes (Remotion 4.0.290):**
+- `Easing.back()` takes a `number`, not an object: `Easing.back(0.3)` NOT `Easing.back({ overshoot: 0.3 })`
+- `clockWipe()` requires `{ width, height }` props: `clockWipe({ width: 1920, height: 1080 })`
+- With TransitionSeries, scenes do NOT need their own fade-in/fade-out — the transition handles it
+- Available: `fade()`, `slide()`, `wipe()`, `flip()`, `clockWipe()` from `@remotion/transitions/*`
+
+**Fallback (if TransitionSeries unavailable):** Use per-scene fade-in/fade-out with overlap:
+```tsx
+const globalFade = interpolate(frame,
+  [0, 15, durationInFrames - 15, durationInFrames],
   [0, 1, 1, 0],
   { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
 );
-
-return (
-  <AbsoluteFill style={{ opacity: globalFade }}>
-    {/* ... scene content */}
-  </AbsoluteFill>
-);
+return <AbsoluteFill style={{ opacity: globalFade }}>...</AbsoluteFill>;
 ```
-
-This ensures scene A's fade-out overlaps with scene B's fade-in, creating a smooth cross-dissolve through the container background.
 
 ---
 
@@ -379,12 +509,41 @@ const flashOpacity = interpolate(frame, [8, 15, 25], [0, 0.8, 0], {
 | Mistake | Why it's wrong | Fix |
 |---------|---------------|-----|
 | Full-body character images | Takes too much screen space, feet hidden by dialog box | Generate half-body (waist up) |
-| Solid color background on sprites | Looks unprofessional, doesn't blend with scene backgrounds | Generate with transparent background |
+| Solid color background on sprites | Looks unprofessional, doesn't blend with scene backgrounds | Use solid magenta #FF00FF in prompt, then rembg to remove |
 | Name label below character sprite | Not how galgames work — name goes in dialog box | Show name in dialog box name plate only |
+| Character images facing right or viewer | Inconsistent flip logic, unpredictable results | ALL images face LEFT; flip in Remotion based on side |
 | Dark gradient dialog box | Looks like subtitles, not a galgame | Use white/light dialog box with dark outline |
 | Showing only one character at a time | Breaks immersion, not how VNs work | Show all characters, highlight speaker |
 | Heavy particle effects on backgrounds | Distracting, clashes with character focus | Clean backgrounds with subtle overlay only |
 | Post-processing background removal | Fragile, jagged edges, white shirts blend with light BG | Generate transparent from the start |
 | Male voice for female characters | Jarring mismatch, breaks immersion | Match voice to character gender in config |
-| No fade-in on scenes after title | Dark container background visible between scenes (black seconds) | Every scene must fade-in AND fade-out with overlap |
-| Title = just particles + text | Underwhelming first impression | Use spring scale-in, flash/bloom, audio stinger |
+| No transitions between scenes | Jarring cuts or black frame gaps | Use TransitionSeries with varied transition types |
+| Title = just particles + text | Underwhelming first impression | Use spring scale-in, flash/bloom, screen shake |
+| Forgetting to update dev.sh | `build:<alias>` fails with "Unknown app" | Add app to ALL_APPS + get_comp_id() in scripts/dev.sh |
+| Scaling name plate fontSize without adjusting `top` offset | Name badge overlaps dialog text — the negative `top` value anchors the badge above the box | Recalculate `top` ≈ `-(fontSize × 0.75 + padding)` and increase text `marginTop` proportionally |
+
+---
+
+## Automatic Build Workflow — ALWAYS run TTS + render in background
+
+After creating or modifying a galgame episode, the full pipeline should run automatically:
+
+**Step 1 — Generate TTS (background):**
+```bash
+bun run generate-tts:<alias>   # run_in_background: true
+```
+
+**Step 2 — On TTS completion, immediately render (background):**
+```bash
+bun run build:<alias>           # run_in_background: true
+```
+
+**Never wait for the user to ask "can it render?"** — kick off the render automatically as soon as TTS finishes.
+
+**Registration checklist for new apps:**
+- [ ] `bun_remotion_proj/<app>/` created with package.json, tsconfig.json, src/
+- [ ] `scripts/dev.sh` — app name in `ALL_APPS` + `get_comp_id()` case
+- [ ] Root `package.json` — `start:<alias>`, `build:<alias>`, `generate-tts:<alias>`
+- [ ] `CLAUDE.md` — app added to project structure tree
+- [ ] `bun install` from repo root
+- [ ] TTS generated + render kicked off (both in background)

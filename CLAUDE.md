@@ -72,6 +72,10 @@ bun-remotion/
     galgame-youth-jokes/              # Galgame youth jokes video
     galgame-meme-theater/             # Galgame meme theater ep1
     galgame-meme-theater-ep2/         # Galgame meme theater ep2 — gaming memes
+    galgame-meme-theater-ep3/         # Galgame meme theater ep3 — Taiwan daily life
+    galgame-meme-theater-ep4/         # Galgame meme theater ep4 — Student golden age
+    xianxia-system-meme-ep1/          # System novel meme ep1 — Fail mission = erased (chibi + battle FX)
+    xianxia-system-meme-ep2/          # System novel meme ep2 — EnergyWave + KamehamehaBeam battle FX
 ```
 
 ## CRITICAL: Never `cd` into subdirectories
@@ -132,6 +136,7 @@ All memory — project knowledge, user feedback, preferences — lives here. Thi
 
 ### project/
 - [project-overview](.agent/memory/project/project-overview.md) - Tech stack, structure, commands, Remotion concepts
+- [shared-fixture](.agent/memory/project/shared-fixture.md) - Reusable background images in shared-fixture/background/
 - [bun-pi-agent](.agent/memory/project/bun-pi-agent.md) - Coding assistant agent: pi-agent-core/ai/coding-agent, CLI+HTTP SSE, z.ai provider
 - [google-free-tier-apis](.agent/memory/project/google-free-tier-apis.md) - Google AI Studio free tier APIs: TTS (3 req/min, PCM→WAV), embedding, chat, image gen status
 - [edge-tts](.agent/memory/project/edge-tts.md) - Microsoft Edge TTS via Python: free, no API key, zh-TW neural voices, MP3 output, Windows-tested
@@ -143,6 +148,8 @@ All memory — project knowledge, user feedback, preferences — lives here. Thi
 - [zai-provider](.agent/memory/reference/zai-provider.md) - z.ai API provider: Z_AI_API_KEY alias, model IDs (glm-4.5/4.6), pi-ai compat
 
 ### feedback/
+- [character-facing-convention](.agent/memory/feedback/character-facing-convention.md) - ALL galgame character images face LEFT by default, Remotion flip rules by side position
+- [no-playwright-visual-verify](.agent/memory/feedback/no-playwright-visual-verify.md) - Don't use Playwright + image analysis to verify Remotion layout — trust math, render output, let user verify
 - [skill-creation](.agent/memory/feedback/skill-creation.md) - Skill structure: v2 load-on-demand (SKILL.md + engines/ + platforms/ + env-check.md) vs v1 (references/ + scripts/)
 - [no-cd-in-bash](.agent/memory/feedback/no-cd-in-bash.md) - Never cd in Bash tool — CWD persists across calls causing silent failures
 - [generate-image-skill](.agent/memory/feedback/generate-image-skill.md) - Lessons learned: use browser_run_code for batch, Escape overlay before next prompt, aria-label selectors
@@ -152,6 +159,7 @@ All memory — project knowledge, user feedback, preferences — lives here. Thi
 - [parallel-bash-failure-cascade](.agent/memory/feedback/parallel-bash-failure-cascade.md) - isolate risky Bash calls; one failure cancels all parallel siblings
 - [galimage-gen](.agent/memory/feedback/galimage-gen.md) - Galgame char images: always generate transparent BG + half-body upfront, never post-process
 - [galgame-video-lessons](.agent/memory/feedback/galgame-video-lessons.md) - AI can't make transparent PNGs (use rembg), TTS must match dialog text, solid BGs cause black frames, Run button selector fix
+- [battle-effects-ep2](.agent/memory/feedback/battle-effects-ep2.md) - Battle FX improvements: AnimatedLine primitive, EnergyWave (multi-line arcs), KamehamehaBeam (charge→fire→impact), ScreenShake
 
 ## Convention
 

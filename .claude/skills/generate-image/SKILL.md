@@ -236,9 +236,17 @@ async (page) => {
 When generating character sprites for galgame-style Remotion videos, **always include these in the prompt**:
 
 ```
-half-body portrait (waist up), transparent PNG background, no background,
-school uniform, facing viewer, high quality anime illustration
+half-body portrait (waist up), solid magenta #FF00FF background,
+no background detail, facing LEFT, high quality anime illustration
 ```
+
+### CRITICAL CONVENTION: ALL character images MUST face LEFT
+
+This applies to **every** character image — normal sprites, chibi (Q版), battle poses, alternate outfits. A consistent base direction makes Remotion flip logic deterministic:
+- Raw image → character **always** faces LEFT
+- `side="left"` → `scaleX(-1)` flips to face RIGHT toward partner
+- `side="right"` → no flip, already facing LEFT toward partner
+- `side="center"` → no flip (facing audience)
 
 ### CRITICAL: AI models CANNOT produce transparent backgrounds
 
@@ -281,26 +289,41 @@ a = np.array(Image.open('character.png'))
 print(f'Transparent pixels: {(a[:,:,3]==0).sum()}/{a.size}')
 ```
 
-### Why include "transparent background" in prompts?
+### Why use solid magenta #FF00FF background?
 
-Even though AI can't actually produce transparency, asking for "no background" / simple backgrounds makes rembg's job easier:
-- Solid/simple backgrounds are easier to remove than complex scenes
-- The subject is more cleanly separated from the background
+Even though AI can't produce transparency, using a solid magenta background makes rembg's job easier:
+- Magenta is rarely part of character designs, so rembg separates cleanly
+- Solid color backgrounds are easier to remove than complex scenes
 - Fewer artifacts around hair and clothing edges
 
-### Prompt template:
+### Prompt templates:
+
+**Normal sprite:**
 ```
 anime style [gender] character, [appearance details], [outfit],
-half-body portrait waist up, facing viewer, no background,
-high quality anime illustration
+facing LEFT, half-body portrait waist up, solid magenta #FF00FF background,
+no background detail, high quality anime illustration
 ```
 
-**Example batch for a school galgame:**
+**Chibi (Q版) sprite:**
+```
+chibi SD super deformed anime style [description], facing LEFT,
+[outfit], very round head, tiny body, chibi proportions (head 2/3 of body),
+half-body portrait, solid magenta #FF00FF background, clean edges,
+no background detail, high quality chibi anime illustration
+```
+
+**Naming convention:**
+- Normal: `<name>.png` (e.g., `xiuxiu.png`)
+- Chibi: `<name>-chibi.png` (e.g., `xiuxiu-chibi.png`)
+
+**Example batch with both normal and chibi:**
 ```js
 const characters = [
-  { file: 'xiaoming.png', prompt: 'anime style boy, brown messy hair, cheerful smile, white shirt red tie blue sweater vest school uniform, half-body portrait waist up, facing viewer, no background, high quality anime illustration' },
-  { file: 'xiaomei.png', prompt: 'anime style girl, long brown hair pink bows, gentle smile, white shirt pink bow tie gray pleated skirt school uniform, half-body portrait waist up, facing viewer, no background, high quality anime illustration' },
-  { file: 'teacher.png', prompt: 'anime style male teacher, short dark hair glasses, white shirt blue gold tie formal attire, half-body portrait waist up, facing viewer, no background, high quality anime illustration' },
+  { file: 'xiuxiu.png', prompt: 'anime style male cultivator, messy dark blue hair ponytail, blue eyes, white blue robes, facing LEFT, half-body portrait waist up, solid magenta #FF00FF background, no background detail, high quality anime illustration' },
+  { file: 'xiuxiu-chibi.png', prompt: 'chibi SD super deformed anime style male cultivator, messy dark blue hair ponytail, big sparkly blue eyes, cute white blue robes, facing LEFT, very round head tiny body, chibi proportions head 2/3 body, half-body portrait, solid magenta #FF00FF background, no background detail, high quality chibi anime illustration' },
+  { file: 'shijie.png', prompt: 'anime style female cultivator, long pink hair ornaments, red eyes, red white robes, facing LEFT, half-body portrait waist up, solid magenta #FF00FF background, no background detail, high quality anime illustration' },
+  { file: 'shijie-chibi.png', prompt: 'chibi SD super deformed anime style female cultivator, long pink hair ornaments, big red eyes, cute red white robes, facing LEFT, very round head tiny body, chibi proportions head 2/3 body, half-body portrait, solid magenta #FF00FF background, no background detail, high quality chibi anime illustration' },
 ];
 ```
 

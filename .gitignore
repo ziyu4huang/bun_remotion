@@ -16,3 +16,7 @@ dist/
 graphify-out/
 tmp/
 **/tsconfig.tsbuildinfo
+# Playwright/browser screenshots in repo root
+/*.png
+/*.jpeg
+/*.jpg

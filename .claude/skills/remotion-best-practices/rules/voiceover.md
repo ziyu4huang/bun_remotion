@@ -407,3 +407,47 @@ main();
 
 - `bun_remotion_proj/claude-code-intro/` — edge-tts English, 4 scenes, MP3, `durations.json`
 - `bun_remotion_proj/taiwan-stock-market/` — Gemini/mlx_tts Chinese, 7 scenes, WAV, `durations.json`
+- `bun_remotion_proj/xianxia-system-meme-ep1/` — mlx_tts multi-voice Chinese, per-character segments, WAV, voice manifest
+
+---
+
+## Manifests — AI-readable metadata for regeneration
+
+### Voice manifest (`public/audio/voice-manifest.json`)
+
+For multi-character videos, generate a `voice-manifest.json` alongside audio files.
+This allows AI to understand which voice was used for each segment and regenerate correctly if needed.
+
+```json
+[
+  {
+    "scene": "JokeScene1",
+    "file": "02-joke1.wav",
+    "segments": [
+      { "character": "xiuxiu", "voice": "uncle_fu", "voiceDescription": { "voice": "uncle_fu", "gender": "male", "accent": "standard Mandarin" }, "text": "啊頭好痛..." },
+      { "character": "system", "voice": "serena", "voiceDescription": { "voice": "serena", "gender": "female", "accent": "standard Mandarin" }, "text": "叮，修仙系統..." }
+    ]
+  }
+]
+```
+
+### Image manifest (`public/images/manifest.json`)
+
+Describes each character image with its generation prompt, facing direction, and post-processing steps.
+Allows AI to understand and regenerate images correctly.
+
+```json
+[
+  {
+    "file": "xiuxiu.png",
+    "type": "normal",
+    "character": "xiuxiu",
+    "facing": "LEFT",
+    "prompt": "anime style male cultivator..., facing LEFT, solid magenta #FF00FF background...",
+    "backgroundStrategy": "solid magenta #FF00FF, remove with rembg",
+    "postProcess": "rembg background removal → verify transparency"
+  }
+]
+```
+
+**Pattern:** Both manifests are written by scripts (`generate-tts.ts`, `image-manifest.ts`) so they stay in sync with code.
