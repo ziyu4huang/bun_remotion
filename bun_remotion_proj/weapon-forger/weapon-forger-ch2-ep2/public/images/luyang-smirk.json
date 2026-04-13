@@ -1,0 +1,9 @@
+{
+  "file": "luyang-smirk.png",
+  "type": "pose",
+  "character": "luyang",
+  "pose": "smirk",
+  "facing": "LEFT",
+  "prompt": "anime style male cultivator, young man with sky-blue themed robes, neat short hair, smug satisfied grin, proud expression as if his surrender logic was genius, one eye closed in confidence, half-body portrait, transparent background",
+  "backgroundStrategy": "solid magenta #FF00FF, remove with rembg"
+}

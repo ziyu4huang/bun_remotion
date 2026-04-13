@@ -1,0 +1,8 @@
+{
+  "file": "mengjingzhou.png",
+  "type": "normal",
+  "character": "mengjingzhou",
+  "facing": "LEFT",
+  "prompt": "anime style male cultivator, young man with orange themed scholarly robes, refined neat black hair tied back in a topknot, thin spectacles, scholarly intellectual appearance, carrying a scroll or book, composed learned demeanor, half-body portrait, transparent background",
+  "backgroundStrategy": "solid magenta #FF00FF, remove with rembg"
+}

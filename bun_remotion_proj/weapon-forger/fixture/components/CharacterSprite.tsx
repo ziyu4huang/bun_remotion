@@ -1,7 +1,7 @@
 import React from "react";
 import { Img, staticFile } from "remotion";
 import { useCurrentFrame, useVideoConfig, interpolate, spring } from "remotion";
-import { CHARACTERS, type Character, type ComicEffect } from "../characters";
+import { CHARACTERS, resolveCharacterImage, type Character, type CharacterPose, type ComicEffect } from "../characters";
 
 /**
  * Enhanced CharacterSprite with more obvious animation effects.
@@ -17,6 +17,7 @@ import { CHARACTERS, type Character, type ComicEffect } from "../characters";
 interface CharacterSpriteProps {
   character: Character;
   image?: string;
+  pose?: CharacterPose;
   chibi?: boolean;
   chibiImage?: string;
   speaking?: boolean;
@@ -28,6 +29,7 @@ interface CharacterSpriteProps {
 export const CharacterSprite: React.FC<CharacterSpriteProps> = ({
   character,
   image,
+  pose,
   chibi = false,
   chibiImage,
   speaking = true,
@@ -154,10 +156,12 @@ export const CharacterSprite: React.FC<CharacterSpriteProps> = ({
   // Face direction
   const faceMirror = side === "left" ? -1 : 1;
 
+  // Priority: chibi > explicit image > pose-resolved > null (placeholder)
+  const resolvedImage = image || resolveCharacterImage(character, pose);
   const imgSrc = chibi && chibiImage
     ? staticFile(`images/${chibiImage}`)
-    : image
-    ? staticFile(`images/${image}`)
+    : resolvedImage
+    ? staticFile(`images/${resolvedImage}`)
     : null;
 
   return (

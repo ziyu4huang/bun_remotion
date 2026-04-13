@@ -1,0 +1,12 @@
+{
+  "file": "xiaoelder-default.png",
+  "type": "emotion",
+  "emotion": "default",
+  "character": "xiaoelder",
+  "facing": "LEFT",
+  "description": "蕭長老 — 天道宗長老，嚴肅威嚴的表情。長鬚，紫色長袍，手持拂塵。",
+  "prompt": "anime style male elder cultivator, old man in his 60s, purple themed elegant elder robes with star and moon patterns, long white beard, stern authoritative expression, holding a horse-tail whisk, dignified posture, half-body portrait, transparent background, solid magenta #FF00FF background",
+  "backgroundStrategy": "solid magenta #FF00FF, remove with rembg",
+  "color": "#A78BFA",
+  "width": "800-1200px"
+}

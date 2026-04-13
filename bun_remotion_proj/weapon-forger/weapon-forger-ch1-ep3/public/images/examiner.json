@@ -1,0 +1,8 @@
+{
+  "file": "examiner.png",
+  "type": "normal",
+  "character": "examiner",
+  "facing": "LEFT",
+  "prompt": "anime style female cultivation sect examiner, mature woman in elegant green-tea themed robes, stern authoritative expression, hair in a neat bun with jade hairpin, arms crossed, holding a jade tablet clipboard, half-body portrait, transparent background",
+  "backgroundStrategy": "solid magenta #FF00FF, remove with rembg"
+}

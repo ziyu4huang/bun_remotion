@@ -5,12 +5,12 @@ description: >
   "gemini image", "imagen", "/generate-image", "nano banana".
   Triggers on: image generation, AI Studio, gemini image gen.
 metadata:
-  version: 2.0.0
+  version: 3.0.0
 ---
 
 # /generate-image — AI Image Generation via Google AI Studio
 
-Generate images using Google's Nano Banana (Gemini) model through the Google AI Studio web interface, automated via Playwright.
+Generate images using Google's Nano Banana (Gemini) model through the Google AI Studio web interface, automated via `playwright-cli`.
 
 ---
 
@@ -38,11 +38,11 @@ Generate images using Google's Nano Banana (Gemini) model through the Google AI 
 
 ## Models
 
-| Model | Tier | Flag | Description |
-|-------|------|------|-------------|
-| Nano Banana | Free | `free` (default) | gemini-2.5-flash-image, state-of-the-art image gen |
-| Nano Banana 2 | Paid | `pro2` | Pro-level visual intelligence, Flash-speed |
-| Nano Banana Pro | Paid | `pro` | State-of-the-art image generation and editing |
+| Model | Tier | Flag | URL param | Description |
+|-------|------|------|-----------|-------------|
+| Nano Banana | Free | `free` (default) | `model=gemini-2.5-flash-image` | state-of-the-art image gen |
+| Nano Banana 2 | Paid | `pro2` | `model=gemini-2.5-flash-preview-image-generation` | Pro-level visual intelligence, Flash-speed |
+| Nano Banana Pro | Paid | `pro` | `model=gemini-2.5-pro-preview-06-05` | State-of-the-art image generation and editing |
 
 ---
 
@@ -50,125 +50,126 @@ Generate images using Google's Nano Banana (Gemini) model through the Google AI 
 
 Follow these steps **in order**.
 
-### Step 1: Check browser state
-- If no browser is open or not on Google AI Studio, navigate to: `https://aistudio.google.com/prompts/new_chat`
-- If user is not logged in, **STOP** and tell the user to log in first. Wait for them to confirm login.
-- Dismiss any "Terms of Service" dialog by clicking "Dismiss"
+### Step 1: Open browser and check login state
+
+```bash
+playwright-cli open https://aistudio.google.com/prompts/new_chat
+```
+
+Take a snapshot to verify page state:
+```bash
+playwright-cli snapshot
+```
+
+- If user is not logged in (redirected to login page), **STOP** and tell the user to log in first. Wait for them to confirm login.
+- If a "Terms of Service" dialog appears, click the Dismiss button using the ref from the snapshot.
+- Dismiss any toast/banner by pressing Escape: `playwright-cli press Escape`
 
 ### Step 2: Select model
-1. Take a snapshot to see current page state
-2. Look for "Image Generation" category button — click it
-3. Wait for the model list to appear, take another snapshot
+
+1. Take a snapshot: `playwright-cli snapshot`
+2. Look for "Image Generation" category button in the snapshot — click it using its ref
+3. Take another snapshot to see the model list
 4. Select the appropriate model based on the tier flag:
-   - `free`: Click button with heading "Nano Banana" that does NOT have a "Paid" badge nearby
-   - `pro`: Click button with heading "Nano Banana Pro" (has "Paid" badge)
-   - `pro2`: Click button with heading "Nano Banana 2" (has "Paid" badge)
-5. Verify the URL contains the correct model parameter (e.g. `model=gemini-2.5-flash-image`)
+   - `free`: Click "Nano Banana" button (does NOT have a "Paid" badge)
+   - `pro`: Click "Nano Banana Pro" button (has "Paid" badge)
+   - `pro2`: Click "Nano Banana 2" button (has "Paid" badge)
+5. Verify the URL changed to include the correct model parameter
 
-### Step 3: Generate and download image (use `browser_run_code`)
+### Step 3: Generate and download image
 
-Use `browser_run_code` to execute the entire generate-and-download workflow atomically. This is faster and more reliable than individual MCP tool calls.
+Use `playwright-cli run-code` to execute the entire generate-and-download workflow atomically. This is faster and more reliable than individual CLI commands.
 
 **Single image:**
-```js
-async (page) => {
+```bash
+playwright-cli run-code "async page => {
   const prompt = 'YOUR_PROMPT_HERE';
   const outputPath = '/absolute/path/to/output.png';
 
-  // 1. Fill prompt and append to chat
+  // 1. Fill prompt
   const textbox = page.getByRole('textbox', { name: 'Enter a prompt' });
   await textbox.fill(prompt);
-  await page.keyboard.press('Alt+Enter');
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(300);
 
-  // 2. Click "Run the prompt" — MUST use evaluate() to bypass overlay interception
-  await page.evaluate(() => {
-    document.querySelector('[aria-label="Run the prompt"]')?.click();
-  });
+  // 2. Click Run button
+  const runButton = page.locator(\"button:has-text('Run'):not([disabled])\").first();
+  await runButton.click();
 
   // 3. Wait for generation to complete
-  await page.locator('text=Response ready.').last().waitFor({ timeout: 40000 });
+  await page.locator('text=Response ready.').last().waitFor({ timeout: 60000 });
+  await page.waitForTimeout(1000);
 
-  // 4. Download the last generated image
+  // 4. Download the generated image
   const [download] = await Promise.all([
     page.waitForEvent('download', { timeout: 15000 }),
     (async () => {
       await page.getByRole('img', { name: /Generated Image/ }).last().click();
       await page.waitForTimeout(800);
-      await page.locator('button:has-text("Download")').first().click();
+      await page.locator(\"button:has-text('Download')\").first().click();
     })()
   ]);
-
   await download.saveAs(outputPath);
 
   // 5. Dismiss overlay
   await page.keyboard.press('Escape');
   await page.waitForTimeout(500);
 
-  return `Saved: ${outputPath}`;
-}
+  return 'Saved: ' + outputPath;
+}"
 ```
 
-**Multiple images (batch):**
-```js
-async (page) => {
+**Multiple images (batch) — use NEW CHAT for each image:**
+```bash
+playwright-cli run-code "async page => {
   const images = [
     { file: 'name1.png', prompt: 'prompt 1' },
     { file: 'name2.png', prompt: 'prompt 2' },
-    // ...
   ];
   const baseDir = '/absolute/path/to/output/dir';
   const results = [];
 
   for (const { file, prompt } of images) {
     try {
-      // Use NEW CHAT for each image — more reliable than multi-turn
+      // NEW CHAT for each image — more reliable than multi-turn
       await page.goto('https://aistudio.google.com/prompts/new_chat?model=gemini-2.5-flash-image');
       await page.waitForTimeout(2000);
-      await page.keyboard.press('Escape'); // dismiss toast
+      await page.keyboard.press('Escape');
       await page.waitForTimeout(500);
 
-      // Fill prompt
       const textbox = page.getByRole('textbox', { name: 'Enter a prompt' });
       await textbox.waitFor({ state: 'visible', timeout: 10000 });
       await textbox.fill(prompt);
       await page.waitForTimeout(300);
 
-      // Click Run button — use text selector, NOT aria-label
-      const runButton = page.locator('button:has-text("Run"):not([disabled])').first();
+      const runButton = page.locator(\"button:has-text('Run'):not([disabled])\").first();
       await runButton.waitFor({ state: 'visible', timeout: 5000 });
       await runButton.click();
 
-      // Wait for response
       await page.locator('text=Response ready.').last().waitFor({ timeout: 60000 });
-      await page.waitForTimeout(1000); // Extra buffer for image rendering
+      await page.waitForTimeout(1000);
 
-      // Download
       const [download] = await Promise.all([
         page.waitForEvent('download', { timeout: 15000 }),
         (async () => {
           await page.getByRole('img', { name: /Generated Image/ }).last().click();
           await page.waitForTimeout(800);
-          await page.locator('button:has-text("Download")').first().click();
+          await page.locator(\"button:has-text('Download')\").first().click();
         })()
       ]);
-
-      await download.saveAs(`${baseDir}/${file}`);
-      results.push(`${file}: OK`);
+      await download.saveAs(baseDir + '/' + file);
+      results.push(file + ': OK');
     } catch (err) {
-      results.push(`${file}: FAILED - ${err.message}`);
-      // Try to recover by pressing Escape
+      results.push(file + ': FAILED - ' + err.message);
       await page.keyboard.press('Escape').catch(() => {});
       await page.waitForTimeout(1000);
     }
   }
-
-  return results.join('\n');
-}
+  return results.join('\\n');
+}"
 ```
 
 ### Step 4: Confirm and show result
-1. Verify the file exists using Bash `ls -la`
+1. Verify the file exists: `ls -la <output-path>`
 2. Display the image to the user using the Read tool
 3. Report: filename, file size, and the prompt used
 
@@ -179,18 +180,18 @@ async (page) => {
 - Default output directory: `./output/`
 - `output/` is in `.gitignore` (won't be committed)
 - Image format: PNG
-- Use `--output <path>` to save to a custom location
+- Use `--output <path>` to save to a custom path
 
 ---
 
 ## Key Selectors
 
-| Element | Selector | Notes |
-|---------|----------|-------|
+| Element | Selector (for `run-code`) | Notes |
+|---------|---------------------------|-------|
 | Prompt textbox | `page.getByRole('textbox', { name: 'Enter a prompt' })` | Must be visible (no overlay) |
-| Run the prompt | `page.locator('button:has-text("Run"):not([disabled])').first()` | **Use text selector** — aria-label "Run the prompt" is unreliable |
+| Run the prompt | `page.locator("button:has-text('Run'):not([disabled])").first()` | **Use text selector** — aria-label is unreliable |
 | Generated image | `page.getByRole('img', { name: /Generated Image/ }).last()` | Use `.last()` for latest |
-| Download button | `page.locator('button:has-text("Download")').first()` | Only visible after clicking image |
+| Download button | `page.locator("button:has-text('Download')").first()` | Only visible after clicking image |
 | Response ready | `page.locator('text=Response ready.').last()` | Wait for this before downloading |
 | Image overlay dismiss | `page.keyboard.press('Escape')` | MUST press before next prompt |
 
@@ -201,19 +202,19 @@ async (page) => {
 | Situation | Action |
 |-----------|--------|
 | User not logged in | Stop and ask user to log in |
-| Model button not found | Take screenshot, ask user to verify page state |
+| Model button not found | Take snapshot, ask user to verify page state |
 | Run button disabled | Check if prompt was entered correctly |
 | Textbox not visible | Press Escape to dismiss any overlay, retry |
 | Image generation fails | Check for error messages, retry once |
 | Download not triggered | Try clicking the image again, wait longer |
-| Playwright not connected | Tell user to ensure Playwright MCP plugin is running |
+| `run-code` fails | Check playwright-cli is installed: `playwright-cli --version` |
 | `textbox.fill()` timeout | Overlay is blocking — press Escape first |
 
 ---
 
 ## Prerequisites
 
-- Playwright MCP plugin must be running
+- `playwright-cli` must be installed (`npm install -g @playwright/cli@latest` or `npx playwright-cli`)
 - User must have a Google account logged in
 - For paid tiers, user must have billing configured in Google AI Studio
 
@@ -221,13 +222,13 @@ async (page) => {
 
 ## Tips
 
-- **Always use `browser_run_code`** for multi-step operations — it's 5-10x faster than individual MCP tool calls
-- **CRITICAL: Use text-based Run button selector** — `page.locator('button:has-text("Run"):not([disabled])').first()` is reliable. The `aria-label="Run the prompt"` selector is NOT always present.
-- **For batch: ALWAYS use new chat per image** — `page.goto('https://aistudio.google.com/prompts/new_chat?model=gemini-2.5-flash-image')` is more reliable than multi-turn in one chat
+- **Always use `run-code`** for the generate-and-download workflow — it's 5-10x faster than individual CLI commands
+- **For batch: ALWAYS use new chat per image** — `page.goto('...new_chat?model=...')` is more reliable than multi-turn
 - **Always press Escape after download** — the image overlay blocks the textbox
 - **Use `.last()` selectors** — in multi-turn chats, always target the last occurrence
 - **Wait for "Response ready."** — don't use fixed timeouts; wait for the actual signal
 - **The image is a data URL** — if download fails, you can extract `src` attribute (base64) as fallback
+- **Close browser when done**: `playwright-cli close`
 
 ---
 
@@ -316,15 +317,50 @@ no background detail, high quality chibi anime illustration
 **Naming convention:**
 - Normal: `<name>.png` (e.g., `xiuxiu.png`)
 - Chibi: `<name>-chibi.png` (e.g., `xiuxiu-chibi.png`)
+- Pose: `<name>-<pose>.png` (e.g., `zhoumo-angry.png`)
 
 **Example batch with both normal and chibi:**
-```js
-const characters = [
-  { file: 'xiuxiu.png', prompt: 'anime style male cultivator, messy dark blue hair ponytail, blue eyes, white blue robes, facing LEFT, half-body portrait waist up, solid magenta #FF00FF background, no background detail, high quality anime illustration' },
-  { file: 'xiuxiu-chibi.png', prompt: 'chibi SD super deformed anime style male cultivator, messy dark blue hair ponytail, big sparkly blue eyes, cute white blue robes, facing LEFT, very round head tiny body, chibi proportions head 2/3 body, half-body portrait, solid magenta #FF00FF background, no background detail, high quality chibi anime illustration' },
-  { file: 'shijie.png', prompt: 'anime style female cultivator, long pink hair ornaments, red eyes, red white robes, facing LEFT, half-body portrait waist up, solid magenta #FF00FF background, no background detail, high quality anime illustration' },
-  { file: 'shijie-chibi.png', prompt: 'chibi SD super deformed anime style female cultivator, long pink hair ornaments, big red eyes, cute red white robes, facing LEFT, very round head tiny body, chibi proportions head 2/3 body, half-body portrait, solid magenta #FF00FF background, no background detail, high quality chibi anime illustration' },
-];
+```bash
+playwright-cli run-code "async page => {
+  const characters = [
+    { file: 'xiuxiu.png', prompt: 'anime style male cultivator, messy dark blue hair ponytail, blue eyes, white blue robes, facing LEFT, half-body portrait waist up, solid magenta #FF00FF background, no background detail, high quality anime illustration' },
+    { file: 'xiuxiu-chibi.png', prompt: 'chibi SD super deformed anime style male cultivator, messy dark blue hair ponytail, big sparkly blue eyes, cute white blue robes, facing LEFT, very round head tiny body, chibi proportions head 2/3 body, half-body portrait, solid magenta #FF00FF background, no background detail, high quality chibi anime illustration' },
+  ];
+  const baseDir = '/absolute/path/to/output';
+  const results = [];
+  for (const { file, prompt } of characters) {
+    try {
+      await page.goto('https://aistudio.google.com/prompts/new_chat?model=gemini-2.5-flash-image');
+      await page.waitForTimeout(2000);
+      await page.keyboard.press('Escape');
+      await page.waitForTimeout(500);
+      const textbox = page.getByRole('textbox', { name: 'Enter a prompt' });
+      await textbox.waitFor({ state: 'visible', timeout: 10000 });
+      await textbox.fill(prompt);
+      await page.waitForTimeout(300);
+      const runButton = page.locator(\"button:has-text('Run'):not([disabled])\").first();
+      await runButton.waitFor({ state: 'visible', timeout: 5000 });
+      await runButton.click();
+      await page.locator('text=Response ready.').last().waitFor({ timeout: 60000 });
+      await page.waitForTimeout(1000);
+      const [download] = await Promise.all([
+        page.waitForEvent('download', { timeout: 15000 }),
+        (async () => {
+          await page.getByRole('img', { name: /Generated Image/ }).last().click();
+          await page.waitForTimeout(800);
+          await page.locator(\"button:has-text('Download')\").first().click();
+        })()
+      ]);
+      await download.saveAs(baseDir + '/' + file);
+      results.push(file + ': OK');
+    } catch (err) {
+      results.push(file + ': FAILED - ' + err.message);
+      await page.keyboard.press('Escape').catch(() => {});
+      await page.waitForTimeout(1000);
+    }
+  }
+  return results.join('\\n');
+}"
 ```
 
 See `/remotion-best-practices` → `rules/galgame.md` for full galgame rendering patterns.

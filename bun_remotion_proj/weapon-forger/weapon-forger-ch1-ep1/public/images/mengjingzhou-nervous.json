@@ -1,0 +1,9 @@
+{
+  "file": "mengjingzhou-nervous.png",
+  "type": "pose",
+  "character": "mengjingzhou",
+  "pose": "nervous",
+  "facing": "LEFT",
+  "prompt": "anime style male cultivator, young man with orange themed scholarly robes, refined neat hair tied back, awkward nervous expression, looking away uncomfortably, adjusting spectacles repeatedly, uncharacteristically flustered scholar, half-body portrait, transparent background",
+  "backgroundStrategy": "solid magenta #FF00FF, remove with rembg"
+}

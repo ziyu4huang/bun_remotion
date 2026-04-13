@@ -19,6 +19,7 @@ type: project
 | Ch1 Ep2 | weapon-forger-ch1-ep2 | 成績公布 | Title + 2 Content + Outro | ~4min |
 | Ch1 Ep3 | weapon-forger-ch1-ep3 | 丹爐修復 | Title + 2 Content + Outro | ~4min |
 | Ch2 Ep1 | weapon-forger-ch2-ep1 | 禍害成軍 | Title + 2 Content + Outro | ~4.5min |
+| Ch2 Ep2 | weapon-forger-ch2-ep2 | 低語洞窟 | Title + 2 Content + Outro | ~3.8min |
 
 ## Characters
 | Character | Name | Color | Voice | Side | Images |
@@ -28,6 +29,7 @@ type: project
 | elder | 長老 | #A78BFA (purple) | uncle_fu (male) | center | elder.png |
 | luyang | 陸陽 | #38BDF8 (sky blue) | uncle_fu (male) | center | luyang.png |
 | mengjingzhou | 孟景舟 | #FB923C (orange) | uncle_fu (male) | right | mengjingzhou.png |
+| soul | 滄溟子 | #A78BFA (purple) | uncle_fu (male) | center | elder.png (ghost effect) |
 
 ## Style Consistency Rules (MUST follow for all episodes)
 - **Title scene**: Clean gradient background (#0a0a1e→#1a0a2e→#2a1a0e), spring-animated text, forge fire glow. NO battle effects in title.

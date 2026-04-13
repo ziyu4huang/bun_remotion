@@ -1,33 +1,45 @@
 #!/usr/bin/env bash
-# Copy fixture images to all episodes (NOT symlinks — Remotion's static server
-# doesn't reliably follow symlinks, causing 404 errors during render).
-# Run after fresh clone: bash bun_remotion_proj/weapon-forger/fixture/scripts/sync-images.sh
+# Sync fixture images to all episodes.
+# - Converts any existing symlinks to real files first (Remotion can't follow symlinks)
+# - Uses rsync --ignore-existing so episode-specific images are never overwritten
+# Run after adding new poses: bash bun_remotion_proj/weapon-forger/fixture/scripts/sync-images.sh
 set -eo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 FIXTURE="$SCRIPT_DIR/.."
 GROUP_DIR="$(cd "$FIXTURE/.." && pwd)"
 
-echo "Syncing images from fixture to episodes (copying, not symlinking)..."
+echo "Syncing images from fixture to episodes..."
 
 for ep_dir in "$GROUP_DIR"/weapon-forger-ch*-ep*/; do
   ep_name="$(basename "$ep_dir")"
   img_dir="$ep_dir/public/images"
   mkdir -p "$img_dir"
 
-  # Copy character images
-  for img in "$FIXTURE"/characters/*.png; do
-    [ -f "$img" ] || continue
-    cp -f "$img" "$img_dir/$(basename "$img")"
-    echo "  $ep_name: $(basename "$img")"
+  # Convert any existing symlinks to real files (Remotion can't follow symlinks)
+  for link in "$img_dir"/*.png "$img_dir"/*.json; do
+    [ -L "$link" ] || continue
+    target="$(readlink "$link")"
+    # Resolve relative path from symlink location
+    if [[ "$target" != /* ]]; then
+      target="$(cd "$(dirname "$link")" && cd "$(dirname "$target")" && pwd)/$(basename "$target")"
+    fi
+    if [ -f "$target" ]; then
+      rm "$link"
+      cp "$target" "$link"
+      echo "  $ep_name: converted symlink $(basename "$link")"
+    fi
   done
 
-  # Copy background images
-  for img in "$FIXTURE"/backgrounds/*.png; do
-    [ -f "$img" ] || continue
-    cp -f "$img" "$img_dir/$(basename "$img")"
-    echo "  $ep_name: $(basename "$img")"
-  done
+  # Sync character images (skip files already in episode)
+  rsync --ignore-existing "$FIXTURE"/characters/*.png "$img_dir/" 2>/dev/null || true
+  # Sync character JSON metadata
+  rsync --ignore-existing "$FIXTURE"/characters/*.json "$img_dir/" 2>/dev/null || true
+
+  # Sync background images
+  rsync --ignore-existing "$FIXTURE"/backgrounds/*.png "$img_dir/" 2>/dev/null || true
+
+  echo "  $ep_name: synced"
 done
 
-echo "Done. All episodes synced with fixture images."
+echo "Done. Fixture images synced (episode-specific files preserved)."

@@ -15,7 +15,7 @@ REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 # Use system Chrome instead of per-app downloaded chrome-headless-shell
 export REMOTION_CHROME_EXECUTABLE_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 
-ALL_APPS="claude-code-intro taiwan-stock-market three-little-pigs galgame-youth-jokes galgame-meme-theater-ep1 galgame-meme-theater-ep2 galgame-meme-theater-ep3 galgame-meme-theater-ep4 galgame-meme-theater-ep5 galgame-meme-theater-ep6 galgame-meme-theater-test-image xianxia-system-meme-ep1 xianxia-system-meme-ep2 weapon-forger-ch1-ep1 weapon-forger-ch1-ep2 weapon-forger-ch1-ep3 weapon-forger-ch2-ep1 commentary-style"
+ALL_APPS="claude-code-intro taiwan-stock-market three-little-pigs galgame-youth-jokes galgame-meme-theater-ep1 galgame-meme-theater-ep2 galgame-meme-theater-ep3 galgame-meme-theater-ep4 galgame-meme-theater-ep5 galgame-meme-theater-ep6 galgame-meme-theater-test-image xianxia-system-meme-ep1 xianxia-system-meme-ep2 weapon-forger-ch1-ep1 weapon-forger-ch1-ep2 weapon-forger-ch1-ep3 weapon-forger-ch2-ep1 weapon-forger-ch2-ep2 commentary-style"
 
 # Resolve composition ID from app directory name
 get_comp_id() {
@@ -37,6 +37,7 @@ get_comp_id() {
         weapon-forger-ch1-ep2)    echo "WeaponForgerCh1Ep2" ;;
         weapon-forger-ch1-ep3)    echo "WeaponForgerCh1Ep3" ;;
         weapon-forger-ch2-ep1)    echo "WeaponForgerCh2Ep1" ;;
+        weapon-forger-ch2-ep2)    echo "WeaponForgerCh2Ep2" ;;
         commentary-style)         echo "CommentaryStyle" ;;
         *) return 1 ;;
     esac

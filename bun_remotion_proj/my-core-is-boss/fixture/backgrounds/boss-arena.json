@@ -1,0 +1,7 @@
+{
+  "file": "boss-arena.png",
+  "description": "BOSS 戰場 — 廣闊的競技場，魔法陣法地板，觀眾席。用於 Ch3 BOSS 戰和 Ch5 決賽。",
+  "prompt": "anime style fantasy boss battle arena, vast circular arena with glowing magic circle pattern on the stone floor, towering ancient columns around the perimeter, raised spectator seats filled with tiny silhouettes, dramatic overhead lighting beams, epic battle atmosphere, cinematic wide shot, 1920x1080 aspect ratio, no text no watermark",
+  "color": "#0a0a2e",
+  "chapters": [3, 5, 9]
+}

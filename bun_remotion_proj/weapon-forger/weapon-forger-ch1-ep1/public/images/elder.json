@@ -1,0 +1,8 @@
+{
+  "file": "elder.png",
+  "type": "normal",
+  "character": "elder",
+  "facing": "LEFT",
+  "prompt": "anime style elderly male cultivation sect elder, long white beard flowing, purple themed grand robes with golden embroidery, wise mysterious eyes, long white hair in a topknot with ornate hairpin, one hand holding a glowing forging hammer, authoritative yet enigmatic presence, half-body portrait, transparent background",
+  "backgroundStrategy": "solid magenta #FF00FF, remove with rembg"
+}

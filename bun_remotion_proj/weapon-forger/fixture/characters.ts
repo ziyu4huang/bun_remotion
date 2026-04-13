@@ -28,7 +28,32 @@ export const { fontFamily: zhiMangXing } = loadZhiMangXing();
  * - 長老 (Elder) — 問道宗煉器峰長老，神秘評審
  */
 
-export type Character = "zhoumo" | "examiner" | "elder" | "luyang" | "mengjingzhou";
+export type Character = "zhoumo" | "examiner" | "elder" | "luyang" | "mengjingzhou" | "soul";
+
+export type CharacterPose = "angry" | "shocked" | "smirk" | "nervous";
+
+/**
+ * Pose image mapping per character.
+ * Default (no pose) uses <character>.png as before.
+ */
+export const CHARACTER_POSES: Partial<Record<Character, CharacterPose[]>> = {
+  zhoumo: ["angry", "shocked", "smirk", "nervous"],
+  luyang: ["angry", "shocked", "smirk", "nervous"],
+  mengjingzhou: ["angry", "shocked", "smirk", "nervous"],
+};
+
+/**
+ * Resolve image filename for a character + pose.
+ * pose undefined → <character>.png (base image)
+ * pose specified  → <character>-<pose>.png
+ */
+export function resolveCharacterImage(
+  character: Character,
+  pose?: CharacterPose
+): string {
+  if (pose) return `${character}-${pose}.png`;
+  return `${character}.png`;
+}
 
 export interface CharacterConfig {
   name: string;
@@ -74,6 +99,13 @@ export const CHARACTERS: Record<Character, CharacterConfig> = {
     position: "right",
     voice: "uncle_fu",
   },
+  soul: {
+    name: "滄溟子",
+    color: "#A78BFA",
+    bgColor: "rgba(167, 139, 250, 0.25)",
+    position: "center",
+    voice: "uncle_fu",
+  },
 };
 
 export type ComicEffect =
@@ -93,6 +125,7 @@ export type ComicEffect =
 export interface DialogLine {
   character: Character;
   text: string;
+  pose?: CharacterPose;
   effect?: ComicEffect | ComicEffect[];
   sfx?: MangaSfxEvent[];
 }

@@ -1,0 +1,8 @@
+{
+  "file": "zhoumo.png",
+  "type": "normal",
+  "character": "zhoumo",
+  "facing": "LEFT",
+  "prompt": "anime style male cultivator, young man in his early 20s, amber/gold themed robes with forge-fire patterns, slightly messy dark hair, round glasses giving a nerdy-engineer vibe, confident but slightly mischievous expression, holding a small mechanical device, half-body portrait, transparent background",
+  "backgroundStrategy": "solid magenta #FF00FF, remove with rembg"
+}

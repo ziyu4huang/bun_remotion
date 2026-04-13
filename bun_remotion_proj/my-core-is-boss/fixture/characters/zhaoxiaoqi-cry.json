@@ -1,0 +1,12 @@
+{
+  "file": "zhaoxiaoqi-cry.png",
+  "type": "emotion",
+  "emotion": "cry",
+  "character": "zhaoxiaoqi",
+  "facing": "LEFT",
+  "description": "趙小七 — 感動到哭。雙手握拳，熱淚盈眶，嘴巴抿著。",
+  "prompt": "anime style male cultivator, young man late teens, sky-blue themed disciple robes with cloud patterns, neat short black hair, deeply moved expression with tears streaming from closed eyes, fists clenched in emotion, trembling with admiration, half-body portrait, transparent background, solid magenta #FF00FF background",
+  "backgroundStrategy": "solid magenta #FF00FF, remove with rembg",
+  "color": "#38BDF8",
+  "width": "800-1200px"
+}

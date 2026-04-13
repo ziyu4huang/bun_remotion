@@ -83,6 +83,7 @@ Episode `generate-tts` script path: `../fixture/scripts/generate-tts.ts` (relati
 | ch1-ep2 | 成績公布 | zh-TW (Traditional) | zhoumo, examiner, elder | Complete |
 | ch1-ep3 | 丹爐修復 | zh-TW (Traditional) | zhoumo, elder | Complete |
 | ch2-ep1 | 禍害成軍 | zh-TW (Traditional) | zhoumo, luyang, mengjingzhou | Complete |
+| ch2-ep2 | 低語洞窟 | zh-TW (Traditional) | zhoumo, luyang, mengjingzhou, soul | Complete |
 
 ## Adding a New Episode
 
@@ -126,18 +127,21 @@ bash scripts/dev.sh studio weapon-forger-ch1-ep1
 bash scripts/dev.sh studio weapon-forger-ch1-ep2
 bash scripts/dev.sh studio weapon-forger-ch1-ep3
 bash scripts/dev.sh studio weapon-forger-ch2-ep1
+bash scripts/dev.sh studio weapon-forger-ch2-ep2
 
 # Render
 bash scripts/dev.sh render weapon-forger-ch1-ep1
 bash scripts/dev.sh render weapon-forger-ch1-ep2
 bash scripts/dev.sh render weapon-forger-ch1-ep3
 bash scripts/dev.sh render weapon-forger-ch2-ep1
+bash scripts/dev.sh render weapon-forger-ch2-ep2
 
 # TTS
 bun run generate-tts:wf-ch1-ep1
 bun run generate-tts:wf-ch1-ep2
 bun run generate-tts:wf-ch1-ep3
 bun run generate-tts:wf-ch2-ep1
+bun run generate-tts:wf-ch2-ep2
 ```
 
 ---
@@ -156,7 +160,7 @@ bun run generate-tts:wf-ch2-ep1
 
 **Ep1 — 禍害成軍：** 周墨在煉器峰改良壓力釋放模組，炸掉了第三個鍋爐。爆炸聲引來了正在附近練「投降劍法」的陸陽（核心招式：「我認輸」和「別打了」，防守效率極高——因為對手笑到沒力氣）。隨後孟景舟登場，天賦是「單身光環」（被動技能，方圓三丈內女性自動遠離）。他已經寫了七篇論文研究自己為什麼沒有女朋友。三人發現彼此的共同點——「都不正常」——成立了「問道宗邏輯修正小組」。招牌缺陷延續：周墨改良了壓力釋放模組但忘加防爆閥。
 
-周墨在炼器峰炸掉第三个锅炉时，遇到了正在路边练"投降剑法"的**陆阳**和自带单身光环的**孟景舟**。三人一拍即合，成立了"问道宗逻辑修正小组"。
+**Ep2 — 低語洞窟：** 邏輯修正小組第一次正式任務——探索後山的低語洞窟。洞窟裡住著上古劍仙滄溟子的殘魂，已嚇跑十七批弟子。周墨把殘魂當成「離線終端」來修復，修好後發現——滄溟子是問道宗第三代長老，他煉了一把宗門至寶「滄溟之劍」，但三千年来沒人能拔出來。原因：他忘記加拔劍按鈕。招牌缺陷延續：周墨說「原來忘加按鈕是家族遺傳」。
 
 ### 第三章：秘境探索
 
@@ -170,11 +174,11 @@ bun run generate-tts:wf-ch2-ep1
 
 Every episode MUST evolve these running gags — they are the series' identity.
 
-| 梗 | Ep1 | Ep2 | Ep3 | Ch2-Ep1 | Ep4+ |
-|----|-----|-----|-----|---------|------|
-| 忘加按鈕 | 忘加停止按鈕 | 飛劍仍收不回來 | 記得加定時休眠，但忘加音量控制 | 改良壓力釋放模組但忘加防爆閥 | TBD |
-| 現代科技用語 | 模組化設計、使用者體驗 | 演算法、手機 | 情感交互界面、系統升級 | 壓力釋放模組、演算法思維、被動技能、離線終端 | TBD |
-| 法寶反噬 | 飛劍搶儲物袋 | 考官袋未取回 | 丹爐半夜唱歌 | 第三個鍋爐爆炸 | TBD |
+| 梗 | Ep1 | Ep2 | Ep3 | Ch2-Ep1 | Ch2-Ep2 | Ep4+ |
+|----|-----|-----|-----|---------|---------|------|
+| 忘加按鈕 | 忘加停止按鈕 | 飛劍仍收不回來 | 記得加定時休眠，但忘加音量控制 | 改良壓力釋放模組但忘加防爆閥 | 滄溟子忘加拔劍按鈕 → 家族遺傳 | TBD |
+| 現代科技用語 | 模組化設計、使用者體驗 | 演算法、手機 | 情感交互界面、系統升級 | 壓力釋放模組、演算法思維、被動技能、離線終端 | 自動防禦系統、密碼重設、記憶區段、人工智慧、常規維護 | TBD |
+| 法寶反噬 | 飛劍搶儲物袋 | 考官袋未取回 | 丹爐半夜唱歌 | 第三個鍋爐爆炸 | 滄溟之劍三千年沒人能拔出 | TBD |
 
 ## 标志性原创法宝
 
