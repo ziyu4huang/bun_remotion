@@ -41,10 +41,19 @@
     "generate-tts:xianxia2": "bun run --cwd bun_remotion_proj/xianxia-system-meme-ep2 generate-tts",
     "start:wf-ch1-ep1": "bash scripts/dev.sh studio weapon-forger-ch1-ep1",
     "build:wf-ch1-ep1": "bash scripts/dev.sh render weapon-forger-ch1-ep1",
-    "generate-tts:wf-ch1-ep1": "bun run --cwd bun_remotion_proj/weapon-forger-ch1-ep1 generate-tts",
+    "generate-tts:wf-ch1-ep1": "bun run --cwd bun_remotion_proj/weapon-forger/weapon-forger-ch1-ep1 generate-tts",
     "start:wf-ch1-ep2": "bash scripts/dev.sh studio weapon-forger-ch1-ep2",
     "build:wf-ch1-ep2": "bash scripts/dev.sh render weapon-forger-ch1-ep2",
-    "generate-tts:wf-ch1-ep2": "bun run --cwd bun_remotion_proj/weapon-forger-ch1-ep2 generate-tts"
+    "generate-tts:wf-ch1-ep2": "bun run --cwd bun_remotion_proj/weapon-forger/weapon-forger-ch1-ep2 generate-tts",
+    "start:wf-ch1-ep3": "bash scripts/dev.sh studio weapon-forger-ch1-ep3",
+    "build:wf-ch1-ep3": "bash scripts/dev.sh render weapon-forger-ch1-ep3",
+    "generate-tts:wf-ch1-ep3": "bun run --cwd bun_remotion_proj/weapon-forger/weapon-forger-ch1-ep3 generate-tts",
+    "start:wf-ch2-ep1": "bash scripts/dev.sh studio weapon-forger-ch2-ep1",
+    "build:wf-ch2-ep1": "bash scripts/dev.sh render weapon-forger-ch2-ep1",
+    "generate-tts:wf-ch2-ep1": "bun run --cwd bun_remotion_proj/weapon-forger/weapon-forger-ch2-ep1 generate-tts",
+    "start:commentary": "bash scripts/dev.sh studio commentary-style",
+    "build:commentary": "bash scripts/dev.sh render commentary-style",
+    "generate-tts:commentary": "bun run --cwd bun_remotion_proj/commentary-style generate-tts"
   },
   "dependencies": {
     "@remotion/cli": "4.0.290",

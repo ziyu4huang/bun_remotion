@@ -36,6 +36,10 @@ When needing to use sound effects, load the [./rules/sound-effects.md](./rules/s
 
 When building a galgame (visual novel) style video, load [./rules/galgame.md](./rules/galgame.md) for character sprite rendering, dialog box patterns, multi-character layout, and **critical image generation guidelines** (always generate half-body + transparent background).
 
+## Episode creation (multi-episode series)
+
+When creating a new episode for an existing series (weapon-forger, galgame-meme-theater, etc.), load [./rules/episode-creation.md](./rules/episode-creation.md) for the stable confirm format, story writing checklist, and scaffolding workflow. **Key: confirm story content in zh_TW BEFORE writing any code.**
+
 ## How to use
 
 Read individual rule files for detailed explanations and code examples:
@@ -72,3 +76,4 @@ Read individual rule files for detailed explanations and code examples:
 - [rules/maps.md](rules/maps.md) - Add a map using Mapbox and animate it
 - [rules/voiceover.md](rules/voiceover.md) - Adding AI-generated voiceover (edge-tts/Gemini/mlx_tts) with dynamic duration via durations.json
 - [rules/scaffolding.md](rules/scaffolding.md) - Scaffold new apps, add compositions/scenes, monorepo structure, common errors
+- [rules/episode-creation.md](rules/episode-creation.md) - Episode creation workflow for multi-episode series — confirm format (zh_TW), story writing, scaffolding order

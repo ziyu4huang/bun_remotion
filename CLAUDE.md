@@ -76,8 +76,22 @@ bun-remotion/
     galgame-meme-theater-ep4/         # Galgame meme theater ep4 — Student golden age
     xianxia-system-meme-ep1/          # System novel meme ep1 — Fail mission = erased (chibi + battle FX)
     xianxia-system-meme-ep2/          # System novel meme ep2 — EnergyWave + KamehamehaBeam battle FX
-    weapon-forger-ch1-ep1/             # Weapon forger ch1 ep1 — Sect entrance exam (12-ep series)
-    weapon-forger-ch1-ep2/             # Weapon forger ch1 ep2 — Results announced (zh_TW, manga SFX, shape effects)
+    weapon-forger/                      # Weapon forger series (12-ep)
+      fixture/                          # Shared assets (characters, backgrounds, components)
+        characters/                     # Character PNGs (canonical source)
+        backgrounds/                    # Background PNGs (canonical source)
+        components/                     # Shared React components
+        scripts/sync-images.sh          # Symlink fixture images into episodes
+      weapon-forger-ch1-ep1/            # Ep1 — Sect entrance exam
+      weapon-forger-ch1-ep2/            # Ep2 — Results announced
+      weapon-forger-ch1-ep3/            # Ep3 — Furnace repair
+```
+
+## Post-clone setup
+
+After a fresh clone, weapon-forger episodes need symlinks to shared images:
+```bash
+bash bun_remotion_proj/weapon-forger/fixture/scripts/sync-images.sh
 ```
 
 ## CRITICAL: Never `cd` into subdirectories
@@ -164,6 +178,8 @@ All memory — project knowledge, user feedback, preferences — lives here. Thi
 - [galgame-video-lessons](.agent/memory/feedback/galgame-video-lessons.md) - AI can't make transparent PNGs (use rembg), TTS must match dialog text, solid BGs cause black frames, Run button selector fix
 - [battle-effects-ep2](.agent/memory/feedback/battle-effects-ep2.md) - Battle FX improvements: AnimatedLine primitive, EnergyWave (multi-line arcs), KamehamehaBeam (charge→fire→impact), ScreenShake
 - [weapon-forger-ep2-lessons](.agent/memory/feedback/weapon-forger-ep2-lessons.md) - ScreenShake undefined delay = black frames, fadeOut use durationInFrames, elder image prop, remotion still verify
+- [no-duplicate-tool-runs](.agent/memory/feedback/no-duplicate-tool-runs.md) - Don't re-run long commands (render, build) that already completed — check output instead
+- [confirm-format-zhtw](.agent/memory/feedback/confirm-format-zhtw.md) - When presenting episode content for user confirmation, show all story/dialog in zh_TW — never English summaries
 
 ## Convention
 

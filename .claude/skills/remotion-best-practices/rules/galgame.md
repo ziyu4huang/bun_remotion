@@ -504,6 +504,291 @@ const flashOpacity = interpolate(frame, [8, 15, 25], [0, 0.8, 0], {
 
 ---
 
+## Dialog-Driven Scene Architecture
+
+In dialog-heavy scenes (galgame, system novel, visual novel), the `dialogLines[]` array is the **single source of truth**. Everything derives from `currentLineIndex`:
+
+```tsx
+const dialogLines: DialogLine[] = [
+  { character: "examiner", text: "你知不知道你做了什麼？", effect: "anger" },
+  { character: "zhoumo",   text: "技術上來說，是飛劍自己決定的。", effect: "sweat" },
+  { character: "elder",    text: "等一下。", sfx: [{ text: "咚！", x: 960, y: 450, color: "#A78BFA", fontSize: 130, font: "brush" }] },
+  // ...
+];
+
+export const ContentScene: React.FC = () => {
+  const frame = useCurrentFrame();
+  const { durationInFrames } = useVideoConfig();
+
+  // Current line calculation — drives EVERYTHING
+  const lineDuration = durationInFrames / dialogLines.length;
+  const currentLineIndex = Math.min(
+    Math.floor(frame / lineDuration),
+    dialogLines.length - 1,
+  );
+  const currentLine = dialogLines[currentLineIndex];
+
+  // Key moments defined by line index ranges (adaptive to duration changes)
+  const isAngerPhase = currentLineIndex >= 0 && currentLineIndex <= 4;
+  const isElderEntrance = currentLineIndex >= 8 && currentLineIndex <= 9;
+
+  // Frame offset for triggering effects at specific lines
+  const elderFrame = (8 / dialogLines.length) * durationInFrames;
+  const frameOffset = frame - elderFrame; // 0 when line 8 starts
+
+  return (
+    <AbsoluteFill>
+      {/* Effects triggered by dialog progress */}
+      <ScreenShake delay={isElderEntrance ? Math.floor(elderFrame) : undefined} />
+      {frameOffset >= 0 && frameOffset < 30 && <ImpactBurst delay={0} />}
+
+      {/* Characters: speaking state derived from currentLine */}
+      <CharacterSprite character="zhoumo" speaking={currentLine.character === "zhoumo"} side="left" />
+      <CharacterSprite character="elder" speaking={currentLine.character === "elder"} side="center" />
+
+      {/* Comic effects for current speaker */}
+      <ComicEffects effects={normalizeEffects(currentLine.effect)} />
+
+      {/* Manga SFX from dialog line definition */}
+      <MangaSfx events={currentLine.sfx ?? []} />
+
+      {/* System notification at specific dialog moment */}
+      {currentLineIndex >= 10 && (
+        <SystemNotification text="長老評審中" type="success" delay={Math.max(0, frame - (10 / dialogLines.length) * durationInFrames)} />
+      )}
+
+      <DialogBox lines={dialogLines} sceneFrame={frame} sceneDuration={durationInFrames} />
+    </AbsoluteFill>
+  );
+};
+```
+
+**Key rules:**
+- **Never hardcode frame numbers for dialog events** — use `(lineIndex / totalLines) * durationInFrames`
+- **Define moments by `currentLineIndex` ranges** — makes scenes adaptive to audio duration changes
+- **Everything derives from `currentLine`** — character speaking, effects, SFX, notifications all from one source
+- **`lineDuration` is the natural timing unit** — each line gets equal time (alternative: per-line timing in durations.json)
+
+---
+
+## Three-Character Scene Layout
+
+When a scene has 3+ characters (common in xianxia/system novels with elder/authority figures):
+
+```tsx
+<CharacterSprite character="zhoumo" side="left" speaking={currentLine.character === "zhoumo"} />
+<CharacterSprite character="examiner" side="right" speaking={currentLine.character === "examiner"} />
+{/* Center character — typically authority figure (elder, teacher, boss) */}
+{currentLineIndex >= 8 && (
+  <CharacterSprite character="elder" side="center" speaking={currentLine.character === "elder"} />
+)}
+```
+
+**Rules:**
+- **Authority figure goes center** — elder, teacher, boss, system
+- **Center characters can appear mid-scene** — wrap in conditional `{currentLineIndex >= N && ...}`
+- **When center speaks, side characters dim** — standard `background` prop handles this
+- **ComicEffects side follows speaker** — `side={currentLine.character === "zhoumo" ? "left" : currentLine.character === "elder" ? "center" : "right"}`
+
+---
+
+## Manga SFX Overlay
+
+Japanese manga-style onomatopoeia (狀聲字) overlay for dramatic moments. Each SFX event is defined per dialog line:
+
+### Type definition
+
+```tsx
+export interface MangaSfxEvent {
+  text: string;        // The sound text (e.g., "轟！", "咻～")
+  x: number;           // X position (px)
+  y: number;           // Y position (px)
+  color: string;       // Text color (also used for burst background)
+  rotation?: number;   // Base rotation (degrees, default -8)
+  fontSize?: number;   // Text size (default 120)
+  font?: "brush" | "playful" | "action";  // Font style
+  delay?: number;      // Delay from scene start (default: index * 5)
+}
+```
+
+### Font routing
+
+```tsx
+const sfxFont = (font: string): string => {
+  switch (font) {
+    case "brush":    return "MaShanZheng";     // Calligraphic brush — dramatic moments
+    case "playful":  return "ZCOOLKuaiLe";     // Rounded cute — comedic moments
+    case "action":   return "ZhiMangXing";     // Sharp angular — fast action
+    default:         return "MaShanZheng";
+  }
+};
+```
+
+### Integration with dialog lines
+
+```tsx
+const dialogLines: DialogLine[] = [
+  { character: "examiner", text: "你知不知道你做了什麼？",
+    sfx: [{ text: "怒！", x: 400, y: 350, color: "#EF4444", rotation: -12, fontSize: 110, font: "action" }] },
+  { character: "elder", text: "等一下。",
+    sfx: [{ text: "咚！", x: 960, y: 450, color: "#A78BFA", rotation: 0, fontSize: 130, font: "brush" }] },
+];
+
+// In scene component — render current line's SFX events
+<MangaSfx events={currentLine.sfx ?? []} />
+```
+
+### Animation pattern (spring burst-in + elastic settle)
+
+```tsx
+// Phase 1: Spring burst-in (overshoot to 1.35x)
+const scaleSpring = spring({
+  frame: f, fps,
+  config: { damping: 8, stiffness: 300, mass: 0.3 },
+});
+const burstScale = interpolate(scaleSpring, [0, 1], [0, 1.35]);
+
+// Phase 2: Elastic settle to 1.0x (starts after 8 frames)
+const settleFrame = Math.max(0, f - 8);
+const settleScale = interpolate(settleFrame, [0, 12], [1.35, 1.0], {
+  easing: Easing.out(Easing.elastic(1)),  // ← 1 arg only!
+});
+const finalScale = f < 8 ? burstScale : settleScale;
+```
+
+### Visual style
+
+- **Text**: white fill with colored stroke (`WebkitTextStroke: 6px ${color}`), `paintOrder: "stroke fill"`
+- **Background**: starburst via `conic-gradient()` — 12 alternating transparent/white wedges
+- **Text shadow**: 4px offset copies in color + subtle glow
+- **Opacity**: fast fade-in (3 frames), hold (35 frames), fade-out (50 frames)
+
+---
+
+## Battle Effects Library
+
+Reusable visual effect components for dramatic moments. All effects share a consistent API pattern:
+
+```tsx
+// Common API pattern for all effects:
+interface EffectProps {
+  delay?: number;    // When to start (frame number) — undefined = don't render
+  color?: string;    // Primary color
+  // ... effect-specific props
+}
+```
+
+### Available effects
+
+| Effect | Purpose | Key props |
+|--------|---------|-----------|
+| `ScreenShake` | Noise-based screen shake | `delay`, `intensity`, `duration` |
+| `ScreenFlash` | Full-screen radial flash | `delay`, `duration`, `color` |
+| `SlashEffect` | Curved sword slash arc | `delay`, `direction`, `color`, `thickness` |
+| `ImpactBurst` | Radial explosion + particles | `delay`, `x`, `y`, `color`, `maxRadius` |
+| `EnergyWave` | Multi-line parallel arcs | `delay`, `fromX/Y`, `toX/Y`, `waveCount` |
+| `SpeedLines` | Radiating motion lines | `delay`, `lineCount`, `color` |
+| `BattleAura` | Pulsing energy ellipse | `color`, `intensity` (no delay — always on) |
+| `TriangleBurst` | Expanding triangle shapes | `delay`, `x`, `y`, `color`, `count` |
+| `DiamondShards` | Rhombus particle explosion | `delay`, `x`, `y`, `color`, `count` |
+| `ConcentrationLines` | Manga diagonal focus lines | `delay`, `angle`, `lineCount`, `duration` |
+| `GroundCrack` | Ground crack + dust | `delay`, `x`, `y`, `color` |
+| `PowerUpRings` | Concentric expanding rings | `delay`, `x`, `y`, `color`, `ringCount` |
+
+### Usage pattern
+
+```tsx
+// Effects conditionally rendered based on dialog progress
+{isElderEntrance && (
+  <>
+    <ScreenShake delay={Math.floor(elderFrame)} intensity={15} duration={20} />
+    <TriangleBurst x={960} y={500} delay={Math.floor(elderFrame)} color="#A78BFA" />
+    <ImpactBurst x={960} y={500} delay={Math.floor(elderFrame)} color="#A78BFA" />
+    <ConcentrationLines delay={Math.floor(elderFrame)} angle={45} lineCount={30} />
+  </>
+)}
+
+// ScreenShake wraps the entire scene content
+<ScreenShake delay={isPassMoment ? Math.floor(passFrame) : undefined}>
+  <BackgroundLayer />
+  <CharacterSprite />
+  <DialogBox />
+</ScreenShake>
+```
+
+### Key rules
+
+- **ScreenShake wraps content** — it translates children, so it must be an ancestor of everything it should shake
+- **Other effects are siblings** — placed at absolute position with `pointerEvents: "none"` and high `zIndex`
+- **Use `delay` for timing** — all effects (except BattleAura) accept `delay` to start at a specific frame
+- **Combine effects for impact** — layer 2-3 effects for dramatic moments (shake + flash + burst)
+- **Effects auto-cleanup** — all effects fade to `opacity: 0` and/or return `null` when done
+
+---
+
+## SystemOverlay — Game-like Notifications
+
+For system novel (系統文) style videos, game-like notifications add immersion:
+
+```tsx
+import { SystemNotification, SystemMessage } from "../components/SystemOverlay";
+
+// Slide-in notification bar (top of screen)
+<SystemNotification
+  text="入宗考試結果：通過！"
+  type="success"          // "success" | "warning" | "danger"
+  delay={frameOffset}     // When to appear
+/>
+
+// Centered dramatic message
+<SystemMessage
+  text="恭喜通過！"
+  delay={Math.floor(passFrame) + 5}
+  position="center"
+  color="#FBBF24"
+/>
+```
+
+### Type theming
+
+| Type | Background | Border | Icon |
+|------|-----------|--------|------|
+| `success` | Green tint | `#22C55E` | Checkmark |
+| `warning` | Amber tint | `#F59E0B` | Exclamation |
+| `danger` | Red tint | `#EF4444` | X mark |
+
+### When to use
+
+- **System novel**: mission notifications, status updates, level-up announcements
+- **Xianxia**: cultivation breakthroughs, exam results, sect announcements
+- **Galgame**: text message popups, social media notifications, achievement unlocks
+
+---
+
+## Scene Indicator
+
+A brief scene name indicator that fades in at the start of each content scene:
+
+```tsx
+const indicatorOpacity = interpolate(frame, [0, 15, 45, 60], [0, 1, 1, 0], {
+  extrapolateLeft: "clamp", extrapolateRight: "clamp",
+});
+
+<div style={{ position: "absolute", top: 40, left: 60, opacity: indicatorOpacity, zIndex: 50 }}>
+  <div style={{ color: "#A78BFA", fontSize: 24, fontWeight: 700, fontFamily: notoSansTC }}>
+    成績公布
+  </div>
+  <div style={{
+    width: interpolate(frame, [5, 25], [0, 200], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }),
+    height: 2, background: "linear-gradient(90deg, #A78BFA, transparent)", marginTop: 4,
+  }} />
+</div>
+```
+
+**Pattern:** Scene name + animated underline that grows from 0 to ~200px. Fades in (0-15f), holds (15-45f), fades out (45-60f). Uses scene's accent color.
+
+---
+
 ## Common Mistakes
 
 | Mistake | Why it's wrong | Fix |
@@ -525,6 +810,10 @@ const flashOpacity = interpolate(frame, [8, 15, 25], [0, 0.8, 0], {
 | Fade-out with hardcoded frame numbers | Outro/ending goes blank early when scene duration changes across episodes | Use `durationInFrames` from `useVideoConfig()`: `interpolate(frame, [durationInFrames - 60, durationInFrames - 10], [1, 0])` |
 | New character without image prop or image file | CharacterSprite falls through to placeholder (colored box with first char of name) | Every character MUST have `image="<name>.png"` prop + PNG file in `public/images/` |
 | Not verifying renders with `remotion still` | Studio preview (DOM) can look different from actual render (canvas). ScreenShake noise was small in DOM but catastrophic in canvas. | After scene changes, run `bunx remotion still <CompId> --frame=N --output /tmp/test.png` and check mean brightness > 50 |
+| `Easing.elastic(1, 0.3)` — 2 arguments | Remotion's `Easing.elastic()` takes only 1 arg (`bounciness`). TypeScript error + silent failure. | `Easing.elastic(1)` or `Easing.elastic(3)` for more bounce |
+| Hardcoded frame numbers for dialog events | When TTS audio length changes, hardcoded frames point to wrong dialog lines | Use `(lineIndex / totalLines) * durationInFrames` to calculate frame offsets |
+| Effects outside ScreenShake wrapper | ScreenShake only shakes its children — effects placed as siblings won't shake | Place BackgroundLayer, Characters, DialogBox INSIDE the ScreenShake wrapper. Other effects (ImpactBurst, SpeedLines) can be siblings since they're decorative overlays |
+| Too many simultaneous effects | 5+ effects at once causes visual noise and slows render | Layer 2-3 effects max per moment. Use different effect types for variety across moments |
 
 ---
 

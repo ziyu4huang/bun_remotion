@@ -1,0 +1,110 @@
+/**
+ * Narration scripts with per-character voice assignment for
+ * 誰讓他煉器的！ 第二章 第一集：禍害成軍
+ *
+ * Voices (mlx_tts):
+ *   周墨 (zhoumo)         → uncle_fu  — male
+ *   陸陽 (luyang)         → uncle_fu  — male
+ *   孟景舟 (mengjingzhou) → uncle_fu  — male
+ *   narrator              → uncle_fu  — male narrator
+ *
+ * All dialog text is in Traditional Chinese (zh_TW).
+ */
+
+export type VoiceCharacter = "zhoumo" | "luyang" | "mengjingzhou" | "narrator";
+
+export interface NarrationSegment {
+  character: VoiceCharacter;
+  text: string;
+}
+
+export interface NarrationScript {
+  scene: string;
+  file: string;
+  segments: NarrationSegment[];
+  fullText: string;
+}
+
+export const NARRATOR_LANG = "zh-TW";
+
+export const VOICE_MAP: Record<VoiceCharacter, string> = {
+  zhoumo: "uncle_fu",
+  luyang: "uncle_fu",
+  mengjingzhou: "uncle_fu",
+  narrator: "uncle_fu",
+};
+
+export const VOICE_DESCRIPTION: Record<VoiceCharacter, { voice: string; gender: string; accent: string }> = {
+  zhoumo: { voice: "uncle_fu", gender: "male", accent: "standard Mandarin" },
+  luyang: { voice: "uncle_fu", gender: "male", accent: "standard Mandarin" },
+  mengjingzhou: { voice: "uncle_fu", gender: "male", accent: "standard Mandarin" },
+  narrator: { voice: "uncle_fu", gender: "male", accent: "standard Mandarin" },
+};
+
+export const narrations: NarrationScript[] = [
+  {
+    scene: "TitleScene",
+    file: "01-title.wav",
+    segments: [
+      { character: "narrator", text: "歡迎來到誰讓他煉器的！第二章，第一集，禍害成軍。" },
+      { character: "narrator", text: "周墨在煉器峰的日子過得「精彩」——丹爐半夜唱歌、鍋爐接連爆炸、長老的頭髮越來越少。今天，他即將炸掉第三個鍋爐。但這一次，爆炸的範圍比預期大了一點。" },
+    ],
+    fullText: "歡迎來到誰讓他煉器的！第二章，第一集，禍害成軍。周墨在煉器峰的日子過得「精彩」——丹爐半夜唱歌、鍋爐接連爆炸、長老的頭髮越來越少。今天，他即將炸掉第三個鍋爐。但這一次，爆炸的範圍比預期大了一點。",
+  },
+  {
+    scene: "ContentScene1",
+    file: "02-content1.wav",
+    segments: [
+      { character: "zhoumo", text: "新的實驗！這次我改良了壓力釋放模組。理論上，效率應該提高百分之三百。" },
+      { character: "zhoumo", text: "三、二、一——啟動！" },
+      { character: "luyang", text: "那個，不好意思打擾了，請問你們這裡有沒有投降表？" },
+      { character: "zhoumo", text: "什麼？" },
+      { character: "luyang", text: "我是問道宗新弟子陸陽，我的劍法叫「投降劍法」。剛才看到爆炸，想說先填好表，等一下可能用得上。" },
+      { character: "zhoumo", text: "你的劍法叫投降劍法？" },
+      { character: "luyang", text: "對啊！核心招式是「我認輸」和「別打了」。防守效率極高——因為對手通常笑到沒力氣繼續打。" },
+      { character: "zhoumo", text: "從邏輯上來說，確實是最短路徑。你直接跳過了戰鬥過程，抵達了終點。" },
+      { character: "luyang", text: "對吧！終於有人理解我了！其他人只會說我沒出息。" },
+      { character: "zhoumo", text: "不不不，你是把「效率」做到了極致。這是一種高級演算法思維。" },
+      { character: "luyang", text: "你，你是唯一一個說我好話的人。" },
+    ],
+    fullText: "新的實驗！這次我改良了壓力釋放模組。理論上，效率應該提高百分之三百。三、二、一——啟動！那個，不好意思打擾了，請問你們這裡有沒有投降表？什麼？我是問道宗新弟子陸陽，我的劍法叫「投降劍法」。剛才看到爆炸，想說先填好表，等一下可能用得上。你的劍法叫投降劍法？對啊！核心招式是「我認輸」和「別打了」。防守效率極高——因為對手通常笑到沒力氣繼續打。從邏輯上來說，確實是最短路徑。你直接跳過了戰鬥過程，抵達了終點。對吧！終於有人理解我了！其他人只會說我沒出息。不不不，你是把「效率」做到了極致。這是一種高級演算法思維。你，你是唯一一個說我好話的人。",
+  },
+  {
+    scene: "ContentScene2",
+    file: "03-content2.wav",
+    segments: [
+      { character: "mengjingzhou", text: "等等，你們兩個在聊什麼？我從二十步外就感覺到了異常的邏輯波動。" },
+      { character: "luyang", text: "這位是？" },
+      { character: "mengjingzhou", text: "孟景舟，問道宗弟子。我的天賦是「單身光環」——方圓三丈內，所有女性都會自動遠離我。" },
+      { character: "zhoumo", text: "這也是天賦？" },
+      { character: "mengjingzhou", text: "宗門鑒定說是「被動技能，無法關閉」。連女修都繞著我走，所以我有很充足的時間做研究。" },
+      { character: "luyang", text: "那你研究什麼？" },
+      { character: "mengjingzhou", text: "為什麼我沒有女朋友。" },
+      { character: "zhoumo", text: "你把單身當成一個研究課題？" },
+      { character: "mengjingzhou", text: "二十三年了。我的論文已經寫到第七篇了，題目是「論問道宗女弟子的空間分布與我的絕緣性」。" },
+      { character: "zhoumo", text: "我突然覺得，我們三個有一個共同點。" },
+      { character: "luyang", text: "什麼？" },
+      { character: "mengjingzhou", text: "什麼？" },
+      { character: "zhoumo", text: "我們都不正常。" },
+      { character: "luyang", text: "說得好有道理。" },
+      { character: "zhoumo", text: "所以我提議，我們成立一個小組。叫「問道宗邏輯修正小組」。" },
+      { character: "mengjingzhou", text: "邏輯修正？修正什麼？" },
+      { character: "zhoumo", text: "修正整個修仙界對「正常」的定義。" },
+      { character: "luyang", text: "我加入！不過我有一個條件——小組的第一條規則是「隨時可以投降」。" },
+      { character: "mengjingzhou", text: "我也有條件——開會的時候不要提「女朋友」這三個字。" },
+      { character: "zhoumo", text: "成交。順帶一提，我剛才忘了說——第三個鍋爐的爆炸範圍可能還沒結束。" },
+      { character: "luyang", text: "我的投降表呢？" },
+    ],
+    fullText: "等等，你們兩個在聊什麼？我從二十步外就感覺到了異常的邏輯波動。這位是？孟景舟，問道宗弟子。我的天賦是「單身光環」——方圓三丈內，所有女性都會自動遠離我。這也是天賦？宗門鑒定說是「被動技能，無法關閉」。連女修都繞著我走，所以我有很充足的時間做研究。那你研究什麼？為什麼我沒有女朋友。你把單身當成一個研究課題？二十三年了。我的論文已經寫到第七篇了，題目是「論問道宗女弟子的空間分布與我的絕緣性」。我突然覺得，我們三個有一個共同點。什麼？什麼？我們都不正常。說得好有道理。所以我提議，我們成立一個小組。叫「問道宗邏輯修正小組」。邏輯修正？修正什麼？修正整個修仙界對「正常」的定義。我加入！不過我有一個條件——小組的第一條規則是「隨時可以投降」。我也有條件——開會的時候不要提「女朋友」這三個字。成交。順帶一提，我剛才忘了說——第三個鍋爐的爆炸範圍可能還沒結束。我的投降表呢？",
+  },
+  {
+    scene: "OutroScene",
+    file: "04-outro.wav",
+    segments: [
+      { character: "narrator", text: "感謝收看誰讓他煉器的！第二章第一集，禍害成軍。" },
+      { character: "narrator", text: "問道宗邏輯修正小組正式成立。三個最不正常的弟子聚在一起，展開了全新的篇章。陸陽的投降劍法、孟景舟的單身研究、周墨的法寶實驗——問道宗從此再也沒有安寧的日子。" },
+      { character: "narrator", text: "下集預告：三人組的第一個共同任務——探索後山的「低語洞窟」。聽說那裡住著一個上古大能的殘魂，但周墨覺得那只是一個「待修復的離線終端」。" },
+    ],
+    fullText: "感謝收看誰讓他煉器的！第二章第一集，禍害成軍。問道宗邏輯修正小組正式成立。三個最不正常的弟子聚在一起，展開了全新的篇章。陸陽的投降劍法、孟景舟的單身研究、周墨的法寶實驗——問道宗從此再也沒有安寧的日子。下集預告：三人組的第一個共同任務——探索後山的「低語洞窟」。聽說那裡住著一個上古大能的殘魂，但周墨覺得那只是一個「待修復的離線終端」。",
+  },
+];

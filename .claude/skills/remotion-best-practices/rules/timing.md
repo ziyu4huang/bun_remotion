@@ -177,3 +177,23 @@ const value1 = interpolate(frame, [0, 100], [0, 1], {
   extrapolateRight: "clamp",
 });
 ```
+
+## Easing API Reference — argument count matters
+
+These are common traps that cause TypeScript errors or silent runtime failures:
+
+| Function | Signature | Common mistake |
+|----------|-----------|---------------|
+| `Easing.elastic()` | `(bounciness?: number)` — **1 arg max** | `Easing.elastic(1, 0.3)` → TS error |
+| `Easing.back()` | `(overshoot?: number)` — takes a **number**, not object | `Easing.back({ overshoot: 0.3 })` → wrong |
+| `Easing.cubic` | property (not a function) | `Easing.cubic()` → error, use `Easing.cubic` |
+
+```tsx
+// Elastic: more bounciness = more oscillation
+Easing.out(Easing.elastic(1))   // gentle (default)
+Easing.out(Easing.elastic(3))   // very bouncy
+
+// Back: overshoot past the target then settle
+Easing.out(Easing.back(0.3))    // subtle overshoot
+Easing.out(Easing.back(1.5))    // dramatic overshoot
+```

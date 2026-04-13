@@ -15,7 +15,7 @@ REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 # Use system Chrome instead of per-app downloaded chrome-headless-shell
 export REMOTION_CHROME_EXECUTABLE_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 
-ALL_APPS="claude-code-intro taiwan-stock-market three-little-pigs galgame-youth-jokes galgame-meme-theater galgame-meme-theater-ep2 galgame-meme-theater-ep3 galgame-meme-theater-ep4 xianxia-system-meme-ep1 xianxia-system-meme-ep2 weapon-forger-ch1-ep1 weapon-forger-ch1-ep2"
+ALL_APPS="claude-code-intro taiwan-stock-market three-little-pigs galgame-youth-jokes galgame-meme-theater galgame-meme-theater-ep2 galgame-meme-theater-ep3 galgame-meme-theater-ep4 xianxia-system-meme-ep1 xianxia-system-meme-ep2 weapon-forger-ch1-ep1 weapon-forger-ch1-ep2 weapon-forger-ch1-ep3 weapon-forger-ch2-ep1 commentary-style"
 
 # Resolve composition ID from app directory name
 get_comp_id() {
@@ -32,6 +32,9 @@ get_comp_id() {
         xianxia-system-meme-ep2) echo "XianxiaSystemMemeEp2" ;;
         weapon-forger-ch1-ep1)    echo "WeaponForgerCh1Ep1" ;;
         weapon-forger-ch1-ep2)    echo "WeaponForgerCh1Ep2" ;;
+        weapon-forger-ch1-ep3)    echo "WeaponForgerCh1Ep3" ;;
+        weapon-forger-ch2-ep1)    echo "WeaponForgerCh2Ep1" ;;
+        commentary-style)         echo "CommentaryStyle" ;;
         *) return 1 ;;
     esac
 }
@@ -61,7 +64,13 @@ invoke_app() {
         return 1
     }
 
-    local app_dir="$REPO_ROOT/bun_remotion_proj/$app_name"
+    local app_dir
+    # Check direct child first, then nested under weapon-forger group
+    if [[ -d "$REPO_ROOT/bun_remotion_proj/weapon-forger/$app_name" ]]; then
+        app_dir="$REPO_ROOT/bun_remotion_proj/weapon-forger/$app_name"
+    else
+        app_dir="$REPO_ROOT/bun_remotion_proj/$app_name"
+    fi
 
     if [[ ! -d "$app_dir" ]]; then
         echo "ERROR: App directory not found: $app_dir" >&2
