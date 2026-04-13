@@ -15,7 +15,7 @@ REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 # Use system Chrome instead of per-app downloaded chrome-headless-shell
 export REMOTION_CHROME_EXECUTABLE_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 
-ALL_APPS="claude-code-intro taiwan-stock-market three-little-pigs galgame-youth-jokes galgame-meme-theater galgame-meme-theater-ep2 galgame-meme-theater-ep3 galgame-meme-theater-ep4 xianxia-system-meme-ep1 xianxia-system-meme-ep2 weapon-forger-ch1-ep1 weapon-forger-ch1-ep2 weapon-forger-ch1-ep3 weapon-forger-ch2-ep1 commentary-style"
+ALL_APPS="claude-code-intro taiwan-stock-market three-little-pigs galgame-youth-jokes galgame-meme-theater-ep1 galgame-meme-theater-ep2 galgame-meme-theater-ep3 galgame-meme-theater-ep4 galgame-meme-theater-ep5 galgame-meme-theater-test-image xianxia-system-meme-ep1 xianxia-system-meme-ep2 weapon-forger-ch1-ep1 weapon-forger-ch1-ep2 weapon-forger-ch1-ep3 weapon-forger-ch2-ep1 commentary-style"
 
 # Resolve composition ID from app directory name
 get_comp_id() {
@@ -24,10 +24,12 @@ get_comp_id() {
         taiwan-stock-market)      echo "TaiwanStockMarket" ;;
         three-little-pigs)        echo "ThreeLittlePigs" ;;
         galgame-youth-jokes)      echo "GalgameYouthJokes" ;;
-        galgame-meme-theater)     echo "GalgameMemeTheater" ;;
+        galgame-meme-theater-ep1) echo "GalgameMemeTheater" ;;
         galgame-meme-theater-ep2) echo "GalgameMemeTheaterEp2" ;;
         galgame-meme-theater-ep3) echo "GalgameMemeTheaterEp3" ;;
         galgame-meme-theater-ep4) echo "GalgameMemeTheaterEp4" ;;
+        galgame-meme-theater-ep5) echo "GalgameMemeTheaterEp5" ;;
+        galgame-meme-theater-test-image) echo "TestImageSharedImport" ;;
         xianxia-system-meme-ep1) echo "XianxiaSystemMemeEp1" ;;
         xianxia-system-meme-ep2) echo "XianxiaSystemMemeEp2" ;;
         weapon-forger-ch1-ep1)    echo "WeaponForgerCh1Ep1" ;;
@@ -65,9 +67,11 @@ invoke_app() {
     }
 
     local app_dir
-    # Check direct child first, then nested under weapon-forger group
+    # Check direct child first, then nested under group directories
     if [[ -d "$REPO_ROOT/bun_remotion_proj/weapon-forger/$app_name" ]]; then
         app_dir="$REPO_ROOT/bun_remotion_proj/weapon-forger/$app_name"
+    elif [[ -d "$REPO_ROOT/bun_remotion_proj/galgame-meme-theater/$app_name" ]]; then
+        app_dir="$REPO_ROOT/bun_remotion_proj/galgame-meme-theater/$app_name"
     else
         app_dir="$REPO_ROOT/bun_remotion_proj/$app_name"
     fi

@@ -52,8 +52,7 @@ weapon-forger/
 
 ### Image Sync Convention
 
-Each episode's `public/images/` contains **copies** of fixture images.
-Remotion's static server doesn't reliably follow symlinks, so we copy instead.
+Each episode's `public/images/` contains **copies** of fixture images (NOT symlinks — Remotion's static server doesn't follow symlinks, causing 404 during render).
 
 **Source of truth:** `fixture/characters/` and `fixture/backgrounds/`
 
