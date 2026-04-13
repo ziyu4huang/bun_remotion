@@ -1,6 +1,6 @@
 ---
 name: shared-fixture
-description: Reusable background images and assets in shared-fixture/ for cross-episode reuse
+description: Reusable background images and cross-project shared component architecture
 type: project
 ---
 
@@ -33,3 +33,22 @@ After generating backgrounds for a new episode, copy reusable ones to `shared-fi
 ```bash
 cp bun_remotion_proj/<new-ep>/public/images/<bg-name>.png bun_remotion_proj/shared-fixture/background/
 ```
+
+## Cross-Project Shared Components (2026-04-14)
+
+`@bun-remotion/shared` (workspace package) now contains unified components used by all video project groups:
+
+**Why:** Previously weapon-forger, galgame-meme-theater, and my-core-is-boss each had forked copies of CharacterSprite, DialogBox, ComicEffects, etc. This caused code duplication and inconsistent bug fixes.
+
+**How to apply:**
+- Import from `@bun-remotion/shared` instead of `../../../fixture/components/`
+- See `feedback/shared-component-architecture.md` for full details
+- BattleEffects stays project-local (genuinely different per project)
+
+### Planned: Selective Image Sync (Phase 4)
+
+Currently every episode gets ALL fixture images (causing ~174MB duplication). Planned: each episode declares needed images via `images.json` manifest, sync script only copies what's needed.
+
+### Planned: JSON Manifest System
+
+Weapon-forger character/background JSON manifests will be updated to match my-core-is-boss format (`type: "emotion"` instead of `type: "pose"`, add `description`, `color`, `width` fields).

@@ -1,0 +1,9 @@
+{
+  "file": "zhoumo-shocked.png",
+  "type": "pose",
+  "character": "zhoumo",
+  "pose": "shocked",
+  "facing": "LEFT",
+  "prompt": "anime style male cultivator, young man in his early 20s, amber/gold themed robes with forge-fire patterns, slightly messy dark hair, round glasses askew on nose, wide shocked eyes, jaw dropped in disbelief, comically exaggerated surprise expression, half-body portrait, transparent background",
+  "backgroundStrategy": "solid magenta #FF00FF, remove with rembg"
+}

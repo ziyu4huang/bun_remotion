@@ -471,7 +471,7 @@ bun run generate-tts:mcb-ch1-ep1
 
 | Ch | Ep | Title | Characters | Status |
 |----|-----|-------|------------|--------|
-| 1 | 1 | 首次誤會 | linyi, zhaoxiaoqi, xiaoelder | Images Ready |
+| 1 | 1 | 首次誤會 | linyi, zhaoxiaoqi, xiaoelder | Scaffolding Complete |
 | 1 | 2 | 任務跳過 | linyi, zhaoxiaoqi | Planned |
 | 1 | 3 | Bug 利用 | linyi, zhaoxiaoqi, xiaoelder | Planned |
 | 2 | 1 | 掛機修仙 | linyi, zhaoxiaoqi, xiaoelder | Planned |

@@ -41,10 +41,21 @@ bun-remotion/
   bun_remotion_proj/
     shared/                           # @bun-remotion/shared
       src/
-        index.ts                      # Barrel export
+        index.ts                      # Barrel export (types, fonts, utils, components)
+        types.ts                      # Emotion, ComicEffect, CharacterConfig, DialogLine, manifests
+        fonts.ts                      # NotoSansTC, MaShanZheng, ZCOOLKuaiLe, ZhiMangXing, sfxFont()
+        utils.ts                      # resolveCharacterImage(), effectToEmoji()
         FadeText.tsx                  # Fade-in text with translateY
         Candle.tsx                    # Candlestick chart element
         CandleChart.tsx               # K-line chart container
+        components/
+          index.ts                    # Component barrel
+          CharacterSprite.tsx         # Unified: emotion + chibi + face mirror + intensity
+          DialogBox.tsx               # Typewriter dialog with name plate
+          BackgroundLayer.tsx         # Ken Burns zoom background
+          ComicEffects.tsx            # Spring-based emoji effects (12 types)
+          MangaSfx.tsx                # Manga onomatopoeia with starburst
+          SystemOverlay.tsx           # System notification + message overlays
     claude-code-intro/                # @bun-remotion/claude-code-intro
       src/
         index.ts                      # registerRoot()
@@ -168,6 +179,7 @@ All memory — project knowledge, user feedback, preferences — lives here. Thi
 - [zai-provider](.agent/memory/reference/zai-provider.md) - z.ai API provider: Z_AI_API_KEY alias, model IDs (glm-4.5/4.6), pi-ai compat
 
 ### feedback/
+- [shared-component-architecture](.agent/memory/feedback/shared-component-architecture.md) - Unified @bun-remotion/shared: CharacterSprite, DialogBox, ComicEffects etc. — use `emotion` not `pose`, import from shared
 - [character-facing-convention](.agent/memory/feedback/character-facing-convention.md) - ALL galgame character images face LEFT by default, Remotion flip rules by side position
 - [no-playwright-visual-verify](.agent/memory/feedback/no-playwright-visual-verify.md) - Don't use Playwright + image analysis to verify Remotion layout — trust math, render output, let user verify
 - [skill-creation](.agent/memory/feedback/skill-creation.md) - Skill structure: v2 load-on-demand (SKILL.md + engines/ + platforms/ + env-check.md) vs v1 (references/ + scripts/)

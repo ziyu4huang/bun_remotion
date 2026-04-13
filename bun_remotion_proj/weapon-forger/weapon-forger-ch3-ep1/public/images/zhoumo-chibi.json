@@ -1,0 +1,8 @@
+{
+  "file": "zhoumo-chibi.png",
+  "type": "chibi",
+  "character": "zhoumo",
+  "facing": "LEFT",
+  "prompt": "chibi anime style male cultivator, cute small version, amber/gold themed mini robes, round glasses, mischievous grin, holding a tiny wrench, simple cute design, half-body, transparent background",
+  "backgroundStrategy": "solid magenta #FF00FF, remove with rembg"
+}

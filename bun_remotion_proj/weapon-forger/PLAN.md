@@ -24,19 +24,14 @@ weapon-forger/
       examiner.png, examiner-chibi.png
       elder.png
       *.json                 # Image generation metadata
-    backgrounds/             # Shared background images
+    backgrounds/             # Group-specific background images
       sect-gate.png
-    characters.ts            # Shared: character configs, types, fonts, effects, utilities
-    components/              # Shared React components (enhanced versions)
-      BackgroundLayer.tsx
-      CharacterSprite.tsx
-      DialogBox.tsx
-      ComicEffects.tsx
-      MangaSfx.tsx
-      BattleEffects.tsx
-      SystemOverlay.tsx
+    characters.ts            # Per-group: character configs, imports types/fonts from @bun-remotion/shared
+    components/              # DEPRECATED — migrate to @bun-remotion/shared
+      BattleEffects.tsx      # Project-local (NOT shared — different per project)
     scripts/
       generate-tts.ts        # Shared TTS generator (mlx_tts + Gemini fallback)
+      sync-images.sh         # Image sync to episodes (legacy)
   weapon-forger-ch1-ep1/     # Episode (lean — only scenes + narration)
     public/
       images/                # Copies of fixture images (run sync-images.sh)
@@ -49,6 +44,22 @@ weapon-forger/
       Root.tsx               # Composition
       index.ts               # registerRoot()
 ```
+
+### Shared Components (@bun-remotion/shared)
+
+Dialog, character, and effect components now live in `bun_remotion_proj/shared/src/`. **New episodes MUST import from `@bun-remotion/shared`, not from `fixture/components/`.**
+
+| Component | Import | Notes |
+|-----------|--------|-------|
+| CharacterSprite | `@bun-remotion/shared` | Use `emotion` prop (not `pose`), pass `characterConfig`, set `intensity="enhanced"` |
+| DialogBox | `@bun-remotion/shared` | Pass `getCharacterConfig={(id) => CHARACTERS[id as Character]}` |
+| BackgroundLayer | `@bun-remotion/shared` | Gradient default: `#0a0a1e→#1a0a2e→#2a1a0e` |
+| ComicEffects | `@bun-remotion/shared` | 12 spring-based emoji effects |
+| MangaSfx | `@bun-remotion/shared` | Manga onomatopoeia with starburst |
+| SystemOverlay | `@bun-remotion/shared` | SystemNotification + SystemMessage |
+| BattleEffects | `../../../fixture/components/BattleEffects` | **Project-local** — NOT shared |
+
+See `/remotion-best-practices` skill → `rules/shared-components.md` for full API docs.
 
 ### Image Sync Convention
 
@@ -65,14 +76,25 @@ This copies all fixture images into every episode's `public/images/`.
 
 ### Import Convention
 
-Scenes import from fixture using relative paths:
+**New episodes** import shared components and types from `@bun-remotion/shared`:
 
 ```typescript
-import { BackgroundLayer } from "../../../fixture/components/BackgroundLayer";
-import { notoSansTC, type DialogLine } from "../../../fixture/characters";
+// Shared components
+import { CharacterSprite, DialogBox, BackgroundLayer, ComicEffects, MangaSfx, SystemNotification } from "@bun-remotion/shared";
+
+// Shared types and fonts
+import { notoSansTC, sfxFont, resolveCharacterImage, effectToEmoji } from "@bun-remotion/shared";
+import type { Emotion, ComicEffect, CharacterConfig, DialogLine, MangaSfxEvent } from "@bun-remotion/shared";
+
+// Per-group character definitions (weapon-forger specific)
+import { CHARACTERS, type Character } from "../../../fixture/characters";
+
+// Project-local only
+import { BattleEffects } from "../../../fixture/components/BattleEffects";
 ```
 
-Components inside `fixture/components/` import from `../characters` (sibling of components dir).
+**Legacy episodes** (ch1-ep1 through ch2-ep2) still import from `../../../fixture/components/`. These are pending migration — see TODO.md for each episode.
+
 Episode `generate-tts` script path: `../fixture/scripts/generate-tts.ts` (relative from episode root).
 
 ## Episode Guide
@@ -84,6 +106,7 @@ Episode `generate-tts` script path: `../fixture/scripts/generate-tts.ts` (relati
 | ch1-ep3 | 丹爐修復 | zh-TW (Traditional) | zhoumo, elder | Complete |
 | ch2-ep1 | 禍害成軍 | zh-TW (Traditional) | zhoumo, luyang, mengjingzhou | Complete |
 | ch2-ep2 | 低語洞窟 | zh-TW (Traditional) | zhoumo, luyang, mengjingzhou, soul | Complete |
+| ch3-ep1 | 秘境探索 | zh-TW (Traditional) | zhoumo, luyang, mengjingzhou, elder | Complete |
 
 ## Adding a New Episode
 
@@ -93,8 +116,11 @@ Follow the `/remotion-best-practices` skill → load `rules/episode-creation.md`
 1. Read context (PLAN.md, previous narration.ts, previous outro teaser)
 2. Write story draft → present **confirm block in zh_TW** → wait for user approval
 3. After approval → scaffold episode (TODO.md → narration.ts → configs → scenes → update PLAN.md/dev.sh/package.json)
-4. Verify style consistency against this PLAN.md
-5. Generate TTS → verify in Studio → render MP4
+4. **Import from `@bun-remotion/shared`** for all shared components (CharacterSprite, DialogBox, etc.)
+5. Verify style consistency against this PLAN.md
+6. Generate TTS → verify in Studio → render MP4
+
+**Migration status:** Episodes ch1-ep1 through ch2-ep2 still use legacy `fixture/components/` imports. New episodes (ch3+) must use `@bun-remotion/shared`.
 
 **File checklist for each new episode:**
 ```
@@ -128,6 +154,7 @@ bash scripts/dev.sh studio weapon-forger-ch1-ep2
 bash scripts/dev.sh studio weapon-forger-ch1-ep3
 bash scripts/dev.sh studio weapon-forger-ch2-ep1
 bash scripts/dev.sh studio weapon-forger-ch2-ep2
+bash scripts/dev.sh studio weapon-forger-ch3-ep1
 
 # Render
 bash scripts/dev.sh render weapon-forger-ch1-ep1
@@ -135,6 +162,7 @@ bash scripts/dev.sh render weapon-forger-ch1-ep2
 bash scripts/dev.sh render weapon-forger-ch1-ep3
 bash scripts/dev.sh render weapon-forger-ch2-ep1
 bash scripts/dev.sh render weapon-forger-ch2-ep2
+bash scripts/dev.sh render weapon-forger-ch3-ep1
 
 # TTS
 bun run generate-tts:wf-ch1-ep1
@@ -142,6 +170,7 @@ bun run generate-tts:wf-ch1-ep2
 bun run generate-tts:wf-ch1-ep3
 bun run generate-tts:wf-ch2-ep1
 bun run generate-tts:wf-ch2-ep2
+bun run generate-tts:wf-ch3-ep1
 ```
 
 ---
@@ -164,7 +193,7 @@ bun run generate-tts:wf-ch2-ep2
 
 ### 第三章：秘境探索
 
-众人进入一个严肃的上古大能秘境。别家宗门在破解禁制，周墨掏出了"激光切割阵法"。
+**Ep1 — 秘境探索：** 長老派邏輯修正小組參加五年一次的宗門秘境探索。別家宗門在認真破解上古禁制，周墨掏出了「雷射切割陣法」——效率很高，但把整座秘境的禁制全切斷了，觸發了自毀倒數。招牌缺陷延續：雷射筆沒有方向限制，出口也被切斷了。現在問題很簡單：在一百八十息之內，找到一個不存在的出口。
 
 ### 第四章：师姐的"肯定"
 
@@ -174,11 +203,11 @@ bun run generate-tts:wf-ch2-ep2
 
 Every episode MUST evolve these running gags — they are the series' identity.
 
-| 梗 | Ep1 | Ep2 | Ep3 | Ch2-Ep1 | Ch2-Ep2 | Ep4+ |
-|----|-----|-----|-----|---------|---------|------|
-| 忘加按鈕 | 忘加停止按鈕 | 飛劍仍收不回來 | 記得加定時休眠，但忘加音量控制 | 改良壓力釋放模組但忘加防爆閥 | 滄溟子忘加拔劍按鈕 → 家族遺傳 | TBD |
-| 現代科技用語 | 模組化設計、使用者體驗 | 演算法、手機 | 情感交互界面、系統升級 | 壓力釋放模組、演算法思維、被動技能、離線終端 | 自動防禦系統、密碼重設、記憶區段、人工智慧、常規維護 | TBD |
-| 法寶反噬 | 飛劍搶儲物袋 | 考官袋未取回 | 丹爐半夜唱歌 | 第三個鍋爐爆炸 | 滄溟之劍三千年沒人能拔出 | TBD |
+| 梗 | Ep1 | Ep2 | Ep3 | Ch2-Ep1 | Ch2-Ep2 | Ch3-Ep1 | Ep4+ |
+|----|-----|-----|-----|---------|---------|---------|------|
+| 忘加按鈕 | 忘加停止按鈕 | 飛劍仍收不回來 | 記得加定時休眠，但忘加音量控制 | 改良壓力釋放模組但忘加防爆閥 | 滄溟子忘加拔劍按鈕 → 家族遺傳 | 雷射筆忘加方向控制 → 出口被切斷 | TBD |
+| 現代科技用語 | 模組化設計、使用者體驗 | 演算法、手機 | 情感交互界面、系統升級 | 壓力釋放模組、演算法思維、被動技能、離線終端 | 自動防禦系統、密碼重設、記憶區段、人工智慧、常規維護 | 雷射切割陣法、聚焦式靈氣切割陣法發射器、冗餘設計、備份系統、計時觸發的自動防禦協議 | TBD |
+| 法寶反噬 | 飛劍搶儲物袋 | 考官袋未取回 | 丹爐半夜唱歌 | 第三個鍋爐爆炸 | 滄溟之劍三千年沒人能拔出 | 雷射筆切了禁制也切了出口 → 自毀倒數 | TBD |
 
 ## 标志性原创法宝
 

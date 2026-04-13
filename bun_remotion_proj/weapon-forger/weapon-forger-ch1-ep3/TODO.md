@@ -34,3 +34,14 @@ Language: zh-TW (Traditional Chinese)
 - [x] Sync fixture images to all episodes
 - [x] Open in Remotion Studio and verify visuals
 - [x] Render final MP4 (re-running after bug fix)
+
+## Migration: @bun-remotion/shared (Pending)
+
+- [ ] Update scene imports from `../../../fixture/components/X` to `@bun-remotion/shared`
+- [ ] Change `pose` prop to `emotion` on CharacterSprite usage
+- [ ] Add `characterConfig={CHARACTERS[character]}` prop to CharacterSprite
+- [ ] Add `intensity="enhanced"` prop to CharacterSprite
+- [ ] Update DialogBox to use `getCharacterConfig` callback
+- [ ] Keep BattleEffects import from `../../../fixture/components/BattleEffects` (project-local)
+- [ ] Verify in Remotion Studio after migration
+- [ ] Remove legacy imports from fixture/components/
