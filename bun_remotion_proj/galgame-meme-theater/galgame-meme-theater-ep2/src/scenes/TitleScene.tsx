@@ -1,7 +1,7 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, Easing } from "remotion";
-import { BackgroundLayer } from "../../../fixture/components/BackgroundLayer";
-import { notoSansTC } from "../../../fixture/characters";
+import { BackgroundLayer } from "../../../assets/components/BackgroundLayer";
+import { notoSansTC } from "../../../assets/characters";
 
 export const TitleScene: React.FC = () => {
   const frame = useCurrentFrame();

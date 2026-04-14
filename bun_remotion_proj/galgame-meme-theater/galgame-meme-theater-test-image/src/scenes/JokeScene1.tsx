@@ -1,15 +1,15 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, spring } from "remotion";
-import { BackgroundLayer } from "../../../fixture/components/BackgroundLayer";
-import { CharacterSprite } from "../../../fixture/components/CharacterSprite";
-import { DialogBox } from "../../../fixture/components/DialogBox";
-import { ComicEffects } from "../../../fixture/components/ComicEffects";
-import type { DialogLine } from "../../../fixture/characters";
+import { BackgroundLayer } from "../../../assets/components/BackgroundLayer";
+import { CharacterSprite } from "../../../assets/components/CharacterSprite";
+import { DialogBox } from "../../../assets/components/DialogBox";
+import { ComicEffects } from "../../../assets/components/ComicEffects";
+import type { DialogLine } from "../../../assets/characters";
 
 /**
  * test-image JokeScene1 — 測試共享圖片模組
  *
- * Uses ALL fixture images via the shared import module (getImageUrl).
+ * Uses ALL asset images via the shared import module (getImageUrl).
  * No images in public/images/ — everything is bundled by webpack.
  */
 const dialog: DialogLine[] = [

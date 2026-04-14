@@ -1,6 +1,6 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate } from "remotion";
-import { notoSansTC } from "../../../fixture/characters";
+import { notoSansTC } from "../../../assets/characters";
 
 /**
  * EP6 Outro

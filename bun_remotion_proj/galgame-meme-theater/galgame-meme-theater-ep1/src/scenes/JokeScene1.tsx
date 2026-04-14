@@ -1,9 +1,9 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate } from "remotion";
-import { BackgroundLayer } from "../../../fixture/components/BackgroundLayer";
-import { DialogBox } from "../../../fixture/components/DialogBox";
-import { CharacterSprite } from "../../../fixture/components/CharacterSprite";
-import type { DialogLine } from "../../../fixture/characters";
+import { BackgroundLayer } from "../../../assets/components/BackgroundLayer";
+import { DialogBox } from "../../../assets/components/DialogBox";
+import { CharacterSprite } from "../../../assets/components/CharacterSprite";
+import type { DialogLine } from "../../../assets/characters";
 
 // 梗：早八人的痛 (The pain of 8AM classes)
 const lines: DialogLine[] = [

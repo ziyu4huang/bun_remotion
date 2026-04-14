@@ -1,6 +1,6 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, Easing } from "remotion";
-import { BackgroundLayer } from "../../../fixture/components/BackgroundLayer";
+import { BackgroundLayer } from "../../../assets/components/BackgroundLayer";
 
 export const OutroScene: React.FC = () => {
   const frame = useCurrentFrame();

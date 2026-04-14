@@ -1,6 +1,6 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, Easing } from "remotion";
-import { notoSansTC } from "../../../fixture/characters";
+import { notoSansTC } from "../../../assets/characters";
 
 /**
  * EP6 Title — 美少女梗圖劇場 第六集（共享圖片模組測試）

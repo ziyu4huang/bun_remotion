@@ -1,7 +1,7 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, interpolate, Easing } from "remotion";
-import { BackgroundLayer } from "../../../fixture/components/BackgroundLayer";
-import { TitleCard } from "../../../fixture/components/TitleCard";
+import { BackgroundLayer } from "../../../assets/components/BackgroundLayer";
+import { TitleCard } from "../../../assets/components/TitleCard";
 
 export const TitleScene: React.FC = () => {
   const frame = useCurrentFrame();

@@ -6,7 +6,7 @@
     "start": "remotion studio",
     "build": "remotion render GalgameMemeTheaterEp7 out/galgame-meme-theater-ep7.mp4 --timeout=160000",
     "upgrade": "remotion upgrade",
-    "generate-tts": "bun run ../fixture/scripts/generate-tts.ts"
+    "generate-tts": "bun run ../assets/scripts/generate-tts.ts"
   },
   "dependencies": {
     "@bun-remotion/shared": "workspace:*",

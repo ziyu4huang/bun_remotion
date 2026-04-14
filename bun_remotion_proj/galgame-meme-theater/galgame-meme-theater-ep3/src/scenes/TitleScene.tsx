@@ -1,6 +1,6 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, interpolate, Easing } from "remotion";
-import { notoSansTC } from "../../../fixture/characters";
+import { notoSansTC } from "../../../assets/characters";
 
 /**
  * EP3 Opening — Cinematic anime-style title sequence

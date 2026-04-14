@@ -7,9 +7,9 @@
  *      Requires VOICE_MAP, VOICE_DESCRIPTION, NARRATOR_LANG exports.
  *
  * Must be run from an episode directory via:
- *   bun run ../fixture/scripts/generate-tts.ts
- *   bun run ../fixture/scripts/generate-tts.ts --skip-existing
- *   bun run ../fixture/scripts/generate-tts.ts --scene JokeScene1
+ *   bun run ../assets/scripts/generate-tts.ts
+ *   bun run ../assets/scripts/generate-tts.ts --skip-existing
+ *   bun run ../assets/scripts/generate-tts.ts --scene JokeScene1
  *
  * On macOS  -> uses mlx_tts (Qwen3-TTS, local, offline, no API key needed)
  * Otherwise -> falls back to Gemini TTS (requires GOOGLE_API_KEY env var)

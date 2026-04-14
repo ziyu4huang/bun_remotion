@@ -25,7 +25,7 @@ Language: zh-TW (Traditional Chinese)
 - [x] Update PLAN.md (episode guide)
 - [x] Update scripts/dev.sh ALL_APPS + get_comp_id()
 - [x] Update root package.json with meme5 scripts
-- [x] Run sync-images.sh to copy fixture images
+- [x] Run sync-images.sh to copy assets images
 - [x] Run `bun install` to link workspace
 - [x] Run `bun run generate-tts:meme5` to generate audio
 - [x] Quick headless verify (playwright-cli snapshot/screenshot)

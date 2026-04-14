@@ -1,9 +1,9 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate } from "remotion";
-import { BackgroundLayer } from "../../../fixture/components/BackgroundLayer";
-import { DialogBox } from "../../../fixture/components/DialogBox";
-import { CharacterSprite } from "../../../fixture/components/CharacterSprite";
-import type { DialogLine } from "../../../fixture/characters";
+import { BackgroundLayer } from "../../../assets/components/BackgroundLayer";
+import { DialogBox } from "../../../assets/components/DialogBox";
+import { CharacterSprite } from "../../../assets/components/CharacterSprite";
+import type { DialogLine } from "../../../assets/characters";
 
 // 梗：減肥永遠從明天開始 (Diet always starts tomorrow)
 const lines: DialogLine[] = [

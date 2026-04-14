@@ -1,11 +1,11 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate } from "remotion";
-import { BackgroundLayer } from "../../../fixture/components/BackgroundLayer";
-import { DialogBox } from "../../../fixture/components/DialogBox";
-import { CharacterSprite } from "../../../fixture/components/CharacterSprite";
-import { ComicEffects } from "../../../fixture/components/ComicEffects";
-import { notoSansTC } from "../../../fixture/characters";
-import type { DialogLine, ComicEffect } from "../../../fixture/characters";
+import { BackgroundLayer } from "../../../assets/components/BackgroundLayer";
+import { DialogBox } from "../../../assets/components/DialogBox";
+import { CharacterSprite } from "../../../assets/components/CharacterSprite";
+import { ComicEffects } from "../../../assets/components/ComicEffects";
+import { notoSansTC } from "../../../assets/characters";
+import type { DialogLine, ComicEffect } from "../../../assets/characters";
 import { getSegmentTiming } from "./useSegmentTiming";
 
 /**
