@@ -145,7 +145,25 @@ cp ../../../fixture/characters/zhoumo.png public/images/zhoumo.png
 
 **This affects:** ALL `public/` assets (images, audio, fonts, data files). Any file served by Remotion's static server must be a real file, not a symlink.
 
-### 9. `durations.json` stale data
+### 9. `Math.random()` in effects → non-deterministic rendering
+
+`Math.random()` produces different results per render. This means:
+- Studio preview ≠ rendered output
+- Repeated renders produce different shake/flicker patterns
+- Remotion's frame cache can't work (every render is "new")
+
+```tsx
+// ❌ WRONG — different every render, cache can't work
+const shakeX = (Math.random() - 0.5) * 2 * intensity * decay;
+
+// ✅ CORRECT — deterministic noise based on frame number
+const noise = Math.sin(elapsed * 12.9898 + 78.233) * 43758.5453 % 1;
+const shakeX = (noise - 0.5) * 2 * intensity * decay;
+```
+
+**This applies to ALL visual effects:** ScreenShake, particle systems, flicker, noise textures. Any random visual must be seeded by frame number.
+
+### 10. `durations.json` stale data
 
 If audio was regenerated but `durations.json` wasn't updated, scene durations will be wrong.
 

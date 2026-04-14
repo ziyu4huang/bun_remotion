@@ -219,6 +219,9 @@ async function main() {
   let generated = 0;
   let skipped = 0;
 
+  // Per-segment durations for audio-text sync
+  const sceneSegmentDurations: Array<{ scene: string; file: string; segmentDurations: number[] }> = [];
+
   for (let i = 0; i < filtered.length; i++) {
     const { scene, file, segments } = filtered[i];
     const outputPath = join(AUDIO_DIR, file);
@@ -233,6 +236,7 @@ async function main() {
 
     try {
       const segmentPaths: string[] = [];
+      const segmentDurations: number[] = [];
 
       for (let s = 0; s < segments.length; s++) {
         const seg = segments[s];
@@ -250,6 +254,9 @@ async function main() {
 
         segmentPaths.push(segPath);
 
+        // Record segment duration in frames (before concatenateWavs deletes the file)
+        segmentDurations.push(wavDurationFrames(segPath, 30));
+
         if (useMlxTts && s < segments.length - 1) {
           await new Promise((r) => setTimeout(r, 1500));
         }
@@ -261,6 +268,9 @@ async function main() {
       concatenateWavs(segmentPaths, outputPath);
       console.log(`  → ${file} (${segments.length} segments concatenated)`);
       generated++;
+
+      // Record per-segment durations (in frames at 30fps)
+      sceneSegmentDurations.push({ scene, file, segmentDurations });
     } catch (err) {
       console.error(`  FAILED: ${err}`);
       process.exit(1);
@@ -272,6 +282,9 @@ async function main() {
     return existsSync(p) ? wavDurationFrames(p, 30) : 240;
   });
   writeFileSync(join(AUDIO_DIR, "durations.json"), JSON.stringify(durationsJson, null, 2) + "\n");
+
+  // Write per-segment durations for audio-text sync
+  writeFileSync(join(AUDIO_DIR, "segment-durations.json"), JSON.stringify(sceneSegmentDurations, null, 2) + "\n");
 
   // Write voice manifest
   const manifest = narrations.map((n: { scene: string; file: string; segments: Array<{ character: VoiceCharacter; text: string }> }) => ({

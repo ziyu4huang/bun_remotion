@@ -168,6 +168,11 @@ export function effectToEmoji(
   return map[single] ?? "";
 }
 
+export function normalizeEffects(effect?: ComicEffect | ComicEffect[]): ComicEffect[] {
+  if (!effect) return [];
+  return Array.isArray(effect) ? effect : [effect];
+}
+
 export function sfxFont(font?: "brush" | "playful" | "action"): string {
   switch (font) {
     case "brush": return maShanZheng;

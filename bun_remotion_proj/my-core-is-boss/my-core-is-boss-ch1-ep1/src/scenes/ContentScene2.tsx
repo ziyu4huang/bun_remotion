@@ -1,12 +1,11 @@
 import React from "react";
-import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate } from "remotion";
-
-// normalizeEffects is already defined below — this is fine
+import { AbsoluteFill, useCurrentFrame, useVideoConfig } from "remotion";
 import { BackgroundLayer } from "../../../fixture/components/BackgroundLayer";
 import { CharacterSprite } from "../../../fixture/components/CharacterSprite";
 import { DialogBox } from "../../../fixture/components/DialogBox";
 import { ComicEffects } from "../../../fixture/components/ComicEffects";
-import { normalizeEffects, type ComicEffect, notoSansTC } from "../../../fixture/characters";
+import { normalizeEffects, CHARACTERS, type ComicEffect } from "../../../fixture/characters";
+import { SceneIndicator } from "../../../fixture/components/SceneIndicator";
 
 const dialogLines = [
   { character: "zhaoxiaoqi" as const, text: "我一定要記下來！《林逸師兄語錄》第一篇！", emotion: "gloating" as const, effect: "fire" as ComicEffect },
@@ -17,11 +16,6 @@ const dialogLines = [
   { character: "zhaoxiaoqi" as const, text: "「這也有 bug」——師兄在質疑天道的運行！這是何等的氣魄！", emotion: "shock" as const, effect: "shock" as ComicEffect },
   { character: "zhaoxiaoqi" as const, text: "我趙小七，從今天起，就是林逸師兄的頭號追隨者！", emotion: "gloating" as const, effect: "gloating" as ComicEffect },
 ];
-
-function normalizeEffects(effect?: ComicEffect | ComicEffect[]): ComicEffect[] {
-  if (!effect) return [];
-  return Array.isArray(effect) ? effect : [effect];
-}
 
 export const ContentScene2: React.FC = () => {
   const frame = useCurrentFrame();
@@ -34,36 +28,12 @@ export const ContentScene2: React.FC = () => {
   );
   const currentLine = dialogLines[currentLineIndex];
 
-  // Scene indicator
-  const indicatorOpacity = frame < 60
-    ? interpolate(frame, [0, 15, 45, 60], [0, 1, 1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })
-    : 0;
-
   return (
     <AbsoluteFill>
       <BackgroundLayer image="sect-plaza.png" />
 
       {/* Scene indicator */}
-      {indicatorOpacity > 0 && (
-        <div style={{
-          position: "absolute",
-          top: 40,
-          left: 60,
-          opacity: indicatorOpacity,
-          zIndex: 50,
-          fontFamily: notoSansTC,
-        }}>
-          <div style={{ color: "#38BDF8", fontSize: 24, fontWeight: 700 }}>
-            語錄誕生
-          </div>
-          <div style={{
-            width: interpolate(frame, [5, 25], [0, 200], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }),
-            height: 2,
-            background: "linear-gradient(90deg, #38BDF8, transparent)",
-            marginTop: 4,
-          }} />
-        </div>
-      )}
+      <SceneIndicator text="語錄誕生" color="#38BDF8" />
 
       {/* Characters — zhaoxiaoqi is the main speaker here */}
       <CharacterSprite
@@ -87,7 +57,7 @@ export const ContentScene2: React.FC = () => {
       {/* Comic effects */}
       <ComicEffects
         effects={normalizeEffects(currentLine.effect)}
-        side={currentLine.character === "linyi" ? "left" : "right"}
+        side={CHARACTERS[currentLine.character].position}
       />
 
       {/* Dialog box */}

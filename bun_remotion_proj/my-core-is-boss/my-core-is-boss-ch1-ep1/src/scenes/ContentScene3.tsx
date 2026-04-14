@@ -1,5 +1,5 @@
 import React from "react";
-import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, spring, Easing } from "remotion";
+import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate } from "remotion";
 import { BackgroundLayer } from "../../../fixture/components/BackgroundLayer";
 import { CharacterSprite } from "../../../fixture/components/CharacterSprite";
 import { DialogBox } from "../../../fixture/components/DialogBox";
@@ -7,7 +7,8 @@ import { ComicEffects } from "../../../fixture/components/ComicEffects";
 import { MangaSfx } from "../../../fixture/components/MangaSfx";
 import { ScreenShake } from "../../../fixture/components/ScreenShake";
 import { SystemNotification, SystemMessage } from "../../../fixture/components/SystemOverlay";
-import { normalizeEffects, type ComicEffect, notoSansTC } from "../../../fixture/characters";
+import { normalizeEffects, CHARACTERS, type ComicEffect } from "../../../fixture/characters";
+import { SceneIndicator } from "../../../fixture/components/SceneIndicator";
 
 const dialogLines = [
   { character: "narrator" as const, text: "消息傳到了蕭長老的耳中。煉器峰的資深長老，決定親自來看看這個「狂徒」。", emotion: "default" as const },
@@ -24,11 +25,6 @@ const dialogLines = [
   { character: "xiaoelder" as const, text: "前輩……不，前輩在上！晚輩有眼不識泰山！", emotion: "cry" as const, effect: "cry" as ComicEffect },
   { character: "linyi" as const, text: "……啊？你在跪什麼啊？", emotion: "confused" as const, effect: "sweat" as ComicEffect },
 ];
-
-function normalizeEffects(effect?: ComicEffect | ComicEffect[]): ComicEffect[] {
-  if (!effect) return [];
-  return Array.isArray(effect) ? effect : [effect];
-}
 
 export const ContentScene3: React.FC = () => {
   const frame = useCurrentFrame();
@@ -60,11 +56,6 @@ export const ContentScene3: React.FC = () => {
     ? Math.floor(kneelFrame)
     : undefined;
 
-  // Scene indicator
-  const indicatorOpacity = frame < 60
-    ? interpolate(frame, [0, 15, 45, 60], [0, 1, 1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })
-    : 0;
-
   // System notification at line 3 (linyi sees level)
   const levelFrame = (3 / dialogLines.length) * durationInFrames;
 
@@ -74,26 +65,7 @@ export const ContentScene3: React.FC = () => {
         <BackgroundLayer image="sect-plaza.png" />
 
         {/* Scene indicator */}
-        {indicatorOpacity > 0 && (
-          <div style={{
-            position: "absolute",
-            top: 40,
-            left: 60,
-            opacity: indicatorOpacity,
-            zIndex: 50,
-            fontFamily: notoSansTC,
-          }}>
-            <div style={{ color: "#A78BFA", fontSize: 24, fontWeight: 700 }}>
-              長老駕到
-            </div>
-            <div style={{
-              width: interpolate(frame, [5, 25], [0, 200], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }),
-              height: 2,
-              background: "linear-gradient(90deg, #A78BFA, transparent)",
-              marginTop: 4,
-            }} />
-          </div>
-        )}
+        <SceneIndicator text="長老駕到" color="#A78BFA" />
 
         {/* Characters */}
         <CharacterSprite
@@ -131,7 +103,7 @@ export const ContentScene3: React.FC = () => {
         {/* Comic effects */}
         <ComicEffects
           effects={normalizeEffects(currentLine.effect)}
-          side={currentLine.character === "linyi" ? "left" : currentLine.character === "xiaoelder" ? "center" : "right"}
+          side={CHARACTERS[currentLine.character].position}
         />
 
         {/* Manga SFX from dialog line */}

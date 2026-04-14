@@ -25,6 +25,7 @@
 - [x] Update root package.json (start/build/generate-tts scripts)
 - [x] Run sync-images.sh to copy fixture images
 - [x] Run `bun install` to link workspace
+- [x] Code review — normalizeEffects, ScreenShake, SceneIndicator, side mapping, name props
 - [ ] Generate TTS (in progress)
 - [ ] Verify in Remotion Studio
 - [ ] Render MP4

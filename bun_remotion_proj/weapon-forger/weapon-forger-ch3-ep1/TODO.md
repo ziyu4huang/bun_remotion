@@ -10,21 +10,25 @@ Language: zh-TW (Traditional Chinese)
 ## Setup Tasks
 
 - [x] Create TODO.md
-- [ ] Write narration.ts (4 scenes: Title, Content1, Content2, Outro)
-- [ ] Create package.json
-- [ ] Create tsconfig.json
-- [ ] Create src/index.ts
-- [ ] Create src/Root.tsx
-- [ ] Create src/WeaponForgerCh3Ep1.tsx
-- [ ] Write src/scenes/TitleScene.tsx
-- [ ] Write src/scenes/ContentScene1.tsx (秘境入口 — 各宗門準備)
-- [ ] Write src/scenes/ContentScene2.tsx (雷射切割 vs 上古禁制)
-- [ ] Write src/scenes/OutroScene.tsx
-- [ ] Update PLAN.md (episode guide + story arcs)
-- [ ] Update scripts/dev.sh ALL_APPS + get_comp_id()
-- [ ] Update root package.json with scripts
-- [ ] Run sync-images.sh to copy fixture images
-- [ ] Run `bun install` to link workspace
-- [ ] Run `bun run generate-tts:wf-ch3-ep1` to generate audio
-- [ ] Verify in Remotion Studio
-- [ ] Render final MP4
+- [x] Write narration.ts (4 scenes: Title, Content1, Content2, Outro)
+- [x] Create package.json
+- [x] Create tsconfig.json
+- [x] Create src/index.ts
+- [x] Create src/Root.tsx
+- [x] Create src/WeaponForgerCh3Ep1.tsx
+- [x] Write src/scenes/TitleScene.tsx
+- [x] Write src/scenes/ContentScene1.tsx (秘境入口 — 各宗門準備)
+- [x] Write src/scenes/ContentScene2.tsx (雷射切割 vs 上古禁制)
+- [x] Write src/scenes/OutroScene.tsx
+- [x] Update PLAN.md (episode guide + story arcs)
+- [x] Update scripts/dev.sh ALL_APPS + get_comp_id()
+- [x] Update root package.json with scripts
+- [x] Run sync-images.sh to copy fixture images
+- [x] Run `bun install` to link workspace
+- [x] Run `bun run generate-tts:wf-ch3-ep1` to generate audio
+- [x] Fix narrator character crash (narrator not in CHARACTERS map → changed to zhoumo/luyang in dialogLines)
+- [x] Render final MP4 (9512 frames, 184.4 MB)
+
+## Bug Fixes
+
+- ContentScene2 used `character: "narrator"` in dialogLines, but `narrator` isn't in the CHARACTERS map → DialogBox crashed with `Cannot read properties of undefined (reading 'color')`. Fixed by changing narrator lines to `zhoumo` and `luyang` respectively.

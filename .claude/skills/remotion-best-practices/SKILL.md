@@ -12,12 +12,13 @@ audio, TTS voiceover, transitions, fonts, and more.
 
 ## Common Patterns (most-used, load these first)
 
-When building a narrative video scene, these 4 rules cover 90% of what you need:
+When building a narrative video scene, these 5 rules cover 90% of what you need:
 
 - [rules/dialog-driven.md](rules/dialog-driven.md) — **Core scene architecture**: `dialogLines[]` as single source of truth, `currentLineIndex`, adaptive frame calculation, scene layer structure
 - [rules/comic-effects.md](rules/comic-effects.md) — **Character reactions**: ComicEffect types (surprise, shock, sweat, sparkle, etc.), integration with dialog lines
 - [rules/environmental-effects.md](rules/environmental-effects.md) — **Scene theming**: accent colors, ambient glow, scene indicators, atmospheric effects per scene
-- [rules/debugging.md](rules/debugging.md) — **Verify renders**: `remotion still` + brightness check, ScreenShake NaN pitfall, common bugs
+- [rules/debugging.md](rules/debugging.md) — **Verify renders**: `remotion still` + brightness check, ScreenShake NaN pitfall, `Math.random()` determinism, common bugs
+- [rules/code-quality.md](rules/code-quality.md) — **Code quality**: utility exports, config-driven side mapping, component extraction, name props, React.FC import
 
 ---
 

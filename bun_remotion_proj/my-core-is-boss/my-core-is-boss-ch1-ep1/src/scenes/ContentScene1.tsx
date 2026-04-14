@@ -4,10 +4,10 @@ import { BackgroundLayer } from "../../../fixture/components/BackgroundLayer";
 import { CharacterSprite } from "../../../fixture/components/CharacterSprite";
 import { DialogBox } from "../../../fixture/components/DialogBox";
 import { ComicEffects } from "../../../fixture/components/ComicEffects";
-import { normalizeEffects, type ComicEffect } from "../../../fixture/characters";
+import { normalizeEffects, CHARACTERS, type ComicEffect } from "../../../fixture/characters";
 import { SystemNotification } from "../../../fixture/components/SystemOverlay";
 import { LoadingText } from "../../../fixture/components/GameUI";
-import { notoSansTC } from "../../../fixture/characters";
+import { SceneIndicator } from "../../../fixture/components/SceneIndicator";
 
 const dialogLines = [
   { character: "narrator" as const, text: "天道宗廣場，晨曦初照。弟子們正在晨練。", emotion: "default" as const },
@@ -20,11 +20,6 @@ const dialogLines = [
   { character: "zhaoxiaoqi" as const, text: "「不屑與凡人交流」……一定是看破紅塵了！", emotion: "think" as const, effect: "sparkle" as ComicEffect },
   { character: "zhaoxiaoqi" as const, text: "「跳過對話」……天哪，他是在說跳過修行的俗世煩惱！", emotion: "gloating" as const, effect: "gloating" as ComicEffect },
 ];
-
-function normalizeEffects(effect?: ComicEffect | ComicEffect[]): ComicEffect[] {
-  if (!effect) return [];
-  return Array.isArray(effect) ? effect : [effect];
-}
 
 export const ContentScene1: React.FC = () => {
   const frame = useCurrentFrame();
@@ -46,36 +41,12 @@ export const ContentScene1: React.FC = () => {
   const zhaoxiaoqiFrame = (6 / dialogLines.length) * durationInFrames;
   const showNotification = currentLineIndex >= 6 && currentLineIndex <= 7;
 
-  // Scene indicator
-  const indicatorOpacity = frame < 60
-    ? interpolate(frame, [0, 15, 45, 60], [0, 1, 1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })
-    : 0;
-
   return (
     <AbsoluteFill>
       <BackgroundLayer image="sect-plaza.png" />
 
       {/* Scene indicator */}
-      {indicatorOpacity > 0 && (
-        <div style={{
-          position: "absolute",
-          top: 40,
-          left: 60,
-          opacity: indicatorOpacity,
-          zIndex: 50,
-          fontFamily: notoSansTC,
-        }}>
-          <div style={{ color: "#F59E0B", fontSize: 24, fontWeight: 700 }}>
-            天道宗廣場
-          </div>
-          <div style={{
-            width: interpolate(frame, [5, 25], [0, 200], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }),
-            height: 2,
-            background: "linear-gradient(90deg, #F59E0B, transparent)",
-            marginTop: 4,
-          }} />
-        </div>
-      )}
+      <SceneIndicator text="天道宗廣場" color="#F59E0B" />
 
       {/* Characters */}
       {currentLineIndex >= 5 && (
@@ -101,7 +72,7 @@ export const ContentScene1: React.FC = () => {
       {/* Comic effects */}
       <ComicEffects
         effects={normalizeEffects(currentLine.effect)}
-        side={currentLine.character === "linyi" ? "left" : currentLine.character === "zhaoxiaoqi" ? "right" : "center"}
+        side={CHARACTERS[currentLine.character].position}
       />
 
       {/* Game UI elements */}

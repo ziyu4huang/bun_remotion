@@ -32,10 +32,12 @@ export const ScreenShake: React.FC<ScreenShakeProps> = ({
     return <>{children}</>;
   }
 
-  // Decay shake over duration
+  // Decay shake over duration — deterministic noise based on frame
   const decay = 1 - elapsed / duration;
-  const shakeX = (Math.random() - 0.5) * 2 * intensity * decay;
-  const shakeY = (Math.random() - 0.5) * 2 * intensity * decay;
+  const noise1 = Math.sin(elapsed * 12.9898 + 78.233) * 43758.5453 % 1;
+  const noise2 = Math.sin(elapsed * 63.7264 + 10.873) * 43758.5453 % 1;
+  const shakeX = (noise1 - 0.5) * 2 * intensity * decay;
+  const shakeY = (noise2 - 0.5) * 2 * intensity * decay;
 
   return (
     <div

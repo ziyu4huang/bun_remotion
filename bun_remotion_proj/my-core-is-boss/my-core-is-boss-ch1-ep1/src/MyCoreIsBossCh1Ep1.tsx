@@ -14,6 +14,8 @@ import { OutroScene } from "./scenes/OutroScene";
 
 const TRANSITION_FRAMES = 15;
 
+const sceneNames = ["Title", "Content 1", "Content 2", "Content 3", "Outro"] as const;
+
 const scenes = [
   { Scene: TitleScene, audio: "audio/01-title.wav" },
   { Scene: ContentScene1, audio: "audio/02-content1.wav" },
@@ -37,7 +39,7 @@ export const MyCoreIsBossCh1Ep1: React.FC<Props> = ({ sceneDurations }) => {
       <TransitionSeries>
         {scenes.map(({ Scene, audio }, i) => (
           <React.Fragment key={i}>
-            <TransitionSeries.Sequence durationInFrames={d(i)}>
+            <TransitionSeries.Sequence durationInFrames={d(i)} name={sceneNames[i]}>
               <Scene />
               <Audio src={staticFile(audio)} volume={1} />
             </TransitionSeries.Sequence>

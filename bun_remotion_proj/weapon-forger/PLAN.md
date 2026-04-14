@@ -2,6 +2,13 @@
 
 12-ep xianxia comedy series. Tone: "一本正經胡說八道" (deadpan absurd).
 
+## Chapter Rules
+
+- **Episode count:** Each chapter MUST have **3-5 episodes**. No single-episode chapters.
+- **Running gags:** Every episode MUST evolve at least 2 running gags (忘加按鈕, 現代科技用語, 法寶反噬).
+- **Original artifact:** Each chapter should introduce at least one new 法寶 with absurd logic.
+- **Arc closure:** Each chapter has a mini-arc with setup → escalation → cliffhanger into next chapter.
+
 ## Characters
 
 | Character | Name | Voice | Color | Images |
@@ -106,7 +113,20 @@ Episode `generate-tts` script path: `../fixture/scripts/generate-tts.ts` (relati
 | ch1-ep3 | 丹爐修復 | zh-TW (Traditional) | zhoumo, elder | Complete |
 | ch2-ep1 | 禍害成軍 | zh-TW (Traditional) | zhoumo, luyang, mengjingzhou | Complete |
 | ch2-ep2 | 低語洞窟 | zh-TW (Traditional) | zhoumo, luyang, mengjingzhou, soul | Complete |
+| ch2-ep3 | 三人成虎 | zh-TW (Traditional) | zhoumo, luyang, mengjingzhou, elder | Complete |
 | ch3-ep1 | 秘境探索 | zh-TW (Traditional) | zhoumo, luyang, mengjingzhou, elder | Complete |
+| ch3-ep2 | 智商測試 | zh-TW (Traditional) | zhoumo, luyang, mengjingzhou | Planned |
+| ch3-ep3 | 秘境逃脫 | zh-TW (Traditional) | zhoumo, luyang, mengjingzhou | Planned |
+| ch4-ep1 | 飛舟事件 | zh-TW (Traditional) | zhoumo, luyang, mengjingzhou, yunzhi | Planned |
+| ch4-ep2 | 宗門大比 | zh-TW (Traditional) | zhoumo, luyang, mengjingzhou, yunzhi | Planned |
+| ch4-ep3 | 師姐的評估 | zh-TW (Traditional) | zhoumo, yunzhi, elder | Planned |
+
+**Chapter summary:** Ch1 = 3 eps, Ch2 = 3 eps, Ch3 = 3 eps, Ch4 = 3 eps. Total: 12 eps.
+
+**New characters:**
+| Character | Name | Voice | Color | First Appearance |
+|-----------|------|-------|-------|-----------------|
+| yunzhi | 雲芝 | serena (female) | #EC4899 (pink) | ch4-ep1 |
 
 ## Adding a New Episode
 
@@ -154,6 +174,7 @@ bash scripts/dev.sh studio weapon-forger-ch1-ep2
 bash scripts/dev.sh studio weapon-forger-ch1-ep3
 bash scripts/dev.sh studio weapon-forger-ch2-ep1
 bash scripts/dev.sh studio weapon-forger-ch2-ep2
+bash scripts/dev.sh studio weapon-forger-ch2-ep3
 bash scripts/dev.sh studio weapon-forger-ch3-ep1
 
 # Render
@@ -162,6 +183,7 @@ bash scripts/dev.sh render weapon-forger-ch1-ep2
 bash scripts/dev.sh render weapon-forger-ch1-ep3
 bash scripts/dev.sh render weapon-forger-ch2-ep1
 bash scripts/dev.sh render weapon-forger-ch2-ep2
+bash scripts/dev.sh render weapon-forger-ch2-ep3
 bash scripts/dev.sh render weapon-forger-ch3-ep1
 
 # TTS
@@ -170,6 +192,7 @@ bun run generate-tts:wf-ch1-ep2
 bun run generate-tts:wf-ch1-ep3
 bun run generate-tts:wf-ch2-ep1
 bun run generate-tts:wf-ch2-ep2
+bun run generate-tts:wf-ch2-ep3
 bun run generate-tts:wf-ch3-ep1
 ```
 
@@ -191,13 +214,23 @@ bun run generate-tts:wf-ch3-ep1
 
 **Ep2 — 低語洞窟：** 邏輯修正小組第一次正式任務——探索後山的低語洞窟。洞窟裡住著上古劍仙滄溟子的殘魂，已嚇跑十七批弟子。周墨把殘魂當成「離線終端」來修復，修好後發現——滄溟子是問道宗第三代長老，他煉了一把宗門至寶「滄溟之劍」，但三千年来沒人能拔出來。原因：他忘記加拔劍按鈕。招牌缺陷延續：周墨說「原來忘加按鈕是家族遺傳」。
 
-### 第三章：秘境探索
+**Ep3 — 三人成虎：** 滄溟子的殘魂恢復後成為邏輯修正小組的「名譽顧問」。三人接到第二個任務：修復後山崩塌的「藏經閣」。藏經閣裡的書籍會攻擊靠近的人——因為三百年沒人看過它們，「書的怨念」形成了自動防禦。陸陽的投降表被一本書搶走並讀了出聲，孟景舟的論文被一本書批改了，加上滿滿的紅筆。周墨發現解決方法很簡單：給每本書「點讚」。書籍們得到認可後停止攻擊，但現在藏經閣裡的書都會主動找周墨要「更新評價」。招牌缺陷延續：周墨給書加了「自動評價系統」但忘加評價標準——書們開始互相吹捧，藏經閣的文學水平直線下降。
+
+### 第三章：秘境探索（3 episodes）
 
 **Ep1 — 秘境探索：** 長老派邏輯修正小組參加五年一次的宗門秘境探索。別家宗門在認真破解上古禁制，周墨掏出了「雷射切割陣法」——效率很高，但把整座秘境的禁制全切斷了，觸發了自毀倒數。招牌缺陷延續：雷射筆沒有方向限制，出口也被切斷了。現在問題很簡單：在一百八十息之內，找到一個不存在的出口。
 
-### 第四章：师姐的"肯定"
+**Ep2 — 智商測試：** 邏輯修正小組在自毀倒計時中瘋狂找出口，結果發現秘境的核心藏著一個更大的秘密——上古大能設計這個秘境的真正目的，是為了測試後人的智商。秘境的核心是一個「邏輯謎題陣」，只有智商不超過某個閾值的人才能通過（這也是為什麼周墨能通過所有關卡）。其他宗門的天才弟子們因為想太多全部失敗，只有周墨用「最笨的方法」一路過關。招牌缺陷延續：周墨解謎的方法太直接，把秘境的防禦系統也解了。
 
-云芝师姐看着周墨炼出的"能自动折叠成板砖的飞舟"，陷入沉思。
+**Ep3 — 秘境逃脫：** 秘境的核心其實是上古大能留下的「煉器寶庫」，裡面存放著大量上古法寶藍圖。周墨拿到藍圖後如獲至寶，但秘境的出口需要用特定的「鑰匙」打開——而這把鑰匙被周墨當成廢鐵丟進了他的「材料回收箱」。招牌缺陷延續：周墨的材料回收箱沒有分類功能，他在三千多件廢鐵中翻找鑰匙。其他宗門的弟子們已經開始在秘境裡蓋房子了。
+
+### 第四章：师姐的"肯定"（3 episodes）
+
+**Ep1 — 飛舟事件：** 宗門大比，各組需要煉製飛舟。其他組煉出華麗的仙鶴、威武的蛟龍。周墨煉出「能自動折疊成板磚的飛舟」——設計理念是「便於攜帶」。飛舟在比試中折疊成板磚，不小心把隔壁組的仙鶴拍扁了。師姐雲芝第一次登場，對周墨的法寶進行「嚴格評估」，結論是：「設計理念很實用，但執行方式有問題。比如，你忘了加展開按鈕。」招牌缺陷延續：飛舟忘加展開按鈕，只能永遠保持板磚形態。
+
+**Ep2 — 宗門大比：** 周墨的板磚飛舟被強制參賽。比試項目包括速度、防禦、載重。周墨用工程師思維解決問題：速度靠「流線型板磚」通過風阻測試，防禦靠「板磚夠硬」，載重靠「板磚面積大」。其他組的飛舟紛紛墜落，只有板磚穩穩落地。但評委認為這不是飛舟，這是一塊磚。招牌缺陷延續：周墨說服評委的邏輯太過硬核，評委們開始懷疑自己的專業水平。
+
+**Ep3 — 師姐的評估：** 雲芝師姐正式對周墨進行評估，讓他修復一座損壞的上古煉器爐。周墨修好了，但爐子多了「語音助手」功能——會在別人煉器時給出「建議」，建議內容包括「溫度太高了，建議降低三百度」和「你這個手法不對，建議參考第三章第七節」。全宗門的煉器師瘋了。招牌缺陷延續：語音助手沒有音量控制（和 ch1-ep3 丹爐問題相同——周墨的設計模式重複），而且會在半夜朗讀上古煉器手冊。
 
 ## 招牌梗追蹤（Running Gags）
 
