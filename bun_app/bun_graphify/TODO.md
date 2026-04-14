@@ -11,11 +11,10 @@ These are implementation tasks in `bun_app/bun_graphify/src/`. For architecture 
 
 ### P0 — Fix next
 
-- [ ] **graphify-merge.ts: same_character for non-adjacent episodes**
-  - Currently only links sequential episodes (ep[i] ↔ ep[i+1])
-  - Should also link same character across non-adjacent episodes when they share the character
-  - e.g., ch1ep1_char_zhoumo → ch1ep3_char_zhoumo (skip ch1ep2)
-  - File: `src/scripts/graphify-merge.ts` ~Step 4b
+- [ ] **All scripts: enforce absolute path for dir args**
+  - Scripts silently resolve relative paths from `bun_app/bun_graphify/`
+  - Add validation at entry: if `!path.isAbsolute(dir)`, throw with clear error
+  - Files: `graphify-episode.ts`, `graphify-merge.ts`, `graphify-pipeline.ts`, `gen-story-html.ts`, `graphify-check.ts`
 
 ### P1 — Code quality
 

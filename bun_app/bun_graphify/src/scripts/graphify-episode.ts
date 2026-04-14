@@ -119,6 +119,14 @@ addNode(
   { language: parsed.language }
 );
 
+// ─── Step 2.5: Extract scene nodes ───
+
+for (const scene of parsed.scenes) {
+  const sceneId = `${EP_ID}_scene_${scene.scene}`;
+  addNode(sceneId, scene.scene, "scene");
+  addEdge(sceneId, `${EP_ID}_plot`, "part_of");
+}
+
 // ─── Step 3: Extract character instances ───
 
 const CHAR_NAMES: Record<string, string> = {
@@ -147,11 +155,14 @@ for (const charId of parsed.characters) {
   }
   const fullDialog = dialogLines.join(" | ");
 
-  addNode(nodeId, `${charName} (${EP_ID})`, "character_instance", {
+  const charProps: Record<string, string> = {
     character_id: charId,
     dialog_count: String(dialogLines.length),
     dialog_text: fullDialog.slice(0, 500), // Truncate for storage
-  });
+  };
+  if (charId === "narrator") charProps.role = "structural";
+
+  addNode(nodeId, `${charName} (${EP_ID})`, "character_instance", charProps);
 
   // Character → plot
   addEdge(nodeId, `${EP_ID}_plot`, "appears_in");
@@ -211,8 +222,9 @@ for (const charId of parsed.characters) {
   }
 }
 
-// Create tech term nodes and edges
+// Create tech term nodes and edges (skip narrator — structural role, not story participant)
 for (const [charId, terms] of Object.entries(charTechTerms)) {
+  if (charId === "narrator") continue; // Narrator mentions tech terms in summaries, not as a participant
   for (const term of terms) {
     const termId = `${EP_ID}_tech_${term.replace(/\s+/g, "_")}`;
     // Deduplicate term nodes

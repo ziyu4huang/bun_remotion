@@ -132,10 +132,12 @@ narration.ts (per episode)
 ```
 <series>/
 ├── PLAN.md                          # Series plan (gag table, characters)
+├── TODO.md                          # Series-level tasks (episodes, assets)
 ├── bun_graphify_out/                # Series-level merged output
 │   ├── merged-graph.json            # All nodes/edges + link_edges + communities
 │   ├── link-edges.json              # Cross-episode link edges only
 │   ├── graph.html                   # Interactive vis.js (episode coloring)
+│   ├── regen-report.md              # Per-episode timing + stats table
 │   ├── MERGED_REPORT.md             # Communities + link edge summary
 │   └── consistency-report.md        # PASS/WARN/FAIL report
 ├── <series>-ch1-ep1/
@@ -167,12 +169,10 @@ narration.ts (per episode)
 
 ## Status
 
-- **v0.4.0** — Simplified federated merge + episode coloring
-  - No synthetic nodes (no canonical/arc/gag_type)
-  - Episode-based coloring with toggle
-  - Auto-detect series pattern
-  - 7 episodes: 150 nodes, 268 edges, 43 link edges
+- **v0.5.0** — Scene nodes, all-pairs same_character, narrator role
+  - Scene nodes added (4 per episode: TitleScene, ContentScene1, ContentScene2, OutroScene)
+  - same_character now all-pairs (not just sequential) — 61 links
+  - Narrator excluded from uses_tech_term edges, marked as structural role
+  - 7 episodes: 177 nodes, 371 edges, 85 link edges
   - Consistency: 13 PASS, 8 WARN, 0 FAIL
-  - Text-mention character fallback implemented (CHAR_NAMES mapping)
-  - Gag detection fallback works without PLAN.md column
-  - Remaining gaps: same_character only links adjacent eps, no escapeHtml, no per-episode HTML in pipeline
+  - Remaining gaps: no escapeHtml, no per-episode HTML in pipeline, subagent JSON fragile

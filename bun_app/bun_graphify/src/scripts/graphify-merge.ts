@@ -238,32 +238,34 @@ for (const eg of episodeGraphs) {
   }
 }
 
-// Link sequential appearances of same character
+// Link ALL pairs of same character (not just sequential)
 for (const [charId, instances] of charInstances) {
-  for (let i = 0; i < instances.length - 1; i++) {
-    const nodeA = instances[i];
-    const nodeB = instances[i + 1];
-    if (G.hasNode(nodeA) && G.hasNode(nodeB)) {
-      try {
-        G.addDirectedEdge(nodeA, nodeB, {
-          relation: "same_character",
-          confidence: "LINK",
-          confidence_score: 1.0,
-          weight: 1.0,
-        });
-        G.addDirectedEdge(nodeB, nodeA, {
-          relation: "same_character",
-          confidence: "LINK",
-          confidence_score: 1.0,
-          weight: 1.0,
-        });
+  for (let i = 0; i < instances.length; i++) {
+    for (let j = i + 1; j < instances.length; j++) {
+      const nodeA = instances[i];
+      const nodeB = instances[j];
+      if (G.hasNode(nodeA) && G.hasNode(nodeB)) {
+        try {
+          G.addDirectedEdge(nodeA, nodeB, {
+            relation: "same_character",
+            confidence: "LINK",
+            confidence_score: 1.0,
+            weight: 1.0,
+          });
+          G.addDirectedEdge(nodeB, nodeA, {
+            relation: "same_character",
+            confidence: "LINK",
+            confidence_score: 1.0,
+            weight: 1.0,
+          });
 
-        linkEdges.push({
-          source: nodeA, target: nodeB,
-          relation: "same_character", confidence: "LINK",
-          confidence_score: 1.0, source_file: "graph_data",
-        });
-      } catch { /* skip */ }
+          linkEdges.push({
+            source: nodeA, target: nodeB,
+            relation: "same_character", confidence: "LINK",
+            confidence_score: 1.0, source_file: "graph_data",
+          });
+        } catch { /* skip */ }
+      }
     }
   }
 }

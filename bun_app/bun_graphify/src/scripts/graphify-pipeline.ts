@@ -12,7 +12,7 @@
  */
 
 import { resolve } from "node:path";
-import { readdirSync, existsSync } from "node:fs";
+import { readdirSync, existsSync, rmSync, unlinkSync } from "node:fs";
 import { spawn } from "child_process";
 
 const args = process.argv.slice(2);
@@ -37,12 +37,40 @@ const scriptDir = resolve(import.meta.dir);
 console.log(`=== Federated Graph Pipeline ===`);
 console.log(`Series: ${seriesDir}\n`);
 
-// Step 1: Find and process episodes (auto-detect from directory naming)
+// Discover episode directories early (needed for cleanup)
 const EP_DIR_PATTERN = /-ch(\d+)-ep(\d+)/;
 const episodes = readdirSync(seriesDir, { withFileTypes: true })
   .filter(e => e.isDirectory() && EP_DIR_PATTERN.test(e.name))
   .map(e => e.name)
   .sort();
+
+// Step 0: Clean stale codebase-mode artifacts from prior runs
+console.log(`Step 0: Cleaning stale artifacts...`);
+
+// Remove GRAPH_REPORT.md from episode dirs (codebase-mode artifact)
+for (const ep of episodes) {
+  const reportPath = resolve(seriesDir, ep, "bun_graphify_out", "GRAPH_REPORT.md");
+  if (existsSync(reportPath)) {
+    unlinkSync(reportPath);
+    console.log(`  Removed stale ${ep}/bun_graphify_out/GRAPH_REPORT.md`);
+  }
+}
+
+// Remove series-level graph.json if it's codebase-mode (has "contains"/"calls" edges, not story edges)
+const seriesGraphPath = resolve(seriesDir, "bun_graphify_out", "graph.json");
+if (existsSync(seriesGraphPath)) {
+  try {
+    const content = require(seriesGraphPath);
+    if (content.links?.[0]?.relation === "contains" || content.links?.[0]?.relation === "calls") {
+      unlinkSync(seriesGraphPath);
+      console.log(`  Removed stale series-level graph.json (codebase mode)`);
+    }
+  } catch { /* not JSON or can't read — leave it */ }
+}
+
+console.log(``);
+
+// Step 1: Process episodes
 
 console.log(`Step 1: Processing ${episodes.length} episodes...`);
 

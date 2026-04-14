@@ -11,14 +11,15 @@
 
 ## Characters
 
-| Character | Name | Voice | Color | Images |
-|-----------|------|-------|-------|--------|
-| zhoumo | 周墨 | uncle_fu (male) | #F59E0B (amber) | zhoumo.png, zhoumo-chibi.png |
-| examiner | 考官 | serena (female) | #34D399 (emerald) | examiner.png, examiner-chibi.png |
-| elder | 長老 | uncle_fu (male) | #A78BFA (purple) | elder.png |
-| luyang | 陸陽 | uncle_fu (male) | #38BDF8 (sky blue) | luyang.png |
-| mengjingzhou | 孟景舟 | uncle_fu (male) | #FB923C (orange) | mengjingzhou.png |
-| narrator | — | uncle_fu (male) | — | — |
+| Character | Name | Voice | Color | Images | First Ep |
+|-----------|------|-------|-------|--------|----------|
+| zhoumo | 周墨 | uncle_fu (male) | #F59E0B (amber) | zhoumo.png, zhoumo-chibi.png | ch1-ep1 |
+| examiner | 考官 | serena (female) | #34D399 (emerald) | examiner.png, examiner-chibi.png | ch1-ep1 |
+| elder | 長老 | uncle_fu (male) | #A78BFA (purple) | elder.png | ch1-ep2 |
+| luyang | 陸陽 | uncle_fu (male) | #38BDF8 (sky blue) | luyang.png | ch2-ep1 |
+| mengjingzhou | 孟景舟 | uncle_fu (male) | #FB923C (orange) | mengjingzhou.png | ch2-ep1 |
+| yunzhi | 雲芝 | serena (female) | #EC4899 (pink) | yunzhi.png | ch4-ep1 (planned) |
+| narrator | — | uncle_fu (male) | — | — | ch1-ep1 |
 
 ## Project Structure
 
@@ -122,11 +123,6 @@ Episode `generate-tts` script path: `../fixture/scripts/generate-tts.ts` (relati
 | ch4-ep3 | 師姐的評估 | zh-TW (Traditional) | zhoumo, yunzhi, elder | Planned |
 
 **Chapter summary:** Ch1 = 3 eps, Ch2 = 3 eps, Ch3 = 3 eps, Ch4 = 3 eps. Total: 12 eps.
-
-**New characters:**
-| Character | Name | Voice | Color | First Appearance |
-|-----------|------|-------|-------|-----------------|
-| yunzhi | 雲芝 | serena (female) | #EC4899 (pink) | ch4-ep1 |
 
 ## Adding a New Episode
 
@@ -236,11 +232,34 @@ bun run generate-tts:wf-ch3-ep1
 
 Every episode MUST evolve these running gags — they are the series' identity.
 
-| 梗 | Ep1 | Ep2 | Ep3 | Ch2-Ep1 | Ch2-Ep2 | Ch3-Ep1 | Ep4+ |
-|----|-----|-----|-----|---------|---------|---------|------|
-| 忘加按鈕 | 忘加停止按鈕 | 飛劍仍收不回來 | 記得加定時休眠，但忘加音量控制 | 改良壓力釋放模組但忘加防爆閥 | 滄溟子忘加拔劍按鈕 → 家族遺傳 | 雷射筆忘加方向控制 → 出口被切斷 | TBD |
-| 現代科技用語 | 模組化設計、使用者體驗 | 演算法、手機 | 情感交互界面、系統升級 | 壓力釋放模組、演算法思維、被動技能、離線終端 | 自動防禦系統、密碼重設、記憶區段、人工智慧、常規維護 | 雷射切割陣法、聚焦式靈氣切割陣法發射器、冗餘設計、備份系統、計時觸發的自動防禦協議 | TBD |
-| 法寶反噬 | 飛劍搶儲物袋 | 考官袋未取回 | 丹爐半夜唱歌 | 第三個鍋爐爆炸 | 滄溟之劍三千年沒人能拔出 | 雷射筆切了禁制也切了出口 → 自毀倒數 | TBD |
+| 梗 | Ep1 | Ep2 | Ep3 | Ch2-Ep1 | Ch2-Ep2 | Ch2-Ep3 | Ch3-Ep1 | Ep4+ |
+|----|-----|-----|-----|---------|---------|---------|---------|------|
+| 忘加按鈕 | 忘加停止按鈕 | 飛劍仍收不回來 | 記得加定時休眠，但忘加音量控制 | 改良壓力釋放模組但忘加防爆閥 | 滄溟子忘加拔劍按鈕 → 家族遺傳 | 忘加評價標準 → 書們互相吹捧 | 雷射筆忘加方向控制 → 出口被切斷 | TBD |
+| 現代科技用語 | 模組化設計、使用者體驗 | 演算法、手機 | 情感交互界面、系統升級 | 壓力釋放模組、演算法思維、被動技能、離線終端 | 自動防禦系統、密碼重設、記憶區段、人工智慧、常規維護 | 資訊系統、認可系統、自動評價系統、評價標準 | 雷射切割陣法、聚焦式靈氣切割陣法發射器、冗餘設計、備份系統、計時觸發的自動防禦協議 | TBD |
+| 法寶反噬 | 飛劍搶儲物袋 | 考官袋未取回 | 丹爐半夜唱歌 | 第三個鍋爐爆炸 | 滄溟之劍三千年沒人能拔出 | 藏經閣書籍假評價工廠 | 雷射筆切了禁制也切了出口 → 自毀倒數 | TBD |
+
+## Knowledge Graph Stats
+
+Per-episode KG extraction from narration.ts (regenerated 2026-04-14):
+
+| Episode | Nodes | Links | Comms | Characters | Tech Terms | Traits |
+|---------|-------|-------|-------|------------|------------|--------|
+| ch1-ep1 | 24 | 25 | 3 | 3 | 8 | 5 |
+| ch1-ep2 | 26 | 31 | 3 | 4 | 6 | 8 |
+| ch1-ep3 | 24 | 27 | 3 | 3 | 6 | 7 |
+| ch2-ep1 | 24 | 29 | 4 | 4 | 5 | 7 |
+| ch2-ep2 | 28 | 39 | 4 | 5 | 4 | 11 |
+| ch2-ep3 | 26 | 38 | 3 | 5 | 4 | 9 |
+| ch3-ep1 | 25 | 36 | 3 | 5 | 3 | 9 |
+
+**Merged graph:** 177 nodes, 371 edges, 85 link edges (same_character: 61, gag_evolves: 18, story_continues: 6)
+
+**Visualization:** `bun_graphify_out/graph.html` (merged, episode-colored)
+
+**Observations:**
+- Tech terms decrease from ch1 (8) → ch3 (3) — ch3+ episodes should use more tech vocabulary
+- ch2-ep2 has the richest graph (28 nodes, 39 links) — good scene complexity
+- Character traits grow across episodes as characters develop
 
 ## 标志性原创法宝
 

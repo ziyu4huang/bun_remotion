@@ -9,19 +9,20 @@
 >
 > **Rule:** Pipeline/architecture tasks → this file. Code implementation tasks → `bun_app/bun_graphify/TODO.md`.
 
-> **Status:** v0.4.0 — Simplified federated merge, episode coloring, operational SKILL
+> **Status:** v0.5.0 — Scene nodes, all-pairs same_character, ch2ep3 gag fix, narrator role, stale cleanup
 
-## Known Issues (from 2026-04-14 pipeline run)
+## Known Issues (from 2026-04-14 v0.5.0 pipeline run)
 
 - **`soul` has no same_character links** — Only 1 episode instance → no cross-episode link possible. Expected for single-episode characters.
 - **8 WARN all from regex trait limitations** — Predefined trait patterns miss traits when dialog doesn't match regex. `萬物皆可修`, `毒舌警告` etc. are core traits per PLAN.md but regex misses them in some episodes. **Root cause:** regex pipeline uses pattern matching; subagent would catch these.
 - **ch3ep1 has only 3 tech terms** — Below the diversity threshold but only a WARN, not a FAIL.
-- **Generated graphify files tracked by mistake** — `.graphify_detect.json` and `**/.graphify_ast.json` were committed. Now gitignored as of 2026-04-14.
+- **No artifact nodes** — Zhou Mo's creations (飛劍, 丹爐, 自動評價系統, 雷射筆) are the series premise but not tracked in KG. Requires NL extraction or PLAN.md artifacts table parsing.
+- **No plot_event nodes** — Key story beats ("sword steals bag", "books attack", "self-destruct") absent. Requires NL extraction or narrator summary parsing.
 
 ## P0 — Fix next
 
-- [ ] **graphify-merge.ts: same_character for non-adjacent episodes** — Currently only links sequential episodes (ep[i] ↔ ep[i+1]). Should link all pairs sharing the character. File: `src/scripts/graphify-merge.ts` ~Step 4b
 - [ ] **Subagent JSON extraction is fragile** — 2/7 episodes had broken JSON in prior runs. Need robust extraction: try JSON.parse → fix trailing commas → fix single quotes → `jsonrepair` npm package → re-run subagent.
+- [ ] **Absolute path requirement not enforced in scripts** — Scripts accept relative paths but silently resolve from `bun_app/bun_graphify/`. Add a check: if path doesn't start with `/`, error with a message to use absolute paths.
 
 ## P1 — Feature completeness
 
@@ -29,6 +30,8 @@
 - [ ] **Batch per-episode HTML** — Pipeline only generates merged HTML. Add per-episode HTML generation step: `for each episode: gen-story-html.ts <ep-dir>`.
 - [ ] **gag_evolves ID normalization** — Regex creates `${EP_ID}_gag_${gagName.replace(/\s+/g, "_")}`, subagent creates `${EP_ID}_gag_${type}`. Different naming conventions. Merge script needs fuzzy ID matching or both pipelines should use same convention.
 - [ ] **Trait coverage: PLAN.md character baseline** — Read PLAN.md character personality descriptions and compare against detected traits. This would distinguish "regex missed it" (false positive WARN) from "character actually changed" (real drift).
+- [ ] **Artifact extraction** — Parse PLAN.md "標志性原創法寶" table or scan zhoumo dialog for creation patterns (飛劍, 丹爐, 系統, 陣法). Create artifact nodes with `creates` edges.
+- [ ] **Plot event extraction** — Extract key story beats from narrator's TitleScene/OutroScene summaries. Create plot_event nodes.
 
 ## P2 — Architecture improvements
 
@@ -39,7 +42,42 @@
 
 ## Pipeline Run History
 
-### 2026-04-14 — weapon-forger (7 episodes, regex pipeline)
+### 2026-04-14 — weapon-forger-ch1-ep1 single episode rerun
+
+| Metric | Value |
+|--------|-------|
+| Nodes | 24 |
+| Links | 25 |
+| Communities | 3 |
+| Node types | episode_plot(1), scene(4), character_instance(3), tech_term(8), gag_manifestation(3), character_trait(5) |
+| Output files | graph.json, graph.html, .narrative_extract.json, plan.json |
+
+**Result:** Clean rerun after removing bun_graphify_out. Stats match expected v0.5.0 output for this episode.
+
+### 2026-04-14 v0.5.0 — weapon-forger (7 episodes, regex pipeline + improvements)
+
+| Metric | Value |
+|--------|-------|
+| Per-episode nodes | 24-28 (was 20-26, +4 scene nodes) |
+| Per-episode edges | 25-39 |
+| Merged nodes | 177 (was 150, +28 scene nodes) |
+| Merged edges | 371 (was 268, +28 part_of + all-pairs same_character) |
+| Link edges | 85 (was 43, +42 all-pairs same_character) |
+| Communities | 8 |
+| Consistency | 13 PASS, 8 WARN, 0 FAIL |
+| Gag coverage | 21/21 (was 18/21, fixed ch2ep3) |
+| Scene nodes | 28 (4 per episode, new) |
+| Node types | episode_plot(7), scene(28), character_instance(29), tech_term(36), gag_manifestation(21), character_trait(56) |
+
+**Fixes applied:**
+- ch2ep3 gag nodes fixed (PLAN.md table was missing Ch2-Ep3 column)
+- same_character now all-pairs (not just sequential)
+- Narrator excluded from uses_tech_term edges, marked as structural role
+- Scene nodes added (TitleScene, ContentScene1, ContentScene2, OutroScene per ep)
+- Stale codebase-mode artifacts cleaned (GRAPH_REPORT.md, series graph.json)
+- Pipeline Step 0 auto-cleans stale artifacts
+
+### 2026-04-14 v0.4.0 — weapon-forger (7 episodes, regex pipeline)
 
 | Metric | Value |
 |--------|-------|
@@ -79,3 +117,8 @@
 - [x] Memory/feedback capture for lessons learned
 - [x] Character detection: text-mention fallback — CHAR_NAMES mapping in graphify-episode.ts detects characters mentioned in narration text (not just `character:` fields)
 - [x] Gag detection without PLAN.md column — fallback logic checks `colEpId === EP_ID` + truthy manifestation, works even without explicit column
+- [x] ch2ep3 gag fix — PLAN.md gag table was missing Ch2-Ep3 column; added with correct manifestations
+- [x] same_character all-pairs — graphify-merge.ts now links all episode pairs sharing a character (not just sequential)
+- [x] Narrator role — marked as structural; excluded from uses_tech_term edge generation
+- [x] Scene nodes — 4 per episode (TitleScene, ContentScene1, ContentScene2, OutroScene) with part_of edges
+- [x] Stale artifact cleanup — Pipeline Step 0 removes GRAPH_REPORT.md and stale codebase-mode graph.json
