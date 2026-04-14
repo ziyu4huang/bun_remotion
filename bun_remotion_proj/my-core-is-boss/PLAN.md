@@ -182,8 +182,9 @@ my-core-is-boss/
       MangaSfx.tsx
       SystemOverlay.tsx
       GameUI.tsx             # NEW — game-style HUD overlay (HP bars, level tags, cooldowns)
+      dialogTiming.ts        # Shared getLineIndex() — proportional dialog-audio sync
     scripts/
-      generate-tts.ts        # Shared TTS generator (mlx_tts + Gemini fallback)
+      generate-tts.ts        # Shared TTS generator (mlx_tts + Gemini fallback, outputs segment-durations.json)
   my-core-is-boss-ch1-ep1/   # Episode (lean — only scenes + narration)
     public/
       images/                # Copies of fixture images (run sync-images.sh)
@@ -285,8 +286,8 @@ Episode `generate-tts` script path: `../fixture/scripts/generate-tts.ts` (relati
 
 | Episode | Title | Language | Characters | Status |
 |---------|-------|----------|------------|--------|
-| ch1-ep1 | 首次誤會 | zh-TW | linyi, zhaoxiaoqi, xiaoelder | Images Ready |
-| ch1-ep2 | 任務跳過 | zh-TW | linyi, zhaoxiaoqi | Planned |
+| ch1-ep1 | 首次誤會 | zh-TW | linyi, zhaoxiaoqi, xiaoelder | Scaffolding Complete |
+| ch1-ep2 | 任務跳過 | zh-TW | linyi, zhaoxiaoqi | Scaffolding Complete |
 | ch1-ep3 | Bug 利用 | zh-TW | linyi, zhaoxiaoqi, xiaoelder | Planned |
 | ch2-ep1 | 秘境速通 | zh-TW | linyi, zhaoxiaoqi, xiaoelder | Planned |
 
@@ -329,12 +330,15 @@ my-core-is-boss-chN-epM/
 ```bash
 # Studio
 bash scripts/dev.sh studio my-core-is-boss-ch1-ep1
+bash scripts/dev.sh studio my-core-is-boss-ch1-ep2
 
 # Render
 bash scripts/dev.sh render my-core-is-boss-ch1-ep1
+bash scripts/dev.sh render my-core-is-boss-ch1-ep2
 
 # TTS
 bun run generate-tts:mcb-ch1-ep1
+bun run generate-tts:mcb-ch1-ep2
 ```
 
 ---
@@ -472,7 +476,7 @@ bun run generate-tts:mcb-ch1-ep1
 | Ch | Ep | Title | Characters | Status |
 |----|-----|-------|------------|--------|
 | 1 | 1 | 首次誤會 | linyi, zhaoxiaoqi, xiaoelder | Scaffolding Complete |
-| 1 | 2 | 任務跳過 | linyi, zhaoxiaoqi | Planned |
+| 1 | 2 | 任務跳過 | linyi, zhaoxiaoqi | Scaffolding Complete |
 | 1 | 3 | Bug 利用 | linyi, zhaoxiaoqi, xiaoelder | Planned |
 | 2 | 1 | 掛機修仙 | linyi, zhaoxiaoqi, xiaoelder | Planned |
 | 2 | 2 | 經驗值農場 | linyi, zhaoxiaoqi, xiaoelder | Planned |

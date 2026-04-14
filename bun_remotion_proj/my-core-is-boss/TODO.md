@@ -30,9 +30,28 @@
 - [ ] Verify in Remotion Studio
 - [ ] Render MP4
 
+## Phase 2.5: Ch1-EP2 — 任務跳過
+
+- [x] Write narration.ts (5 scenes: Title, Content1-3, Outro, multi-voice linyi/zhaoxiaoqi/narrator)
+- [x] Scaffold my-core-is-boss-ch1-ep2/ (package.json, tsconfig, index.ts, Root.tsx)
+- [x] TitleScene.tsx
+- [x] ContentScene1.tsx (sect-plaza: quest announcement, skip button discovery)
+- [x] ContentScene2.tsx (spirit-beast-cave: bypass beasts, take reward)
+- [x] ContentScene3.tsx (sect-plaza: Zhao Xiaoqi over-interpretation)
+- [x] OutroScene.tsx (summary + ch1-ep3 teaser)
+- [x] MyCoreIsBossCh1Ep2.tsx (main + TransitionSeries)
+- [x] Update scripts/dev.sh (ALL_APPS + get_comp_id)
+- [x] Update root package.json (start/build/generate-tts scripts)
+- [x] Run sync-images.sh to copy fixture images
+- [x] Run `bun install` to link workspace
+- [x] Generate TTS audio (durations.json + segment-durations.json + voice-manifest.json)
+- [x] Shared dialogTiming.ts utility (proportional dialog-audio sync)
+- [x] generate-tts.ts updated to output segment-durations.json
+- [ ] Verify in Remotion Studio
+- [ ] Render MP4
+
 ## Phase 3: Remaining Ch1 Episodes
 
-- [ ] Ch1-EP2 — 任務跳過 (linyi, zhaoxiaoqi)
 - [ ] Ch1-EP3 — Bug 利用 (linyi, zhaoxiaoqi, xiaoelder)
 
 ## Phase 4: Ch2+ (Future)

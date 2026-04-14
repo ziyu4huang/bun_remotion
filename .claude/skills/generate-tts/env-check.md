@@ -57,24 +57,46 @@ Get key free at: https://aistudio.google.com/apikey
 
 ---
 
-## 4. Report & Select Engine
+## 4. Check MLX TTS (Apple Silicon only)
+
+Skip this step on Windows/Linux.
+
+```bash
+python -c "import mlx_audio; print('mlx-audio OK')" 2>&1
+```
+
+| Result | Status |
+|--------|--------|
+| `mlx-audio OK` | ✅ Available |
+| `No module named mlx_audio` | ❌ Not installed |
+| Not on macOS | ⏭️ Skipped |
+
+**If not installed**, show:
+```
+pip install mlx-audio misaki[zh]
+```
+
+---
+
+## 5. Report & Select Engine
 
 After running the checks, summarize clearly:
 
 ```
 Environment check:
-  Platform:  windows / macos / linux
+  Platform:  macos
   Edge TTS:  ✅ edge-tts 7.2.8  (Python 3.x)  — unlimited, MP3 output
   Gemini:    ✅ GOOGLE_API_KEY set             — 3 req/min, WAV output
-  
-Selected engine: edge-tts  (change with --engine gemini)
+  MLX TTS:   ✅ mlx-audio OK                  — local, WAV/FLAC, best Chinese voices
+
+Selected engine: edge-tts  (change with --engine gemini or mlx-tts)
 ```
 
 Then load the platform doc and the selected engine doc before proceeding.
 
 ---
 
-## 5. Output Directory
+## 6. Output Directory
 
 Ensure output directory exists. Default: `./output/` relative to cwd.
 

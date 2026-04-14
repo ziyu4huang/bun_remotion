@@ -1,0 +1,12 @@
+{
+  "file": "chenmo-default.png",
+  "type": "emotion",
+  "emotion": "default",
+  "character": "chenmo",
+  "facing": "LEFT",
+  "description": "陳默 — 另一個穿越者，程式設計師。比林逸安靜，戴眼鏡，表情平靜帶一絲疲憊。",
+  "prompt": "anime style male cultivator, young man mid 20s, emerald/green themed simple robes with subtle binary code patterns, neat dark hair combed back, thin rectangular glasses, calm tired expression with slight dark circles under eyes, holding a bamboo scroll, introverted scholarly vibe, half-body portrait, transparent background, solid magenta #FF00FF background",
+  "backgroundStrategy": "solid magenta #FF00FF, remove with rembg",
+  "color": "#10B981",
+  "width": "800-1200px"
+}

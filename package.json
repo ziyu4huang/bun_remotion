@@ -77,7 +77,10 @@
     "generate-tts:commentary": "bun run --cwd bun_remotion_proj/commentary-style generate-tts",
     "start:mcb-ch1-ep1": "bash scripts/dev.sh studio my-core-is-boss-ch1-ep1",
     "build:mcb-ch1-ep1": "bash scripts/dev.sh render my-core-is-boss-ch1-ep1",
-    "generate-tts:mcb-ch1-ep1": "bun run --cwd bun_remotion_proj/my-core-is-boss/my-core-is-boss-ch1-ep1 generate-tts"
+    "generate-tts:mcb-ch1-ep1": "bun run --cwd bun_remotion_proj/my-core-is-boss/my-core-is-boss-ch1-ep1 generate-tts",
+    "start:mcb-ch1-ep2": "bash scripts/dev.sh studio my-core-is-boss-ch1-ep2",
+    "build:mcb-ch1-ep2": "bash scripts/dev.sh render my-core-is-boss-ch1-ep2",
+    "generate-tts:mcb-ch1-ep2": "bun run --cwd bun_remotion_proj/my-core-is-boss/my-core-is-boss-ch1-ep2 generate-tts"
   },
   "dependencies": {
     "@remotion/cli": "4.0.290",

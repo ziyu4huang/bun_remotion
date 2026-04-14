@@ -1,0 +1,12 @@
+{
+  "file": "xiaoelder-anger.png",
+  "type": "emotion",
+  "emotion": "anger",
+  "character": "xiaoelder",
+  "facing": "LEFT",
+  "description": "蕭長老 — 被林逸氣到的憤怒表情。瞪眼，鬍鬚翹起，怒氣特效。",
+  "prompt": "anime style male elder cultivator, old man in his 60s, purple themed elegant elder robes, long white beard bristling with anger, furious expression with glaring eyes and furrowed brows, pointing accusingly with one hand, red anger veins on forehead, half-body portrait, transparent background, solid magenta #FF00FF background",
+  "backgroundStrategy": "solid magenta #FF00FF, remove with rembg",
+  "color": "#A78BFA",
+  "width": "800-1200px"
+}

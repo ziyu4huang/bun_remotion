@@ -10,7 +10,7 @@ metadata:
 
 # /generate-tts — Text-to-Speech Generation
 
-Multi-engine free TTS: **Edge TTS** (Microsoft Neural, no API key) + **Gemini TTS** (Google free tier).
+Multi-engine free TTS: **Edge TTS** (Microsoft Neural, no API key) + **Gemini TTS** (Google free tier) + **MLX TTS** (Apple Silicon local).
 
 ---
 
@@ -35,7 +35,7 @@ Do NOT skip — engine availability differs per machine.
 | `--voice <name>` | auto | Engine-specific voice name |
 | `--lang <code>` | auto | Language hint: `zh_TW`, `en_US`, `ja_JP` |
 | `--output <path>` | `./output/<slug>.<ext>` | Output file path |
-| `--engine <name>` | auto | Force `gemini` or `edge-tts` |
+| `--engine <name>` | auto | Force `gemini`, `edge-tts`, or `mlx-tts` |
 | `--rate <pct>` | — | Speed adjustment: `+20%`, `-10%` (edge-tts only) |
 
 **Examples:**
@@ -55,6 +55,7 @@ Do NOT skip — engine availability differs per machine.
 | User specified `--engine` | Honor it (error if unavailable) |
 | Edge TTS available (Python) | **edge-tts** — unlimited, MP3 output |
 | Only Gemini key set | **gemini** — 3 req/min free, WAV output |
+| MLX TTS available (Apple Silicon) | **mlx-tts** — local, WAV/FLAC output, best Chinese voices |
 | Both + bulk (>3 segments) | **edge-tts** — avoids Gemini rate limit |
 | Neither available | Error — show setup from env-check.md |
 
@@ -72,3 +73,4 @@ After env-check determines platform + engine, read:
 - Engine doc:
   - Edge TTS → [`engines/edge-tts.md`](engines/edge-tts.md)
   - Gemini → [`engines/gemini.md`](engines/gemini.md)
+  - MLX TTS → [`engines/mlx-tts.md`](engines/mlx-tts.md) (Apple Silicon only)

@@ -46,6 +46,14 @@ function wavDurationFrames(filePath: string, fps: number): number {
   return Math.ceil((dataSize / byteRate) * fps) + 15;
 }
 
+/** Raw audio duration in seconds (no padding). */
+function wavDurationSec(filePath: string): number {
+  const buf = readFileSync(filePath);
+  const byteRate = buf.readUInt32LE(28);
+  const dataSize = buf.readUInt32LE(40);
+  return dataSize / byteRate;
+}
+
 function createWavHeader(dataSize: number): Buffer {
   const header = Buffer.alloc(44);
   header.write("RIFF", 0);
@@ -219,6 +227,9 @@ async function main() {
   let generated = 0;
   let skipped = 0;
 
+  // Per-scene raw segment durations (seconds) for dialog sync
+  const sceneSegmentDurations: Record<string, number[]> = {};
+
   for (let i = 0; i < filtered.length; i++) {
     const { scene, file, segments } = filtered[i];
     const outputPath = join(AUDIO_DIR, file);
@@ -233,6 +244,7 @@ async function main() {
 
     try {
       const segmentPaths: string[] = [];
+      const segDurations: number[] = [];
 
       for (let s = 0; s < segments.length; s++) {
         const seg = segments[s];
@@ -249,6 +261,7 @@ async function main() {
         }
 
         segmentPaths.push(segPath);
+        segDurations.push(wavDurationSec(segPath));
 
         if (useMlxTts && s < segments.length - 1) {
           await new Promise((r) => setTimeout(r, 1500));
@@ -259,6 +272,7 @@ async function main() {
       }
 
       concatenateWavs(segmentPaths, outputPath);
+      sceneSegmentDurations[scene] = segDurations;
       console.log(`  → ${file} (${segments.length} segments concatenated)`);
       generated++;
     } catch (err) {
@@ -272,6 +286,9 @@ async function main() {
     return existsSync(p) ? wavDurationFrames(p, 30) : 240;
   });
   writeFileSync(join(AUDIO_DIR, "durations.json"), JSON.stringify(durationsJson, null, 2) + "\n");
+
+  // Write per-scene raw segment durations (seconds) for dialog sync
+  writeFileSync(join(AUDIO_DIR, "segment-durations.json"), JSON.stringify(sceneSegmentDurations, null, 2) + "\n");
 
   // Write voice manifest
   const manifest = narrations.map((n: { scene: string; file: string; segments: Array<{ character: VoiceCharacter; text: string }> }) => ({

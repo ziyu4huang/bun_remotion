@@ -196,6 +196,7 @@ All memory — project knowledge, user feedback, preferences — lives here. Thi
 - [weapon-forger-ep2-lessons](.agent/memory/feedback/weapon-forger-ep2-lessons.md) - ScreenShake undefined delay = black frames, fadeOut use durationInFrames, elder image prop, remotion still verify
 - [no-duplicate-tool-runs](.agent/memory/feedback/no-duplicate-tool-runs.md) - Don't re-run long commands (render, build) that already completed — check output instead
 - [my-core-is-boss-ep1-lessons](.agent/memory/feedback/my-core-is-boss-ep1-lessons.md) - normalizeEffects export, deterministic ScreenShake, SceneIndicator extraction, derive side from CHARACTERS
+- [dialog-audio-sync](.agent/memory/feedback/dialog-audio-sync.md) - Proportional dialog timing via segment-durations.json + getLineIndex() — equal division causes text-audio mismatch
 - [remotion-no-symlinks](.agent/memory/feedback/remotion-no-symlinks.md) - Remotion static server can't follow symlinks — always copy files for public/ assets, never symlink
 - [confirm-format-zhtw](.agent/memory/feedback/confirm-format-zhtw.md) - When presenting episode content for user confirmation, show all story/dialog in zh_TW — never English summaries
 
