@@ -1,122 +1,235 @@
 ---
 name: bun_graphify
-description: Bun/TypeScript knowledge graph generator — multiple input sources to graph to communities to HTML + JSON + plan file
+description: Bun/TypeScript knowledge graph generator — codebase AST analysis AND federated story knowledge graph for Remotion series
 trigger: /bun_graphify
 ---
 
 # /bun_graphify
 
-Bun/TypeScript knowledge graph generator. Accepts multiple input sources, produces a single output folder with graph.json, graph.html, GRAPH_REPORT.md, and plan.json.
+Bun/TypeScript knowledge graph generator with two modes:
+1. **Codebase mode** — AST extraction from source code → code structure graph
+2. **Story KG mode** — Natural language analysis of narration.ts → federated story knowledge graph
 
 ## Prerequisites
 
 ```bash
-# Bun + dependencies (installed in bun_app/bun_graphify/)
 bun install --cwd bun_app/bun_graphify
-
-# Python tree-sitter (used as subprocess for AST extraction)
 python -c "import graphify" 2>/dev/null || pip install graphifyy -q
 ```
 
-## Usage
+## Mode Detection
 
-```
-/bun_graphify <path>                                # full pipeline on single path
-/bun_graphify src/ lib/ tests/                      # full pipeline on multiple paths
-/bun_graphify <path> --no-viz                       # skip HTML, just JSON + report
-/bun_graphify <path> --output-dir <dir>             # custom output dir
-/bun_graphify <path> --include .ts,.py              # only process these extensions
-/bun_graphify <path> --exclude .test.ts,.spec.ts    # skip these extensions
-/bun_graphify <path> --exclude-dir vendor,__tests__ # skip these directories
-/bun_graphify <path> --max-files 100                # cap file count
-/bun_graphify <path> --format json                  # only JSON, no HTML
-/bun_graphify <path> --verbose                      # detailed progress
-```
+- Path is a **Remotion episode directory** (contains `scripts/narration.ts`) → **Single Episode mode**
+- Path is a **Remotion series directory** (contains episode dirs matching `*-ch*-ep*`) → **Pipeline mode** (all episodes)
+- Otherwise → **Codebase mode** (AST pipeline)
 
-## Query Tools (on existing graph.json)
+---
 
+## Operations
+
+### op: pipeline `<series-dir>`
+
+Full federated graph pipeline: episode extraction → merge → HTML → consistency check.
+
+**Command:**
 ```bash
-# BFS traversal from a node
-bun run --cwd bun_app/bun_graphify src/cli.ts query graphify-out/graph.json "NodeName"
-
-# Node explanation (fuzzy search)
-bun run --cwd bun_app/bun_graphify src/cli.ts explain graphify-out/graph.json "NodeName"
-
-# Show plan info from previous run
-bun run --cwd bun_app/bun_graphify src/cli.ts plan graphify-out/plan.json
-
-# Codebase map
-bun run --cwd bun_app/bun_graphify src/scripts/codebase-map.ts graphify-out/graph.json --labels graphify-out/.labels.json
-
-# Node explanation script
-bun run --cwd bun_app/bun_graphify src/scripts/explain.ts graphify-out/graph.json "NodeName"
+bun run --cwd bun_app/bun_graphify src/scripts/graphify-pipeline.ts <series-dir>
 ```
 
-## What You Must Do When Invoked
+**Inputs:**
+- Series directory containing episode dirs (`*-ch*-ep*`)
+- Each episode dir has `scripts/narration.ts`
+- Optional: `PLAN.md` at series root (for gag table, character metadata)
 
-If no path was given, use `.` (current directory). Do not ask the user for a path.
+**Outputs:**
+- Per-episode: `<ep-dir>/bun_graphify_out/graph.json`
+- Series-level: `<series-dir>/bun_graphify_out/merged-graph.json`
+- Series-level: `<series-dir>/bun_graphify_out/graph.html` (interactive visualization)
+- Series-level: `<series-dir>/bun_graphify_out/link-edges.json`
+- Series-level: `<series-dir>/bun_graphify_out/consistency-report.md`
 
-### Step 1 — Run the pipeline
+**Validation:**
+1. Check all episodes processed: `ls <series-dir>/*/bun_graphify_out/graph.json | wc -l`
+2. Check merged graph exists: `test -f <series-dir>/bun_graphify_out/merged-graph.json`
+3. Check link edges present: `cat <series-dir>/bun_graphify_out/link-edges.json | jq length`
+4. Check HTML opens without JS errors: `open <series-dir>/bun_graphify_out/graph.html`
 
+**Knowledge Capture:** Record node counts, link edge counts, check results (PASS/WARN/FAIL) to TODO.md.
+
+---
+
+### op: episode `<episode-dir>`
+
+Extract story KG for a single episode from narration.ts.
+
+**Command:**
+```bash
+bun run --cwd bun_app/bun_graphify src/scripts/graphify-episode.ts <episode-dir> [--series-dir <series-dir>]
+```
+
+**Inputs:**
+- Episode directory with `scripts/narration.ts`
+- Optional `--series-dir` for PLAN.md gag matching
+
+**Outputs:**
+- `<ep-dir>/bun_graphify_out/graph.json` — Episode story KG
+- `<ep-dir>/bun_graphify_out/.narrative_extract.json` — Raw extraction data
+- `<ep-dir>/bun_graphify_out/plan.json` — Run metadata
+
+**Subagent Alternative:** For richer analysis, spawn a Claude subagent to analyze narration.ts and produce story KG JSON with node types: `episode_plot`, `scene`, `character_instance`, `plot_event`, `artifact`, `running_gag`, `character_trait`, `relationship`, `theme`.
+
+**Validation:** Check graph.json has 20-50 nodes. Verify JSON is valid: `jq . <ep-dir>/bun_graphify_out/graph.json > /dev/null`.
+
+---
+
+### op: merge `<series-dir>`
+
+Merge per-episode sub-graphs into federated graph with cross-episode link edges.
+
+**Command:**
+```bash
+bun run --cwd bun_app/bun_graphify/src/scripts/graphify-merge.ts <series-dir>
+```
+
+**Inputs:** All `<ep-dir>/bun_graphify_out/graph.json` files + optional `PLAN.md`
+
+**Outputs:**
+- `bun_graphify_out/merged-graph.json` — All nodes/edges + link edges
+- `bun_graphify_out/link-edges.json` — Cross-episode link edges only
+- `bun_graphify_out/MERGED_REPORT.md` — Summary report
+
+**Link Edge Types (anchors for consistency checking):**
+| Link Edge | Connects | Checks For |
+|-----------|----------|------------|
+| `same_character` | Character A in ep1 ↔ A in ep2 | Trait drift, personality conflict |
+| `story_continues` | Plot node ep1 → Plot node ep2 | Duplicate plot, story arc gaps |
+| `gag_evolves` | Gag manifestation → next | Stagnation, repetition |
+
+**Validation:**
+- Link edges exist: `jq '. | length' link-edges.json`
+- Every node has `episode` property: `jq '.nodes[] | select(.episode == null)' merged-graph.json` should be empty
+
+---
+
+### op: html `<dir>`
+
+Generate interactive vis.js HTML visualization.
+
+**Command:**
+```bash
+bun run --cwd bun_app/bun_graphify src/scripts/gen-story-html.ts <dir>
+```
+
+Auto-detects:
+- `<dir>` contains `bun_graphify_out/merged-graph.json` → merged mode (episode coloring)
+- `<dir>` contains `bun_graphify_out/graph.json` → single episode mode (type coloring)
+
+**Features:**
+- Episode-based coloring (default for merged) with type toggle
+- Link edges shown as dashed colored lines
+- Search, node info panel, legend with click-to-hide
+
+**Validation:** Open in browser. Check no console errors. Verify toggle works.
+
+---
+
+### op: check `<series-dir>`
+
+Run consistency checks on merged graph via link edge traversal.
+
+**Command:**
+```bash
+bun run --cwd bun_app/bun_graphify src/scripts/graphify-check.ts <series-dir>
+```
+
+**Inputs:** `bun_graphify_out/merged-graph.json` + `link-edges.json`
+
+**Outputs:** `bun_graphify_out/consistency-report.md`
+
+**Checks:**
+| Check | Traverses | Detects |
+|-------|-----------|---------|
+| Character Consistency | `same_character` links | Missing core traits across episodes |
+| Gag Evolution | `gag_evolves` links | Identical/near-identical manifestations |
+| Tech Term Diversity | Per-episode nodes | <2 tech terms per episode |
+| Trait Coverage | Character nodes | Characters with no detected traits |
+| Interaction Density | Per-episode edges | Characters with no interactions |
+
+---
+
+### op: codebase `<path>`
+
+AST extraction from source code → code structure graph.
+
+**Command:**
 ```bash
 bun run --cwd bun_app/bun_graphify src/cli.ts full <paths...> --output-dir graphify-out
 ```
 
-Wait for completion. It will output:
-- `graphify-out/graph.json` — node_link format (NetworkX compatible)
-- `graphify-out/graph.html` — interactive vis.js visualization
-- `graphify-out/GRAPH_REPORT.md` — analysis report
-- `graphify-out/plan.json` — run config snapshot (inputs, options, stats, timestamp)
+**Validation:** Show stats. Offer to open graph.html.
 
-### Step 2 — Show results
+---
 
-Present the stats line (nodes, edges, communities). If `graph.html` was generated, offer to open it.
+## Knowledge Capture Protocol
 
-### Step 3 — Generate CODEBASE_MAP.md
+After EVERY operation, Claude MUST:
 
-```bash
-bun run --cwd bun_app/bun_graphify src/scripts/codebase-map.ts graphify-out/graph.json --output graphify-out/CODEBASE_MAP.md
-cp graphify-out/CODEBASE_MAP.md .agent/memory/project/codebase-map.md
-```
+1. **Inspect output** — Read JSON stats, check node/edge counts
+2. **Record to TODO.md:**
+   - Mark completed items as `[x]`
+   - Add warnings/anomalies as new `[ ]` items
+   - Note any script errors or unexpected behavior
+3. **Capture lessons** — If a new lesson was learned (script bug, format mismatch, etc.):
+   - Write to `.agent/memory/feedback/` with type `feedback`
+   - Follow existing memory file format (YAML frontmatter + structured content)
+4. **Update this SKILL.md** — If a command or behavior changed, update the relevant operation section
 
-Show the CODEBASE_MAP.md content.
+## Self-Reflection Checklist
 
-## Architecture
+After completing a full pipeline run, Claude MUST review:
 
-The TypeScript pipeline handles: **detect → AST extract → build → cluster → export → plan**.
+1. **Output quality:**
+   - Per-episode graphs: 20-50 nodes each?
+   - Merged graph: link edges present for all expected types?
+   - Consistency report: any FAIL items that need attention?
+   - HTML: opens without errors, visualization is readable?
 
-- **Multiple input sources**: detect each path, merge results by deduplicating absolute paths
-- **Filtering**: --include, --exclude, --exclude-dir, --max-files applied after detection
-- **AST extraction** uses Python tree-sitter as a subprocess (reliable on Windows)
-- **Graph operations** use `graphology` (pure JS, no native deps)
-- **Community detection** uses Louvain (via `graphology-communities-louvain`)
-- **HTML export** generates vis.js visualization matching Python graphify output
-- **Plan file** saves run config snapshot (version, inputs, options, stats, timestamp)
-- **Semantic extraction** (docs/papers/images) is NOT included — dispatch Claude subagents for this separately if needed
+2. **Cross-episode links:**
+   - `same_character`: Are all recurring characters linked across episodes?
+   - `story_continues`: Is the plot chain complete and in order?
+   - `gag_evolves`: Do gag chains match PLAN.md gag table?
 
-## Output Format
+3. **Comparison with previous run** (if applicable):
+   - Node counts changed? Why?
+   - Previously failing checks now pass?
+   - Any new warnings?
 
-`graph.json` is NetworkX node_link_data compatible:
-```json
-{
-  "directed": false,
-  "multigraph": false,
-  "graph": { "hyperedges": [] },
-  "nodes": [{ "id", "label", "file_type", "source_file", "source_location", "community" }],
-  "links": [{ "source", "target", "relation", "confidence", "confidence_score", "source_file", "weight", "_src", "_tgt" }]
-}
-```
+4. **Record findings** to TODO.md and feedback memory.
 
-`plan.json` captures the run configuration:
-```json
-{
-  "version": "0.2.0",
-  "inputs": ["src/", "lib/"],
-  "output_dir": "graphify-out",
-  "options": { "format": "both", "title": "graphify", "include": null, "exclude": null, "exclude_dirs": [], "no_viz": false },
-  "stats": { "files_detected": 42, "nodes": 150, "edges": 280, "communities": 8 },
-  "timestamp": "2026-04-13T10:30:00Z"
-}
-```
+---
 
-These formats are compatible with the Python graphify tools (`explain.py`, `codebase_map.py`, etc.) for cross-tool analysis.
+## Scripts Reference
+
+| Script | Purpose |
+|--------|---------|
+| `src/cli.ts` | Codebase mode: detect → extract → build → cluster → export |
+| `src/scripts/graphify-episode.ts` | Per-episode regex extraction from narration.ts |
+| `src/scripts/graphify-merge.ts` | Concatenate sub-graphs + add link edges |
+| `src/scripts/graphify-check.ts` | Consistency checking via link edges |
+| `src/scripts/graphify-pipeline.ts` | Full pipeline: episode → merge → html → check |
+| `src/scripts/gen-story-html.ts` | graph.json → vis.js HTML (single + merged) |
+| `src/scripts/codebase-map.ts` | Generate CODEBASE_MAP.md |
+
+## Important Notes
+
+- **bun_graphify_out/** is in `.gitignore` — output is ephemeral
+- **Never put TypeScript syntax in HTML templates** — crashes browsers
+- **Subagent JSON is fragile** — always validate with try/catch before writing
+- **Always run from `bun_app/bun_graphify/` cwd** — graphology imports need it
+
+## See Also
+
+- [PLAN.md](PLAN.md) — Full architecture, node types, edge relations
+- [TODO.md](TODO.md) — Pipeline-level tasks, run history, known issues
+- [../../bun_app/bun_graphify/PLAN.md](../../bun_app/bun_graphify/PLAN.md) — Code-level plan + reuse reference
+- [../../bun_app/bun_graphify/TODO.md](../../bun_app/bun_graphify/TODO.md) — Code-level tasks (file/line specific)

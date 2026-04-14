@@ -89,6 +89,11 @@ Commands:
   explain <json> <node> Show node details with neighbors
   plan <json>           Show plan info from a previous run
 
+  episode <ep-dir>      Per-episode graph generation (federated)
+  merge <series-dir>    Merge per-episode graphs with link edges
+  check <series-dir>    Consistency checking via link edges
+  pipeline <series-dir> Run episode → merge → check for all episodes
+
 Paths:
   Multiple input sources supported: full src/ lib/ tests/
   Defaults to '.' if no paths given.
@@ -444,6 +449,22 @@ switch (command) {
     break;
   case 'plan':
     cmdPlan(args.slice(1)).catch(console.error);
+    break;
+  case 'episode':
+  case 'merge':
+  case 'check':
+  case 'pipeline':
+    // Delegate to dedicated scripts
+    console.log(`Tip: Run directly for full output:`);
+    console.log(`  bun run src/scripts/graphify-${command}.ts ${args.slice(1).join(' ')}`);
+    console.log('');
+    import('child_process').then(({ spawn }) => {
+      const child = spawn('bun', ['run', `src/scripts/graphify-${command}.ts`, ...args.slice(1)], {
+        cwd: resolve(import.meta.dir, '..'),
+        stdio: 'inherit',
+      });
+      child.on('close', (code: number) => process.exit(code));
+    });
     break;
   case '--version':
   case '-v':

@@ -1,0 +1,102 @@
+[
+  {
+    "scene": "TitleScene",
+    "file": "01-title.wav",
+    "segmentDurations": [
+      183,
+      323
+    ]
+  },
+  {
+    "scene": "JokeScene1",
+    "file": "02-joke1.wav",
+    "segmentDurations": [
+      140,
+      116,
+      99,
+      104,
+      90,
+      87,
+      203,
+      51,
+      248,
+      114,
+      63,
+      205,
+      59,
+      107
+    ]
+  },
+  {
+    "scene": "JokeScene2",
+    "file": "03-joke2.wav",
+    "segmentDurations": [
+      169,
+      181,
+      191,
+      171,
+      131,
+      131,
+      116,
+      39,
+      152,
+      174,
+      126,
+      104
+    ]
+  },
+  {
+    "scene": "JokeScene3",
+    "file": "04-joke3.wav",
+    "segmentDurations": [
+      155,
+      95,
+      116,
+      99,
+      56,
+      186,
+      56,
+      207,
+      116,
+      159,
+      147,
+      99,
+      176,
+      109,
+      78
+    ]
+  },
+  {
+    "scene": "JokeScene4",
+    "file": "05-joke4.wav",
+    "segmentDurations": [
+      145,
+      227,
+      87,
+      97,
+      90,
+      133,
+      97,
+      121,
+      109,
+      176,
+      195,
+      311,
+      152,
+      162,
+      152,
+      265,
+      167,
+      87
+    ]
+  },
+  {
+    "scene": "OutroScene",
+    "file": "06-outro.wav",
+    "segmentDurations": [
+      179,
+      457,
+      476
+    ]
+  }
+]

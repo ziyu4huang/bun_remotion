@@ -6,26 +6,31 @@ interface DialogBoxProps {
   lines: DialogLine[];
   sceneFrame: number;
   sceneDuration: number;
+  /** Override line index (when using segment-based timing) */
+  overrideLineIndex?: number;
+  /** Frame offset within the current line (when using segment-based timing) */
+  overrideLineFrame?: number;
 }
 
 export const DialogBox: React.FC<DialogBoxProps> = ({
   lines,
   sceneFrame,
   sceneDuration,
+  overrideLineIndex,
+  overrideLineFrame,
 }) => {
   const { fps } = useVideoConfig();
 
-  // Each dialog line gets an equal share of the scene
   const lineDuration = sceneDuration / lines.length;
-  const currentLineIndex = Math.min(
+  const currentLineIndex = overrideLineIndex ?? Math.min(
     Math.floor(sceneFrame / lineDuration),
     lines.length - 1
   );
   const currentLine = lines[currentLineIndex];
   const character = CHARACTERS[currentLine.character];
 
-  // Typewriter effect: show chars based on progress within this line's time slot
-  const lineFrame = sceneFrame - currentLineIndex * lineDuration;
+  // Typewriter effect
+  const lineFrame = overrideLineFrame ?? (sceneFrame - currentLineIndex * lineDuration);
   const charsPerFrame = 2.5;
   const visibleChars = Math.floor(lineFrame * charsPerFrame);
   const displayText = currentLine.text.slice(0, visibleChars);

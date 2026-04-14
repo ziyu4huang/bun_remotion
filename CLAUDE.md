@@ -187,6 +187,7 @@ All memory — project knowledge, user feedback, preferences — lives here. Thi
 - [generate-image-skill](.agent/memory/feedback/generate-image-skill.md) - Lessons learned: use browser_run_code for batch, Escape overlay before next prompt, aria-label selectors
 - [remotion-sequence-name](.agent/memory/feedback/remotion-sequence-name.md) - Always use name prop on Sequence for readable Studio timeline
 - [graphify-windows-lessons](.agent/memory/feedback/graphify-windows-lessons.md) - graphify v0.3.20 on Windows: extension patching, tree-sitter API, encoding, Verilog AST
+- [bun-graphify-story-kg](.agent/memory/feedback/bun-graphify-story-kg.md) - Story KG pipeline: subagent for NL analysis, federated merge, Playwright verify, HTML template bugs
 - [graphify-query-explain-lessons](.agent/memory/feedback/graphify-query-explain-lessons.md) - querying graph.json: links vs edges, node ID disambiguation, explain pipeline
 - [parallel-bash-failure-cascade](.agent/memory/feedback/parallel-bash-failure-cascade.md) - isolate risky Bash calls; one failure cancels all parallel siblings
 - [galimage-gen](.agent/memory/feedback/galimage-gen.md) - Galgame char images: always generate transparent BG + half-body upfront, never post-process

@@ -4,7 +4,7 @@
 
 import { execSync } from 'node:child_process';
 import { extname, resolve, dirname } from 'node:path';
-import { writeFileSync, unlinkSync, mkdirSync } from 'node:fs';
+import { writeFileSync, unlinkSync, mkdirSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import type { GraphNode, GraphEdge, ExtractionResult } from './types';
@@ -70,9 +70,14 @@ export function extractASTPython(files: string[], rootDir?: string): ExtractionR
   writeFileSync(scriptPath, EXTRACT_SCRIPT_CONTENT, 'utf-8');
   writeFileSync(filesPath, JSON.stringify(filtered), 'utf-8');
 
+  // Resolve python command: prefer local .venv, then python3, then python
+  const venvPython = join(dirname(dirname(__dirname)), '.venv', 'bin', 'python');
+  const pythonCmd = existsSync(venvPython) ? venvPython
+    : execSync('which python3 2>/dev/null', { encoding: 'utf-8' }).trim() || 'python';
+
   try {
     const result = execSync(
-      `python "${scriptPath}" "${rootDir || process.cwd()}" "${filesPath}"`,
+      `"${pythonCmd}" "${scriptPath}" "${rootDir || process.cwd()}" "${filesPath}"`,
       { encoding: 'utf-8', maxBuffer: 50 * 1024 * 1024, timeout: 120_000 },
     );
 

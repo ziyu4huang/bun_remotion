@@ -1,8 +1,40 @@
 import { loadFont } from "@remotion/google-fonts/NotoSansTC";
+import { loadFont as loadMaShanZheng } from "@remotion/google-fonts/MaShanZheng";
+import { loadFont as loadZCOOLKuaiLe } from "@remotion/google-fonts/ZCOOLKuaiLe";
+import { loadFont as loadZhiMangXing } from "@remotion/google-fonts/ZhiMangXing";
 
 export const { fontFamily: notoSansTC } = loadFont("normal", {
   weights: ["400", "700"],
 });
+
+// 馬善政 — brush calligraphy, for manga SFX
+export const { fontFamily: maShanZheng } = loadMaShanZheng();
+
+// 站酷快樂體 — playful rounded, for comedic SFX
+export const { fontFamily: zcoolKuaiLe } = loadZCOOLKuaiLe();
+
+// 志芒行 — quick-brush calligraphy, for action SFX
+export const { fontFamily: zhiMangXing } = loadZhiMangXing();
+
+export function sfxFont(font?: "brush" | "playful" | "action"): string {
+  switch (font) {
+    case "brush": return maShanZheng;
+    case "playful": return zcoolKuaiLe;
+    case "action": return zhiMangXing;
+    default: return maShanZheng;
+  }
+}
+
+export interface MangaSfxEvent {
+  text: string;
+  x: number;
+  y: number;
+  color: string;
+  rotation?: number;
+  fontSize?: number;
+  font?: "brush" | "playful" | "action";
+  delay?: number;
+}
 
 /**
  * Characters for 美少女梗圖劇場 第四集 (Beautiful Girl Meme Theater EP4)
@@ -62,6 +94,7 @@ export interface DialogLine {
   character: Character;
   text: string;
   effect?: ComicEffect | ComicEffect[];
+  sfx?: MangaSfxEvent[];
 }
 
 /**

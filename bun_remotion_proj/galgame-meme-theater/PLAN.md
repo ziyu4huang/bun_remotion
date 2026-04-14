@@ -43,6 +43,8 @@ galgame-meme-theater/
   galgame-meme-theater-ep3/        # EP3 — 台灣生活日常
   galgame-meme-theater-ep4/        # EP4 — 學生黃金時代
   galgame-meme-theater-ep5/        # EP5 — 職場求生指南
+  galgame-meme-theater-ep6/        # EP6 — 戀愛煩惱大會
+  galgame-meme-theater-ep7/        # EP7 — AI 時代求生 (segment-based audio-text sync)
 ```
 
 ### Episode Structure
@@ -85,6 +87,8 @@ galgame-meme-theater-epN/
 | ep3 | 台灣生活日常 | 台灣人的日常真實寫照 | Complete |
 | ep4 | 學生黃金時代 | 期末考、手搖飲、捷運、實習 | Complete |
 | ep5 | 職場求生指南 | 面試、畫大餅、開會廢話、加班文化 | Complete |
+| ep6 | 戀愛煩惱大會 | 暗戀、直男迷惑、LINE聊天、催婚 | Complete |
+| ep7 | AI 時代求生 | AI代寫作業、AI回訊息、深度偽造、人類存在的意義 | Complete |
 
 ## Adding a New Episode
 
@@ -110,6 +114,8 @@ bun start:meme2     # ep2
 bun start:meme3     # ep3
 bun start:meme4     # ep4
 bun start:meme5     # ep5
+bun start:meme6     # ep6
+bun start:meme7     # ep7
 
 # Render
 bun build:meme      # ep1
@@ -117,6 +123,8 @@ bun build:meme2     # ep2
 bun build:meme3     # ep3
 bun build:meme4     # ep4
 bun build:meme5     # ep5
+bun build:meme6     # ep6
+bun build:meme7     # ep7
 
 # TTS
 bun run generate-tts:meme    # ep1
@@ -124,6 +132,8 @@ bun run generate-tts:meme2   # ep2
 bun run generate-tts:meme3   # ep3
 bun run generate-tts:meme4   # ep4
 bun run generate-tts:meme5   # ep5
+bun run generate-tts:meme6   # ep6
+bun run generate-tts:meme7   # ep7
 ```
 
 ## Naming Conventions
