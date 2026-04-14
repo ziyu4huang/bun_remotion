@@ -47,6 +47,6 @@ For complete patterns (sprites, dialog boxes, battle effects), read `galgame.md`
 
 ## Cross-References
 
-- Related: `../episode-setup/code-quality.md` — extract repeated patterns to fixture components
+- Related: `../episode-setup/code-quality.md` — extract repeated patterns to assets components
 - Related: `../animation/transitions.md` — TransitionSeries for scene-to-scene cuts
 - Related: `../media/voiceover.md` — TTS per scene with dynamic duration

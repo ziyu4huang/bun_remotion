@@ -1,11 +1,8 @@
 /**
- * Narration scripts with per-character voice assignment for
- * 我的核心是大佬 第一章第二集：任務跳過
+ * Narration scripts for 我的核心是大佬 第一章第二集：任務跳過
  *
- * Voices (mlx_tts):
- *   林逸 (linyi)       → uncle_fu  — male
- *   趙小七 (zhaoxiaoqi) → serena    — female
- *   narrator            → uncle_fu  — male narrator
+ * Voice mapping is centralized in assets/voice-config.json.
+ * Characters: linyi, zhaoxiaoqi, narrator
  */
 
 export type VoiceCharacter = "linyi" | "zhaoxiaoqi" | "narrator";
@@ -23,18 +20,6 @@ export interface NarrationScript {
 }
 
 export const NARRATOR_LANG = "zh-TW";
-
-export const VOICE_MAP: Record<VoiceCharacter, string> = {
-  linyi: "uncle_fu",
-  zhaoxiaoqi: "serena",
-  narrator: "uncle_fu",
-};
-
-export const VOICE_DESCRIPTION: Record<VoiceCharacter, { voice: string; gender: string; accent: string }> = {
-  linyi: { voice: "uncle_fu", gender: "male", accent: "standard Mandarin, casual gamer tone" },
-  zhaoxiaoqi: { voice: "serena", gender: "female", accent: "standard Mandarin, enthusiastic fanboy tone" },
-  narrator: { voice: "uncle_fu", gender: "male", accent: "standard Mandarin, neutral narrator" },
-};
 
 export const narrations: NarrationScript[] = [
   // ─── TitleScene ────────────────────────────────────────────────────────

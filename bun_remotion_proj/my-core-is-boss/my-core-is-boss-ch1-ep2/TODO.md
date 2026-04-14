@@ -25,7 +25,7 @@ Chapter: 第一章：系統覺醒（第 2/3 集）
 - [x] Update PLAN.md (episode guide)
 - [x] Update scripts/dev.sh ALL_APPS + get_comp_id()
 - [x] Update root package.json with scripts
-- [x] Run sync-images.sh to copy fixture images
+- [x] Run sync-images.sh to copy asset images
 - [x] Run `bun install` to link workspace
 - [x] Run `bun run generate-tts:mcb-ch1-ep2` to generate audio (durations.json + segment-durations.json + voice-manifest.json)
 

@@ -23,7 +23,7 @@
 - [x] MyCoreIsBossCh1Ep1.tsx (main + TransitionSeries)
 - [x] Update scripts/dev.sh (ALL_APPS + get_comp_id)
 - [x] Update root package.json (start/build/generate-tts scripts)
-- [x] Run sync-images.sh to copy fixture images
+- [x] Run sync-images.sh to copy asset images
 - [x] Run `bun install` to link workspace
 - [x] Code review — normalizeEffects, ScreenShake, SceneIndicator, side mapping, name props
 - [ ] Generate TTS (in progress)
@@ -42,7 +42,7 @@
 - [x] MyCoreIsBossCh1Ep2.tsx (main + TransitionSeries)
 - [x] Update scripts/dev.sh (ALL_APPS + get_comp_id)
 - [x] Update root package.json (start/build/generate-tts scripts)
-- [x] Run sync-images.sh to copy fixture images
+- [x] Run sync-images.sh to copy asset images
 - [x] Run `bun install` to link workspace
 - [x] Generate TTS audio (durations.json + segment-durations.json + voice-manifest.json)
 - [x] Shared dialogTiming.ts utility (proportional dialog-audio sync)

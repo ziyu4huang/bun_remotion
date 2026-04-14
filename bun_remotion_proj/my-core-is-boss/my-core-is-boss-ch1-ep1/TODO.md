@@ -3,15 +3,15 @@
 ## Code Review (2026-04-14)
 
 ### Done
-- [x] Add `normalizeEffects` to `fixture/characters.ts` — was imported but not exported
+- [x] Add `normalizeEffects` to `assets/characters.ts` — was imported but not exported
 - [x] Fix ScreenShake determinism — replaced `Math.random()` with frame-based noise
-- [x] Extract `SceneIndicator` component — `fixture/components/SceneIndicator.tsx`
+- [x] Extract `SceneIndicator` component — `assets/components/SceneIndicator.tsx`
 - [x] Fix ComicEffects side mapping — use `CHARACTERS[].position` instead of ternary chains
 - [x] Add `name` prop to `TransitionSeries.Sequence` for readable Studio timeline
 
 ### Deferred (future episodes)
-- [ ] Migrate fixture components to use `@bun-remotion/shared` as base (8 near-duplicate components)
-- [ ] Consolidate type definitions (fixture/characters.ts vs shared/types.ts)
+- [ ] Migrate assets components to use `@bun-remotion/shared` as base (8 near-duplicate components)
+- [ ] Consolidate type definitions (assets/characters.ts vs shared/types.ts)
 - [ ] Different backgrounds per content scene (all 3 use `sect-plaza.png`)
 - [ ] Character entrance animation when appearing mid-scene (currently abrupt)
 - [ ] Narrator dialog styling — make visually distinct from character dialog

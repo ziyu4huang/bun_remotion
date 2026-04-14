@@ -1,13 +1,13 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate } from "remotion";
-import { BackgroundLayer } from "../../../fixture/components/BackgroundLayer";
-import { CharacterSprite } from "../../../fixture/components/CharacterSprite";
-import { ComicEffects } from "../../../fixture/components/ComicEffects";
-import { SystemNotification } from "../../../fixture/components/SystemOverlay";
-import { DialogBox } from "../../../fixture/components/DialogBox";
-import { MangaSfx } from "../../../fixture/components/MangaSfx";
-import { notoSansTC } from "../../../fixture/characters";
-import type { DialogLine, ComicEffect } from "../../../fixture/characters";
+import { BackgroundLayer } from "../../../assets/components/BackgroundLayer";
+import { CharacterSprite } from "../../../assets/components/CharacterSprite";
+import { ComicEffects } from "../../../assets/components/ComicEffects";
+import { SystemNotification } from "../../../assets/components/SystemOverlay";
+import { DialogBox } from "../../../assets/components/DialogBox";
+import { MangaSfx } from "../../../assets/components/MangaSfx";
+import { notoSansTC } from "../../../assets/characters";
+import type { DialogLine, ComicEffect } from "../../../assets/characters";
 
 /**
  * ContentScene1 — 秘境入口，各宗門準備破解禁制

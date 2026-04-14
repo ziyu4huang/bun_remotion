@@ -22,19 +22,19 @@ Read this when creating a new episode or video project.
 - Remotion + @remotion/cli same version (4.0.290). durations via `require()`.
 - Read `scaffolding.md` for reference.
 
-## shared-fixture-images -- Cross-episode assets
+## shared-assets-images -- Cross-episode assets
 
-- Source: `fixture/{characters,backgrounds}/`. `sync-images.sh` copies to each ep `public/images/`.
+- Source: `assets/{characters,backgrounds}/`. `sync-images.sh` copies to each ep `public/images/`.
 - **`staticFile()` only** -- webpack imports outside ep dir = 404.
 - **Copy, never symlink** -- Remotion 404s symlinks. Verify no `->`.
-- New images to fixture, re-run sync.
-- Read `shared-fixture-images.md` for details.
+- New images to assets, re-run sync.
+- Read `shared-assets-images.md` for details.
 
 ## code-quality -- Code conventions
 
-- 2+ scenes use a utility = export from `fixture/`, no local copies.
+- 2+ scenes use a utility = export from `assets/`, no local copies.
 - `CHARACTERS[id].position`, not ternary chains.
-- Repeated visuals at 2+ scenes = extract to `fixture/components/`.
+- Repeated visuals at 2+ scenes = extract to `assets/components/`.
 - **`name` on every Sequence** for Studio timeline.
 - `import React` for `React.FC`.
 - Read `code-quality.md` for guidelines.

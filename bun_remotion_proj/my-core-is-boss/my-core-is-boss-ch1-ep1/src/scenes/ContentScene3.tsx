@@ -1,14 +1,14 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate } from "remotion";
-import { BackgroundLayer } from "../../../fixture/components/BackgroundLayer";
-import { CharacterSprite } from "../../../fixture/components/CharacterSprite";
-import { DialogBox } from "../../../fixture/components/DialogBox";
-import { ComicEffects } from "../../../fixture/components/ComicEffects";
-import { MangaSfx } from "../../../fixture/components/MangaSfx";
-import { ScreenShake } from "../../../fixture/components/ScreenShake";
-import { SystemNotification, SystemMessage } from "../../../fixture/components/SystemOverlay";
-import { normalizeEffects, CHARACTERS, type ComicEffect } from "../../../fixture/characters";
-import { SceneIndicator } from "../../../fixture/components/SceneIndicator";
+import { BackgroundLayer } from "../../../assets/components/BackgroundLayer";
+import { CharacterSprite } from "../../../assets/components/CharacterSprite";
+import { DialogBox } from "../../../assets/components/DialogBox";
+import { ComicEffects } from "../../../assets/components/ComicEffects";
+import { MangaSfx } from "../../../assets/components/MangaSfx";
+import { ScreenShake } from "../../../assets/components/ScreenShake";
+import { SystemNotification, SystemMessage } from "../../../assets/components/SystemOverlay";
+import { normalizeEffects, CHARACTERS, type ComicEffect } from "../../../assets/characters";
+import { SceneIndicator } from "../../../assets/components/SceneIndicator";
 
 const dialogLines = [
   { character: "narrator" as const, text: "消息傳到了蕭長老的耳中。煉器峰的資深長老，決定親自來看看這個「狂徒」。", emotion: "default" as const },

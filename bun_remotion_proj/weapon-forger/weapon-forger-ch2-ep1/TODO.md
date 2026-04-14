@@ -11,7 +11,7 @@ Language: zh-TW (Traditional Chinese)
 
 - [x] Create TODO.md
 - [x] Write narration.ts (4 scenes: Title, Content1, Content2, Outro)
-- [x] Add 陸陽 and 孟景舟 to fixture/characters.ts
+- [x] Add 陸陽 and 孟景舟 to assets/characters.ts
 - [x] Generate character images (luyang.png, mengjingzhou.png)
 - [x] Create package.json
 - [x] Create tsconfig.json
@@ -25,7 +25,7 @@ Language: zh-TW (Traditional Chinese)
 - [x] Update PLAN.md (episode guide + story arcs + commands + 招牌梗追蹤)
 - [x] Update scripts/dev.sh ALL_APPS + get_comp_id()
 - [x] Update root package.json with wf-ch2-ep1 scripts
-- [x] Run sync-images.sh to copy fixture images
+- [x] Run sync-images.sh to copy assets images
 - [x] Run `bun install` to link workspace
 - [x] Run `bun run generate-tts:wf-ch2-ep1` to generate audio
 - [x] Open in Remotion Studio and verify visuals
@@ -39,11 +39,11 @@ Language: zh-TW (Traditional Chinese)
 
 ## Migration: @bun-remotion/shared (Pending)
 
-- [ ] Update scene imports from `../../../fixture/components/X` to `@bun-remotion/shared`
+- [ ] Update scene imports from `../../../assets/components/X` to `@bun-remotion/shared`
 - [ ] Change `pose` prop to `emotion` on CharacterSprite usage
 - [ ] Add `characterConfig={CHARACTERS[character]}` prop to CharacterSprite
 - [ ] Add `intensity="enhanced"` prop to CharacterSprite
 - [ ] Update DialogBox to use `getCharacterConfig` callback
-- [ ] Keep BattleEffects import from `../../../fixture/components/BattleEffects` (project-local)
+- [ ] Keep BattleEffects import from `../../../assets/components/BattleEffects` (project-local)
 - [ ] Verify in Remotion Studio after migration
-- [ ] Remove legacy imports from fixture/components/
+- [ ] Remove legacy imports from assets/components/

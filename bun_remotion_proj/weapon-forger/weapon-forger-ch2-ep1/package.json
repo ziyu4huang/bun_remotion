@@ -6,7 +6,7 @@
     "start": "remotion studio",
     "build": "remotion render WeaponForgerCh2Ep1 out/weapon-forger-ch2-ep1.mp4",
     "upgrade": "remotion upgrade",
-    "generate-tts": "bun run ../fixture/scripts/generate-tts.ts"
+    "generate-tts": "bun run ../assets/scripts/generate-tts.ts"
   },
   "dependencies": {
     "@bun-remotion/shared": "workspace:*",

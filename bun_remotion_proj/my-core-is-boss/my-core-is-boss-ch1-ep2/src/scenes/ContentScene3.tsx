@@ -1,13 +1,13 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig } from "remotion";
-import { BackgroundLayer } from "../../../fixture/components/BackgroundLayer";
-import { CharacterSprite } from "../../../fixture/components/CharacterSprite";
-import { DialogBox } from "../../../fixture/components/DialogBox";
-import { ComicEffects } from "../../../fixture/components/ComicEffects";
-import { MangaSfx } from "../../../fixture/components/MangaSfx";
-import { normalizeEffects, CHARACTERS, type ComicEffect, type MangaSfxEvent } from "../../../fixture/characters";
-import { SceneIndicator } from "../../../fixture/components/SceneIndicator";
-import { getLineIndex } from "../../../fixture/components/dialogTiming";
+import { BackgroundLayer } from "../../../assets/components/BackgroundLayer";
+import { CharacterSprite } from "../../../assets/components/CharacterSprite";
+import { DialogBox } from "../../../assets/components/DialogBox";
+import { ComicEffects } from "../../../assets/components/ComicEffects";
+import { MangaSfx } from "../../../assets/components/MangaSfx";
+import { normalizeEffects, CHARACTERS, type ComicEffect, type MangaSfxEvent } from "../../../assets/characters";
+import { SceneIndicator } from "../../../assets/components/SceneIndicator";
+import { getLineIndex } from "../../../assets/components/dialogTiming";
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const segmentDurations: Record<string, number[]> = (() => {

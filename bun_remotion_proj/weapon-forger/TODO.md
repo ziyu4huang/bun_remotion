@@ -31,9 +31,20 @@
 
 ## Cross-Episode Issues
 
-- [ ] Legacy imports: ch1-ep1 through ch2-ep2 still import from `fixture/components/` — migrate to `@bun-remotion/shared`
+- [ ] Legacy imports: ch1-ep1 through ch2-ep2 still import from `assets/components/` — migrate to `@bun-remotion/shared`
 - [ ] Tech term diversity: ch3 episodes have fewer tech terms (3) vs ch1 (8) — enrich narration when writing new episodes
 - [ ] ch1-ep1 uses zh-CN (Simplified); all others use zh-TW (Traditional) — normalize when revisiting
+
+## TTS Voice Config Migration
+
+Centralize per-episode voice config (currently duplicated in each narration.ts VOICE_MAP/VOICE_DESCRIPTION) into `assets/voice-config.json`. Pattern established in my-core-is-boss.
+
+- [ ] Create `assets/voice-config.json` with per-engine voice mapping (mlx_tts, gemini, edge_tts) + `defaultTtsModel` + `engines` section
+- [ ] Update `assets/scripts/generate-tts.ts` to read from voice-config.json instead of importing VOICE_MAP from narration.ts
+- [ ] Remove VOICE_MAP + VOICE_DESCRIPTION from all 7 episode narration.ts files (ch1-ep1 through ch3-ep1)
+- [ ] Update PLAN.md character table with voice assignments from voice-config.json
+- [ ] Regenerate TTS for all existing episodes (voices will change — zhoumo/elder/luyang/mengjingzhou/narrator all currently use uncle_fu)
+- [ ] Update voiceover.md in remotion-best-practices skill if not already covered
 
 ## Character Assets
 

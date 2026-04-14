@@ -135,10 +135,10 @@ Symlinked files in `public/` will 404 during render even if they appear to work 
 
 ```bash
 # ❌ WRONG — symlinks cause 404 at render time
-ln -sf ../../../fixture/characters/zhoumo.png public/images/zhoumo.png
+ln -sf ../../../assets/characters/zhoumo.png public/images/zhoumo.png
 
 # ✅ CORRECT — always copy actual files
-cp ../../../fixture/characters/zhoumo.png public/images/zhoumo.png
+cp ../../../assets/characters/zhoumo.png public/images/zhoumo.png
 ```
 
 **Verify:** After running any sync script, check with `ls -la public/images/` — no `->` arrows should appear.

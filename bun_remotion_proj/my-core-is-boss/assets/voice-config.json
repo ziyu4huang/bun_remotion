@@ -1,0 +1,91 @@
+{
+  "language": "zh-TW",
+  "defaultEngine": "mlx_tts",
+  "defaultTtsModel": "Qwen3-TTS-0.6B",
+  "speed": 0.97,
+  "sampleRate": 24000,
+  "engines": {
+    "mlx_tts": {
+      "model": "Qwen3-TTS-0.6B",
+      "models": {
+        "Qwen3-TTS-0.6B": {
+          "id": "mlx-community/Qwen3-TTS-12Hz-0.6B-CustomVoice-8bit",
+          "memory": "~4GB",
+          "voices": ["uncle_fu", "ryan", "serena", "vivian"],
+          "notes": "Default. Best quality, 4 standard Chinese voices."
+        },
+        "Kokoro-82M": {
+          "id": "mlx-community/Kokoro-82M-bf16",
+          "memory": "~1GB",
+          "voices": ["zm_yunjian", "zm_yunxi", "zf_xiaobei", "zf_xiaoni"],
+          "notes": "Fallback. Light, 100+ Chinese voices via Kokoro v1.1-zh."
+        }
+      }
+    },
+    "gemini": {
+      "model": "gemini-2.5-flash-preview-tts",
+      "voices": ["Kore", "Fenrir", "Charon", "Orus", "Puck", "Leda", "Zephyr", "Aoede"]
+    },
+    "edge_tts": {
+      "model": "Microsoft Neural TTS",
+      "voices": ["zh-TW-HsiaoChenNeural", "zh-TW-YunJheNeural", "zh-CN-XiaoxiaoNeural", "zh-CN-YunxiNeural"]
+    }
+  },
+  "characters": {
+    "linyi": {
+      "name": "林逸",
+      "role": "現代玩家穿越，核心系統宿主",
+      "gender": "male",
+      "description": "Casual gamer tone, complains about bugs",
+      "voices": {
+        "mlx_tts": "ryan",
+        "gemini": "Fenrir",
+        "edge_tts": "zh-TW-YunJheNeural"
+      }
+    },
+    "zhaoxiaoqi": {
+      "name": "趙小七",
+      "role": "外門弟子，頭號腦補狂魔",
+      "gender": "female",
+      "description": "Enthusiastic over-interpreter, warm energy",
+      "voices": {
+        "mlx_tts": "serena",
+        "gemini": "Aoede",
+        "edge_tts": "zh-TW-HsiaoChenNeural"
+      }
+    },
+    "xiaoelder": {
+      "name": "蕭長老",
+      "role": "天道宗長老，內心戲極多",
+      "gender": "male",
+      "description": "Stern elder, gradually breaking down",
+      "voices": {
+        "mlx_tts": "uncle_fu",
+        "gemini": "Charon",
+        "edge_tts": "zh-CN-YunxiNeural"
+      }
+    },
+    "chenmo": {
+      "name": "陳默",
+      "role": "另一個穿越者 (Ch8+)",
+      "gender": "male",
+      "description": "Programmer, quiet observer",
+      "voices": {
+        "mlx_tts": "ryan",
+        "gemini": "Orus",
+        "edge_tts": "zh-TW-YunJheNeural"
+      }
+    },
+    "narrator": {
+      "name": "旁白",
+      "role": "Narrator",
+      "gender": "female",
+      "description": "Clear, neutral storytelling voice",
+      "voices": {
+        "mlx_tts": "vivian",
+        "gemini": "Kore",
+        "edge_tts": "zh-CN-XiaoxiaoNeural"
+      }
+    }
+  }
+}

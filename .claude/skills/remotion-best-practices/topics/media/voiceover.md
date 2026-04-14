@@ -54,6 +54,133 @@ Requires `ELEVENLABS_API_KEY`. High quality, paid.
 
 ---
 
+## Centralized Voice Configuration (`voice-config.json`)
+
+For multi-episode series with multiple characters, create a centralized
+`assets/voice-config.json` as the **single source of truth** for voice assignments.
+Episode `narration.ts` files reference characters by ID — the generate-tts script
+resolves voices from the config.
+
+### Why centralized?
+
+- **Consistency**: Same character always uses the same voice across all episodes
+- **Engine switching**: Change TTS engine without editing every episode's narration.ts
+- **Model upgrades**: `defaultTtsModel` key tracks which model to use, future-proof
+- **Auditability**: One file shows all character → voice → engine mappings
+
+### File location
+
+```
+bun_remotion_proj/<series>/assets/voice-config.json
+```
+
+### Structure
+
+```json
+{
+  "language": "zh-TW",
+  "defaultEngine": "mlx_tts",
+  "defaultTtsModel": "Qwen3-TTS-0.6B",
+  "speed": 0.97,
+  "sampleRate": 24000,
+  "engines": {
+    "mlx_tts": {
+      "model": "Qwen3-TTS-0.6B",
+      "models": {
+        "Qwen3-TTS-0.6B": {
+          "id": "mlx-community/Qwen3-TTS-12Hz-0.6B-CustomVoice-8bit",
+          "memory": "~4GB",
+          "voices": ["uncle_fu", "ryan", "serena", "vivian"],
+          "notes": "Default. Best quality, 4 standard Chinese voices."
+        },
+        "Kokoro-82M": {
+          "id": "mlx-community/Kokoro-82M-bf16",
+          "memory": "~1GB",
+          "voices": ["zm_yunjian", "zm_yunxi", "zf_xiaobei", "zf_xiaoni"],
+          "notes": "Fallback. Light, 100+ Chinese voices via Kokoro v1.1-zh."
+        }
+      }
+    },
+    "gemini": {
+      "model": "gemini-2.5-flash-preview-tts",
+      "voices": ["Kore", "Fenrir", "Charon", "Orus", "Puck", "Leda", "Zephyr", "Aoede"]
+    },
+    "edge_tts": {
+      "model": "Microsoft Neural TTS",
+      "voices": ["zh-TW-HsiaoChenNeural", "zh-TW-YunJheNeural", "zh-CN-XiaoxiaoNeural", "zh-CN-YunxiNeural"]
+    }
+  },
+  "characters": {
+    "linyi": {
+      "name": "林逸",
+      "role": "現代玩家穿越，核心系統宿主",
+      "gender": "male",
+      "description": "Casual gamer tone",
+      "voices": {
+        "mlx_tts": "ryan",
+        "gemini": "Fenrir",
+        "edge_tts": "zh-TW-YunJheNeural"
+      }
+    },
+    "narrator": {
+      "name": "旁白",
+      "role": "Narrator",
+      "gender": "female",
+      "description": "Clear storytelling voice",
+      "voices": {
+        "mlx_tts": "vivian",
+        "gemini": "Kore",
+        "edge_tts": "zh-CN-XiaoxiaoNeural"
+      }
+    }
+  }
+}
+```
+
+### Episode narration.ts (simplified)
+
+With centralized voice config, episode narration.ts only needs `NarrationSegment[]`:
+
+```typescript
+export type VoiceCharacter = "linyi" | "zhaoxiaoqi" | "narrator";
+
+export interface NarrationSegment {
+  character: VoiceCharacter;
+  text: string;
+}
+
+export interface NarrationScript {
+  scene: string;
+  file: string;
+  segments: NarrationSegment[];
+  fullText: string;
+}
+
+export const NARRATOR_LANG = "zh-TW";
+
+// NO VOICE_MAP or VOICE_DESCRIPTION — resolved from assets/voice-config.json
+
+export const narrations: NarrationScript[] = [
+  {
+    scene: "TitleScene",
+    file: "01-title.wav",
+    segments: [
+      { character: "narrator", text: "蒼穹大陸，太平紀元三千年。" },
+    ],
+    fullText: "蒼穹大陸，太平紀元三千年。",
+  },
+];
+```
+
+### Voice assignment rules
+
+1. **Distinct voices per scene**: Characters appearing in the same scene must have different voices
+2. **Gender matching**: Voice gender should match character gender (unless comedic intent)
+3. **Voice sharing OK across episodes**: Characters that never share a scene can use the same voice (e.g., `chenmo` and `linyi` both use `ryan` — they don't meet until ch8)
+4. **Narrator must be unique in scene**: If narrator speaks alongside characters, it needs a distinct voice from all dialog characters in that scene
+
+---
+
 ## Full Workflow (edge-tts example)
 
 ### File structure

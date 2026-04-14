@@ -1,14 +1,14 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate } from "remotion";
-import { BackgroundLayer } from "../../../fixture/components/BackgroundLayer";
-import { CharacterSprite } from "../../../fixture/components/CharacterSprite";
-import { ComicEffects } from "../../../fixture/components/ComicEffects";
-import { ScreenShake, ConcentrationLines, ImpactBurst, TriangleBurst } from "../../../fixture/components/BattleEffects";
-import { SystemNotification } from "../../../fixture/components/SystemOverlay";
-import { DialogBox } from "../../../fixture/components/DialogBox";
-import { MangaSfx } from "../../../fixture/components/MangaSfx";
-import { notoSansTC } from "../../../fixture/characters";
-import type { DialogLine, ComicEffect, MangaSfxEvent } from "../../../fixture/characters";
+import { BackgroundLayer } from "../../../assets/components/BackgroundLayer";
+import { CharacterSprite } from "../../../assets/components/CharacterSprite";
+import { ComicEffects } from "../../../assets/components/ComicEffects";
+import { ScreenShake, ConcentrationLines, ImpactBurst, TriangleBurst } from "../../../assets/components/BattleEffects";
+import { SystemNotification } from "../../../assets/components/SystemOverlay";
+import { DialogBox } from "../../../assets/components/DialogBox";
+import { MangaSfx } from "../../../assets/components/MangaSfx";
+import { notoSansTC } from "../../../assets/characters";
+import type { DialogLine, ComicEffect, MangaSfxEvent } from "../../../assets/characters";
 
 /**
  * ContentScene1 — 周墨加入煉器峰，長老介紹會說話的丹爐

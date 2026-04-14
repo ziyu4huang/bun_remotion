@@ -1,14 +1,14 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate } from "remotion";
-import { BackgroundLayer } from "../../../fixture/components/BackgroundLayer";
-import { CharacterSprite } from "../../../fixture/components/CharacterSprite";
-import { ComicEffects } from "../../../fixture/components/ComicEffects";
-import { PowerUpRings, ImpactBurst } from "../../../fixture/components/BattleEffects";
-import { SystemMessage } from "../../../fixture/components/SystemOverlay";
-import { DialogBox } from "../../../fixture/components/DialogBox";
-import { MangaSfx } from "../../../fixture/components/MangaSfx";
-import { notoSansTC } from "../../../fixture/characters";
-import type { DialogLine, ComicEffect } from "../../../fixture/characters";
+import { BackgroundLayer } from "../../../assets/components/BackgroundLayer";
+import { CharacterSprite } from "../../../assets/components/CharacterSprite";
+import { ComicEffects } from "../../../assets/components/ComicEffects";
+import { PowerUpRings, ImpactBurst } from "../../../assets/components/BattleEffects";
+import { SystemMessage } from "../../../assets/components/SystemOverlay";
+import { DialogBox } from "../../../assets/components/DialogBox";
+import { MangaSfx } from "../../../assets/components/MangaSfx";
+import { notoSansTC } from "../../../assets/characters";
+import type { DialogLine, ComicEffect } from "../../../assets/characters";
 
 /**
  * ContentScene2 — 孟景舟登場 + 三人成軍

@@ -1,8 +1,8 @@
 /**
- * Shared TTS generator for 我的核心是大佬 series.
+ * Shared TTS generator for weapon-forger series.
  *
  * Run from an episode directory via:
- *   bun run ../../fixture/scripts/generate-tts.ts
+ *   bun run ../../assets/scripts/generate-tts.ts
  *
  * Uses process.cwd() to locate the episode's scripts/narration.ts.
  * Expects narration.ts to export: narrations, VOICE_MAP, VOICE_DESCRIPTION, VoiceCharacter, NARRATOR_LANG
@@ -15,9 +15,9 @@ import { execFileSync } from "node:child_process";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-// APP_DIR is the episode root (e.g., my-core-is-boss-ch1-ep1/)
+// APP_DIR is the episode root (e.g., weapon-forger-ch1-ep1/)
 const APP_DIR = process.cwd();
-// REPO_ROOT is 3 levels up from episode: episode -> my-core-is-boss -> bun_remotion_proj -> repo root
+// REPO_ROOT is 3 levels up from episode: episode -> weapon-forger -> bun_remotion_proj -> repo root
 const REPO_ROOT = join(APP_DIR, "..", "..", "..");
 const AUDIO_DIR = join(APP_DIR, "public", "audio");
 const SEGMENTS_DIR = join(AUDIO_DIR, "_segments");
@@ -44,14 +44,6 @@ function wavDurationFrames(filePath: string, fps: number): number {
   const byteRate = buf.readUInt32LE(28);
   const dataSize = buf.readUInt32LE(40);
   return Math.ceil((dataSize / byteRate) * fps) + 15;
-}
-
-/** Raw audio duration in seconds (no padding). */
-function wavDurationSec(filePath: string): number {
-  const buf = readFileSync(filePath);
-  const byteRate = buf.readUInt32LE(28);
-  const dataSize = buf.readUInt32LE(40);
-  return dataSize / byteRate;
 }
 
 function createWavHeader(dataSize: number): Buffer {
@@ -227,8 +219,8 @@ async function main() {
   let generated = 0;
   let skipped = 0;
 
-  // Per-scene raw segment durations (seconds) for dialog sync
-  const sceneSegmentDurations: Record<string, number[]> = {};
+  // Per-segment durations for audio-text sync
+  const sceneSegmentDurations: Array<{ scene: string; file: string; segmentDurations: number[] }> = [];
 
   for (let i = 0; i < filtered.length; i++) {
     const { scene, file, segments } = filtered[i];
@@ -244,7 +236,7 @@ async function main() {
 
     try {
       const segmentPaths: string[] = [];
-      const segDurations: number[] = [];
+      const segmentDurations: number[] = [];
 
       for (let s = 0; s < segments.length; s++) {
         const seg = segments[s];
@@ -261,7 +253,9 @@ async function main() {
         }
 
         segmentPaths.push(segPath);
-        segDurations.push(wavDurationSec(segPath));
+
+        // Record segment duration in frames (before concatenateWavs deletes the file)
+        segmentDurations.push(wavDurationFrames(segPath, 30));
 
         if (useMlxTts && s < segments.length - 1) {
           await new Promise((r) => setTimeout(r, 1500));
@@ -272,9 +266,11 @@ async function main() {
       }
 
       concatenateWavs(segmentPaths, outputPath);
-      sceneSegmentDurations[scene] = segDurations;
       console.log(`  → ${file} (${segments.length} segments concatenated)`);
       generated++;
+
+      // Record per-segment durations (in frames at 30fps)
+      sceneSegmentDurations.push({ scene, file, segmentDurations });
     } catch (err) {
       console.error(`  FAILED: ${err}`);
       process.exit(1);
@@ -287,7 +283,7 @@ async function main() {
   });
   writeFileSync(join(AUDIO_DIR, "durations.json"), JSON.stringify(durationsJson, null, 2) + "\n");
 
-  // Write per-scene raw segment durations (seconds) for dialog sync
+  // Write per-segment durations for audio-text sync
   writeFileSync(join(AUDIO_DIR, "segment-durations.json"), JSON.stringify(sceneSegmentDurations, null, 2) + "\n");
 
   // Write voice manifest

@@ -1,13 +1,13 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate } from "remotion";
-import { BackgroundLayer } from "../../../fixture/components/BackgroundLayer";
-import { CharacterSprite } from "../../../fixture/components/CharacterSprite";
-import { ComicEffects } from "../../../fixture/components/ComicEffects";
-import { SpeedLines, SlashEffect, ScreenFlash, BattleAura } from "../../../fixture/components/BattleEffects";
-import { SystemNotification } from "../../../fixture/components/SystemOverlay";
-import { DialogBox } from "../../../fixture/components/DialogBox";
-import { notoSansTC } from "../../../fixture/characters";
-import type { DialogLine, ComicEffect } from "../../../fixture/characters";
+import { BackgroundLayer } from "../../../assets/components/BackgroundLayer";
+import { CharacterSprite } from "../../../assets/components/CharacterSprite";
+import { ComicEffects } from "../../../assets/components/ComicEffects";
+import { SpeedLines, SlashEffect, ScreenFlash, BattleAura } from "../../../assets/components/BattleEffects";
+import { SystemNotification } from "../../../assets/components/SystemOverlay";
+import { DialogBox } from "../../../assets/components/DialogBox";
+import { notoSansTC } from "../../../assets/characters";
+import type { DialogLine, ComicEffect } from "../../../assets/characters";
 
 /**
  * 第一集：周墨炼制"自动寻路飞剑"，飞剑锁定考官的储物袋

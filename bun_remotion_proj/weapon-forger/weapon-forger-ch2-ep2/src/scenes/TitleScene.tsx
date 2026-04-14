@@ -1,6 +1,6 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, spring } from "remotion";
-import { notoSansTC } from "../../../fixture/characters";
+import { notoSansTC } from "../../../assets/characters";
 
 /**
  * Title Scene — 誰讓他煉器的！ 第二章 第二集：低語洞窟

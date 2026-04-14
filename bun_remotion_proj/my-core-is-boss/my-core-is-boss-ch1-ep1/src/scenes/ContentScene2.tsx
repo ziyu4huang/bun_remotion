@@ -1,11 +1,11 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig } from "remotion";
-import { BackgroundLayer } from "../../../fixture/components/BackgroundLayer";
-import { CharacterSprite } from "../../../fixture/components/CharacterSprite";
-import { DialogBox } from "../../../fixture/components/DialogBox";
-import { ComicEffects } from "../../../fixture/components/ComicEffects";
-import { normalizeEffects, CHARACTERS, type ComicEffect } from "../../../fixture/characters";
-import { SceneIndicator } from "../../../fixture/components/SceneIndicator";
+import { BackgroundLayer } from "../../../assets/components/BackgroundLayer";
+import { CharacterSprite } from "../../../assets/components/CharacterSprite";
+import { DialogBox } from "../../../assets/components/DialogBox";
+import { ComicEffects } from "../../../assets/components/ComicEffects";
+import { normalizeEffects, CHARACTERS, type ComicEffect } from "../../../assets/characters";
+import { SceneIndicator } from "../../../assets/components/SceneIndicator";
 
 const dialogLines = [
   { character: "zhaoxiaoqi" as const, text: "我一定要記下來！《林逸師兄語錄》第一篇！", emotion: "gloating" as const, effect: "fire" as ComicEffect },

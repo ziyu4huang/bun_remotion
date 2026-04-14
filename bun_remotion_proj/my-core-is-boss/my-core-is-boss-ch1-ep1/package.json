@@ -6,7 +6,7 @@
     "start": "remotion studio",
     "build": "remotion render MyCoreIsBossCh1Ep1 out/my-core-is-boss-ch1-ep1.mp4",
     "upgrade": "remotion upgrade",
-    "generate-tts": "bun run ../fixture/scripts/generate-tts.ts"
+    "generate-tts": "bun run ../assets/scripts/generate-tts.ts"
   },
   "dependencies": {
     "@bun-remotion/shared": "workspace:*",

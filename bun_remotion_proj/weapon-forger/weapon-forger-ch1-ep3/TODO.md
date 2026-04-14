@@ -25,23 +25,23 @@ Language: zh-TW (Traditional Chinese)
 - [x] Update PLAN.md with ch1-ep3 entry
 - [x] Update scripts/dev.sh ALL_APPS + get_comp_id()
 - [x] Update root package.json with wf-ch1-ep3 scripts
-- [x] Run sync-images.sh to copy fixture images
+- [x] Run sync-images.sh to copy assets images
 - [x] Run `bun install` to link workspace
 - [x] Run `bun run generate-tts:wf-ch1-ep3` to generate audio
-- [x] Fix generate-tts path in package.json (../../fixture → ../fixture)
+- [x] Fix generate-tts path in package.json (../../assets → ../assets)
 - [x] Fix SystemOverlay.tsx: add "info" type (was missing, caused render crash)
 - [x] Regenerate elder.png via Nano Banana + rembg
-- [x] Sync fixture images to all episodes
+- [x] Sync assets images to all episodes
 - [x] Open in Remotion Studio and verify visuals
 - [x] Render final MP4 (re-running after bug fix)
 
 ## Migration: @bun-remotion/shared (Pending)
 
-- [ ] Update scene imports from `../../../fixture/components/X` to `@bun-remotion/shared`
+- [ ] Update scene imports from `../../../assets/components/X` to `@bun-remotion/shared`
 - [ ] Change `pose` prop to `emotion` on CharacterSprite usage
 - [ ] Add `characterConfig={CHARACTERS[character]}` prop to CharacterSprite
 - [ ] Add `intensity="enhanced"` prop to CharacterSprite
 - [ ] Update DialogBox to use `getCharacterConfig` callback
-- [ ] Keep BattleEffects import from `../../../fixture/components/BattleEffects` (project-local)
+- [ ] Keep BattleEffects import from `../../../assets/components/BattleEffects` (project-local)
 - [ ] Verify in Remotion Studio after migration
-- [ ] Remove legacy imports from fixture/components/
+- [ ] Remove legacy imports from assets/components/

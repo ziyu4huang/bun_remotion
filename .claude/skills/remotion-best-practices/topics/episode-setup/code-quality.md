@@ -9,26 +9,26 @@ metadata:
 
 ---
 
-## 1. Export utilities from fixture barrel, not local copies
+## 1. Export utilities from assets barrel, not local copies
 
-When a utility function is used across 2+ scenes, export it from the fixture barrel
-(`fixture/characters.ts` or a dedicated `utils.ts`). Never define local copies that
+When a utility function is used across 2+ scenes, export it from the assets barrel
+(`assets/characters.ts` or a dedicated `utils.ts`). Never define local copies that
 shadow imports.
 
 ```tsx
 // ❌ WRONG — local copy shadows broken import
-import { normalizeEffects } from "../../../fixture/characters"; // doesn't exist!
+import { normalizeEffects } from "../../../assets/characters"; // doesn't exist!
 function normalizeEffects(effect) { ... } // shadows the import, confusing
 
-// ✅ CORRECT — export once from fixture, import everywhere
-// fixture/characters.ts
+// ✅ CORRECT — export once from assets, import everywhere
+// assets/characters.ts
 export function normalizeEffects(effect?: ComicEffect | ComicEffect[]): ComicEffect[] {
   if (!effect) return [];
   return Array.isArray(effect) ? effect : [effect];
 }
 
 // scenes/ContentScene1.tsx
-import { normalizeEffects } from "../../../fixture/characters";
+import { normalizeEffects } from "../../../assets/characters";
 ```
 
 ---
@@ -51,15 +51,15 @@ This also works for narrator (center) and any future characters automatically.
 
 ---
 
-## 3. Extract repeated visual patterns to fixture components
+## 3. Extract repeated visual patterns to assets components
 
 When the same visual pattern (scene indicator, loading text, notification) appears in
-2+ scenes, extract to a fixture component.
+2+ scenes, extract to an assets component.
 
 **Example — SceneIndicator:**
 
 ```tsx
-// fixture/components/SceneIndicator.tsx
+// assets/components/SceneIndicator.tsx
 interface SceneIndicatorProps { text: string; color: string; }
 
 export const SceneIndicator: React.FC<SceneIndicatorProps> = ({ text, color }) => {

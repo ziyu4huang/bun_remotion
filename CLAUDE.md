@@ -199,6 +199,7 @@ All memory — project knowledge, user feedback, preferences — lives here. Thi
 - [dialog-audio-sync](.agent/memory/feedback/dialog-audio-sync.md) - Proportional dialog timing via segment-durations.json + getLineIndex() — equal division causes text-audio mismatch
 - [remotion-no-symlinks](.agent/memory/feedback/remotion-no-symlinks.md) - Remotion static server can't follow symlinks — always copy files for public/ assets, never symlink
 - [confirm-format-zhtw](.agent/memory/feedback/confirm-format-zhtw.md) - When presenting episode content for user confirmation, show all story/dialog in zh_TW — never English summaries
+- [fixture-to-assets-migration](.agent/memory/feedback/fixture-to-assets-migration.md) - SOP: fixture→assets rename + story guides + genre presets. my-core-is-boss done, galgame-meme-theater & weapon-forger pending
 
 ## Convention
 

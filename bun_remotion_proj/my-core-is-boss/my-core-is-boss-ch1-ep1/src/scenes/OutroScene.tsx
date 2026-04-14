@@ -1,6 +1,6 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, Easing } from "remotion";
-import { maShanZheng, notoSansTC } from "../../../fixture/characters";
+import { maShanZheng, notoSansTC } from "../../../assets/characters";
 
 export const OutroScene: React.FC = () => {
   const frame = useCurrentFrame();

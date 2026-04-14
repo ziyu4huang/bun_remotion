@@ -35,7 +35,7 @@ Numbered for reference. A real PLAN.md does NOT need section numbers — these a
 | 3 | Characters table | name, voice, color, image per character | **New character introduced** (e.g., chenmo in Ch8) |
 | 4 | Character Descriptions | Personality text per character | New character, or after significant character development |
 | 5 | Emotion Image System | Emotion set, character emotion map, how it works | Only at creation (shared across all episodes) |
-| 6 | Project Structure | Directory layout, file naming, import conventions | New shared component added to fixture/ |
+| 6 | Project Structure | Directory layout, file naming, import conventions | New shared component added to assets/ |
 | 7 | Episode Guide (short) | Summary table — episode, title, language, characters, **status** | **Every new episode** + **every status change** |
 | 8 | Adding a New Episode | Workflow summary + file checklist | Rarely (only when workflow changes) |
 | 9 | Commands | Studio, render, TTS commands for all episodes | **Every new episode** |
@@ -116,7 +116,7 @@ Numbered for reference. A real PLAN.md does NOT need section numbers — these a
 - [ ] Main component (TransitionSeries)
 - [ ] Update scripts/dev.sh (ALL_APPS + get_comp_id)
 - [ ] Update root package.json (start/build/generate-tts scripts)
-- [ ] Run sync-images.sh to copy fixture images
+- [ ] Run sync-images.sh to copy assets images
 - [ ] Run `bun install` to link workspace
 - [ ] Code review
 - [ ] Generate TTS
@@ -206,7 +206,7 @@ Chapter: 第<N>章：<Chapter Title>（第<M>/<K>集）
 - [ ] Update PLAN.md (episode guide + commands)
 - [ ] Update scripts/dev.sh ALL_APPS + get_comp_id()
 - [ ] Update root package.json with scripts
-- [ ] Run sync-images.sh to copy fixture images
+- [ ] Run sync-images.sh to copy assets images
 - [ ] Run `bun install` to link workspace
 - [ ] Run `bun run generate-tts:<alias>` to generate audio
 

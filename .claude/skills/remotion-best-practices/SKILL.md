@@ -23,7 +23,7 @@ Detect what the user is working on from conversation context, then read ONLY the
 | Keywords / Context | Topic | Read |
 |---|---|---|
 | scene, dialog, character, dialogLines, narrative, galgame, VN, comic effect, environmental | Narrative | `topics/narrative/_topic.md` |
-| new episode, series, PLAN.md, scaffold, fixture, story, code quality | Episode Setup | `topics/episode-setup/_topic.md` |
+| new episode, series, PLAN.md, scaffold, assets, story, code quality | Episode Setup | `topics/episode-setup/_topic.md` |
 | animate, interpolate, spring, sequence, transition, timing, typewriter, fade, slide, trim | Animation | `topics/animation/_topic.md` |
 | audio, video, image, asset, gif, voiceover, TTS, sfx, sound | Media | `topics/media/_topic.md` |
 | visualization, lottie, chart, light-leak, 3D, three.js, map, mapbox | Effects | `topics/effects/_topic.md` |

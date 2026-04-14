@@ -1,6 +1,6 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, spring } from "remotion";
-import { notoSansTC } from "../../../fixture/characters";
+import { notoSansTC } from "../../../assets/characters";
 
 /**
  * Title Scene — 谁让他炼器的！ 第一章 第一集：入宗考试

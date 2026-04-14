@@ -4,11 +4,18 @@ Galgame-style meme comedy series. Tone: relatable everyday absurdity.
 
 ## Characters
 
-| Character | Name | Voice | Color | Image |
-|-----------|------|-------|-------|-------|
-| xiaoxue | 小雪 | serena (female) | #F472B6 (pink) | xiaoxue.png |
-| xiaoyue | 小月 | vivian (female) | #818CF8 (indigo) | xiaoyue.png |
-| xiaoying | 小樱 | serena (female) | #FB923C (orange) | xiaoying.png |
+| Character | Name | Voice (mlx_tts) | Gender | Color | Image |
+|-----------|------|-----------------|--------|-------|-------|
+| xiaoxue | 小雪 | serena | female | #F472B6 (pink) | xiaoxue.png |
+| xiaoyue | 小月 | vivian | female | #818CF8 (indigo) | xiaoyue.png |
+| xiaoying | 小櫻 | serena | female | #FB923C (orange) | xiaoying.png |
+| narrator | — | serena | female | — | — |
+
+Voice configuration is centralized in `assets/voice-config.json` — single source of truth
+for all engines (mlx_tts, gemini, edge_tts). See `voice-config.json` for per-engine mappings.
+
+**Note:** xiaoxue and xiaoying currently share `serena` — they should use distinct voices
+when a centralized config is created (e.g., xiaoying → `vivian`-style or different personality).
 
 ## Project Structure
 
@@ -16,6 +23,7 @@ Galgame-style meme comedy series. Tone: relatable everyday absurdity.
 galgame-meme-theater/
   PLAN.md                          # This file (technical reference)
   assets/
+    voice-config.json              # Centralized TTS voice config (per-engine, per-character)
     characters/                    # Character PNGs
       xiaoxue.png, xiaoyue.png, xiaoying.png
     backgrounds/                   # Background PNGs
@@ -162,3 +170,15 @@ bun run generate-tts:meme7   # ep7
 | Component file | `GalgameMemeTheaterEp{N}.tsx` | `GalgameMemeTheaterEp5.tsx` |
 | Root script alias | `meme{N}` | `meme5` |
 | Audio files | `01-title.wav` ... `06-outro.wav` | Same every episode |
+
+## TTS Voice Config Migration
+
+Centralize voice config (currently duplicated per-episode or missing in ep1-6 flat format) into `assets/voice-config.json`. Pattern established in my-core-is-boss.
+
+- [ ] Create `assets/voice-config.json` with per-engine voice mapping (mlx_tts, gemini, edge_tts) + `defaultTtsModel` + `engines` section
+- [ ] Update `assets/scripts/generate-tts.ts` to read from voice-config.json instead of importing VOICE_MAP from narration.ts
+- [ ] Remove VOICE_MAP + VOICE_DESCRIPTION from ep7 narration.ts (ep1-6 use flat single-voice format — no VOICE_MAP to remove)
+- [ ] Update PLAN.md character table with voice assignments from voice-config.json
+- [ ] Resolve xiaoxue/xiaoying voice conflict (both use `serena` — need distinct voices for shared scenes)
+- [ ] Regenerate TTS for affected episodes
+- [ ] Update voiceover.md in remotion-best-practices skill if not already covered

@@ -1,13 +1,13 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig } from "remotion";
-import { BackgroundLayer } from "../../../fixture/components/BackgroundLayer";
-import { CharacterSprite } from "../../../fixture/components/CharacterSprite";
-import { DialogBox } from "../../../fixture/components/DialogBox";
-import { ComicEffects } from "../../../fixture/components/ComicEffects";
-import { normalizeEffects, CHARACTERS, type ComicEffect } from "../../../fixture/characters";
-import { SystemNotification } from "../../../fixture/components/SystemOverlay";
-import { SceneIndicator } from "../../../fixture/components/SceneIndicator";
-import { getLineIndex } from "../../../fixture/components/dialogTiming";
+import { BackgroundLayer } from "../../../assets/components/BackgroundLayer";
+import { CharacterSprite } from "../../../assets/components/CharacterSprite";
+import { DialogBox } from "../../../assets/components/DialogBox";
+import { ComicEffects } from "../../../assets/components/ComicEffects";
+import { normalizeEffects, CHARACTERS, type ComicEffect } from "../../../assets/characters";
+import { SystemNotification } from "../../../assets/components/SystemOverlay";
+import { SceneIndicator } from "../../../assets/components/SceneIndicator";
+import { getLineIndex } from "../../../assets/components/dialogTiming";
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const segmentDurations: Record<string, number[]> = (() => {

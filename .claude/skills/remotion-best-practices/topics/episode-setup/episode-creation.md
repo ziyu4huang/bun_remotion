@@ -18,7 +18,7 @@ follow this strict workflow. The key principle: **confirm the story in the user'
 
 A PLAN.md is the series "bible" — it contains:
 - Characters table (name, voice, color, image)
-- Project structure (fixture layout, episode dirs)
+- Project structure (assets layout, episode dirs)
 - **Chapter rules** (for chapter-based series — see below)
 - Episode guide table (all episodes with title, theme, status)
 - Story arcs (per-chapter/episode summaries)
@@ -315,7 +315,7 @@ Only after user approval, proceed to code generation in this exact order:
    - **New characters table** (if this episode introduces a new character — add to Characters table with voice/color/image)
 6. **Update dev.sh** — ALL_APPS list + get_comp_id() case
 7. **Update root package.json** — start/build/generate-tts scripts
-8. **Run sync-images.sh** — copy fixture images (if series uses fixture pattern). **CRITICAL:** Verify files are actual copies, NOT symlinks. Remotion's static server returns 404 for symlinks. Check with `ls -la public/images/` — no `->` arrows. See [shared-fixture-images.md](shared-fixture-images.md) for the full pattern and why webpack imports don't work.
+8. **Run sync-images.sh** — copy assets images (if series uses assets pattern). **CRITICAL:** Verify files are actual copies, NOT symlinks. Remotion's static server returns 404 for symlinks. Check with `ls -la public/images/` — no `->` arrows. See [shared-assets-images.md](shared-assets-images.md) for the full pattern and why webpack imports don't work.
 9. **Run bun install** — link workspace
 10. **Generate TTS** — `bun run generate-tts:<alias>`
 11. **Quick headless verify** — playwright-cli snapshot/screenshot (Studio only for visual bug debugging)
@@ -368,7 +368,7 @@ Chapter: 第[N]章：[章節標題]（第[M]/[K]集）
 - [ ] Update PLAN.md (episode guide)
 - [ ] Update scripts/dev.sh ALL_APPS + get_comp_id()
 - [ ] Update root package.json with scripts
-- [ ] Run sync-images.sh to copy fixture images (if applicable)
+- [ ] Run sync-images.sh to copy assets images (if applicable)
 - [ ] Run `bun install` to link workspace
 - [ ] Run `bun run generate-tts:<alias>` to generate audio
 - [ ] Quick headless verify (playwright-cli snapshot/screenshot)
@@ -552,4 +552,4 @@ export const narrations: NarrationScript[] = [
 | Not creating TODO.md per episode | Always create TODO.md — it's the task tracker and reflection log |
 | Symlinks in public/ instead of copies | Remotion's static server can't follow symlinks — always `cp`, never `ln -sf` |
 | Not verifying images after sync | Run `ls -la public/images/` — should show regular files, no `->` arrows |
-| Using webpack imports for fixture images | `import img from '../fixture/bg.png'` resolves to raw path (404) because Remotion sets webpack context to the episode dir. Always use `staticFile()` + `sync-images.sh` instead |
+| Using webpack imports for assets images | `import img from '../assets/bg.png'` resolves to raw path (404) because Remotion sets webpack context to the episode dir. Always use `staticFile()` + `sync-images.sh` instead |

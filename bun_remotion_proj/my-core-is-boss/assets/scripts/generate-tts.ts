@@ -1,11 +1,11 @@
 /**
- * Shared TTS generator for weapon-forger series.
+ * Shared TTS generator for 我的核心是大佬 series.
  *
  * Run from an episode directory via:
- *   bun run ../../fixture/scripts/generate-tts.ts
+ *   bun run ../../assets/scripts/generate-tts.ts
  *
- * Uses process.cwd() to locate the episode's scripts/narration.ts.
- * Expects narration.ts to export: narrations, VOICE_MAP, VOICE_DESCRIPTION, VoiceCharacter, NARRATOR_LANG
+ * Voice configuration is centralized in assets/voice-config.json.
+ * Episode narration.ts only needs to export: narrations, NARRATOR_LANG
  */
 
 import { writeFileSync, mkdirSync, existsSync, readFileSync, readdirSync, unlinkSync } from "node:fs";
@@ -15,21 +15,43 @@ import { execFileSync } from "node:child_process";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-// APP_DIR is the episode root (e.g., weapon-forger-ch1-ep1/)
+// Voice config — single source of truth
+const VOICE_CONFIG_PATH = join(__dirname, "..", "voice-config.json");
+const voiceConfig = JSON.parse(readFileSync(VOICE_CONFIG_PATH, "utf-8")) as {
+  language: string;
+  defaultEngine: string;
+  defaultTtsModel: string;
+  speed: number;
+  sampleRate: number;
+  engines: Record<string, {
+    model: string;
+    models?: Record<string, { id: string; memory: string; voices: string[]; notes: string }>;
+    voices: string[];
+  }>;
+  characters: Record<string, {
+    name: string;
+    role: string;
+    gender: string;
+    description: string;
+    voices: Record<string, string>;
+  }>;
+};
+
+// APP_DIR is the episode root (e.g., my-core-is-boss-ch1-ep1/)
 const APP_DIR = process.cwd();
-// REPO_ROOT is 3 levels up from episode: episode -> weapon-forger -> bun_remotion_proj -> repo root
+// REPO_ROOT is 3 levels up from episode: episode -> my-core-is-boss -> bun_remotion_proj -> repo root
 const REPO_ROOT = join(APP_DIR, "..", "..", "..");
 const AUDIO_DIR = join(APP_DIR, "public", "audio");
 const SEGMENTS_DIR = join(AUDIO_DIR, "_segments");
 
 const MLX_TTS_ROOT = join(REPO_ROOT, "mlx_tts");
 const MLX_PYTHON = join(MLX_TTS_ROOT, ".venv", "bin", "python");
-const MLX_SPEED = "0.97";
+const MLX_SPEED = String(voiceConfig.speed);
 const MLX_LANG = "zh";
 
-const GEMINI_MODEL = "gemini-2.5-flash-preview-tts";
+const GEMINI_MODEL = voiceConfig.engines.gemini?.model ?? "gemini-2.5-flash-preview-tts";
 const GEMINI_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
-const SAMPLE_RATE = 24000;
+const SAMPLE_RATE = voiceConfig.sampleRate;
 const BYTE_RATE = SAMPLE_RATE * 2;
 
 const args = process.argv.slice(2);
@@ -44,6 +66,14 @@ function wavDurationFrames(filePath: string, fps: number): number {
   const byteRate = buf.readUInt32LE(28);
   const dataSize = buf.readUInt32LE(40);
   return Math.ceil((dataSize / byteRate) * fps) + 15;
+}
+
+/** Raw audio duration in seconds (no padding). */
+function wavDurationSec(filePath: string): number {
+  const buf = readFileSync(filePath);
+  const byteRate = buf.readUInt32LE(28);
+  const dataSize = buf.readUInt32LE(40);
+  return dataSize / byteRate;
 }
 
 function createWavHeader(dataSize: number): Buffer {
@@ -62,6 +92,16 @@ function createWavHeader(dataSize: number): Buffer {
   header.write("data", 36);
   header.writeUInt32LE(dataSize, 40);
   return header;
+}
+
+function getVoice(characterId: string): string {
+  const char = voiceConfig.characters[characterId];
+  if (!char) throw new Error(`Unknown character "${characterId}". Available: ${Object.keys(voiceConfig.characters).join(", ")}`);
+
+  const engine = process.platform === "darwin" ? "mlx_tts" : "gemini";
+  const voice = char.voices[engine];
+  if (!voice) throw new Error(`No voice defined for character "${characterId}" with engine "${engine}"`);
+  return voice;
 }
 
 function generateViaMlxTts(text: string, outputPath: string, voice: string): void {
@@ -143,7 +183,7 @@ function concatenateWavs(segmentPaths: string[], outputPath: string): void {
 
   const pcmChunks: Buffer[] = [];
   let totalDataSize = 0;
-  const sampleRate = 24000;
+  const sampleRate = SAMPLE_RATE;
 
   for (const p of segmentPaths) {
     const buf = readFileSync(p);
@@ -190,13 +230,13 @@ async function main() {
   }
 
   const narrationModule = await import(narrationPath);
-  const { narrations, VOICE_MAP, VOICE_DESCRIPTION, NARRATOR_LANG = "zh-CN" } = narrationModule;
-  type VoiceCharacter = keyof typeof VOICE_MAP;
+  const { narrations, NARRATOR_LANG = voiceConfig.language } = narrationModule;
 
   mkdirSync(AUDIO_DIR, { recursive: true });
   mkdirSync(SEGMENTS_DIR, { recursive: true });
 
   const useMlxTts = process.platform === "darwin";
+  const engine = useMlxTts ? "mlx_tts" : "gemini";
 
   const filtered = sceneFilter
     ? narrations.filter((n: { scene: string }) => n.scene === sceneFilter)
@@ -207,20 +247,34 @@ async function main() {
     process.exit(1);
   }
 
-  console.log(`Backend: ${useMlxTts ? "mlx_tts (multi-voice)" : "Gemini TTS (multi-voice)"}`);
+  // Collect all character IDs used in this episode
+  const usedChars = new Set<string>();
+  for (const n of filtered) {
+    for (const seg of n.segments) {
+      usedChars.add(seg.character);
+    }
+  }
+
+  console.log(`Backend: ${engine} (model: ${voiceConfig.engines[engine]?.model ?? voiceConfig.defaultTtsModel})`);
   console.log(`Narrator lang: ${NARRATOR_LANG}`);
-  console.log(`Voice mapping:`);
-  for (const [char, voice] of Object.entries(VOICE_MAP)) {
-    const desc = VOICE_DESCRIPTION[char as VoiceCharacter];
-    console.log(`  ${char} → ${voice} (${desc.gender}, ${desc.accent})`);
+  console.log(`TTS model: ${voiceConfig.defaultTtsModel}`);
+  console.log(`Voice mapping (from voice-config.json):`);
+  for (const charId of usedChars) {
+    const char = voiceConfig.characters[charId];
+    if (!char) {
+      console.error(`  WARNING: character "${charId}" not found in voice-config.json`);
+      continue;
+    }
+    const voice = char.voices[engine] || "???";
+    console.log(`  ${charId} (${char.name}) → ${voice} (${char.gender}, ${char.description})`);
   }
   console.log(`\nGenerating TTS for ${filtered.length} scene(s)...\n`);
 
   let generated = 0;
   let skipped = 0;
 
-  // Per-segment durations for audio-text sync
-  const sceneSegmentDurations: Array<{ scene: string; file: string; segmentDurations: number[] }> = [];
+  // Per-scene raw segment durations (seconds) for dialog sync
+  const sceneSegmentDurations: Record<string, number[]> = {};
 
   for (let i = 0; i < filtered.length; i++) {
     const { scene, file, segments } = filtered[i];
@@ -236,11 +290,11 @@ async function main() {
 
     try {
       const segmentPaths: string[] = [];
-      const segmentDurations: number[] = [];
+      const segDurations: number[] = [];
 
       for (let s = 0; s < segments.length; s++) {
         const seg = segments[s];
-        const voice = VOICE_MAP[seg.character as VoiceCharacter];
+        const voice = getVoice(seg.character);
         const segPath = join(SEGMENTS_DIR, `${scene}-${s}-${voice}.wav`);
 
         console.log(`  segment ${s + 1}/${segments.length}: ${seg.character} (${voice}) — "${seg.text.slice(0, 30)}..."`);
@@ -253,9 +307,7 @@ async function main() {
         }
 
         segmentPaths.push(segPath);
-
-        // Record segment duration in frames (before concatenateWavs deletes the file)
-        segmentDurations.push(wavDurationFrames(segPath, 30));
+        segDurations.push(wavDurationSec(segPath));
 
         if (useMlxTts && s < segments.length - 1) {
           await new Promise((r) => setTimeout(r, 1500));
@@ -266,36 +318,41 @@ async function main() {
       }
 
       concatenateWavs(segmentPaths, outputPath);
+      sceneSegmentDurations[scene] = segDurations;
       console.log(`  → ${file} (${segments.length} segments concatenated)`);
       generated++;
-
-      // Record per-segment durations (in frames at 30fps)
-      sceneSegmentDurations.push({ scene, file, segmentDurations });
     } catch (err) {
       console.error(`  FAILED: ${err}`);
       process.exit(1);
     }
   }
 
-  const durationsJson = narrations.map(({ file }: { file: string }) => {
+  const durationsJson = filtered.map(({ file }: { file: string }) => {
     const p = join(AUDIO_DIR, file);
     return existsSync(p) ? wavDurationFrames(p, 30) : 240;
   });
   writeFileSync(join(AUDIO_DIR, "durations.json"), JSON.stringify(durationsJson, null, 2) + "\n");
 
-  // Write per-segment durations for audio-text sync
+  // Write per-scene raw segment durations (seconds) for dialog sync
   writeFileSync(join(AUDIO_DIR, "segment-durations.json"), JSON.stringify(sceneSegmentDurations, null, 2) + "\n");
 
-  // Write voice manifest
-  const manifest = narrations.map((n: { scene: string; file: string; segments: Array<{ character: VoiceCharacter; text: string }> }) => ({
+  // Write voice manifest with centralized config data
+  const manifest = filtered.map((n: { scene: string; file: string; segments: Array<{ character: string; text: string }> }) => ({
     scene: n.scene,
     file: n.file,
-    segments: n.segments.map(s => ({
-      character: s.character,
-      voice: VOICE_MAP[s.character as VoiceCharacter],
-      voiceDescription: VOICE_DESCRIPTION[s.character as VoiceCharacter],
-      text: s.text,
-    })),
+    segments: n.segments.map(s => {
+      const char = voiceConfig.characters[s.character];
+      return {
+        character: s.character,
+        voice: getVoice(s.character),
+        voiceDescription: char ? {
+          voice: getVoice(s.character),
+          gender: char.gender,
+          accent: char.description,
+        } : { voice: "unknown", gender: "unknown", accent: "unknown" },
+        text: s.text,
+      };
+    }),
   }));
   writeFileSync(join(AUDIO_DIR, "voice-manifest.json"), JSON.stringify(manifest, null, 2) + "\n");
 
@@ -308,6 +365,7 @@ async function main() {
 
   console.log(`\nDone. Generated: ${generated}, Skipped: ${skipped}`);
   console.log(`Audio files:   ${AUDIO_DIR}`);
+  console.log(`Voice config:  ${VOICE_CONFIG_PATH}`);
   console.log(`durations.json written (reload Remotion Studio to pick up new timings)`);
 }
 
