@@ -62,7 +62,7 @@ export const ContentScene3: React.FC = () => {
   return (
     <AbsoluteFill>
       <ScreenShake delay={shakeDelay} intensity={isKneeling ? 20 : 12} duration={25}>
-        <BackgroundLayer image="sect-plaza.png" />
+        <BackgroundLayer image="sect-training.png" />
 
         {/* Scene indicator */}
         <SceneIndicator text="長老駕到" color="#A78BFA" />

@@ -10,7 +10,7 @@
 >
 > **Rule:** Architecture decisions → skill PLAN.md. Code-level tasks → this TODO.md.
 
-## Current State (v0.4.0)
+## Current State (v0.6.0)
 
 See `.claude/skills/bun_graphify/PLAN.md` for full architecture.
 
@@ -35,3 +35,28 @@ See `.claude/skills/bun_graphify/PLAN.md` for full architecture.
 | `src/export/` | `writeGraphJSON()`, `writeGraphHTML()` — export |
 | `src/report.ts` | `writeReport()` — report generation |
 | `src/types.ts` | `GraphNode`, `GraphEdge`, `ExtractionResult` — shared types |
+
+## Phase 23 — AI Cross-Link Discovery 🔲
+
+See `.claude/skills/bun_graphify/PLAN.md` Phase 23 for architecture.
+
+### New Files
+
+| File | Purpose |
+|------|---------|
+| `src/scripts/story-algorithms.ts` | PageRank, Jaccard similarity, character arc score, gag evolution score |
+| `src/scripts/ai-crosslink-generator.ts` | Claude subagent call, JSON parsing, cross-link edge creation |
+
+### Files to Modify
+
+| File | Change |
+|------|--------|
+| `src/scripts/graphify-pipeline.ts` | Add step 4: run story-algorithms + ai-crosslink-generator |
+| `src/scripts/gen-story-html.ts` | Render AI cross-links (dotted lines, colors, PageRank glow) |
+| `src/scripts/graphify-merge.ts` | Include cross_links in merged output schema |
+| `src/types.ts` | Add StoryCrossLink interface |
+
+### Dependencies
+
+- `graphology` + `graphology-pagerank` — PageRank on existing graph structure (already using graphology-communities-louvain)
+- Claude subagent — reuse existing SKILL.md subagent pattern

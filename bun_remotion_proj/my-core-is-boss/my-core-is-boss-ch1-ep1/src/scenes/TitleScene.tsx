@@ -1,6 +1,7 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, Easing } from "remotion";
 import { maShanZheng, notoSansTC } from "../../../assets/characters";
+import { SystemNotification } from "../../../assets/components/SystemOverlay";
 
 export const TitleScene: React.FC = () => {
   const frame = useCurrentFrame();
@@ -54,6 +55,12 @@ export const TitleScene: React.FC = () => {
     easing: Easing.out(Easing.cubic),
   });
 
+  // Ambient pulse glow
+  const glowPulse = interpolate(frame % 120, [0, 60, 120], [0.12, 0.2, 0.12], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+
   return (
     <AbsoluteFill
       style={{
@@ -61,7 +68,7 @@ export const TitleScene: React.FC = () => {
         opacity: fadeOut,
       }}
     >
-      {/* Background particles / glow */}
+      {/* Background glow with pulse */}
       <div style={{
         position: "absolute",
         top: "30%",
@@ -70,7 +77,7 @@ export const TitleScene: React.FC = () => {
         width: 800,
         height: 800,
         borderRadius: "50%",
-        background: "radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%)",
+        background: `radial-gradient(circle, rgba(59, 130, 246, ${glowPulse}) 0%, transparent 70%)`,
         filter: "blur(40px)",
       }} />
 
@@ -81,6 +88,15 @@ export const TitleScene: React.FC = () => {
         background: "radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.9), transparent 70%)",
         opacity: flashOpacity,
       }} />
+
+      {/* System stinger notification */}
+      {frame >= 35 && frame <= 95 && (
+        <SystemNotification
+          text="新集數已解鎖：第一章第一集"
+          type="info"
+          delay={35}
+        />
+      )}
 
       {/* Main title */}
       <div style={{

@@ -54,12 +54,14 @@ export interface RunningGag {
 
 // ─── Episode detection ─────────────────────────────────────────────
 
-const EPISODE_DIR_PATTERN = /^weapon-forger-ch(\d+)-ep(\d+)$/;
+/** Generic pattern: matches any <series>-chN-epM directory */
+const GENERIC_EPISODE_PATTERN = /-ch(\d+)-ep(\d+)$/i;
 
-export function detectEpisodes(seriesDir: string): string[] {
+export function detectEpisodes(seriesDir: string, pattern?: RegExp): string[] {
+  const epPattern = pattern ?? GENERIC_EPISODE_PATTERN;
   const entries = readdirSync(seriesDir, { withFileTypes: true });
   return entries
-    .filter(e => e.isDirectory() && EPISODE_DIR_PATTERN.test(e.name))
+    .filter(e => e.isDirectory() && epPattern.test(e.name))
     .map(e => e.name)
     .sort();
 }

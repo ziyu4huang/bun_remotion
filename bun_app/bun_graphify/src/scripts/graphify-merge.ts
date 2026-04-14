@@ -17,6 +17,8 @@ import { resolve, basename } from "node:path";
 import { existsSync, mkdirSync, writeFileSync, readdirSync, readFileSync } from "node:fs";
 import Graph from "graphology";
 import louvain from "graphology-communities-louvain";
+import { getSeriesConfigOrThrow } from "./series-config";
+import type { SeriesConfig } from "./series-config";
 
 // ─── Types ───
 
@@ -52,9 +54,19 @@ generates cross-episode link edges, outputs merged graph.
 }
 
 const seriesDir = resolve(args[0]);
+
+// P0: Absolute path validation
+if (!seriesDir.startsWith("/")) {
+  console.error(`Error: "${seriesDir}" is not an absolute path. Use absolute paths.`);
+  process.exit(1);
+}
+
+// Load series config
+const config: SeriesConfig = getSeriesConfigOrThrow(seriesDir);
+
 const outDir = resolve(seriesDir, "bun_graphify_out");
 
-console.log(`Series: ${seriesDir}`);
+console.log(`Series: ${config.displayName} (${seriesDir})`);
 
 // ─── Step 1: Discover per-episode graphs ───
 
@@ -109,11 +121,7 @@ interface EpisodeMeta {
 }
 
 const episodeMetas: EpisodeMeta[] = [];
-const charNames: Record<string, string> = {
-  zhoumo: "周墨", examiner: "考官", elder: "長老",
-  luyang: "陸陽", mengjingzhou: "孟景舟", soul: "滄溟子",
-  narrator: "旁白", yunzhi: "雲芝",
-};
+const charNames = config.charNames;
 
 if (existsSync(planPath)) {
   const planContent = readFileSync(planPath, "utf-8");
@@ -152,38 +160,103 @@ interface GagChain {
 
 const gagChains: GagChain[] = [];
 
-if (existsSync(planPath)) {
-  const planContent = readFileSync(planPath, "utf-8");
-  const gagSectionMatch = planContent.match(/(\|\s*梗\s*\|[^\n]+)\n([\s\S]*?)(?=\n\n[^|\n]|\n##|\n$)/);
-  if (gagSectionMatch) {
-    const headerRow = gagSectionMatch[1];
-    const dataSection = gagSectionMatch[2];
-    const headers = headerRow.split("|").map(c => c.trim()).filter(Boolean);
-      const headerEpIds = headers.slice(1).map(h => {
-        const m = h.match(/(?:Ch(\d+)-)?Ep(\d+)/i);
-        if (m) return `ch${m[1] ?? "1"}ep${m[2]}`;
-        return h.toLowerCase();
-      });
+if (config.gagSource === "plan_md") {
+  // Parse gag table from PLAN.md (episode-column format)
+  if (existsSync(planPath)) {
+    const planContent = readFileSync(planPath, "utf-8");
+    const gagSectionMatch = planContent.match(/(\|\s*梗\s*\|[^\n]+)\n([\s\S]*?)(?=\n\n[^|\n]|\n##|\n$)/);
+    if (gagSectionMatch) {
+      const headerRow = gagSectionMatch[1];
+      const dataSection = gagSectionMatch[2];
+      const headers = headerRow.split("|").map(c => c.trim()).filter(Boolean);
+        const headerEpIds = headers.slice(1).map(h => {
+          const m = h.match(/(?:Ch(\d+)-)?Ep(\d+)/i);
+          if (m) return `ch${m[1] ?? "1"}ep${m[2]}`;
+          return h.toLowerCase();
+        });
 
-      const gagDataRows = dataSection.split("\n").filter(l => l.startsWith("|") && !l.includes("---"));
+        const gagDataRows = dataSection.split("\n").filter(l => l.startsWith("|") && !l.includes("---"));
 
-      for (const row of gagDataRows) {
-        const cells = row.split("|").map(c => c.trim()).filter(Boolean);
-        if (cells.length < 2) continue;
+        for (const row of gagDataRows) {
+          const cells = row.split("|").map(c => c.trim()).filter(Boolean);
+          if (cells.length < 2) continue;
 
-        const gagType = cells[0];
-        const chain: GagChain = { gagType, manifestations: [] };
+          const gagType = cells[0];
+          const chain: GagChain = { gagType, manifestations: [] };
 
-        for (let j = 1; j < cells.length && j < headerEpIds.length + 1; j++) {
-          const text = cells[j];
-          if (text && text !== "TBD" && text !== "—") {
-            chain.manifestations.push({ epId: headerEpIds[j - 1], text });
+          for (let j = 1; j < cells.length && j < headerEpIds.length + 1; j++) {
+            const text = cells[j];
+            if (text && text !== "TBD" && text !== "—") {
+              chain.manifestations.push({ epId: headerEpIds[j - 1], text });
+            }
+          }
+          if (chain.manifestations.length >= 2) {
+            gagChains.push(chain);
           }
         }
-        if (chain.manifestations.length >= 2) {
-          gagChains.push(chain);
+    }
+  }
+} else if (config.gagSource === "plot_lines_md" && config.gagFilePath) {
+  // Parse gag table from plot-lines.md (chapter-column format)
+  const plotLinesPath = resolve(seriesDir, config.gagFilePath);
+  if (existsSync(plotLinesPath)) {
+    try {
+      const plotLinesContent = readFileSync(plotLinesPath, "utf-8");
+
+      // Find gag table under ## 招牌梗追蹤
+      const gagSectionMatch = plotLinesContent.match(
+        /## 招牌梗追蹤\s*\n\s*\n((?:\|.*\n)+)/
+      );
+      if (gagSectionMatch) {
+        const tableLines = gagSectionMatch[1].split("\n").filter(
+          l => l.startsWith("|") && !l.includes("---")
+        );
+
+        if (tableLines.length >= 1) {
+          // Parse header to find chapter columns
+          const headerCells = tableLines[0].split("|").map(c => c.trim()).filter(Boolean);
+
+          // Map chapter column index → list of episode IDs in that chapter
+          const chapterEpisodes: Map<number, string[]> = new Map();
+          for (const entry of episodeEntries) {
+            if (!chapterEpisodes.has(entry.ch)) chapterEpisodes.set(entry.ch, []);
+            chapterEpisodes.get(entry.ch)!.push(entry.epId);
+          }
+
+          for (let r = 1; r < tableLines.length; r++) {
+            const cells = tableLines[r].split("|").map(c => c.trim()).filter(Boolean);
+            if (cells.length < 2) continue;
+
+            const gagType = cells[0];
+            const chain: GagChain = { gagType, manifestations: [] };
+
+            // Collect manifestations from all chapter columns
+            for (let c = 1; c < cells.length && c < headerCells.length; c++) {
+              const text = cells[c];
+              if (!text || text === "TBD" || text === "—") continue;
+
+              const chMatch = headerCells[c].match(/Ch(\d+)/);
+              if (!chMatch) continue;
+              const chNum = parseInt(chMatch[1]);
+
+              // Map chapter to episode IDs that exist in our data
+              const epIds = chapterEpisodes.get(chNum);
+              if (epIds) {
+                for (const epId of epIds) {
+                  chain.manifestations.push({ epId, text });
+                }
+              }
+            }
+
+            if (chain.manifestations.length >= 2) {
+              gagChains.push(chain);
+            }
+          }
         }
       }
+    } catch (e) {
+      console.warn(`Warning: Could not parse plot-lines.md: ${e}`);
+    }
   }
 }
 

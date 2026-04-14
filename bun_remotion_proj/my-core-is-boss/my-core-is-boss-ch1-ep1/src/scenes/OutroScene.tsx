@@ -1,6 +1,7 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, Easing } from "remotion";
 import { maShanZheng, notoSansTC } from "../../../assets/characters";
+import { QuestBadge, UnlockingTeaser } from "../../../assets/components/QuestBadge";
 
 export const OutroScene: React.FC = () => {
   const frame = useCurrentFrame();
@@ -19,25 +20,25 @@ export const OutroScene: React.FC = () => {
   });
 
   // Summary text
-  const summaryOpacity = interpolate(frame, [15, 35], [0, 1], {
+  const summaryOpacity = interpolate(frame, [50, 70], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
 
   // Teaser section
-  const teaserOpacity = interpolate(frame, [90, 110], [0, 1], {
+  const teaserOpacity = interpolate(frame, [120, 140], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
 
-  const teaserY = interpolate(frame, [90, 115], [20, 0], {
+  const teaserY = interpolate(frame, [120, 145], [20, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.out(Easing.cubic),
   });
 
   // Decorative line
-  const dividerWidth = interpolate(frame, [80, 110], [0, 400], {
+  const dividerWidth = interpolate(frame, [110, 140], [0, 400], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.out(Easing.cubic),
@@ -63,10 +64,18 @@ export const OutroScene: React.FC = () => {
         filter: "blur(40px)",
       }} />
 
+      {/* Quest Complete badge */}
+      <QuestBadge
+        title="首次誤會"
+        subtitle="收穫腦補狂魔粉絲 + 嚇到腿軟的長老"
+        color="#F59E0B"
+        delay={10}
+      />
+
       {/* Summary */}
       <div style={{
         position: "absolute",
-        top: "20%",
+        top: "38%",
         left: "50%",
         transform: "translateX(-50%)",
         opacity: summaryOpacity,
@@ -74,24 +83,26 @@ export const OutroScene: React.FC = () => {
         fontFamily: notoSansTC,
       }}>
         <div style={{
-          fontSize: 36,
+          fontSize: 32,
           color: "#94A3B8",
-          lineHeight: 2,
-          maxWidth: 1200,
+          lineHeight: 2.2,
+          maxWidth: 1100,
           letterSpacing: "0.05em",
         }}>
           就這樣，林逸在天道宗的第一天，
           <br />
           就收穫了一個腦補狂魔粉絲，和一個嚇到腿軟的長老。
           <br />
-          而他本人，還在糾結系統 UI 的字體大小。
+          <span style={{ color: "#64748B", fontSize: 24 }}>
+            而他本人，還在糾結系統 UI 的字體大小。
+          </span>
         </div>
       </div>
 
       {/* Divider */}
       <div style={{
         position: "absolute",
-        top: "55%",
+        top: "58%",
         left: "50%",
         transform: "translateX(-50%)",
         width: dividerWidth,
@@ -102,7 +113,7 @@ export const OutroScene: React.FC = () => {
       {/* Teaser */}
       <div style={{
         position: "absolute",
-        top: "60%",
+        top: "62%",
         left: "50%",
         transform: `translateX(-50%) translateY(${teaserY}px)`,
         opacity: teaserOpacity,
@@ -138,6 +149,13 @@ export const OutroScene: React.FC = () => {
           宗門發布「清剿妖獸」任務，林逸發現了一個驚人的秘密……
         </div>
       </div>
+
+      {/* System unlocking teaser */}
+      <UnlockingTeaser
+        text="Ch1-Ep2 解鎖進度：62%"
+        color="#38BDF8"
+        delay={130}
+      />
 
       {/* Series title at bottom */}
       <div style={{

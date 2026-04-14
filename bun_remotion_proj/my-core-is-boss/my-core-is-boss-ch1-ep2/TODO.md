@@ -31,5 +31,6 @@ Chapter: 第一章：系統覺醒（第 2/3 集）
 
 ## Remaining
 
-- [ ] Verify in Remotion Studio
-- [ ] Render final MP4
+- [x] Verify in Remotion Studio
+- [x] Render final MP4 — `out/my-core-is-boss-ch1-ep2.mp4` (155.9 MB, 6715 frames, 3:43)
+- [x] Episode-polish improvements applied: effect pacing ≤50%, background variety, TitleScene system stinger, OutroScene QuestBadge

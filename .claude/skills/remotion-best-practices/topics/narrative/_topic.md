@@ -24,6 +24,16 @@ For full code examples, read `dialog-driven.md`.
 
 For all effect types and component code, read `comic-effects.md`.
 
+## episode-polish — Post-scaffold quality checklist
+
+- **Effect pacing:** ≤ 50% of lines per scene should have effects — overuse dilutes punchlines
+- **Background variety:** No two adjacent content scenes share the same background image
+- **TitleScene hook:** Flash + scale-in + system stinger notification (frame 35–95)
+- **OutroScene UI:** `QuestBadge` (trophy + achievement box) + `UnlockingTeaser` (progress bar)
+- Components: `assets/components/QuestBadge.tsx` — `QuestBadge` and `UnlockingTeaser`
+
+For full checklist and code examples, read `episode-polish.md`.
+
 ## environmental-effects — Scene theming
 
 - Each scene: unique background + one accent color + ambient glow (radial-gradient, opacity 0.1-0.15)

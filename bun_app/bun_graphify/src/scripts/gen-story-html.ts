@@ -289,6 +289,8 @@ const html = `<!DOCTYPE html>
     <div id="stats">${isMerged ? `${raw.episode_count || '?'} episodes · ` : ''}${vizNodes.length} nodes · ${vizEdges.length} edges${isMerged ? ` · ${linkEdgesData.length} link edges` : ''} · ${Object.keys(communities).length} communities</div>
   </div>
   <script>
+function escapeHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
 const IS_MERGED = ${isMerged ? 'true' : 'false'};
 const RAW_NODES = ${JSON.stringify(vizNodes)};
 const RAW_EDGES = ${JSON.stringify(vizEdges)};
@@ -314,7 +316,7 @@ const nodesDS = new vis.DataSet(RAW_NODES.map(n => {
     color: { background: c, border: c, highlight: { background: '#fff', border: c } },
     size: n.size,
     font: { size: n.font_size, color: '#fff', face: 'system-ui, sans-serif', strokeWidth: 2, strokeColor: '#0f0f1a' },
-    title: n.label + ' [' + n.file_type + ']',
+    title: escapeHtml(n.label) + ' [' + n.file_type + ']',
     _type: n.file_type,
     _episode: n.episode,
     _properties: n.properties || {},
@@ -388,7 +390,7 @@ document.getElementById('search').addEventListener('input', (e) => {
     const d = document.createElement('div');
     d.className = 'search-item';
     const c = nodeColor(n);
-    d.innerHTML = '<span class="search-dot" style="background:' + c + '"></span>' + n.label;
+    d.innerHTML = '<span class="search-dot" style="background:' + c + '"></span>' + escapeHtml(n.label);
     d.onclick = () => { network.focus(n.id, { scale: 1.5, animation: true }); network.selectNodes([n.id]); };
     sr.appendChild(d);
   });
@@ -404,7 +406,7 @@ network.on('click', (params) => {
 
   const neighbors = network.getConnectedNodes(nid).map(id => RAW_NODES.find(x => x.id === id)).filter(Boolean);
 
-  let h = '<div class="label">' + n.label + '</div>';
+  let h = '<div class="label">' + escapeHtml(n.label) + '</div>';
   const tc = TYPE_COLORS[n.file_type] || '#BAB0AC';
   h += '<div class="type-badge" style="background:' + tc + '33;color:' + tc + '">' + n.file_type.replace(/_/g, ' ') + '</div>';
   if (n.episode) {
@@ -416,16 +418,16 @@ network.on('click', (params) => {
   for (const [k, v] of Object.entries(props)) {
     if (k === 'character_id') continue;
     if (typeof v === 'string' && v.length > 200) {
-      h += '<div class="meta"><b>' + k + ':</b> ' + v.slice(0, 200) + '…</div>';
+      h += '<div class="meta"><b>' + escapeHtml(k) + ':</b> ' + escapeHtml(v.slice(0, 200)) + '…</div>';
     } else {
-      h += '<div class="meta"><b>' + k + ':</b> ' + v + '</div>';
+      h += '<div class="meta"><b>' + escapeHtml(k) + ':</b> ' + escapeHtml(v) + '</div>';
     }
   }
 
   h += '<div class="neighbors" style="margin-top:8px">';
   neighbors.slice(0, 12).forEach(nb => {
     const nc = nodeColor(nb);
-    h += '<span class="neighbor" style="border-left:2px solid ' + nc + '" onclick="network.focus(\\'' + nb.id + '\\',{scale:1.5,animation:true})">' + nb.label + '</span>';
+    h += '<span class="neighbor" style="border-left:2px solid ' + nc + '" onclick="network.focus(\\'' + escapeHtml(nb.id) + '\\',{scale:1.5,animation:true})">' + escapeHtml(nb.label) + '</span>';
   });
   if (neighbors.length > 12) h += '<span class="neighbor">+' + (neighbors.length - 12) + '</span>';
   h += '</div>';

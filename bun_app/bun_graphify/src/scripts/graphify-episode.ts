@@ -22,6 +22,8 @@ import { detectMultiple } from "../detect";
 import { extractAST } from "../extract/ast";
 import { buildFromExtraction } from "../build";
 import { parseNarration } from "../extract/narrative";
+import { getSeriesConfigOrThrow } from "./series-config";
+import type { SeriesConfig } from "./series-config";
 import type { ExtractionResult, GraphNode, GraphEdge, Confidence } from "../types";
 
 // ─── Args ───
@@ -46,17 +48,29 @@ const seriesDir = seriesDirIdx !== -1 && args[seriesDirIdx + 1]
   ? resolve(args[seriesDirIdx + 1])
   : resolve(episodeDir, "..");
 
+// P0: Absolute path validation
+for (const dir of [episodeDir, seriesDir]) {
+  if (!dir.startsWith("/")) {
+    console.error(`Error: "${dir}" is not an absolute path. All paths must be absolute.`);
+    process.exit(1);
+  }
+}
+
 const outDir = resolve(episodeDir, "bun_graphify_out");
 
 // Extract episode ID from directory name
 const epIdMatch = basename(episodeDir).match(/ch(\d+)-ep(\d+)/i);
 if (!epIdMatch) {
   console.error(`Cannot extract episode ID from: ${basename(episodeDir)}`);
-  console.error(`Expected format: weapon-forger-chN-epM`);
+  console.error(`Expected format: <series>-chN-epM`);
   process.exit(1);
 }
 const EP_ID = `ch${epIdMatch[1]}ep${epIdMatch[2]}`;
-console.log(`Episode: ${EP_ID}`);
+
+// Load series config (auto-detected from directory name)
+const config: SeriesConfig = getSeriesConfigOrThrow(seriesDir);
+
+console.log(`Episode: ${EP_ID} | Series: ${config.displayName}`);
 console.log(`Episode dir: ${episodeDir}`);
 console.log(`Series dir: ${seriesDir}`);
 
@@ -129,19 +143,8 @@ for (const scene of parsed.scenes) {
 
 // ─── Step 3: Extract character instances ───
 
-const CHAR_NAMES: Record<string, string> = {
-  zhoumo: "周墨",
-  examiner: "考官",
-  elder: "長老",
-  luyang: "陸陽",
-  mengjingzhou: "孟景舟",
-  soul: "滄溟子",
-  narrator: "旁白",
-  yunzhi: "雲芝",
-};
-
 for (const charId of parsed.characters) {
-  const charName = CHAR_NAMES[charId] ?? charId;
+  const charName = config.charNames[charId] ?? charId;
   const nodeId = `${EP_ID}_char_${charId}`;
 
   // Collect all dialog for this character
@@ -170,40 +173,6 @@ for (const charId of parsed.characters) {
 
 // ─── Step 4: Extract tech terms per character ───
 
-// Known tech term patterns (modern terminology used in xianxia context)
-const TECH_PATTERNS = [
-  /模組化設計/g, /模块化设计/g,
-  /使用者體驗/g, /用户体验/g,
-  /底層邏輯閉環/g, /底层逻辑闭环/g,
-  /指紋識別/g, /指纹识别/g,
-  /自動格式化/g, /自动格式化/g,
-  /自動尋路/g, /自动寻路/g,
-  /核心算法/g,
-  /演算法/g, /算法/g,
-  /情感交互界面/g,
-  /系統升級/g, /系统升级/g,
-  /情緒管理系統/g, /情绪管理系统/g,
-  /語音控制/g, /语音控制/g,
-  /定時休眠/g, /定时休眠/g,
-  /壓力釋放模組/g, /压力释放模块/g,
-  /被動技能/g, /被动技能/g,
-  /離線終端/g, /离线终端/g,
-  /自動防禦系統/g, /自动防御系统/g,
-  /密碼重設/g, /密码重设/g,
-  /記憶區段/g, /记忆区段/g,
-  /人工智慧/g, /人工智能/g,
-  /常規維護/g, /常规维护/g,
-  /認可系統/g, /认可系统/g,
-  /自動評價系統/g, /自动评价系统/g,
-  /評價標準/g, /评价标准/g,
-  /資訊系統/g, /信息系统/g,
-  /雷射切割/g, /激光切割/g,
-  /冗餘設計/g, /冗余设计/g,
-  /備份系統/g, /备份系统/g,
-  /自動防禦協議/g, /自动防御协议/g,
-  /演算法思維/g, /算法思维/g,
-];
-
 // Character → tech terms mapping
 const charTechTerms: Record<string, Set<string>> = {};
 for (const charId of parsed.characters) {
@@ -211,7 +180,7 @@ for (const charId of parsed.characters) {
   for (const scene of parsed.scenes) {
     for (const line of scene.lines) {
       if (line.character === charId) {
-        for (const pattern of TECH_PATTERNS) {
+        for (const pattern of config.techPatterns) {
           const matches = line.text.matchAll(pattern);
           for (const m of matches) {
             charTechTerms[charId].add(m[0]);
@@ -265,96 +234,124 @@ for (const scene of parsed.scenes) {
   }
 }
 
-// ─── Step 6: Match running gags from PLAN.md ───
+// ─── Step 6: Match running gags ───
 
-const planPath = resolve(seriesDir, "PLAN.md");
-if (existsSync(planPath)) {
-  try {
-    const planContent = readFileSync(planPath, "utf-8");
+if (config.gagSource === "plan_md") {
+  // Parse gag table from PLAN.md (weapon-forger style: episode-column table)
+  const planPath = resolve(seriesDir, "PLAN.md");
+  if (existsSync(planPath)) {
+    try {
+      const planContent = readFileSync(planPath, "utf-8");
 
-    // Extract gag table (include header row in capture for column parsing)
-    const gagTableMatch = planContent.match(/(\|\s*梗\s*\|[^\n]+)\n([\s\S]*?)(?=\n\n[^|\n]|\n##|\n$)/);
-    if (gagTableMatch) {
-      const headerRow = gagTableMatch[1]; // | 梗 | Ep1 | Ep2 | ...
-      const dataSection = gagTableMatch[2];
+      // Extract gag table (include header row in capture for column parsing)
+      const gagTableMatch = planContent.match(/(\|\s*梗\s*\|[^\n]+)\n([\s\S]*?)(?=\n\n[^|\n]|\n##|\n$)/);
+      if (gagTableMatch) {
+        const headerRow = gagTableMatch[1]; // | 梗 | Ep1 | Ep2 | ...
+        const dataSection = gagTableMatch[2];
 
-      const headers = headerRow.split("|").map(c => c.trim()).filter(Boolean);
-      const headerEpIds = headers.slice(1).map(h => {
-        const m = h.match(/(?:Ch(\d+)-)?Ep(\d+)/i);
-        if (m) return `ch${m[1] ?? "1"}ep${m[2]}`;
-        const m2 = h.match(/Ch(\d+)-Ep(\d+)/i);
-        if (m2) return `ch${m2[1]}ep${m2[2]}`;
-        return h.toLowerCase();
-      });
+        const headers = headerRow.split("|").map(c => c.trim()).filter(Boolean);
+        const headerEpIds = headers.slice(1).map(h => {
+          const m = h.match(/(?:Ch(\d+)-)?Ep(\d+)/i);
+          if (m) return `ch${m[1] ?? "1"}ep${m[2]}`;
+          const m2 = h.match(/Ch(\d+)-Ep(\d+)/i);
+          if (m2) return `ch${m2[1]}ep${m2[2]}`;
+          return h.toLowerCase();
+        });
 
-      // Data rows (filter out separator)
-      const dataRows = dataSection.split("\n").filter(l => l.startsWith("|") && !l.includes("---"));
+        // Data rows (filter out separator)
+        const dataRows = dataSection.split("\n").filter(l => l.startsWith("|") && !l.includes("---"));
 
-      for (const row of dataRows) {
-        const cells = row.split("|").map(c => c.trim()).filter(Boolean);
-        if (cells.length < 2) continue;
+        for (const row of dataRows) {
+          const cells = row.split("|").map(c => c.trim()).filter(Boolean);
+          if (cells.length < 2) continue;
 
-        const gagName = cells[0];
-        if (gagName.includes("---")) continue;
+          const gagName = cells[0];
+          if (gagName.includes("---")) continue;
 
-        // Find manifestation for THIS episode
-        for (let j = 1; j < cells.length && j < headerEpIds.length + 1; j++) {
-          const manifestation = cells[j];
-          const colEpId = headerEpIds[j - 1];
+          // Find manifestation for THIS episode
+          for (let j = 1; j < cells.length && j < headerEpIds.length + 1; j++) {
+            const manifestation = cells[j];
+            const colEpId = headerEpIds[j - 1];
 
-          if (colEpId === EP_ID && manifestation && manifestation !== "TBD" && manifestation !== "—") {
-            const gagId = `${EP_ID}_gag_${gagName.replace(/\s+/g, "_")}`;
-            addNode(gagId, `${gagName}：${manifestation}`, "gag_manifestation", {
-              gag_type: gagName,
-              episode: EP_ID,
-            });
-            addEdge(gagId, `${EP_ID}_plot`, "appears_in");
+            if (colEpId === EP_ID && manifestation && manifestation !== "TBD" && manifestation !== "—") {
+              const gagId = `${EP_ID}_gag_${gagName.replace(/\s+/g, "_")}`;
+              addNode(gagId, `${gagName}：${manifestation}`, "gag_manifestation", {
+                gag_type: gagName,
+                episode: EP_ID,
+              });
+              addEdge(gagId, `${EP_ID}_plot`, "appears_in");
+            }
           }
         }
       }
+    } catch (e) {
+      console.warn(`Warning: Could not parse PLAN.md gag table: ${e}`);
     }
-  } catch (e) {
-    console.warn(`Warning: Could not parse PLAN.md: ${e}`);
+  }
+} else if (config.gagSource === "plot_lines_md" && config.gagFilePath) {
+  // Parse gag table from plot-lines.md (my-core-is-boss style: chapter-column table)
+  const plotLinesPath = resolve(seriesDir, config.gagFilePath);
+  if (existsSync(plotLinesPath)) {
+    try {
+      const plotLinesContent = readFileSync(plotLinesPath, "utf-8");
+
+      // Extract chapter number from EP_ID (ch1ep2 → chapter 1)
+      const chapterNum = epIdMatch![1];
+
+      // Find gag table under ## 招牌梗追蹤
+      const gagSectionMatch = plotLinesContent.match(
+        /## 招牌梗追蹤\s*\n\s*\n((?:\|.*\n)+)/
+      );
+      if (gagSectionMatch) {
+        const tableLines = gagSectionMatch[1].split("\n").filter(
+          l => l.startsWith("|") && !l.includes("---")
+        );
+
+        if (tableLines.length >= 1) {
+          // Parse header to find chapter column index
+          const headerCells = tableLines[0].split("|").map(c => c.trim()).filter(Boolean);
+          const gagColIdx = 0; // first column is gag name
+          let chapterColIdx = -1;
+
+          for (let i = 1; i < headerCells.length; i++) {
+            if (headerCells[i] === `Ch${chapterNum}`) {
+              chapterColIdx = i;
+              break;
+            }
+          }
+
+          if (chapterColIdx >= 0) {
+            // Parse data rows
+            for (let r = 1; r < tableLines.length; r++) {
+              const cells = tableLines[r].split("|").map(c => c.trim()).filter(Boolean);
+              if (cells.length < 2) continue;
+
+              const gagName = cells[0];
+              if (gagName.includes("---")) continue;
+
+              const manifestation = cells[chapterColIdx];
+              if (manifestation && manifestation !== "TBD" && manifestation !== "—") {
+                const gagId = `${EP_ID}_gag_${gagName.replace(/\s+/g, "_")}`;
+                addNode(gagId, `${gagName}：${manifestation} (${EP_ID})`, "gag_manifestation", {
+                  gag_type: gagName,
+                  episode: EP_ID,
+                  chapter: `Ch${chapterNum}`,
+                });
+                addEdge(gagId, `${EP_ID}_plot`, "appears_in");
+              }
+            }
+          }
+        }
+      }
+    } catch (e) {
+      console.warn(`Warning: Could not parse plot-lines.md gag table: ${e}`);
+    }
   }
 }
 
 // ─── Step 7: Extract character speech traits (heuristic) ───
 
-// Known trait patterns per character
-const TRAIT_PATTERNS: Record<string, { pattern: RegExp; trait: string }[]> = {
-  zhoumo: [
-    { pattern: /模組化|模块化|設計|设计|使用者|用户|體驗|体验|邏輯|逻辑|閉環|闭环/, trait: "科技工程術語" },
-    { pattern: /忘加|忘記加|忘记加|沒加|没加/, trait: "忘加按鈕/功能" },
-    { pattern: /效率|演算法|算法|模組|模块|系統|系统/, trait: "工程師思維" },
-    { pattern: /技術上來說|技术上来说|準確地說|准确地说|從.*角度/, trait: "用邏輯包裝荒謬" },
-    { pattern: /升級|優化|优化|維護|维护|修復|修复/, trait: "萬物皆可修" },
-  ],
-  examiner: [
-    { pattern: /你知不知道|還敢|管.*叫|破.*收/, trait: "崩潰吐槽" },
-    { pattern: /入宗|考試|考试|通過|通过|不合格/, trait: "權威考官" },
-  ],
-  elder: [
-    { pattern: /有意思|創新|创新|不錯|不错/, trait: "欣賞創新" },
-    { pattern: /警告|不許|不许|小心/, trait: "毒舌警告" },
-    { pattern: /恰恰|正是|需要/, trait: "認可但擔憂" },
-  ],
-  luyang: [
-    { pattern: /投降|認輸|认输|別打了|對不起/, trait: "投降反射" },
-    { pattern: /投降表|投降劍法/, trait: "隨時備好投降表" },
-    { pattern: /好像|似乎|比喻/, trait: "天真神比喻" },
-  ],
-  mengjingzhou: [
-    { pattern: /論文|论文|研究|數據|数据|統計|统计/, trait: "研究狂" },
-    { pattern: /單身|女朋友|絕緣/, trait: "單身光環" },
-    { pattern: /記錄|记录|採集|采集|第.*篇/, trait: "一切皆為數據" },
-  ],
-  soul: [
-    { pattern: /吾乃|上古|三千/, trait: "上古大能口吻" },
-    { pattern: /忘記|忘加|忘/, trait: "家族遺傳忘性" },
-  ],
-};
-
-for (const [charId, patterns] of Object.entries(TRAIT_PATTERNS)) {
+for (const [charId, patterns] of Object.entries(config.traitPatterns)) {
   const charNodeId = `${EP_ID}_char_${charId}`;
   if (!nodes.find(n => n.id === charNodeId)) continue; // Character not in this episode
 
@@ -365,7 +362,7 @@ for (const [charId, patterns] of Object.entries(TRAIT_PATTERNS)) {
       const traitId = `${EP_ID}_trait_${charId}_${trait.replace(/\s+/g, "_")}`;
       // Only add if not duplicate
       if (!nodes.find(n => n.id === traitId)) {
-        addNode(traitId, `${CHAR_NAMES[charId] ?? charId}: ${trait}`, "character_trait", {
+        addNode(traitId, `${config.charNames[charId] ?? charId}: ${trait}`, "character_trait", {
           character_id: charId,
         });
         addEdge(traitId, charNodeId, "character_speaks_like");

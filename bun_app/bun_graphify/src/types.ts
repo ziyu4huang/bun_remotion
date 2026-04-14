@@ -76,3 +76,21 @@ export interface CacheEntry {
   edges: GraphEdge[];
   hyperedges: Hyperedge[];
 }
+
+// ─── Phase 23: AI Cross-Link Discovery ───
+
+export type CrossLinkType =
+  | "character_theme_affinity"
+  | "gag_character_synergy"
+  | "narrative_cluster"
+  | "story_anti_pattern";
+
+export interface StoryCrossLink {
+  from: string;
+  to: string;
+  link_type: CrossLinkType;
+  confidence: number;
+  evidence: string[];
+  generated_by: "ai" | "algorithm";
+  rationale: string;
+}

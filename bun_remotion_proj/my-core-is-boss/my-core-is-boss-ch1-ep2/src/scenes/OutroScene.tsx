@@ -1,6 +1,7 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, Easing } from "remotion";
 import { maShanZheng, notoSansTC } from "../../../assets/characters";
+import { QuestBadge, UnlockingTeaser } from "../../../assets/components/QuestBadge";
 
 export const OutroScene: React.FC = () => {
   const frame = useCurrentFrame();
@@ -19,25 +20,25 @@ export const OutroScene: React.FC = () => {
   });
 
   // Summary text
-  const summaryOpacity = interpolate(frame, [15, 35], [0, 1], {
+  const summaryOpacity = interpolate(frame, [50, 70], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
 
   // Teaser section
-  const teaserOpacity = interpolate(frame, [90, 110], [0, 1], {
+  const teaserOpacity = interpolate(frame, [120, 140], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
 
-  const teaserY = interpolate(frame, [90, 115], [20, 0], {
+  const teaserY = interpolate(frame, [120, 145], [20, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.out(Easing.cubic),
   });
 
   // Decorative line
-  const dividerWidth = interpolate(frame, [80, 110], [0, 400], {
+  const dividerWidth = interpolate(frame, [110, 140], [0, 400], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.out(Easing.cubic),
@@ -63,10 +64,18 @@ export const OutroScene: React.FC = () => {
         filter: "blur(40px)",
       }} />
 
+      {/* Quest Complete badge */}
+      <QuestBadge
+        title="任務跳過"
+        subtitle="三秒通關，以大乘期修為直取天道本源"
+        color="#F59E0B"
+        delay={10}
+      />
+
       {/* Summary */}
       <div style={{
         position: "absolute",
-        top: "20%",
+        top: "38%",
         left: "50%",
         transform: "translateX(-50%)",
         opacity: summaryOpacity,
@@ -74,24 +83,24 @@ export const OutroScene: React.FC = () => {
         fontFamily: notoSansTC,
       }}>
         <div style={{
-          fontSize: 36,
+          fontSize: 32,
           color: "#94A3B8",
-          lineHeight: 2,
-          maxWidth: 1200,
+          lineHeight: 2.2,
+          maxWidth: 1100,
           letterSpacing: "0.05em",
         }}>
-          林逸用系統的「跳過」功能，三秒鐘完成了宗門任務。
-          <br />
-          趙小七把這解讀為「以大乘期修為直取天道本源」。
-          <br />
           而蕭長老聽說此事後，開始暗中記錄林逸的每一句話。
+          <br />
+          <span style={{ color: "#64748B", fontSize: 24 }}>[
+            蕭長老筆記本 +1
+          ]</span>
         </div>
       </div>
 
       {/* Divider */}
       <div style={{
         position: "absolute",
-        top: "55%",
+        top: "58%",
         left: "50%",
         transform: "translateX(-50%)",
         width: dividerWidth,
@@ -102,7 +111,7 @@ export const OutroScene: React.FC = () => {
       {/* Teaser */}
       <div style={{
         position: "absolute",
-        top: "60%",
+        top: "62%",
         left: "50%",
         transform: `translateX(-50%) translateY(${teaserY}px)`,
         opacity: teaserOpacity,
@@ -138,6 +147,13 @@ export const OutroScene: React.FC = () => {
           宗門大比，林逸發現比武台有碰撞體 Bug……
         </div>
       </div>
+
+      {/* System unlocking teaser */}
+      <UnlockingTeaser
+        text="Ch1-Ep3 解鎖進度：87%"
+        color="#38BDF8"
+        delay={130}
+      />
 
       {/* Series title at bottom */}
       <div style={{
