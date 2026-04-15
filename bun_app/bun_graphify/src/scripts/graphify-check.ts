@@ -17,6 +17,7 @@
 
 import { resolve } from "node:path";
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import type { CommunityReport } from "../types";
 
 // ─── Types ───
 
@@ -110,12 +111,24 @@ function getTechTerms(charNodeId: string): string[] {
 
 // ─── Check 1: Character Consistency ───
 
-function checkCharacterConsistency(): CheckResult[] {
+interface CharTraitComparison {
+  charId: string;
+  charLabel: string;
+  episodes: { id: string; label: string; traits: string[] }[];
+  sharedTraits: string[];
+  variantTraits: Map<string, string[]>; // trait → which episodes have it
+}
+
+function checkCharacterConsistency(): { results: CheckResult[]; comparisons: CharTraitComparison[] } {
   const results: CheckResult[] = [];
+  const comparisons: CharTraitComparison[] = [];
 
   const sameCharLinks = linkEdgesByRelation.get("same_character") ?? [];
   if (sameCharLinks.length === 0) {
-    return [{ check: "Character Consistency", status: "PASS", details: "No same_character link edges to check", evidence: [] }];
+    return {
+      results: [{ check: "Character Consistency", status: "PASS", details: "No same_character link edges to check", evidence: [] }],
+      comparisons: [],
+    };
   }
 
   // Group by character: find all episode instances
@@ -136,19 +149,45 @@ function checkCharacterConsistency(): CheckResult[] {
   for (const [charId, instances] of charEpisodes) {
     const traitsPerEpisode = instances.map(id => ({
       id,
+      label: nodesMap.get(id)?.label ?? charId,
       traits: getTraits(id),
     }));
 
-    // Find core traits (present in ≥50% of episodes)
+    // Find core traits (present in ≥75% of episodes, minimum 2 episodes required)
+    // With 2 episodes: threshold=2 → only shared traits are "core"
+    // With 3 episodes: threshold=3
+    // With 4+ episodes: threshold=ceil(N*0.75)
+    const minEpisodes = 2; // Need ≥2 episodes for consistency to be meaningful
     const traitCounts = new Map<string, number>();
     for (const ep of traitsPerEpisode) {
       for (const t of ep.traits) {
         traitCounts.set(t, (traitCounts.get(t) ?? 0) + 1);
       }
     }
-    const coreTraits = [...traitCounts.entries()]
-      .filter(([, count]) => count >= Math.ceil(traitsPerEpisode.length * 0.5))
-      .map(([trait]) => trait);
+    const coreThreshold = Math.ceil(traitsPerEpisode.length * 0.75);
+    const coreTraits = traitsPerEpisode.length >= minEpisodes
+      ? [...traitCounts.entries()]
+          .filter(([, count]) => count >= coreThreshold)
+          .map(([trait]) => trait)
+      : []; // Skip core trait check if only 1 episode instance
+
+    // Build variant map: trait → which episodes have it
+    const variantTraits = new Map<string, string[]>();
+    for (const [trait, count] of traitCounts) {
+      if (count < coreThreshold) {
+        const eps = traitsPerEpisode.filter(ep => ep.traits.includes(trait)).map(ep => ep.id);
+        variantTraits.set(trait, eps);
+      }
+    }
+
+    // Store comparison data
+    comparisons.push({
+      charId,
+      charLabel: (traitsPerEpisode[0]?.label ?? charId).replace(/\s*\(ch\d+ep\d+\)$/, ""),
+      episodes: traitsPerEpisode,
+      sharedTraits: coreTraits,
+      variantTraits,
+    });
 
     // Check each episode for missing core traits
     for (const ep of traitsPerEpisode) {
@@ -174,7 +213,7 @@ function checkCharacterConsistency(): CheckResult[] {
     }
   }
 
-  return results;
+  return { results, comparisons };
 }
 
 // ─── Check 2: Gag Evolution ───
@@ -377,16 +416,157 @@ function checkInteractionDensity(): CheckResult[] {
   return results;
 }
 
+// ─── Check 6: Community Structure Health ───
+
+function checkCommunityStructure(analysis: CommunityReport): CheckResult[] {
+  const results: CheckResult[] = [];
+
+  // Global modularity check
+  if (analysis.globalModularity < 0) {
+    results.push({
+      check: "Community Structure",
+      status: "FAIL",
+      details: `Global modularity is negative (${analysis.globalModularity.toFixed(4)}): partition is worse than random`,
+      evidence: [`globalModularity: ${analysis.globalModularity}`],
+    });
+  } else {
+    results.push({
+      check: "Community Structure",
+      status: "PASS",
+      details: `Global modularity: ${analysis.globalModularity.toFixed(4)} (${analysis.totalCommunities} communities)`,
+      evidence: [],
+    });
+  }
+
+  // Per-community checks
+  for (const ca of analysis.communities) {
+    if (!ca.isConnected) {
+      results.push({
+        check: "Community Connectivity",
+        status: "WARN",
+        details: `Community ${ca.id} ("${ca.label}") is not internally connected after refinement`,
+        evidence: [`community_${ca.id}`, ...ca.dominantTypes],
+      });
+    }
+
+    if (ca.cohesion < 0.1 && ca.size > 3) {
+      results.push({
+        check: "Community Cohesion",
+        status: "WARN",
+        details: `Community ${ca.id} ("${ca.label}") has very low cohesion (${ca.cohesion.toFixed(2)}): members may not belong together`,
+        evidence: [`community_${ca.id}`, `cohesion: ${ca.cohesion}`],
+      });
+    }
+
+    if (ca.modularityContribution < 0) {
+      results.push({
+        check: "Community Modularity",
+        status: "WARN",
+        details: `Community ${ca.id} ("${ca.label}") has negative modularity contribution (${ca.modularityContribution.toFixed(4)}): hurts partition quality`,
+        evidence: [`community_${ca.id}`, `modularityContribution: ${ca.modularityContribution}`],
+      });
+    }
+  }
+
+  return results;
+}
+
+// ─── Check 7: Isolated Node Detection ───
+
+function checkIsolatedNodes(analysis: CommunityReport): CheckResult[] {
+  const results: CheckResult[] = [];
+
+  const isolated = analysis.nodes.filter(n => n.isIsolated);
+  if (isolated.length === 0) {
+    results.push({
+      check: "Isolated Nodes",
+      status: "PASS",
+      details: "No isolated nodes found (all nodes have intra-community edges)",
+      evidence: [],
+    });
+  } else {
+    for (const node of isolated) {
+      const label = nodesMap.get(node.nodeId)?.label ?? node.nodeId;
+      results.push({
+        check: "Isolated Nodes",
+        status: "WARN",
+        details: `${label} (community ${node.communityId}) has no edges to other community members — assignment may be suboptimal`,
+        evidence: [node.nodeId],
+      });
+    }
+  }
+
+  return results;
+}
+
+// ─── Check 8: Cross-Community Coherence ───
+
+function checkCrossCommunityCoherence(analysis: CommunityReport): CheckResult[] {
+  const results: CheckResult[] = [];
+
+  const totalEdges = merged.links.length;
+  const crossEdges = analysis.surprisingConnections.length;
+
+  if (totalEdges === 0) {
+    return [{ check: "Cross-Community Coherence", status: "PASS", details: "No edges to analyze", evidence: [] }];
+  }
+
+  const crossRatio = crossEdges / totalEdges;
+
+  if (crossRatio > 0.4) {
+    results.push({
+      check: "Cross-Community Coherence",
+      status: "FAIL",
+      details: `${crossEdges}/${totalEdges} edges cross community boundaries (${(crossRatio * 100).toFixed(1)}%): partition quality is poor`,
+      evidence: [`crossRatio: ${crossRatio.toFixed(3)}`],
+    });
+  } else if (crossRatio > 0.2) {
+    results.push({
+      check: "Cross-Community Coherence",
+      status: "WARN",
+      details: `${crossEdges}/${totalEdges} edges cross community boundaries (${(crossRatio * 100).toFixed(1)}%): some communities may need merging`,
+      evidence: [`crossRatio: ${crossRatio.toFixed(3)}`],
+    });
+  } else {
+    results.push({
+      check: "Cross-Community Coherence",
+      status: "PASS",
+      details: `${crossEdges}/${totalEdges} edges cross community boundaries (${(crossRatio * 100).toFixed(1)}%): communities are well-separated`,
+      evidence: [],
+    });
+  }
+
+  // Report top surprising connections as informational
+  const topSurprising = analysis.surprisingConnections.slice(0, 5);
+  for (const sc of topSurprising) {
+    results.push({
+      check: "Surprising Connection",
+      status: "PASS",
+      details: `${sc.sourceLabel} (comm ${sc.sourceCommunity}) → ${sc.targetLabel} (comm ${sc.targetCommunity}) [${sc.relation}]`,
+      evidence: [sc.source, sc.target],
+    });
+  }
+
+  return results;
+}
+
 // ─── Run all checks ───
 
 console.log("Running consistency checks...\n");
 
+// Load community analysis (if available from Leiden-inspired clustering)
+const communityAnalysis: CommunityReport | null = merged.community_analysis ?? null;
+
+const charConsistency = checkCharacterConsistency();
 const allChecks: CheckResult[] = [
-  ...checkCharacterConsistency(),
+  ...charConsistency.results,
   ...checkGagEvolution(),
   ...checkTechTermDiversity(),
   ...checkTraitCoverage(),
   ...checkInteractionDensity(),
+  ...(communityAnalysis ? checkCommunityStructure(communityAnalysis) : []),
+  ...(communityAnalysis ? checkIsolatedNodes(communityAnalysis) : []),
+  ...(communityAnalysis ? checkCrossCommunityCoherence(communityAnalysis) : []),
 ];
 
 // ─── Generate report ───
@@ -436,6 +616,88 @@ for (const [group, checks] of checkGroups) {
       report.push(``);
     }
   }
+}
+
+// ─── Trait Comparison Table ───
+
+if (charConsistency.comparisons.length > 0) {
+  report.push(`## Character Trait Comparison`);
+  report.push(``);
+
+  for (const comp of charConsistency.comparisons) {
+    // Skip characters with no detected traits (e.g., narrator)
+    const hasAnyTraits = comp.episodes.some(ep => ep.traits.length > 0);
+    if (!hasAnyTraits) continue;
+
+    report.push(`### ${comp.charLabel} (${comp.charId})`);
+    report.push(``);
+
+    // Build header row from episode IDs
+    const epIds = comp.episodes.map(ep => ep.id.replace(/_char_.*$/, ""));
+    report.push(`| Trait | ${epIds.join(" | ")} | Status |`);
+    report.push(`| ${"--- | ".repeat(epIds.length + 1)}--- |`);
+
+    // Collect all unique traits
+    const allTraits = new Set<string>();
+    for (const ep of comp.episodes) {
+      for (const t of ep.traits) allTraits.add(t);
+    }
+
+    for (const trait of [...allTraits].sort()) {
+      const cols = comp.episodes.map(ep => ep.traits.includes(trait) ? "✓" : "—");
+      const isShared = comp.sharedTraits.includes(trait);
+      const status = isShared ? "**stable**" : "variant";
+      report.push(`| ${trait} | ${cols.join(" | ")} | ${status} |`);
+    }
+
+    report.push(``);
+    report.push(`- **Shared traits (${comp.sharedTraits.length}):** ${comp.sharedTraits.length > 0 ? comp.sharedTraits.join(", ") : "none (all traits are episode-specific)"}`);
+    if (comp.variantTraits.size > 0) {
+      const variants = [...comp.variantTraits.entries()].map(([t, eps]) => `${t} (${eps.join(", ")})`);
+      report.push(`- **Variant traits (${comp.variantTraits.size}):** ${variants.join("; ")}`);
+    }
+    report.push(``);
+  }
+}
+
+// ─── Subagent Enrichment ───
+
+// Build a JSON payload for subagent-based enrichment analysis
+// This is written as a sidecar file that can be consumed by an LLM subagent
+const enrichmentPath = resolve(seriesDir, "bun_graphify_out", "check-enrichment-input.json");
+const enrichmentPayload = {
+  report: {
+    summary: { pass: passCount, warn: warnCount, fail: failCount },
+    checks: allChecks.map(c => ({ check: c.check, status: c.status, details: c.details })),
+  },
+  characterComparisons: charConsistency.comparisons.map(comp => ({
+    character: comp.charLabel,
+    id: comp.charId,
+    sharedTraits: comp.sharedTraits,
+    variantTraits: Object.fromEntries(comp.variantTraits),
+    episodes: comp.episodes.map(ep => ({ id: ep.id, traits: ep.traits })),
+  })),
+  seriesDir,
+  generatedAt: new Date().toISOString(),
+};
+writeFileSync(enrichmentPath, JSON.stringify(enrichmentPayload, null, 2));
+console.log(`Enrichment input: ${enrichmentPath}`);
+
+// Check for existing enrichment section from a previous subagent run
+const enrichmentOutputPath = resolve(seriesDir, "bun_graphify_out", "check-enrichment-output.md");
+if (existsSync(enrichmentOutputPath)) {
+  const enrichmentOutput = readFileSync(enrichmentOutputPath, "utf-8");
+  report.push(`## LLM Analysis`);
+  report.push(``);
+  report.push(enrichmentOutput);
+  report.push(``);
+  console.log(`Enrichment output: ${enrichmentOutputPath}`);
+} else {
+  report.push(`## LLM Analysis`);
+  report.push(``);
+  report.push(`*No LLM enrichment available. To generate, pass \`check-enrichment-input.json\` to a subagent with instructions to analyze warnings and provide explanations.*`);
+  report.push(``);
+  console.log(`No enrichment output found at ${enrichmentOutputPath}`);
 }
 
 writeFileSync(outPath, report.join("\n"));

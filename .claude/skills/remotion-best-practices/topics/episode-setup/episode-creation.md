@@ -147,6 +147,28 @@ Running gags due: 忘加按鈕 (last: ch2-ep2 滄溟子忘加拔劍按鈕), 現�
 
 ---
 
+## Step 1.5: Generate KG Constraints (before writing)
+
+Run the graphify generation prompt script to extract structural constraints from the existing knowledge graph:
+
+```bash
+bun run --cwd bun_app/bun_graphify src/scripts/graphify-gen-prompt.ts <series-dir> --target-ep ch<N>ep<M>
+```
+
+Read the output file `<series-dir>/bun_graphify_out/generation-prompt-<epId>.md` and use it as **mandatory constraints** when writing the story in Step 2. The prompt provides:
+
+1. **角色特質約束** — stable traits to exhibit, new variants to introduce
+2. **科技術語去重** — already-used terms to avoid, suggested new directions
+3. **招牌梗演進** — history + expected next evolution
+4. **Arc 連續性** — previous teaser to resolve, next hook to plant
+5. **互動模式** — required character pairings
+
+**Rule:** Every constraint in the generation prompt MUST be satisfied in the story draft. If a constraint cannot be met, flag it explicitly in the confirm block for user discussion.
+
+> **Note:** If no merged graph exists yet (first episode of a series), skip this step and rely on `assets/story/` files directly.
+
+---
+
 ## Step 2: Write story draft + present confirm block
 
 Write the story and present it for user confirmation using the **stable confirm template** below.
@@ -298,31 +320,191 @@ Before presenting, verify:
 
 ---
 
-## Step 3: User confirms → scaffold episode
+## Step 2.5: Write narration.ts + Episode PLAN.md
 
-Only after user approval, proceed to code generation in this exact order:
+After user approval, create the story artifacts:
 
-1. **Create TODO.md** in episode folder (use template below)
-2. **Write narration.ts** — confirmed dialog becomes the narration script
-3. **Create config files** — package.json, tsconfig.json, index.ts, Root.tsx, main component
-4. **Write scene components** — TitleScene, ContentScenes, OutroScene
-5. **Update PLAN.md** — all relevant sections:
+1. **Create episode directory** — `mkdir -p <series>/<series>-chN-epM/scripts`
+2. **Write narration.ts** — confirmed dialog becomes the narration script (uses series voice mapping)
+3. **Write episode PLAN.md** — story contract (metadata + scene breakdown + running gags + story links). Do NOT include Graphify Quality Gate section yet — that's generated in Step 3.
+
+### Episode PLAN.md Template (before graphify)
+
+The episode PLAN.md is a **story contract** — concise metadata capturing the confirmed story. The Graphify Quality Gate section is appended later by the subagent (Step 3b).
+
+**Status lifecycle:** `draft` (story confirmed, no gate) → `graphified` (gate passed, pending user review) → `approved` (user approved) → `scaffolded` (code done)
+
+```markdown
+# PLAN — <series> Ch[N] Ep[M]：<title>
+
+## Metadata
+
+| Field | Value |
+|-------|-------|
+| Episode ID | ch[N]ep[M] |
+| Directory | `<series>-ch[N]-ep[M>/` |
+| Language | zh-TW |
+| Chapter | 第[N]章：[chapter title]（第[M]/[K]集） |
+| Arc position | setup / escalation / cliffhanger |
+| Status | draft |
+
+## Characters
+
+[character id list — maps to workspace PLAN.md characters table]
+
+## Story Summary
+
+[2-3 sentences zh_TW — corresponds to confirm block]
+
+## Scene Breakdown
+
+| Scene | Characters | Background | Key Beats |
+|-------|-----------|------------|-----------|
+| TitleScene | narrator | — | [hook] |
+| ContentScene1 | [chars] | [bg id] | [1-2 sentences] |
+| ContentScene2 | [chars] | [bg id] | [1-2 sentences] |
+| ContentScene3 | [chars] | [bg id] | [1-2 sentences] |
+| OutroScene | narrator | — | [summary + teaser] |
+
+## Running Gags
+
+| Gag | This Episode | Previous Episode |
+|-----|-------------|-----------------|
+| [gag name] | [manifestation] | [prev manifestation] |
+
+## Story Links
+
+- Continues from: [prev episode title] OutroScene teaser
+- Teases: [next episode title] ([teaser text])
+```
+
+---
+
+## Step 3: Graphify Quality Gate (subagent analysis)
+
+Run graphify scripts for structural extraction, then use a **Claude subagent** to analyze the story and write the quality gate summary directly into PLAN.md.
+
+### 3a: Run graphify scripts
+
+```bash
+# Structural extraction (nodes, edges, communities)
+bun run --cwd bun_app/bun_graphify src/scripts/graphify-episode.ts <episode-dir> --series-dir <series-dir>
+
+# Merge into series graph
+bun run --cwd bun_app/bun_graphify src/scripts/graphify-merge.ts <series-dir>
+
+# Consistency check
+bun run --cwd bun_app/bun_graphify src/scripts/graphify-check.ts <series-dir>
+```
+
+> **Note:** All paths must be absolute. `--cwd bun_app/bun_graphify` sets CWD for the spawned process only.
+
+### 3b: Subagent generates gate summary for PLAN.md
+
+Spawn a Claude subagent with these inputs:
+- The new episode's `scripts/narration.ts` (full dialog)
+- The series workspace `PLAN.md` (characters, arcs, episode guide)
+- The previous episode's `scripts/narration.ts` (for continuity comparison)
+- The graphify `consistency-report.md` (structural check results)
+- The `assets/story/` files (world-building, characters, plot-arcs)
+
+The subagent should:
+1. **Analyze character consistency** — for each character, compare this episode's dialog against their established personality, traits, and speech patterns from previous episodes
+2. **Check running gag evolution** — verify gags evolve (not stagnate) and cite specific dialog lines
+3. **Evaluate story arc continuity** — verify the episode connects to previous episode's teaser and sets up next episode
+4. **Identify improvements** — suggest specific dialog or story improvements if any character feels off-tone or gags feel stale
+5. **Write the Graphify Quality Gate section** directly into the episode PLAN.md — **all descriptive text MUST be in zh_TW**, English only for professional terminology (PASS/WARN/FAIL, nodes, edges, Pipeline, Arc, etc.)
+
+### Graphify Quality Gate section format (written by subagent)
+
+The subagent appends this section to episode PLAN.md. **Language convention: zh_TW as default. English only for professional terminology** (PASS/WARN/FAIL, nodes, edges, Pipeline, Extract, Merge, Check, Arc, cross-episode links, character IDs, scene IDs).
+
+```markdown
+## Graphify 品質閘門
+
+**結果：[通過 (PROCEED) / 需修改 (NEEDS-FIX)]**
+
+### Pipeline 執行紀錄
+
+| 步驟 | 狀態 | 輸出 |
+|------|------|------|
+| Extract（萃取） | 完成/失敗 | `bun_graphify_out/graph.json` — [N] nodes, [N] edges |
+| Merge（合併） | 完成/失敗 | series `bun_graphify_out/merged-graph.json` — [N] nodes, [N] edges, [N] cross-episode links |
+| Check（檢查） | 完成/失敗 | `bun_graphify_out/consistency-report.md` |
+
+### 檢查結果
+
+#### PASS ([N]/[N])
+
+| 檢查項目 | 發現 |
+|----------|------|
+| 角色一致性：[charId] | [zh_TW finding] |
+
+#### WARN ([N]/[N]) — 非阻塞，故事層級分析確認 OK
+
+| 警告 | 原因 | 人工審查 |
+|------|------|---------|
+| [warning] | [why flagged] | [human review] |
+
+### 角色一致性
+
+| 角色 | 已建立特質 | 本集表現 | 狀態 |
+|------|-----------|---------|------|
+| [charId] | [zh_TW traits] | [zh_TW how traits manifest, cite dialog lines] | 一致/自然演進/微小遺漏 |
+
+### 招牌梗演進
+
+| 梗 | 前集 | 本集表現 | 狀態 |
+|----|------|---------|------|
+| [gag] | [prev manifestation] | [this manifestation, cite dialog] | 演進/漸進/停滯 |
+
+### 故事 Arc 連續性
+
+- **承接：** [prev ep teaser] → [this ep opening] — 無縫銜接/有缺口
+- **伏筆：** [this ep teaser] → [next ep plan] — 伏筆強度評估
+- **章節 Arc 位置：** [setup/escalation/cliffhanger] — 契合/不契合
+
+### 修訂評估（如有修訂）
+
+[zh_TW — 修訂改善了哪些方面，每項具體說明]
+
+### 閘門判定
+
+**[通過 (PROCEED) / 需修改 (NEEDS-FIX)]** — [1-2 句 zh_TW 判定理由]
+```
+
+### 3c: Present to user for review
+
+Show the user the complete PLAN.md (story contract + gate summary). The user reviews and decides:
+- **PROCEED** → Step 4 (create TODO.md + scaffold)
+- **NEEDS-FIX** → revise narration.ts, re-run graphify, regenerate gate summary
+
+---
+
+## Step 4: Create TODO.md + Scaffold episode (after gate passes)
+
+Only after the graphify quality gate passes and user approves:
+
+1. **Create TODO.md** — task checklist with Quality Gate already marked `[x]` (see template in [plan-todo-lifecycle.md](plan-todo-lifecycle.md))
+2. **Create config files** — package.json, tsconfig.json, index.ts, Root.tsx, main component
+3. **Write scene components** — TitleScene, ContentScenes, OutroScene
+4. **Update workspace PLAN.md** — all relevant sections:
    - Episode guide table (add new row, update status)
    - Chapter summary line (update episode count: "Ch3 = 2 eps")
    - Story arcs section (add this episode's summary under the correct chapter)
    - Running gags table (add new column with this episode's gag evolution — replace "TBD" with actual content)
    - Commands section (add studio/render/TTS commands)
    - **New characters table** (if this episode introduces a new character — add to Characters table with voice/color/image)
-6. **Update dev.sh** — ALL_APPS list + get_comp_id() case
-7. **Update root package.json** — start/build/generate-tts scripts
-8. **Run sync-images.sh** — copy assets images (if series uses assets pattern). **CRITICAL:** Verify files are actual copies, NOT symlinks. Remotion's static server returns 404 for symlinks. Check with `ls -la public/images/` — no `->` arrows. See [shared-assets-images.md](shared-assets-images.md) for the full pattern and why webpack imports don't work.
-9. **Run bun install** — link workspace
-10. **Generate TTS** — `bun run generate-tts:<alias>`
-11. **Quick headless verify** — playwright-cli snapshot/screenshot (Studio only for visual bug debugging)
+5. **Update dev.sh** — ALL_APPS list + get_comp_id() case
+6. **Update root package.json** — start/build/generate-tts scripts
+7. **Run sync-images.sh** — copy assets images (if series uses assets pattern). **CRITICAL:** Verify files are actual copies, NOT symlinks. Remotion's static server returns 404 for symlinks. Check with `ls -la public/images/` — no `->` arrows. See [shared-assets-images.md](shared-assets-images.md) for the full pattern and why webpack imports don't work.
+8. **Run bun install** — link workspace
+9. **Generate TTS** — `bun run generate-tts:<alias>`
+10. **Quick headless verify** — playwright-cli snapshot/screenshot (Studio only for visual bug debugging)
 
 ---
 
-## Step 4: Verify consistency
+## Step 5: Verify consistency
 
 After scaffolding, check against the series style lock:
 
@@ -332,6 +514,12 @@ After scaffolding, check against the series style lock:
 - Character colors: fixed per character across ALL episodes (see PLAN.md Characters table)
 - Background: thematic per scene, consistent quality
 - Transitions: TransitionSeries with varied types (clockWipe, wipe, slide, fade, flip)
+
+### Final graphify update
+
+After scaffolding and Studio verification:
+1. Re-run `graphify-pipeline` to update merged graph with any scene-level changes
+2. Mark episode PLAN.md status as `scaffolded`
 
 ---
 
@@ -352,10 +540,18 @@ Characters: [角色列表]
 Language: zh-TW (Traditional Chinese)
 Chapter: 第[N]章：[章節標題]（第[M]/[K]集）
 
+## Quality Gate (completed)
+
+- [x] Create episode directory + narration.ts
+- [x] Create episode PLAN.md (story contract)
+- [x] Run graphify pipeline (episode → merge → check)
+- [x] Subagent gate analysis → PLAN.md updated
+- [x] User approved gate results
+
 ## Setup Tasks
 
 - [x] Create TODO.md
-- [ ] Write narration.ts ([N] scenes: ...)
+- [x] Write narration.ts ([N] scenes: ...)
 - [ ] Create package.json
 - [ ] Create tsconfig.json
 - [ ] Create src/index.ts

@@ -34,9 +34,9 @@
     "build:xianxia2": "bash scripts/dev.sh render xianxia-system-meme-ep2",
     "build:all": "bash scripts/dev.sh render-all",
     "upgrade": "remotion upgrade",
-    "agent": "bun apps/bun-pi-agent/src/index.ts",
-    "agent:cli": "bun apps/bun-pi-agent/src/index.ts --cli",
-    "agent:server": "bun apps/bun-pi-agent/src/index.ts --server",
+    "agent": "bun bun_app/bun_pi_agent/src/index.ts",
+    "agent:cli": "bun bun_app/bun_pi_agent/src/index.ts --cli",
+    "agent:server": "bun bun_app/bun_pi_agent/src/index.ts --server",
     "generate-tts:claude": "bun run --cwd bun_remotion_proj/claude-code-intro generate-tts",
     "generate-tts:stock": "bun run --cwd bun_remotion_proj/taiwan-stock-market generate-tts",
     "generate-tts:pigs": "bun run --cwd bun_remotion_proj/three-little-pigs generate-tts",
@@ -80,7 +80,10 @@
     "generate-tts:mcb-ch1-ep1": "bun run --cwd bun_remotion_proj/my-core-is-boss/my-core-is-boss-ch1-ep1 generate-tts",
     "start:mcb-ch1-ep2": "bash scripts/dev.sh studio my-core-is-boss-ch1-ep2",
     "build:mcb-ch1-ep2": "bash scripts/dev.sh render my-core-is-boss-ch1-ep2",
-    "generate-tts:mcb-ch1-ep2": "bun run --cwd bun_remotion_proj/my-core-is-boss/my-core-is-boss-ch1-ep2 generate-tts"
+    "generate-tts:mcb-ch1-ep2": "bun run --cwd bun_remotion_proj/my-core-is-boss/my-core-is-boss-ch1-ep2 generate-tts",
+    "start:mcb-ch1-ep3": "bash scripts/dev.sh studio my-core-is-boss-ch1-ep3",
+    "build:mcb-ch1-ep3": "bash scripts/dev.sh render my-core-is-boss-ch1-ep3",
+    "generate-tts:mcb-ch1-ep3": "bun run --cwd bun_remotion_proj/my-core-is-boss/my-core-is-boss-ch1-ep3 generate-tts"
   },
   "dependencies": {
     "@remotion/cli": "4.0.290",

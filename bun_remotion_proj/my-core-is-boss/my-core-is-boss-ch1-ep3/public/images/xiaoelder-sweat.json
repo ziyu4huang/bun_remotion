@@ -1,0 +1,12 @@
+{
+  "file": "xiaoelder-sweat.png",
+  "type": "emotion",
+  "emotion": "sweat",
+  "character": "xiaoelder",
+  "facing": "LEFT",
+  "description": "蕭長老 — 內心崩潰但努力維持長老威嚴。勉強的微笑，額頭大汗。",
+  "prompt": "anime style male elder cultivator, old man in his 60s, purple themed elegant elder robes, long white beard, forced nervous smile with trembling eyes, large anime sweat drop on forehead, one hand nervously adjusting collar, trying to maintain composure, half-body portrait, transparent background, solid magenta #FF00FF background",
+  "backgroundStrategy": "solid magenta #FF00FF, remove with rembg",
+  "color": "#A78BFA",
+  "width": "800-1200px"
+}

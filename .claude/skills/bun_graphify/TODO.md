@@ -9,15 +9,24 @@
 >
 > **Rule:** Pipeline/architecture tasks → this file. Code implementation tasks → `bun_app/bun_graphify/TODO.md`.
 
-> **Status:** v0.6.0 — Series config system, my-core-is-boss support, Phase 23 types, HTML escape
+> **Status:** v0.7.0 — Leiden-inspired community system, community-based issue detection, community visualization
 
-## Known Issues (from 2026-04-14 v0.5.0 pipeline run)
+## Known Issues (from 2026-04-15 v0.6.0 pipeline run)
 
+**my-core-is-boss (2 episodes):**
+- ~~**4 WARN all character consistency**~~ — Fixed in v0.7.1: raised core-trait threshold from 50% to 75%, added trait comparison table + LLM enrichment. Now 7 PASS, 0 WARN.
+- **No gag_evolves links** — Only 2 episodes in the same chapter share identical gag manifestations from `plot-lines.md`. `gag_evolves` requires ≥2 distinct manifestations per gag type, which needs episodes across multiple chapters.
+- **No artifact / plot_event nodes** — Game items (跳過按鈕, 寶箱, 系統面板) and story beats are not tracked. Requires NL extraction or subagent analysis.
+
+**weapon-forger (7 episodes, last run v0.5.0):**
 - **`soul` has no same_character links** — Only 1 episode instance → no cross-episode link possible. Expected for single-episode characters.
 - **8 WARN all from regex trait limitations** — Predefined trait patterns miss traits when dialog doesn't match regex. `萬物皆可修`, `毒舌警告` etc. are core traits per PLAN.md but regex misses them in some episodes. **Root cause:** regex pipeline uses pattern matching; subagent would catch these.
 - **ch3ep1 has only 3 tech terms** — Below the diversity threshold but only a WARN, not a FAIL.
 - **No artifact nodes** — Zhou Mo's creations (飛劍, 丹爐, 自動評價系統, 雷射筆) are the series premise but not tracked in KG. Requires NL extraction or PLAN.md artifacts table parsing.
 - **No plot_event nodes** — Key story beats ("sword steals bag", "books attack", "self-destruct") absent. Requires NL extraction or narrator summary parsing.
+
+**Cross-cutting:**
+- **Subagent JSON extraction is fragile** — 2/7 weapon-forger episodes had broken JSON in prior runs. Need robust extraction: try JSON.parse → fix trailing commas → fix single quotes → `jsonrepair` npm package.
 
 ## P0 — Fix next
 
@@ -65,6 +74,53 @@
 ---
 
 ## Pipeline Run History
+
+### 2026-04-15 v0.7.1 — my-core-is-boss (2 episodes, check improvements)
+
+| Metric | Before (v0.6.0) | After (v0.7.1) |
+|--------|-----------------|----------------|
+| Consistency | 5 PASS, 4 WARN | **7 PASS, 0 WARN** |
+| Core-trait threshold | 50% (false positives) | **75% (shared-only)** |
+| Trait comparison table | — | **Per-character, stable/variant** |
+| LLM enrichment | — | **Subagent-generated zh_TW analysis** |
+| Enrichment files | — | **check-enrichment-input.json + output.md** |
+
+**Changes applied:**
+- Core-trait threshold raised from 50% to 75%: with 2 episodes, only shared traits are "core"
+- CharTraitComparison interface + comparison data extraction from checkCharacterConsistency()
+- Trait comparison table in report: per-character, episode columns, stable/variant status
+- Subagent enrichment pipeline: writes enrichment-input.json, reads enrichment-output.md
+- Narrator skipped in comparison table (no traits)
+- Character label cleaned (stripped episode suffix)
+
+**LLM enrichment observations:**
+- linyi's 5 ep1-only traits are natural first-episode character establishment
+- zhaoxiaoqi's variant traits (過度解讀/主動腦補) are the same behavioral pattern described differently
+- Series health: excellent, no modifications needed
+
+### 2026-04-15 v0.7.0 — weapon-forger (7 episodes, Leiden community system)
+
+| Metric | Before (v0.5.0) | After (v0.7.0) |
+|--------|-----------------|----------------|
+| Per-episode nodes | 24-28 | 22-25 |
+| Per-episode edges | 25-39 | 27-39 |
+| Merged nodes | 177 | 156 |
+| Merged edges | 371 | 332 |
+| Link edges | 85 | 67 |
+| Communities | 8 | 8 |
+| Consistency | 13 PASS, 8 WARN | **19 PASS, 11 WARN** |
+| Community checks | — | **3 new: structure, isolated, cross-community** |
+| Community analysis | — | **modularity=0.59, 0 isolated, 35 bridges** |
+| Surprising connections | — | **50 cross-community edges** |
+| HTML color modes | 2 (episode, type) | **3 (+ community)** |
+
+**Changes applied:**
+- Leiden-inspired community detection: Louvain + oversized split + connectivity refinement
+- Community analysis: cohesion, modularity contribution, labels, bridge/god/isolated node detection
+- 3 new consistency checks: Community Structure, Isolated Nodes, Cross-Community Coherence
+- Community-based color mode in vis.js HTML with cohesion-coded legend
+- Enhanced MERGED_REPORT.md: Community Health, Surprising Connections, Bridge Nodes sections
+- Community info in node detail panel (cohesion, bridge/god/isolated flags)
 
 ### 2026-04-15 v0.6.0 — my-core-is-boss (2 episodes, series config + regex pipeline)
 
@@ -175,6 +231,18 @@
 
 ## Done
 
+- [x] **v0.6.0: Series config system** — `series-config.ts` with `detectSeries()`, weapon-forger + my-core-is-boss configs
+- [x] **v0.6.0: plot-lines.md gag parsing** — graphify-episode.ts + graphify-merge.ts support chapter-column gag tables from `assets/story/plot-lines.md`
+- [x] **v0.7.0: Leiden-inspired community system** — Louvain + splitOversized + connectivity refinement in cluster.ts (leidenCluster, refineCommunities, analyzeCommunities)
+- [x] **v0.7.0: Community analysis types** — CommunityReport, CommunityAnalysis, NodeCommunityInfo, SurprisingConnection in types.ts
+- [x] **v0.7.0: Community-based consistency checks** — Community Structure (modularity), Isolated Nodes (no intra-community edges), Cross-Community Coherence (cross-edge ratio)
+- [x] **v0.7.0: Community visualization** — "By Community" color mode, cohesion-coded legend, bridge/god/isolated flags in node info panel
+- [x] **v0.7.0: Enhanced merge report** — Community Health (modularity, avg cohesion, splits), Surprising Connections, Bridge Nodes sections
+- [x] **v0.6.0: my-core-is-boss KG** — 53 nodes, 72 edges, 17 tech terms, 17 character traits (was 20/33/1/0)
+- [x] **v0.6.0: Phase 23 foundation** — StoryCrossLink type, story-algorithms.ts (PageRank, Jaccard, arc/evolution), subagent-prompt.ts
+- [x] **v0.6.0: Absolute path validation** — graphify-episode.ts + graphify-merge.ts reject relative paths
+- [x] **v0.6.0: HTML escape** — gen-story-html.ts escapeHtml() on all dynamic content
+- [x] **v0.6.0: Generic episode detection** — narrative.ts uses generic pattern, no series-specific hardcoded regex
 - [x] Simplified merge — no canonical/arc/gag_type nodes, pure concatenation + link edges
 - [x] Episode-based coloring for merged graph HTML (default: By Episode, toggle: By Type)
 - [x] Link edges rendered dashed with distinct colors per type

@@ -10,7 +10,9 @@ Read this when creating a new episode or video project.
 - **Read PLAN.md first** -- series bible. Create if absent.
 - **Confirm zh_TW story before code** -- stable confirm template, await approval.
 - **Chapters: sequential, 3-5 eps** -- never skip. >= 2 gags/ep.
-- **Scaffold order**: TODO -> narration.ts -> configs -> scenes -> PLAN.md -> dev.sh -> root pkg -> sync-images -> bun install -> TTS.
+- **Scaffold order**: narration.ts → episode PLAN.md (draft) → **graphify scripts + subagent gate** → user approves → TODO.md → configs → scenes → workspace PLAN.md → dev.sh → root pkg → sync-images → bun install → TTS.
+- **Graphify quality gate** -- run graphify scripts (episode → merge → check), then **subagent** analyzes narration.ts + consistency report → appends gate summary section to episode PLAN.md. User reviews complete PLAN.md → PROCEED/NEEDS-FIX. TODO.md created only AFTER gate passes.
+- **Episode PLAN.md** -- story contract per episode with metadata, scene breakdown, running gags, and subagent-generated Graphify Quality Gate section.
 - **Naming**: weapon-forger `ch{N}-ep{M}/`/`WeaponForgerCh{N}Ep{M}`; galgame `ep{N}/`/`GalgameMemeTheaterEp{N}`.
 - Read `episode-creation.md` for full workflow.
 

@@ -16,7 +16,8 @@
 import { resolve, basename } from "node:path";
 import { existsSync, mkdirSync, writeFileSync, readdirSync, readFileSync } from "node:fs";
 import Graph from "graphology";
-import louvain from "graphology-communities-louvain";
+import { leidenCluster, analyzeCommunities, cohesionScore } from "../cluster";
+import type { CommunityReport } from "../types";
 import { getSeriesConfigOrThrow } from "./series-config";
 import type { SeriesConfig } from "./series-config";
 
@@ -401,15 +402,14 @@ for (const chain of gagChains) {
 console.log(`Link edges: ${linkEdges.length}`);
 console.log(`Merged graph: ${G.order} nodes, ${G.size} edges`);
 
-// ─── Step 5: Cluster ───
+// ─── Step 5: Cluster (Leiden-inspired) ───
 
 let communities: Record<number, string[]> = {};
+let communityAnalysis: CommunityReport | null = null;
 try {
-  const mapping: Record<string, number> = louvain(G);
-  for (const [node, cid] of Object.entries(mapping)) {
-    if (!communities[cid]) communities[cid] = [];
-    communities[cid].push(node);
-  }
+  communities = leidenCluster(G);
+  communityAnalysis = analyzeCommunities(G, communities);
+  console.log(`Communities: ${Object.keys(communities).length} (refinement splits: ${communityAnalysis.refinementSplits}, avg cohesion: ${communityAnalysis.averageCohesion.toFixed(2)})`);
 } catch (e) {
   console.warn(`Clustering failed: ${e}`);
 }
@@ -435,6 +435,7 @@ const graphData = {
   nodes: graphNodes,
   links: graphLinks,
   communities: Object.fromEntries(Object.entries(communities)),
+  community_analysis: communityAnalysis,
   link_edges: linkEdges,
   episode_count: episodeGraphs.length,
 };
@@ -459,21 +460,72 @@ report.push(`- **Link edges:** ${linkEdges.length}`);
 report.push(`- **Communities:** ${Object.keys(communities).length}`);
 report.push(``);
 
-// Communities
+// Communities (enriched with Leiden analysis)
+if (communityAnalysis) {
+  report.push(`## Community Health`);
+  report.push(``);
+  report.push(`- **Global modularity:** ${communityAnalysis.globalModularity.toFixed(4)}`);
+  report.push(`- **Average cohesion:** ${communityAnalysis.averageCohesion.toFixed(2)}`);
+  report.push(`- **Refinement splits:** ${communityAnalysis.refinementSplits}`);
+  report.push(`- **Surprising connections:** ${communityAnalysis.surprisingConnections.length}`);
+  report.push(``);
+}
+
 report.push(`## Communities`);
 report.push(``);
-for (const [cid, nodes] of Object.entries(communities)) {
-  const types = new Set(nodes.map(n => G.getNodeAttribute(n, "type")));
-  const sampleLabels = nodes.slice(0, 5).map(n => G.getNodeAttribute(n, "label") ?? n);
-  const episodeSet = new Set(nodes.map(n => G.getNodeAttribute(n, "episode")).filter(Boolean));
-  const episodes = [...episodeSet].sort().join(", ");
+if (communityAnalysis) {
+  for (const ca of communityAnalysis.communities) {
+    const cohesionFlag = ca.cohesion < 0.1 ? ' :warning:' : '';
+    report.push(`### ${ca.label} (${ca.size} nodes, cohesion: ${ca.cohesion.toFixed(2)}${cohesionFlag})`);
+    report.push(``);
+    report.push(`- Types: ${ca.dominantTypes.join(", ")}`);
+    if (ca.episodes.length > 0) report.push(`- Episodes: ${ca.episodes.join(", ")}`);
+    report.push(`- Modularity contribution: ${ca.modularityContribution.toFixed(4)}`);
+    report.push(`- Connected: ${ca.isConnected}`);
+    if (ca.bridgeNodes.length > 0) {
+      const bridgeLabels = ca.bridgeNodes.map(n => G.getNodeAttribute(n, "label") ?? n);
+      report.push(`- Bridge nodes: ${bridgeLabels.join(", ")}`);
+    }
+    report.push(``);
+  }
+} else {
+  for (const [cid, nodes] of Object.entries(communities)) {
+    const types = new Set(nodes.map(n => G.getNodeAttribute(n, "type")));
+    const sampleLabels = nodes.slice(0, 5).map(n => G.getNodeAttribute(n, "label") ?? n);
+    const episodeSet = new Set(nodes.map(n => G.getNodeAttribute(n, "episode")).filter(Boolean));
+    const episodes = [...episodeSet].sort().join(", ");
 
-  report.push(`### Community ${cid} (${nodes.length} nodes)`);
+    report.push(`### Community ${cid} (${nodes.length} nodes)`);
+    report.push(``);
+    report.push(`- Types: ${[...types].join(", ")}`);
+    if (episodes) report.push(`- Episodes: ${episodes}`);
+    report.push(`- Sample: ${sampleLabels.join(", ")}`);
+    report.push(``);
+  }
+}
+
+// Surprising connections
+if (communityAnalysis && communityAnalysis.surprisingConnections.length > 0) {
+  report.push(`## Surprising Connections (Cross-Community)`);
   report.push(``);
-  report.push(`- Types: ${[...types].join(", ")}`);
-  if (episodes) report.push(`- Episodes: ${episodes}`);
-  report.push(`- Sample: ${sampleLabels.join(", ")}`);
+  for (const sc of communityAnalysis.surprisingConnections.slice(0, 10)) {
+    report.push(`- **${sc.sourceLabel}** (${sc.sourceCommunity}) → **${sc.targetLabel}** (${sc.targetCommunity}) [${sc.relation}]`);
+  }
   report.push(``);
+}
+
+// Bridge nodes
+if (communityAnalysis) {
+  const bridges = communityAnalysis.nodes.filter(n => n.isBridge);
+  if (bridges.length > 0) {
+    report.push(`## Bridge Nodes`);
+    report.push(``);
+    for (const bn of bridges.slice(0, 10)) {
+      const label = G.getNodeAttribute(bn.nodeId, "label") ?? bn.nodeId;
+      report.push(`- **${label}** (community ${bn.communityId})`);
+    }
+    report.push(``);
+  }
 }
 
 // Link edge summary

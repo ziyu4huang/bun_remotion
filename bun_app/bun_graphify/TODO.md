@@ -21,9 +21,10 @@ These are implementation tasks in `bun_app/bun_graphify/src/`. For architecture 
   - Added `escapeHtml()` in embedded script, applied to node labels, properties, neighbor names
   - File: `src/scripts/gen-story-html.ts`
 
-- [ ] **graphify-check.ts: reduce false positive WARN**
-  - Add `source` field to CheckResult: `"regex"` or `"subagent"` so report readers know which pipeline produced the data
-  - Adjust trait coverage threshold: if episode has <3 lines for a character, skip trait check (not enough data)
+- [x] **graphify-check.ts: reduce false positive WARN**
+  - Raised core-trait threshold from 50% to 75% (with 2 episodes: only shared traits are "core")
+  - Added trait comparison table (per-character, episode columns, stable/variant labels)
+  - Added subagent enrichment: writes `check-enrichment-input.json`, reads `check-enrichment-output.md`
   - File: `src/scripts/graphify-check.ts`
 
 - [ ] **graphify-pipeline.ts: per-episode HTML generation**
@@ -49,11 +50,14 @@ These are implementation tasks in `bun_app/bun_graphify/src/`. For architecture 
 | Script | Lines | Status |
 |--------|-------|--------|
 | `src/cli.ts` | ~250 | Stable |
-| `src/scripts/graphify-episode.ts` | ~480 | Stable — text-mention + gag fallback done |
-| `src/scripts/graphify-merge.ts` | ~436 | Needs same_character fix |
+| `src/scripts/series-config.ts` | ~130 | **New** — SeriesConfig type + configs + detectSeries() |
+| `src/scripts/graphify-episode.ts` | ~490 | Refactored — config-driven, plot-lines.md gag branch, path validation |
+| `src/scripts/graphify-merge.ts` | ~470 | Refactored — config-driven, plot-lines.md gag chains, path validation |
 | `src/scripts/graphify-check.ts` | ~450 | Needs false positive reduction |
-| `src/scripts/graphify-pipeline.ts` | ~150 | Needs per-episode HTML |
-| `src/scripts/gen-story-html.ts` | ~330 | Needs HTML escape |
+| `src/scripts/graphify-pipeline.ts` | ~150 | Needs per-episode HTML + step 4 (algorithms + AI cross-link) |
+| `src/scripts/gen-story-html.ts` | ~340 | HTML escape done |
+| `src/scripts/story-algorithms.ts` | ~170 | **New** — PageRank, Jaccard, arc/evolution scores |
+| `src/scripts/subagent-prompt.ts` | ~130 | **New** — Cross-link discovery prompt builder |
 
 ## Phase 23 — AI Cross-Link Discovery 🔲
 

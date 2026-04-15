@@ -1,13 +1,13 @@
 ---
 name: plan-todo-lifecycle
-description: Stable templates and update rules for workspace PLAN.md, workspace TODO.md, and episode TODO.md — prevents data loss during episode creation
+description: Stable templates and update rules for workspace PLAN.md, workspace TODO.md, episode PLAN.md, and episode TODO.md — prevents data loss during episode creation
 metadata:
-  tags: PLAN, TODO, lifecycle, template, pipeline, episode, series
+  tags: PLAN, TODO, lifecycle, template, pipeline, episode, series, graphify
 ---
 
 # PLAN/TODO Lifecycle — Stable Templates & Update Rules
 
-Three files track every series. Each has a **fixed section order** and **update triggers**.
+Four files track every series. Each has a **fixed section order** and **update triggers**.
 Follow these rules to prevent data loss and keep files in sync.
 
 ---
@@ -18,9 +18,10 @@ Follow these rules to prevent data loss and keep files in sync.
 |------|-------|------|-------------------|
 | `PLAN.md` | Workspace | Series bible | Characters, arcs, episode guide, commands, style rules |
 | `TODO.md` | Workspace | Phased progress tracker | Which episodes exist, overall completion status |
-| `TODO.md` | Episode folder | Task checklist | Per-episode scaffold progress (what's done, what's left) |
+| `PLAN.md` | Episode folder | Story contract | Confirmed story, scene breakdown, graphify validation status |
+| `TODO.md` | Episode folder | Task checklist | Per-episode progress (quality gate + scaffold + verify) |
 
-**Rule: PLAN.md is ALWAYS the source of truth.** TODOs reflect PLAN status, never the reverse.
+**Rule: Workspace PLAN.md is ALWAYS the source of truth.** Episode PLAN.md reflects the confirmed story for that specific episode. TODOs reflect PLAN status, never the reverse.
 
 ---
 
@@ -107,7 +108,10 @@ Numbered for reference. A real PLAN.md does NOT need section numbers — these a
 
 ## Phase 2: Ch1-EP1 — <Title>
 
-- [ ] Write narration.ts
+- [ ] Write narration.ts + episode PLAN.md
+- [ ] Run graphify gate (scripts + subagent analysis)
+- [ ] User approves gate results
+- [ ] Create TODO.md
 - [ ] Scaffold episode (package.json, tsconfig, index.ts, Root.tsx)
 - [ ] TitleScene.tsx
 - [ ] ContentScene1.tsx
@@ -125,9 +129,11 @@ Numbered for reference. A real PLAN.md does NOT need section numbers — these a
 
 ## Phase 2.5: Ch1-EP2 — <Title>
 
-- [ ] Write narration.ts (N scenes: ...)
-- [ ] Scaffold episode
-- [ ] All scene components
+- [ ] Write narration.ts + episode PLAN.md
+- [ ] Run graphify gate (scripts + subagent analysis)
+- [ ] User approves gate results
+- [ ] Create TODO.md
+- [ ] Scaffold episode + all scene components
 - [ ] Update dev.sh + package.json
 - [ ] Run sync-images.sh + bun install
 - [ ] Generate TTS
@@ -173,10 +179,13 @@ Numbered for reference. A real PLAN.md does NOT need section numbers — these a
 | # | Section | Content | Update trigger |
 |---|---------|---------|---------------|
 | 1 | Header + Story | Title, 2-3 line summary, characters, language, chapter | Only at creation |
-| 2 | Setup Tasks | Checklist of all scaffold steps | Check off as each step completes |
-| 3 | Remaining | Tasks not yet done (Studio verify, render) | When all scaffold tasks are done |
+| 2 | Quality Gate (completed) | Gate steps, all `[x]` | Created after gate passes |
+| 3 | Setup Tasks | Checklist of all scaffold steps | Check off as each step completes |
+| 4 | Remaining | Tasks not yet done (Studio verify, render) | When all scaffold tasks are done |
 
 ### Template for episode TODO.md
+
+**IMPORTANT:** TODO.md is created AFTER the graphify quality gate passes. Quality Gate tasks are already `[x]` because the gate already ran. See new pipeline in [episode-creation.md](episode-creation.md) for the full flow.
 
 ```markdown
 # TODO — <Series ZH> <ChapterLabel><EpisodeLabel>：<Title ZH>
@@ -189,10 +198,18 @@ Characters: <id1>, <id2>, ...
 Language: zh-TW (Traditional Chinese)
 Chapter: 第<N>章：<Chapter Title>（第<M>/<K>集）
 
+## Quality Gate (completed)
+
+- [x] Create episode directory + narration.ts
+- [x] Create episode PLAN.md (story contract)
+- [x] Run graphify pipeline (episode → merge → check)
+- [x] Subagent gate analysis → PLAN.md updated with Quality Gate section
+- [x] User approved gate results
+
 ## Setup Tasks
 
 - [x] Create TODO.md
-- [ ] Write narration.ts (<N> scenes: Title, Content1-3, Outro)
+- [x] Write scripts/narration.ts (<N> scenes: Title, Content1-3, Outro)
 - [ ] Create package.json
 - [ ] Create tsconfig.json
 - [ ] Create src/index.ts
@@ -203,7 +220,7 @@ Chapter: 第<N>章：<Chapter Title>（第<M>/<K>集）
 - [ ] Write src/scenes/ContentScene2.tsx (<background>: <description>)
 - [ ] Write src/scenes/ContentScene3.tsx (<background>: <description>) (if 3 content scenes)
 - [ ] Write src/scenes/OutroScene.tsx
-- [ ] Update PLAN.md (episode guide + commands)
+- [ ] Update workspace PLAN.md (episode guide + commands)
 - [ ] Update scripts/dev.sh ALL_APPS + get_comp_id()
 - [ ] Update root package.json with scripts
 - [ ] Run sync-images.sh to copy assets images
@@ -213,12 +230,14 @@ Chapter: 第<N>章：<Chapter Title>（第<M>/<K>集）
 ## Remaining
 
 - [ ] Verify in Remotion Studio
+- [ ] Re-run graphify-pipeline (post-scaffold update)
+- [ ] Update episode PLAN.md status → scaffolded
 - [ ] Render final MP4
 ```
 
 ### Update rules for episode TODO.md
 
-**When creating:** All tasks unchecked except "Create TODO.md" which is `[x]`.
+**When creating:** Quality Gate section is ALL `[x]` (gate already passed). Setup Tasks start all `[ ]` except TODO.md + narration.ts which are `[x]`.
 
 **When completing each scaffold step:**
 1. Check off `[x]` for that task
@@ -235,39 +254,58 @@ Chapter: 第<N>章：<Chapter Title>（第<M>/<K>集）
 
 ---
 
-## Pipeline: How the Three Files Stay in Sync
+## Pipeline: How the Four Files Stay in Sync
 
 ```
-Episode Creation Flow:
+Episode Creation Flow (subagent-based graphify gate):
 
 1. User approves story
-   → Create episode TODO.md         (all unchecked)
-   → Write narration.ts, scenes, etc.
+   → Create episode directory
+   → Write narration.ts
+   → Write episode PLAN.md (draft — no Graphify section yet)
+
+2. Graphify quality gate
+   → Run graphify scripts (episode → merge → check)
+   → Subagent analyzes narration + consistency report
+   → Subagent writes Graphify Quality Gate section into episode PLAN.md
+   → Present complete PLAN.md to user for review
+   → If NEEDS-FIX: revise narration.ts, re-run gate
+   → If PROCEED: continue to step 3
+
+3. Gate passes → create TODO.md + scaffold code
+   → Create episode TODO.md (Quality Gate already [x])
+   → Write configs, scenes, etc.
    → Check off each task as done
 
-2. Scaffold complete (all source files + TTS)
+4. Scaffold complete (all source files + TTS)
    → Update episode TODO.md         (all scaffold tasks [x], Remaining section at bottom)
+   → Update episode PLAN.md         (status → "scaffolded")
    → Update workspace TODO.md       (check off that episode's tasks)
-   → Update PLAN.md Episode Guide   (status → "Scaffolding Complete")
+   → Update workspace PLAN.md Episode Guide (status → "Scaffolding Complete")
 
-3. Studio verify + render
+5. Studio verify + render
+   → Re-run graphify-pipeline       (post-scaffold update)
    → Update episode TODO.md         (all [x])
    → Update workspace TODO.md       (all [x] for that episode)
-   → Update PLAN.md Episode Guide   (status → "Complete")
+   → Update workspace PLAN.md Episode Guide (status → "Complete")
 ```
 
 ### Sync invariant
 
 At any point, these MUST be consistent:
 
-| Condition | PLAN.md Episode Guide | Workspace TODO | Episode TODO |
-|-----------|----------------------|----------------|--------------|
-| Episode not started | `Planned` | Single-line in "Remaining" | File doesn't exist yet |
-| Episode in progress | `Scaffolding` | Phase section with some `[x]` | Some `[x]`, some `[ ]` |
-| Scaffold done, not rendered | `Scaffolding Complete` | All scaffold `[x]`, verify/render `[ ]` | All scaffold `[x]`, Remaining has verify + render |
-| Episode complete | `Complete` | All `[x]` | All `[x]`, no Remaining |
+| Condition | Workspace PLAN.md | Episode PLAN.md | Episode TODO | Workspace TODO |
+|-----------|-------------------|-----------------|--------------|----------------|
+| Episode not started | `Planned` | File doesn't exist | File doesn't exist | Single-line in "Remaining" |
+| Story confirmed, gate pending | `Planned` | `draft` (no Gate section) | File doesn't exist | Single-line in "Remaining" |
+| Quality gate passed | `Planned` | `graphified` (Gate section: PROCEED) | File doesn't exist | Single-line in "Remaining" |
+| User approved, scaffold starting | `Scaffolding` | `approved` | Quality Gate `[x]`, Setup `[ ]` | Phase section created |
+| Scaffold in progress | `Scaffolding` | `approved` | Some Setup `[x]`, some `[ ]` | Phase section with some `[x]` |
+| Scaffold done, not rendered | `Scaffolding Complete` | `scaffolded` | All scaffold `[x]`, Remaining has verify + render | All scaffold `[x]`, verify/render `[ ]` |
+| Episode complete | `Complete` | `scaffolded` | All `[x]`, no Remaining | All `[x]` |
 
 **If any file is out of sync, fix it immediately.** The sync check takes 10 seconds:
-1. Read PLAN.md Episode Guide status
+1. Read workspace PLAN.md Episode Guide status
 2. Verify workspace TODO matches
-3. Verify episode TODO matches
+3. Verify episode PLAN.md status matches
+4. Verify episode TODO matches

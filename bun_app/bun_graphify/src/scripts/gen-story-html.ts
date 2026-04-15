@@ -17,7 +17,8 @@
 import { resolve, basename } from "node:path";
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import Graph from "graphology";
-import louvain from "graphology-communities-louvain";
+import { leidenCluster, analyzeCommunities } from "../cluster";
+import type { CommunityReport } from "../types";
 
 // ─── Args ───
 
@@ -84,28 +85,44 @@ for (const e of links) {
   }
 }
 
-// ─── Community detection ───
+// ─── Community detection (Leiden-inspired) ───
+
+// Use community_analysis from JSON if available (from leidenCluster in episode/merge scripts)
+const communityAnalysis: CommunityReport | null = raw.community_analysis ?? null;
 
 let communities: Record<string, string[]> = {};
-try {
-  const mapping: Record<string, number> = louvain(G);
-  for (const [node, cid] of Object.entries(mapping)) {
-    const key = String(cid);
-    if (!communities[key]) communities[key] = [];
-    communities[key].push(node);
+if (communityAnalysis) {
+  // Reconstruct communities from analysis
+  for (const ca of communityAnalysis.communities) {
+    const key = String(ca.id);
+    // Find nodes in this community from the nodeCommunityInfo
+    communities[key] = communityAnalysis.nodes
+      .filter(n => n.communityId === ca.id)
+      .map(n => n.nodeId);
   }
-} catch (e) {
-  console.warn(`Clustering failed: ${e}`);
+} else {
+  // Fallback: run clustering ourselves
+  try {
+    communities = leidenCluster(G);
+  } catch (e) {
+    console.warn(`Clustering failed: ${e}`);
+  }
 }
 
 const communityLabels: Record<string, string> = {};
-for (const [cid, members] of Object.entries(communities)) {
-  const types: Record<string, number> = {};
-  for (const m of members) {
-    const t = G.getNodeAttribute(m, "type") || "unknown";
-    types[t] = (types[t] || 0) + 1;
+if (communityAnalysis) {
+  for (const ca of communityAnalysis.communities) {
+    communityLabels[String(ca.id)] = ca.label;
   }
-  communityLabels[cid] = Object.entries(types).sort((a, b) => b[1] - a[1]).slice(0, 2).map(([t]) => t).join(", ");
+} else {
+  for (const [cid, members] of Object.entries(communities)) {
+    const types: Record<string, number> = {};
+    for (const m of members) {
+      const t = G.getNodeAttribute(m, "type") || "unknown";
+      types[t] = (types[t] || 0) + 1;
+    }
+    communityLabels[cid] = Object.entries(types).sort((a, b) => b[1] - a[1]).slice(0, 2).map(([t]) => t).join(", ");
+  }
 }
 
 // ─── Color palettes ───
@@ -145,6 +162,12 @@ const LINK_EDGE_COLORS: Record<string, string> = {
   gag_evolves: "#FFE66D",
 };
 
+const COMMUNITY_COLORS = [
+  "#4E79A7", "#F28E2B", "#E15759", "#76B7B2", "#59A14F",
+  "#EDC948", "#B07AA1", "#FF9DA7", "#9C755F", "#BAB0AC",
+  "#86BCB6", "#8CD17D", "#B6992D", "#499894", "#D37295",
+];
+
 const defaultEpColor = "#BAB0AC";
 
 // ─── Prepare viz data ───
@@ -153,14 +176,27 @@ let maxDeg = 1;
 G.forEachNode(node => { const d = G.degree(node); if (d > maxDeg) maxDeg = d; });
 
 const vizNodes: any[] = [];
+// Build community analysis lookup for per-node metadata
+const nodeCommInfo = new Map<string, { isBridge: boolean; isGodNode: boolean; isIsolated: boolean }>();
+if (communityAnalysis) {
+  for (const ni of communityAnalysis.nodes) {
+    nodeCommInfo.set(ni.nodeId, { isBridge: ni.isBridge, isGodNode: ni.isGodNode, isIsolated: ni.isIsolated });
+  }
+}
+
 G.forEachNode((id, attrs) => {
   const comm = Object.entries(communities).find(([_, m]) => m.includes(id))?.[0] || "0";
   const deg = G.degree(id);
+  const nci = nodeCommInfo.get(id);
   vizNodes.push({
     id,
     label: attrs.label || id,
     community: Number(comm),
     community_name: communityLabels[comm] || `Community ${comm}`,
+    community_cohesion: communityAnalysis?.communities.find(ca => ca.id === Number(comm))?.cohesion ?? 0,
+    is_bridge: nci?.isBridge ?? false,
+    is_god: nci?.isGodNode ?? false,
+    is_isolated: nci?.isIsolated ?? false,
     source_file: attrs.source_file || "",
     file_type: attrs.type || "unknown",
     episode: attrs.episode || "",
@@ -280,6 +316,7 @@ const html = `<!DOCTYPE html>
       <h3>Coloring</h3>
       <button class="mode-btn active" id="btn-episode">By Episode</button>
       <button class="mode-btn" id="btn-type">By Type</button>
+      <button class="mode-btn" id="btn-community">By Community</button>
     </div>` : ''}
     <div id="legend-wrap">
       <h3 id="legend-title">${isMerged ? 'Episodes' : 'Node Types'}</h3>
@@ -297,13 +334,18 @@ const RAW_EDGES = ${JSON.stringify(vizEdges)};
 const TYPE_COLORS = ${JSON.stringify(TYPE_COLORS)};
 const EPISODE_COLORS = ${JSON.stringify(EPISODE_COLORS)};
 const LINK_EDGE_COLORS = ${JSON.stringify(LINK_EDGE_COLORS)};
+const COMMUNITY_COLORS = ${JSON.stringify(COMMUNITY_COLORS)};
 const DEFAULT_EP_COLOR = '${defaultEpColor}';
+const COMMUNITY_ANALYSIS = ${JSON.stringify(communityAnalysis)};
 
 let colorMode = IS_MERGED ? 'episode' : 'type';
 
 function nodeColor(n) {
   if (colorMode === 'episode') {
     return EPISODE_COLORS[n.episode] || DEFAULT_EP_COLOR;
+  }
+  if (colorMode === 'community') {
+    return COMMUNITY_COLORS[n.community % COMMUNITY_COLORS.length];
   }
   return TYPE_COLORS[n.file_type] || '#BAB0AC';
 }
@@ -357,27 +399,23 @@ const network = new vis.Network(document.getElementById('graph'), { nodes: nodes
 network.once('stabilizationIterationsDone', () => { network.setOptions({ physics: { enabled: false } }); });
 
 // Color mode toggle
+function setActiveBtn(mode) {
+  ['btn-episode', 'btn-type', 'btn-community'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('active', id === 'btn-' + mode);
+  });
+}
+function recolorNodes() {
+  RAW_NODES.forEach(n => {
+    const c = nodeColor(n);
+    nodesDS.update({ id: n.id, color: { background: c, border: c, highlight: { background: '#fff', border: c } } });
+  });
+  buildLegend();
+}
 if (IS_MERGED) {
-  document.getElementById('btn-episode').addEventListener('click', () => {
-    colorMode = 'episode';
-    document.getElementById('btn-episode').classList.add('active');
-    document.getElementById('btn-type').classList.remove('active');
-    RAW_NODES.forEach(n => {
-      const c = nodeColor(n);
-      nodesDS.update({ id: n.id, color: { background: c, border: c, highlight: { background: '#fff', border: c } } });
-    });
-    buildLegend();
-  });
-  document.getElementById('btn-type').addEventListener('click', () => {
-    colorMode = 'type';
-    document.getElementById('btn-type').classList.add('active');
-    document.getElementById('btn-episode').classList.remove('active');
-    RAW_NODES.forEach(n => {
-      const c = nodeColor(n);
-      nodesDS.update({ id: n.id, color: { background: c, border: c, highlight: { background: '#fff', border: c } } });
-    });
-    buildLegend();
-  });
+  document.getElementById('btn-episode').addEventListener('click', () => { colorMode = 'episode'; setActiveBtn('episode'); recolorNodes(); });
+  document.getElementById('btn-type').addEventListener('click', () => { colorMode = 'type'; setActiveBtn('type'); recolorNodes(); });
+  document.getElementById('btn-community').addEventListener('click', () => { colorMode = 'community'; setActiveBtn('community'); recolorNodes(); });
 }
 
 // Search
@@ -424,6 +462,16 @@ network.on('click', (params) => {
     }
   }
 
+  // Community info
+  h += '<div class="meta" style="margin-top:6px"><b>Community:</b> ' + escapeHtml(n.community_name || 'Community ' + n.community) + '</div>';
+  if (n.community_cohesion > 0) {
+    const cohColor = n.community_cohesion >= 0.3 ? '#59A14F' : n.community_cohesion >= 0.1 ? '#EDC948' : '#E15759';
+    h += '<div class="meta"><b>Cohesion:</b> <span style="color:' + cohColor + '">' + n.community_cohesion.toFixed(2) + '</span></div>';
+  }
+  if (n.is_bridge) h += '<div class="meta" style="color:#F28E2B">Bridge node (connects communities)</div>';
+  if (n.is_god) h += '<div class="meta" style="color:#FF9DA7">Hub node (high connectivity)</div>';
+  if (n.is_isolated) h += '<div class="meta" style="color:#E15759">Isolated (no intra-community edges)</div>';
+
   h += '<div class="neighbors" style="margin-top:8px">';
   neighbors.slice(0, 12).forEach(nb => {
     const nc = nodeColor(nb);
@@ -443,7 +491,26 @@ function buildLegend() {
   hidden.clear();
   const legendTitle = document.getElementById('legend-title');
 
-  if (colorMode === 'episode') {
+  if (colorMode === 'community') {
+    legendTitle.textContent = 'Communities';
+    const commGroups = {};
+    RAW_NODES.forEach(n => { const c = n.community; commGroups[c] = (commGroups[c] || 0) + 1; });
+    Object.entries(commGroups).sort((a, b) => b[1] - a[1]).forEach(([cid, count]) => {
+      const color = COMMUNITY_COLORS[Number(cid) % COMMUNITY_COLORS.length];
+      const label = RAW_NODES.find(n => n.community === Number(cid))?.community_name || ('Community ' + cid);
+      const ca = COMMUNITY_ANALYSIS?.communities?.find(c => c.id === Number(cid));
+      const cohesionStr = ca ? (' (cohesion: ' + ca.cohesion.toFixed(2) + ')') : '';
+      const d = document.createElement('div');
+      d.className = 'legend-item';
+      d.innerHTML = '<span class="legend-dot" style="background:' + color + '"></span>' + escapeHtml(label) + cohesionStr + ' <span class="legend-count">' + count + '</span>';
+      d.onclick = () => {
+        if (hidden.has('comm_' + cid)) { hidden.delete('comm_' + cid); d.classList.remove('dimmed'); }
+        else { hidden.add('comm_' + cid); d.classList.add('dimmed'); }
+        RAW_NODES.forEach(n => { nodesDS.update({ id: n.id, hidden: hidden.has('comm_' + n.community) }); });
+      };
+      legend.appendChild(d);
+    });
+  } else if (colorMode === 'episode') {
     legendTitle.textContent = 'Episodes';
     const epCounts = {};
     RAW_NODES.forEach(n => { const ep = n.episode || 'unknown'; epCounts[ep] = (epCounts[ep] || 0) + 1; });

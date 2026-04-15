@@ -4,10 +4,10 @@ description: Coding assistant agent built on pi-agent ecosystem (pi-agent-core, 
 type: project
 ---
 
-# bun-pi-agent
+# bun_pi_agent
 
 ## Overview
-A coding assistant backend at `bun_app/bun-pi-agent/` (moved from `apps/`) that uses the `@mariozechner/pi-agent-*` ecosystem. Sits between simple LLM tool calls and full frameworks like OpenClaw.
+A coding assistant backend at `bun_app/bun_pi_agent/` that uses the `@mariozechner/pi-agent-*` ecosystem. Sits between simple LLM tool calls and full frameworks like OpenClaw.
 
 ## Architecture
 - **pi-agent-core**: Agent runtime with event system, tool execution, state management
@@ -56,9 +56,9 @@ getEnvApiKey(provider: KnownProvider): string | undefined
 Provider: `"zai"`, models: `glm-4.5`, `glm-4.5-air`, `glm-4.5-flash`, `glm-4.5v`, `glm-4.6`, `glm-4.6v`, `glm-4.6v-plus`, etc. All use `openai-completions` API with `thinkingFormat: "zai"`.
 
 ## Commands
-- `bun run --cwd bun_app/bun-pi-agent start` — CLI mode
-- `bun run --cwd bun_app/bun-pi-agent server` — HTTP server on 127.0.0.1:3456
-- `bun run --cwd bun_app/bun-pi-agent test` — Run all tests
+- `bun run --cwd bun_app/bun_pi_agent start` — CLI mode
+- `bun run --cwd bun_app/bun_pi_agent server` — HTTP server on 127.0.0.1:3456
+- `bun run --cwd bun_app/bun_pi_agent test` — Run all tests
 
 ## HTTP Endpoints
 - `GET /health` — `{"status":"ok"}`

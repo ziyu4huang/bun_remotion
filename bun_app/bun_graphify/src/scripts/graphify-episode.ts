@@ -17,7 +17,8 @@
 import { resolve, basename } from "node:path";
 import { existsSync, mkdirSync, writeFileSync, readFileSync } from "node:fs";
 import Graph from "graphology";
-import louvain from "graphology-communities-louvain";
+import { leidenCluster, analyzeCommunities } from "../cluster";
+import type { CommunityReport } from "../types";
 import { detectMultiple } from "../detect";
 import { extractAST } from "../extract/ast";
 import { buildFromExtraction } from "../build";
@@ -411,17 +412,15 @@ for (const edge of edges) {
 
 console.log(`Graph: ${G.order} nodes, ${G.size} edges (${addedEdges} added, ${skippedEdges} skipped)`);
 
-// ─── Step 9: Cluster (if enough nodes) ───
+// ─── Step 9: Cluster (Leiden-inspired) ───
 
 let communities: Record<number, string[]> = {};
+let communityAnalysis: CommunityReport | null = null;
 if (G.order > 5) {
   try {
-    const mapping: Record<string, number> = louvain(G);
-    for (const [node, cid] of Object.entries(mapping)) {
-      if (!communities[cid]) communities[cid] = [];
-      communities[cid].push(node);
-    }
-    console.log(`Communities: ${Object.keys(communities).length}`);
+    communities = leidenCluster(G);
+    communityAnalysis = analyzeCommunities(G, communities);
+    console.log(`Communities: ${Object.keys(communities).length} (refinement splits: ${communityAnalysis.refinementSplits})`);
   } catch (e) {
     console.warn(`Clustering failed (graph may be too small): ${e}`);
   }
@@ -451,6 +450,7 @@ const graphData = {
   nodes: graphNodes,
   links: graphLinks,
   communities: Object.fromEntries(Object.entries(communities)),
+  community_analysis: communityAnalysis,
   episode_id: EP_ID,
 };
 

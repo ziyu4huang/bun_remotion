@@ -94,3 +94,49 @@ export interface StoryCrossLink {
   generated_by: "ai" | "algorithm";
   rationale: string;
 }
+
+// ─── Leiden-Inspired Community Analysis ───
+
+/** Per-community analysis result */
+export interface CommunityAnalysis {
+  id: number;
+  label: string;
+  size: number;
+  cohesion: number;
+  modularityContribution: number;
+  isConnected: boolean;
+  dominantTypes: string[];
+  episodes: string[];
+  bridgeNodes: string[];
+}
+
+/** Node-level community metadata */
+export interface NodeCommunityInfo {
+  nodeId: string;
+  communityId: number;
+  isBridge: boolean;
+  isGodNode: boolean;
+  isIsolated: boolean;
+}
+
+/** Cross-community edge (surprising connection) */
+export interface SurprisingConnection {
+  source: string;
+  sourceLabel: string;
+  sourceCommunity: number;
+  target: string;
+  targetLabel: string;
+  targetCommunity: number;
+  relation: string;
+}
+
+/** Full community analysis report for a graph */
+export interface CommunityReport {
+  communities: CommunityAnalysis[];
+  nodes: NodeCommunityInfo[];
+  surprisingConnections: SurprisingConnection[];
+  globalModularity: number;
+  totalCommunities: number;
+  averageCohesion: number;
+  refinementSplits: number;
+}

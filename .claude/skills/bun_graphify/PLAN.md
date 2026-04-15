@@ -8,13 +8,15 @@
 > `TODO.md` — Pipeline tasks, run history, known issues | `bun_app/bun_graphify/TODO.md` — Code-level tasks (file/line specific)
 > `SKILL.md` — Operational playbook, commands | —
 
-## Architecture (v0.4.0)
+## Architecture (v0.6.0)
 
 ```
+series-config.ts ─── Auto-detect series, load patterns (charNames, traits, tech, gag source)
+      │
 narration.ts (per episode)
   │
-  ├─ [graphify-episode.ts] Regex extraction (fast, shallow)
-  │   Produces: episode_plot, character_instance, tech_term,
+  ├─ [graphify-episode.ts] Regex extraction (fast, shallow, series-config-driven)
+  │   Produces: episode_plot, scene, character_instance, tech_term,
   │             gag_manifestation, character_trait
   │
   ├─ [subagent] NL analysis (slow, rich) — via SKILL.md instructions
@@ -29,14 +31,26 @@ narration.ts (per episode)
           ├─ story_continues: ch1ep1_plot → ch1ep2_plot → ...
           ├─ gag_evolves: ch1ep1_gag_X → ch1ep2_gag_X → ...
           │
+          ├─ [story-algorithms.ts] PageRank, Jaccard, arc/evolution scores (Phase 23)
+          ├─ [subagent-prompt.ts] Build cross-link discovery prompt (Phase 23)
+          │
           └─ [graphify-check.ts] Traverse link edges → consistency report
 ```
 
-### Simplified Merge (v0.4.0)
+### Series Config System (v0.6.0)
+
+Each series has a `SeriesConfig` defining its characters, trait patterns, tech terms, and gag source. The pipeline auto-detects the series from directory name and loads the matching config. Adding a new series requires only adding a config object to `series-config.ts`.
+
+| Series | Gag Source | Characters |
+|--------|-----------|------------|
+| weapon-forger | `PLAN.md` gag table | zhoumo, examiner, elder, luyang, mengjingzhou, soul |
+| my-core-is-boss | `plot-lines.md` chapter table | linyi, zhaoxiaoqi, xiaoelder, chenmo |
+
+### Simplified Merge (v0.4.0+)
 
 **No synthetic nodes.** The merge concatenates per-episode sub-graphs and adds cross-episode link edges. Every node carries its `episode` property to identify source sub-graph.
 
-| What v0.3.0 had | What v0.4.0 does |
+| What v0.3.0 had | What v0.4.0+ does |
 |------------------|-------------------|
 | `char_zhoumo` canonical node | Removed — link edges connect instances directly |
 | `instance_of` edges (char → canonical) | Removed — `same_character` links connect ep↔ep |
@@ -47,28 +61,29 @@ narration.ts (per episode)
 
 ## Node Types
 
-### Regex Pipeline (graphify-episode.ts)
+### Regex Pipeline (graphify-episode.ts, series-config-driven)
 
 | Type | ID Format | Source |
 |------|-----------|--------|
 | episode_plot | `ch1ep1_plot` | narration.ts title match |
+| scene | `ch1ep1_scene_{name}` | narration.ts scene structure |
 | character_instance | `ch1ep1_char_{id}` | narration.ts `character:` fields |
-| tech_term | `ch1ep1_tech_{term}` | Regex pattern match on dialog text |
-| gag_manifestation | `ch1ep1_gag_{type}` | PLAN.md gag table column match |
-| character_trait | `ch1ep1_trait_{char}_{trait}` | Predefined regex patterns per character |
+| tech_term | `ch1ep1_tech_{term}` | Series-specific regex patterns on dialog text |
+| gag_manifestation | `ch1ep1_gag_{type}` | PLAN.md gag table OR `plot-lines.md` chapter table (series-dependent) |
+| character_trait | `ch1ep1_trait_{char}_{trait}` | Series-specific regex patterns per character |
 
 ### Subagent Pipeline (richer)
 
 | Type | ID Format | Source |
 |------|-----------|--------|
-| (all regex types) | + `scene`, `plot_event`, `artifact`, `relationship`, `theme` | NL analysis |
+| (all regex types) | + `plot_event`, `artifact`, `relationship`, `theme` | NL analysis |
 
 ### Regex Pipeline Limitations
 
 1. **Characters:** Only detects from `character:` dialog fields. Characters mentioned in narration text but not speaking are missed (e.g., 滄溟子 in ch2ep3).
-2. **Gags:** Requires PLAN.md gag table column for the episode. Missing column = no gag nodes.
-3. **Traits:** Predefined regex patterns only. Misses traits not in the pattern list. No false positive control.
-4. **No:** scenes, plot_events, artifacts, relationships, themes — these require subagent analysis.
+2. **Gags:** Supports both `PLAN.md` episode-column tables (weapon-forger) and `plot-lines.md` chapter-column tables (my-core-is-boss). For chapter-column format, all episodes in a chapter share the same gag manifestation text.
+3. **Traits:** Series-specific regex patterns loaded from config. Better than hardcoded but still misses traits not in the pattern list. No false positive control.
+4. **No:** plot_events, artifacts, relationships, themes — these require subagent analysis.
 
 ---
 
@@ -104,11 +119,14 @@ narration.ts (per episode)
 
 | Script | Purpose |
 |--------|---------|
+| `series-config.ts` | Series config definitions + auto-detection (`detectSeries()`) |
 | `graphify-episode.ts` | Regex extraction from narration.ts → per-episode graph.json |
 | `graphify-merge.ts` | Concatenate + link edges → merged-graph.json |
 | `graphify-check.ts` | Consistency checking via link edge traversal |
 | `graphify-pipeline.ts` | Orchestrate: episode → merge → html → check |
-| `gen-story-html.ts` | graph.json → vis.js HTML (auto-detects single vs merged) |
+| `gen-story-html.ts` | graph.json → vis.js HTML (auto-detects single vs merged, HTML-escaped) |
+| `story-algorithms.ts` | PageRank, Jaccard similarity, character arc score, gag evolution score |
+| `subagent-prompt.ts` | Build cross-link discovery prompt for Claude subagent |
 | `codebase-map.ts` | Generate CODEBASE_MAP.md (codebase mode) |
 
 ---
@@ -220,26 +238,21 @@ Cross-link edge structure:
 
 Trigger: Run after merge step when ≥ 3 episodes exist in merged graph.
 
-### 23-B Graph Algorithms for Narrative Analysis
+### 23-B Graph Algorithms for Narrative Analysis ✅ (implemented in `story-algorithms.ts`)
 
-Extend existing `src/analyze.ts` (already has betweennessCentrality, godNodes, bridgeNodes):
+| Algorithm | Purpose | Story KG Application | Status |
+|-----------|---------|---------------------|--------|
+| PageRank | Identify influential nodes | Find structurally central characters (not just dialog-heavy) | Done |
+| Jaccard Similarity | Compare episode structures | Detect repetitive plots across episodes | Done |
+| Character Arc Score | Custom metric | Measure trait drift magnitude along same_character chains | Done |
+| Gag Evolution Score | Custom metric | Measure gag variation depth along gag_evolves chains | Done |
 
-| Algorithm | Purpose | Story KG Application |
-|-----------|---------|---------------------|
-| PageRank | Identify influential nodes | Find structurally central characters (not just dialog-heavy) |
-| Jaccard Similarity | Compare episode structures | Detect repetitive plots across episodes |
-| Character Arc Score | Custom metric | Measure trait drift magnitude along same_character chains |
-| Gag Evolution Score | Custom metric | Measure gag variation depth along gag_evolves chains |
+### 23-C AI Cross-Link Generator (partial)
 
-### 23-C AI Cross-Link Generator
-
-- Read merged-graph.json + algorithm outputs (PageRank scores, similarity matrix)
-- Call Claude subagent with structured prompt:
-  - Input: character summaries, plot summaries, gag summaries, algorithm scores
-  - Prompt: "Analyze these narrative elements for non-obvious cross-episode connections..."
-  - Output: `StoryCrossLink[]` (structured JSON)
-- Write cross-links into merged-graph.json as new edges with `generated_by: "ai"`
-- Triggered by: `graphify-pipeline.ts` step 4 (after merge, before check)
+- ✅ Subagent prompt template (`subagent-prompt.ts`): structured prompt with graph summary + algorithm metrics
+- 🔲 Claude subagent call + JSON parsing: `ai-crosslink-generator.ts`
+- 🔲 Write cross-links into merged-graph.json: extend `graphify-merge.ts` with `cross_links` array
+- 🔲 Pipeline integration: `graphify-pipeline.ts` step 4 (after merge, before check)
 
 ### 23-D Visualization Enhancements
 
@@ -256,8 +269,11 @@ Extend existing `src/analyze.ts` (already has betweennessCentrality, godNodes, b
 
 | Action | File | What |
 |--------|------|------|
-| New | `src/scripts/story-algorithms.ts` | PageRank, Jaccard, arc/evolution scores |
-| New | `src/scripts/ai-crosslink-generator.ts` | Claude subagent call + result parsing |
-| Modify | `src/scripts/graphify-pipeline.ts` | Add step 4: algorithm + AI cross-link |
-| Modify | `src/scripts/gen-story-html.ts` | Render AI cross-links + PageRank glow |
-| Modify | `src/scripts/graphify-merge.ts` | Include cross_links in merged output |
+| Done | `src/scripts/series-config.ts` | SeriesConfig type, weapon-forger + my-core-is-boss configs, `detectSeries()` |
+| Done | `src/scripts/story-algorithms.ts` | PageRank, Jaccard, arc/evolution scores |
+| Done | `src/scripts/subagent-prompt.ts` | Cross-link discovery prompt builder |
+| Done | `src/types.ts` | StoryCrossLink + CrossLinkType interfaces |
+| 🔲 New | `src/scripts/ai-crosslink-generator.ts` | Claude subagent call + result parsing |
+| 🔲 Modify | `src/scripts/graphify-pipeline.ts` | Add step 4: algorithm + AI cross-link |
+| 🔲 Modify | `src/scripts/gen-story-html.ts` | Render AI cross-links + PageRank glow |
+| 🔲 Modify | `src/scripts/graphify-merge.ts` | Include cross_links in merged output |

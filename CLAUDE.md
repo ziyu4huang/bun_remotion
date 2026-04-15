@@ -166,7 +166,7 @@ All memory — project knowledge, user feedback, preferences — lives here. Thi
 ### project/
 - [project-overview](.agent/memory/project/project-overview.md) - Tech stack, structure, commands, Remotion concepts
 - [shared-fixture](.agent/memory/project/shared-fixture.md) - Reusable background images in shared-fixture/background/
-- [bun-pi-agent](.agent/memory/project/bun-pi-agent.md) - Coding assistant agent: pi-agent-core/ai/coding-agent, CLI+HTTP SSE, z.ai provider
+- [bun-pi-agent](.agent/memory/project/bun-pi-agent.md) - Coding assistant agent (renamed to bun_pi_agent): pi-agent-core/ai/coding-agent, CLI+HTTP SSE, z.ai provider
 - [google-free-tier-apis](.agent/memory/project/google-free-tier-apis.md) - Google AI Studio free tier APIs: TTS (3 req/min, PCM→WAV), embedding, chat, image gen status
 - [edge-tts](.agent/memory/project/edge-tts.md) - Microsoft Edge TTS via Python: free, no API key, zh-TW neural voices, MP3 output, Windows-tested
 - [mlx-tts-integration](.agent/memory/project/mlx-tts-integration.md) - mlx_tts Python TTS engine at mlx_tts/: setup.sh, voices, story pipeline, model details
