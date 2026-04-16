@@ -5,7 +5,8 @@
  * The pipeline auto-detects the series from directory name and loads the matching config.
  */
 
-import { basename } from "node:path";
+import { basename, resolve } from "node:path";
+import { readdirSync } from "node:fs";
 
 // ─── Type ───
 
@@ -168,9 +169,43 @@ export const myCoreIsBossConfig: SeriesConfig = {
   episodeDirPattern: /^my-core-is-boss-ch(\d+)-ep(\d+)$/,
 };
 
+// ─── Galgame Meme Theater (美少女梗圖劇場) ───
+
+export const galgameMemeTheaterConfig: SeriesConfig = {
+  seriesId: "galgame-meme-theater",
+  displayName: "美少女梗圖劇場",
+  charNames: {
+    xiaoxue: "小雪",
+    xiaoyue: "小月",
+    xiaoying: "小櫻",
+    narrator: "旁白",
+  },
+  traitPatterns: {
+    xiaoxue: [
+      { pattern: /真的好|太好了|絕對|一定|超級|超/, trait: "元氣系" },
+      { pattern: /最後一杯|最後一次|再睡五分鐘/, trait: "永恆的承諾者" },
+      { pattern: /等等|不對|不不/, trait: "天然呆" },
+    ],
+    xiaoyue: [
+      { pattern: /麻煩|無聊|白痴|笨蛋|隨便/, trait: "毒舌學霸" },
+      { pattern: /邏輯|數學|統計|機率|分析/, trait: "數學腦" },
+      { pattern: /冷靜|理性|客觀/, trait: "冷靜理性的幻覺" },
+    ],
+    xiaoying: [
+      { pattern: /欸|咦|真的假的|不會吧/, trait: "天然呆" },
+      { pattern: /社死|尷尬|想轉學|埋了/, trait: "社死女王" },
+      { pattern: /但是|可是|不過/, trait: "迷糊猶豫" },
+    ],
+  },
+  techPatterns: [], // meme comedy — no tech terms
+  gagSource: "plot_lines_md",
+  gagFilePath: "assets/story/plot-lines.md",
+  episodeDirPattern: /^galgame-meme-theater-ep(\d+)$/,
+};
+
 // ─── Auto-detection ───
 
-const SERIES_CONFIGS: SeriesConfig[] = [weaponForgerConfig, myCoreIsBossConfig];
+const SERIES_CONFIGS: SeriesConfig[] = [weaponForgerConfig, myCoreIsBossConfig, galgameMemeTheaterConfig];
 
 /** Detect series config from series directory path */
 export function detectSeries(seriesDir: string): SeriesConfig | null {
@@ -187,3 +222,44 @@ export function getSeriesConfigOrThrow(seriesDir: string): SeriesConfig {
 
 /** Generic episode directory pattern (fallback when no series config matched) */
 export const GENERIC_EPISODE_PATTERN = /-ch(\d+)-ep(\d+)$/i;
+
+/** Extract episode ID string from directory name using series config pattern */
+export function extractEpId(config: SeriesConfig, dirname: string): string | null {
+  const match = dirname.match(config.episodeDirPattern);
+  if (!match) return null;
+
+  // Chapter-based: ch{N}ep{M}
+  if (match.length >= 3 && match[1] && match[2]) {
+    return `ch${match[1]}ep${match[2]}`;
+  }
+  // Flat numbering: ep{N}
+  if (match.length >= 2 && match[1]) {
+    return `ep${match[1]}`;
+  }
+  return null;
+}
+
+/** Compute sort key from EP_ID for ordering episodes */
+export function epSortKey(epId: string): number {
+  const chEp = epId.match(/^ch(\d+)ep(\d+)$/);
+  if (chEp) return parseInt(chEp[1]) * 100 + parseInt(chEp[2]);
+  const flat = epId.match(/^ep(\d+)$/);
+  if (flat) return parseInt(flat[1]);
+  return 0;
+}
+
+/** Discover episode directories in a series dir using its config */
+export function discoverEpisodes(seriesDir: string): { dirname: string; epId: string; sortKey: number }[] {
+  const config = detectSeries(seriesDir);
+  if (!config) return [];
+
+  const entries = readdirSync(seriesDir, { withFileTypes: true });
+  return entries
+    .filter(e => e.isDirectory())
+    .map(e => {
+      const epId = extractEpId(config, e.name);
+      return epId ? { dirname: e.name, epId, sortKey: epSortKey(epId) } : null;
+    })
+    .filter((x): x is { dirname: string; epId: string; sortKey: number } => x !== null)
+    .sort((a, b) => a.sortKey - b.sortKey);
+}

@@ -16,8 +16,8 @@ export async function startServer() {
   const config = getConfig();
   const origin = `http://${config.host}:${config.port}`;
 
-  // Initialize run store with persistence
-  initStore(config.runsDir);
+  // Initialize run store with persistence and cleanup
+  initStore(config.runsDir, { maxAge: config.maxRunAge, maxCount: config.maxRunCount });
 
   console.log(`Pi Agent server starting on ${origin}`);
   console.log("");

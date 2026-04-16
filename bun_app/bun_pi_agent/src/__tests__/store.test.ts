@@ -9,6 +9,7 @@ import {
   listRuns,
   saveRun,
   deleteRun,
+  cleanupRuns,
   EMPTY_USAGE,
   accumulateUsage,
   type RunState,
@@ -271,5 +272,145 @@ describe("config runsDir", () => {
     const config = getConfig();
     expect(config.runsDir).toBe("/tmp/custom-runs");
     delete process.env.PI_AGENT_RUNS_DIR;
+  });
+
+  test("getConfig includes cleanup defaults", () => {
+    delete process.env.PI_AGENT_MAX_RUN_AGE;
+    delete process.env.PI_AGENT_MAX_RUN_COUNT;
+
+    const { getConfig } = require("../config.js");
+    const config = getConfig();
+
+    expect(config.maxRunAge).toBe(604800);
+    expect(config.maxRunCount).toBe(100);
+  });
+
+  test("getConfig uses custom cleanup env vars", () => {
+    process.env.PI_AGENT_MAX_RUN_AGE = "3600";
+    process.env.PI_AGENT_MAX_RUN_COUNT = "50";
+    const { getConfig } = require("../config.js");
+    const config = getConfig();
+    expect(config.maxRunAge).toBe(3600);
+    expect(config.maxRunCount).toBe(50);
+    delete process.env.PI_AGENT_MAX_RUN_AGE;
+    delete process.env.PI_AGENT_MAX_RUN_COUNT;
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Run cleanup policy
+// ---------------------------------------------------------------------------
+
+describe("run cleanup policy", () => {
+  let tmpDir: string;
+
+  beforeEach(() => {
+    tmpDir = mkdtempSync(join(tmpdir(), "pi-agent-cleanup-"));
+  });
+
+  afterEach(() => {
+    rmSync(tmpDir, { recursive: true, force: true });
+    // Reset module-level state by re-initing without cleanup opts
+    const fresh = mkdtempSync(join(tmpdir(), "pi-agent-reset-"));
+    initStore(fresh);
+    rmSync(fresh, { recursive: true, force: true });
+  });
+
+  test("cleanupRuns removes old runs based on maxAge", () => {
+    const now = new Date();
+    const oldDate = new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000); // 10 days ago
+    const recentDate = new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000); // 1 day ago
+
+    initStore(tmpDir, { maxAge: 7 * 24 * 60 * 60, maxCount: 0 }); // 7 days age, no count limit
+
+    setRun("old-run", makeState({ run: makeRun({ run_id: "old-run", created_at: oldDate.toISOString() }) }));
+    setRun("recent-run", makeState({ run: makeRun({ run_id: "recent-run", created_at: recentDate.toISOString() }) }));
+    saveRun("old-run");
+    saveRun("recent-run");
+
+    const { removed } = cleanupRuns();
+    expect(removed).toBe(1);
+    expect(getRun("old-run")).toBeUndefined();
+    expect(getRun("recent-run")).toBeDefined();
+    expect(existsSync(join(tmpDir, "old-run.json"))).toBe(false);
+    expect(existsSync(join(tmpDir, "recent-run.json"))).toBe(true);
+  });
+
+  test("cleanupRuns removes oldest runs when exceeding maxCount", () => {
+    initStore(tmpDir, { maxAge: 0, maxCount: 2 }); // no age limit, max 2 runs
+
+    const base = Date.now();
+    for (let i = 0; i < 4; i++) {
+      const date = new Date(base - (4 - i) * 60 * 1000); // spaced 1 min apart
+      const id = `run-${i}`;
+      setRun(id, makeState({ run: makeRun({ run_id: id, created_at: date.toISOString() }) }));
+      saveRun(id);
+    }
+
+    const { removed } = cleanupRuns();
+    expect(removed).toBe(2);
+    expect(getRun("run-0")).toBeUndefined(); // oldest
+    expect(getRun("run-1")).toBeUndefined(); // second oldest
+    expect(getRun("run-2")).toBeDefined();
+    expect(getRun("run-3")).toBeDefined();
+  });
+
+  test("cleanupRuns applies both age and count limits", () => {
+    const now = Date.now();
+    const oldDate = new Date(now - 10 * 24 * 60 * 60 * 1000);
+
+    initStore(tmpDir, { maxAge: 7 * 24 * 60 * 60, maxCount: 3 });
+
+    // 2 old runs
+    setRun("old-1", makeState({ run: makeRun({ run_id: "old-1", created_at: oldDate.toISOString() }) }));
+    setRun("old-2", makeState({ run: makeRun({ run_id: "old-2", created_at: oldDate.toISOString() }) }));
+
+    // 3 recent runs
+    for (let i = 0; i < 3; i++) {
+      const id = `recent-${i}`;
+      setRun(id, makeState({ run: makeRun({ run_id: id, created_at: new Date().toISOString() }) }));
+    }
+
+    const { removed } = cleanupRuns();
+    expect(removed).toBe(2); // 2 old runs removed by age
+    expect(getRun("old-1")).toBeUndefined();
+    expect(getRun("old-2")).toBeUndefined();
+    expect(getRun("recent-0")).toBeDefined();
+    expect(getRun("recent-1")).toBeDefined();
+    expect(getRun("recent-2")).toBeDefined();
+  });
+
+  test("cleanupRuns returns 0 when no cleanup needed", () => {
+    initStore(tmpDir, { maxAge: 999999, maxCount: 100 });
+    setRun("run-1", makeState());
+
+    const { removed } = cleanupRuns();
+    expect(removed).toBe(0);
+    expect(getRun("run-1")).toBeDefined();
+  });
+
+  test("cleanupRuns is a no-op without cleanup opts", () => {
+    initStore(tmpDir); // no opts
+    setRun("run-1", makeState());
+
+    const { removed } = cleanupRuns();
+    expect(removed).toBe(0);
+  });
+
+  test("initStore triggers cleanup automatically", () => {
+    // Pre-populate files with old timestamps
+    const oldDate = new Date(Date.now() - 10 * 24 * 60 * 60 * 1000);
+    const persisted = {
+      run: makeRun({ run_id: "stale-run", created_at: oldDate.toISOString() }),
+      events: [],
+      usage: { ...EMPTY_USAGE },
+    };
+    require("fs").writeFileSync(join(tmpDir, "stale-run.json"), JSON.stringify(persisted));
+
+    // initStore should load then cleanup
+    initStore(tmpDir, { maxAge: 7 * 24 * 60 * 60, maxCount: 100 });
+
+    expect(getRun("stale-run")).toBeUndefined();
+    expect(existsSync(join(tmpDir, "stale-run.json"))).toBe(false);
   });
 });

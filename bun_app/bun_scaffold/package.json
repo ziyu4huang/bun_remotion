@@ -1,0 +1,9 @@
+{
+  "name": "bun_scaffold",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "scaffold": "bun run src/index.ts"
+  }
+}

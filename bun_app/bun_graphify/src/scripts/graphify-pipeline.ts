@@ -14,6 +14,7 @@
 import { resolve } from "node:path";
 import { readdirSync, existsSync, rmSync, unlinkSync } from "node:fs";
 import { spawn } from "child_process";
+import { discoverEpisodes } from "./series-config";
 
 const args = process.argv.slice(2);
 if (args.length === 0 || args.includes("--help")) {
@@ -37,12 +38,9 @@ const scriptDir = resolve(import.meta.dir);
 console.log(`=== Federated Graph Pipeline ===`);
 console.log(`Series: ${seriesDir}\n`);
 
-// Discover episode directories early (needed for cleanup)
-const EP_DIR_PATTERN = /-ch(\d+)-ep(\d+)/;
-const episodes = readdirSync(seriesDir, { withFileTypes: true })
-  .filter(e => e.isDirectory() && EP_DIR_PATTERN.test(e.name))
-  .map(e => e.name)
-  .sort();
+// Discover episode directories using series config
+const discovered = discoverEpisodes(seriesDir);
+const episodes = discovered.map(e => e.dirname);
 
 // Step 0: Clean stale codebase-mode artifacts from prior runs
 console.log(`Step 0: Cleaning stale artifacts...`);

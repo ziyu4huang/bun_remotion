@@ -1,6 +1,6 @@
 {
   "name": "bun_pi_agent",
-  "version": "0.1.0",
+  "version": "0.5.0",
   "private": true,
   "type": "module",
   "main": "src/index.ts",
@@ -11,9 +11,13 @@
     "dev": "bun --watch src/index.ts --cli",
     "build": "bun run scripts/build.ts",
     "test": "bun test src/",
-    "test:skills": "bun test src/skills/"
+    "test:skills": "bun test src/skills/",
+    "demo": "bun src/demo.ts",
+    "acp-demo": "bun src/acp-demo.ts",
+    "test:acp": "bun test src/acp/__tests__/"
   },
   "dependencies": {
+    "@agentclientprotocol/sdk": "^0.19.0",
     "@mariozechner/pi-agent-core": "latest",
     "@mariozechner/pi-ai": "latest",
     "@mariozechner/pi-coding-agent": "latest",

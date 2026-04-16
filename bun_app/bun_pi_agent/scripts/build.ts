@@ -1,4 +1,4 @@
-import { cpSync, mkdirSync, rmSync, writeFileSync } from "fs";
+import { cpSync, mkdirSync, rmSync } from "fs";
 import { join, dirname } from "path";
 import { execSync } from "child_process";
 
@@ -18,18 +18,21 @@ execSync(
   { stdio: "inherit" }
 );
 
-// 2. Copy pi-coding-agent assets expected next to the binary
-console.log("[2/3] Copying pi-coding-agent assets...");
+// 2. Compile ACP demo binary
+console.log("[2/3] Compiling ACP demo binary...");
+execSync(
+  `bun build ${join(APP, "src/demo.ts")} --outfile ${join(DIST, "demo")} --compile --target bun --minify`,
+  { stdio: "inherit" }
+);
+
+// 3. Copy pi-coding-agent assets for interactive CLI mode
+// (package.json is no longer needed — binary creates it on startup via ensurePackageJson)
+console.log("[3/3] Copying pi-coding-agent assets (for interactive CLI mode)...");
 cpSync(join(PKG_AGENT, "dist", "modes", "interactive", "theme"), join(DIST, "theme"), { recursive: true });
 cpSync(join(PKG_AGENT, "dist", "modes", "interactive", "assets"), join(DIST, "assets"), { recursive: true });
 cpSync(join(PKG_AGENT, "dist", "core", "export-html"), join(DIST, "export-html"), { recursive: true });
 
-// 3. Write a minimal package.json (pi-coding-agent reads it for piConfig)
-console.log("[3/3] Writing dist/package.json...");
-writeFileSync(join(DIST, "package.json"), JSON.stringify({
-  name: "bun_pi_agent",
-  version: "0.1.0",
-  private: true,
-}, null, 2));
-
-console.log("\nDone! Binary at: dist/agent-cli");
+console.log("\nDone! Binaries at: dist/agent-cli, dist/demo");
+console.log("  agent-cli: Self-contained server+CLI (needs only bun runtime)");
+console.log("  demo:      ACP endpoint demo client");
+console.log("  Optional assets: dist/theme/, dist/assets/, dist/export-html/ (for interactive CLI mode)");

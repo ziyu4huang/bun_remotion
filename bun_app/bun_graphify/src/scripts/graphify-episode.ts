@@ -23,7 +23,7 @@ import { detectMultiple } from "../detect";
 import { extractAST } from "../extract/ast";
 import { buildFromExtraction } from "../build";
 import { parseNarration } from "../extract/narrative";
-import { getSeriesConfigOrThrow } from "./series-config";
+import { getSeriesConfigOrThrow, extractEpId } from "./series-config";
 import type { SeriesConfig } from "./series-config";
 import type { ExtractionResult, GraphNode, GraphEdge, Confidence } from "../types";
 
@@ -59,17 +59,20 @@ for (const dir of [episodeDir, seriesDir]) {
 
 const outDir = resolve(episodeDir, "bun_graphify_out");
 
-// Extract episode ID from directory name
-const epIdMatch = basename(episodeDir).match(/ch(\d+)-ep(\d+)/i);
-if (!epIdMatch) {
+// Load series config (auto-detected from directory name) — must be before EP_ID extraction
+const config: SeriesConfig = getSeriesConfigOrThrow(seriesDir);
+
+// Extract episode ID from directory name using series config pattern
+const epId = extractEpId(config, basename(episodeDir));
+if (!epId) {
   console.error(`Cannot extract episode ID from: ${basename(episodeDir)}`);
-  console.error(`Expected format: <series>-chN-epM`);
+  console.error(`Expected pattern: ${config.episodeDirPattern}`);
   process.exit(1);
 }
-const EP_ID = `ch${epIdMatch[1]}ep${epIdMatch[2]}`;
+const EP_ID = epId;
 
-// Load series config (auto-detected from directory name)
-const config: SeriesConfig = getSeriesConfigOrThrow(seriesDir);
+// For backward compat, extract chapter/ep match if available
+const epIdMatch = EP_ID.match(/ch(\d+)ep(\d+)/);
 
 console.log(`Episode: ${EP_ID} | Series: ${config.displayName}`);
 console.log(`Episode dir: ${episodeDir}`);
@@ -123,8 +126,14 @@ console.log(`Parsed: ${parsed.scenes.length} scenes, ${parsed.characters.length}
 let title = "";
 try {
   const narrationContent = readFileSync(narrationPath, "utf-8");
+  // Chapter-based: 第一章 第一集：標題
   const titleMatch = narrationContent.match(/第[一二三四五六七八九十]+章\s*第[一二三四五六七八九十]+集[：:]\s*(.+)/);
   if (titleMatch) title = titleMatch[1].trim();
+  // Flat numbering: 第七集：AI 時代求生 or 美少女梗圖劇場。今天要帶...
+  if (!title) {
+    const flatMatch = narrationContent.match(/第[一二三四五六七八九十\d]+集[：:]\s*(.+)/);
+    if (flatMatch) title = flatMatch[1].trim().replace(/\n.*/, "");
+  }
 } catch {}
 
 addNode(
@@ -290,28 +299,29 @@ if (config.gagSource === "plan_md") {
     }
   }
 } else if (config.gagSource === "plot_lines_md" && config.gagFilePath) {
-  // Parse gag table from plot-lines.md (my-core-is-boss style: chapter-column table)
+  // Parse gag table from plot-lines.md
   const plotLinesPath = resolve(seriesDir, config.gagFilePath);
   if (existsSync(plotLinesPath)) {
     try {
       const plotLinesContent = readFileSync(plotLinesPath, "utf-8");
 
-      // Extract chapter number from EP_ID (ch1ep2 → chapter 1)
-      const chapterNum = epIdMatch![1];
-
-      // Find gag table under ## 招牌梗追蹤
-      const gagSectionMatch = plotLinesContent.match(
+      // Detect format: chapter-columns (## 招牌梗追蹤) vs evolution-chain (## Signature Running Gags)
+      const chapterSectionMatch = plotLinesContent.match(
         /## 招牌梗追蹤\s*\n\s*\n((?:\|.*\n)+)/
       );
-      if (gagSectionMatch) {
-        const tableLines = gagSectionMatch[1].split("\n").filter(
+      const evolutionSectionMatch = plotLinesContent.match(
+        /## Signature Running Gags\s*\n\s*\n((?:\|.*\n)+)/
+      );
+
+      if (chapterSectionMatch && epIdMatch) {
+        // my-core-is-boss style: chapter-columns table
+        const chapterNum = epIdMatch[1];
+        const tableLines = chapterSectionMatch[1].split("\n").filter(
           l => l.startsWith("|") && !l.includes("---")
         );
 
         if (tableLines.length >= 1) {
-          // Parse header to find chapter column index
           const headerCells = tableLines[0].split("|").map(c => c.trim()).filter(Boolean);
-          const gagColIdx = 0; // first column is gag name
           let chapterColIdx = -1;
 
           for (let i = 1; i < headerCells.length; i++) {
@@ -322,7 +332,6 @@ if (config.gagSource === "plan_md") {
           }
 
           if (chapterColIdx >= 0) {
-            // Parse data rows
             for (let r = 1; r < tableLines.length; r++) {
               const cells = tableLines[r].split("|").map(c => c.trim()).filter(Boolean);
               if (cells.length < 2) continue;
@@ -342,6 +351,45 @@ if (config.gagSource === "plan_md") {
               }
             }
           }
+        }
+      } else if (evolutionSectionMatch) {
+        // galgame-meme-theater style: Gag | Pattern | Episodes | Evolution
+        const tableLines = evolutionSectionMatch[1].split("\n").filter(
+          l => l.startsWith("|") && !l.includes("---")
+        );
+
+        for (const row of tableLines) {
+          const cells = row.split("|").map(c => c.trim()).filter(Boolean);
+          if (cells.length < 4) continue;
+
+          const gagName = cells[0];
+          const episodesCol = cells[2]; // "ep1, ep2, ep3, ep4"
+          const evolutionCol = cells[3]; // "ep1奶茶→ep2再一局→..."
+
+          // Check if this episode is in the episodes list
+          const epList = episodesCol.split(",").map(e => e.trim().toLowerCase());
+          if (!epList.includes(EP_ID.toLowerCase())) continue;
+
+          // Extract this episode's manifestation from evolution chain
+          // Format: "ep1奶茶→ep2再一局→ep3夜市→ep4手搖飲"
+          let manifestation = "";
+          const parts = evolutionCol.split("→");
+          for (const part of parts) {
+            const epTagMatch = part.match(/ep\d+/i);
+            if (epTagMatch && epTagMatch[0].toLowerCase() === EP_ID.toLowerCase()) {
+              manifestation = part.replace(/ep\d+/i, "").trim();
+              break;
+            }
+          }
+          // Fallback: use pattern description if evolution didn't parse
+          if (!manifestation) manifestation = cells[1]; // Pattern column
+
+          const gagId = `${EP_ID}_gag_${gagName.replace(/\s+/g, "_")}`;
+          addNode(gagId, `${gagName}：${manifestation} (${EP_ID})`, "gag_manifestation", {
+            gag_type: gagName,
+            episode: EP_ID,
+          });
+          addEdge(gagId, `${EP_ID}_plot`, "appears_in");
         }
       }
     } catch (e) {

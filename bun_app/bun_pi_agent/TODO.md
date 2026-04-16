@@ -7,14 +7,18 @@
 >
 > **Rule:** Architecture decisions → PLAN.md. Task tracking → this file.
 
-> **Status:** v0.2.0 — Run persistence + token usage tracking, 108 tests passing
+> **Status:** v0.5.0 — ACP stdio mode migration, 160 tests passing
 
 ## Known Issues
 
-**Server:**
+**ACP stdio mode:**
+- `prompt()` doesn't detect abort properly — need to track cancelled state per session
+- No client-side method support (fs, terminal) — agent uses its own tools directly
+- No MCP server integration — `mcpServers` param in `session/new` is ignored
+
+**Server (HTTP mode):**
 - No `/runs/:id/resume` implementation — returns 501.
 - ACP `async` mode still blocks (waits for agent completion) — real impl needs background queue.
-- Run persistence is file-based JSON — no cleanup of old runs, directory grows indefinitely.
 
 **Agent:**
 - No conversation history persistence — agent state resets on restart.
@@ -26,10 +30,18 @@
 
 ## P0 — Fix next
 
-- [ ] **Run cleanup policy** — Add max age or max count for persisted runs. Clean up on startup or via endpoint.
-- [ ] **Streaming response in chat endpoint** — The `/chat` SSE endpoint should stream text deltas, not wait for full completion.
+- [ ] **ACP cancel detection** — `prompt()` handler needs a per-session cancelled flag that `cancel()` sets, so `prompt()` returns `{ stopReason: "cancelled" }` properly.
+- [ ] **Streaming response in chat endpoint** — Verify that `/chat` SSE properly streams text deltas end-to-end (code exists, needs integration test).
 
 ## P1 — Feature completeness
+
+- [ ] **Client-side method support** — When client advertises `fs.readTextFile`/`fs.writeTextFile`, use them instead of agent's own tools.
+- [ ] **Permission flow** — Implement `session/request_permission` for destructive tool calls.
+- [ ] **MCP server integration** — Connect to MCP servers specified in `session/new` params.
+- [ ] **Conversation history** — Persist agent state to disk. Resume previous sessions.
+- [ ] **Model validation on switch** — Check that `provider/model` exists in pi-ai MODELS const before applying.
+- [ ] **Skill hot-reload** — Watch `.claude/skills/` and `.agent/skills/` for changes. Reload without restart.
+- [ ] **Rate limiting** — Add basic rate limiting to HTTP endpoints.
 
 - [ ] **Conversation history** — Persist agent state to disk. Resume previous sessions.
 - [ ] **Model validation on switch** — Check that `provider/model` exists in pi-ai MODELS const before applying.
@@ -59,6 +71,102 @@
 ---
 
 ## Development History
+
+### 2026-04-16 — ACP stdio mode migration (v0.5.0)
+
+| Metric | Before (v0.4.1) | After (v0.5.0) |
+|--------|-----------------|----------------|
+| Tests | 132 pass | **160 pass** (+28) |
+| Test files | 8 | **11** (+3 ACP tests) |
+| expect() calls | 316 | **377** |
+| Source modules | 13 | **18** (+4 ACP modules + acp-demo) |
+| Transport modes | 2 (CLI, HTTP) | **3** (+ACP stdio) |
+| Default mode | CLI | **ACP stdio** |
+| Protocol | REST (IBM/BeeAI) | **JSON-RPC 2.0** (Zed/JetBrains ACP) |
+
+**Changes applied:**
+- `src/acp/event-mapper.ts` — Maps pi-agent-core AgentEvent → ACP SessionUpdate (text, thought, tool calls)
+- `src/acp/session-store.ts` — In-memory session → agent instance store (CRUD)
+- `src/acp/agent-handler.ts` — Implements Agent interface from @agentclientprotocol/sdk (initialize, newSession, prompt, cancel)
+- `src/acp/stdio.ts` — Sets up ndJsonStream + AgentSideConnection over stdin/stdout
+- `src/acp-demo.ts` — Demo client that spawns agent subprocess, walks through full ACP lifecycle
+- `src/index.ts` — Default mode changed to stdio, added --cli/--server flags, version bumped to 0.5.0
+- `package.json` — Added @agentclientprotocol/sdk, added acp-demo + test:acp scripts, version 0.5.0
+- `src/acp/__tests__/event-mapper.test.ts` — 16 tests for all event mappings
+- `src/acp/__tests__/session-store.test.ts` — 8 tests for session CRUD
+- `src/acp/__tests__/agent-handler.test.ts` — 4 tests for handler logic
+
+**Lessons learned:**
+- `@agentclientprotocol/sdk` (v0.19.0) provides AgentSideConnection + ndJsonStream — handles all JSON-RPC framing
+- The IBM/BeeAI `acp-sdk` and the Zed/JetBrains `@agentclientprotocol/sdk` are completely different packages despite sharing "ACP" name
+- Default mode must be stdio for editor integration — editors spawn agent without flags
+
+### 2026-04-16 — ACP demo script + dist/demo binary (v0.4.1)
+
+| Metric | Before (v0.4.0) | After (v0.4.1) |
+|--------|-----------------|----------------|
+| Source modules | 12 | **13** (+demo.ts) |
+| Dist binaries | 1 (agent-cli) | **2** (+demo) |
+| Build steps | 2 | **3** (+demo compile) |
+
+**Changes applied:**
+- `src/demo.ts` — New ACP client demo: walks through all 8 endpoints (ping, agents, sync run, run status, events, stream run, cancel run), colorized output, --host/--port args
+- `scripts/build.ts` — Added step 2/3 to compile `src/demo.ts` into `dist/demo` binary
+- `package.json` — Added `"demo"` script
+
+**Usage:**
+```bash
+# Terminal 1: start server
+bun run --cwd bun_app/bun_pi_agent server
+
+# Terminal 2: run demo (from source)
+bun run --cwd bun_app/bun_pi_agent demo
+
+# Or after build: dist/demo
+```
+
+### 2026-04-16 — Run cleanup policy (v0.4.0)
+
+| Metric | Before (v0.3.0) | After (v0.4.0) |
+|--------|-----------------|----------------|
+| Tests | 124 pass | **132 pass** (+8) |
+| expect() calls | 291 | **316** |
+| Store exports | 8 | **9** (+cleanupRuns) |
+| Config fields | 6 | **8** (+maxRunAge, maxRunCount) |
+
+**Changes applied:**
+- `src/config.ts` — Added `maxRunAge` (default 604800 = 7 days) and `maxRunCount` (default 100) to AgentConfig
+- `src/store.ts` — New `cleanupRuns()`: age-based removal (deletes runs older than maxAge), count-based removal (deletes oldest when exceeding maxCount). `initStore()` now accepts cleanup opts and auto-runs cleanup after loading. `initStore()` clears in-memory Map on re-init.
+- `src/server/index.ts` — Passes cleanup opts from config to `initStore()`
+- `src/__tests__/store.test.ts` — 8 new tests: age-based cleanup, count-based cleanup, combined, no-op cases, initStore auto-cleanup, config defaults/custom
+
+**Lessons learned:**
+- Module-level `runs` Map in store.ts leaks between test describe blocks — `initStore()` must call `runs.clear()` before `loadFromDisk()` to avoid stale state
+
+### 2026-04-16 — Self-contained binary + binary integration tests (v0.3.0)
+
+| Metric | Before (v0.2.0) | After (v0.3.0) |
+|--------|-----------------|----------------|
+| Tests | 108 pass | **124 pass** (+16) |
+| Test files | 7 | **8** (+binary.test.ts) |
+| expect() calls | 254 | **291** |
+| Binary self-contained | No (needs package.json) | **Yes** (creates on first run) |
+| --version flag | No | **Yes** (-v / --version) |
+| Help message | Basic | **Full** (examples, env vars, modes) |
+
+**Changes applied:**
+- `src/index.ts` — Rewritten with dynamic imports, `ensurePackageJson()`, `showHelp()`, `--version` flag
+- `scripts/build.ts` — Removed manual package.json write (binary creates it automatically)
+- `src/__tests__/binary.test.ts` — 16 new integration tests for packaged binary
+- Binary now works from any directory without companion files (only needs bun runtime)
+- `--version` / `-v` flag prints `bun_pi_agent v0.3.0`
+- Help message now includes: mode descriptions, all env vars, ZAI_API_KEY, examples section
+
+**Lessons learned:**
+- pi-coding-agent reads `package.json` from `dirname(process.execPath)` at module scope via `getPackageDir()`
+- `--help` worked without package.json because static imports are deferred in compiled binaries until the module is actually accessed
+- Converting static imports to dynamic imports (`await import()`) allows code to run BEFORE pi-coding-agent loads
+- `ensurePackageJson()` writes embedded package.json content to disk before dynamic import triggers pi-coding-agent
 
 ### 2026-04-16 — Run persistence + token usage tracking (v0.2.0)
 
@@ -113,6 +221,15 @@
 
 ## Done
 
+- [x] ACP demo script: src/demo.ts walks all 8 endpoints, compiled to dist/demo binary
+- [x] Run cleanup policy: age-based + count-based cleanup on startup (PI_AGENT_MAX_RUN_AGE, PI_AGENT_MAX_RUN_COUNT)
+- [x] 8 new cleanup tests (age, count, combined, no-op, initStore auto-cleanup, config)
+- [x] Self-contained binary: writes package.json on first run, works without companion files
+- [x] --version / -v flag for version display
+- [x] Comprehensive help message with examples, env vars, mode descriptions
+- [x] 16 binary integration tests (help, version, self-contained, server mode)
+- [x] Dynamic imports in index.ts to defer pi-coding-agent loading
+- [x] Build script simplified (no package.json write needed)
 - [x] Run store persistence: file-backed JSON in configurable PI_AGENT_RUNS_DIR
 - [x] Token usage tracking: accumulate from turn_end events, expose via GET /runs/:id
 - [x] New src/store.ts module with initStore, getRun, setRun, saveRun, deleteRun

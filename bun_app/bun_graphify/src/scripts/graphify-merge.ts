@@ -18,7 +18,7 @@ import { existsSync, mkdirSync, writeFileSync, readdirSync, readFileSync } from 
 import Graph from "graphology";
 import { leidenCluster, analyzeCommunities, cohesionScore } from "../cluster";
 import type { CommunityReport } from "../types";
-import { getSeriesConfigOrThrow } from "./series-config";
+import { getSeriesConfigOrThrow, discoverEpisodes, epSortKey } from "./series-config";
 import type { SeriesConfig } from "./series-config";
 
 // ─── Types ───
@@ -71,23 +71,18 @@ console.log(`Series: ${config.displayName} (${seriesDir})`);
 
 // ─── Step 1: Discover per-episode graphs ───
 
-// Auto-detect episode directories: any dir matching *-chN-epM pattern
-const EP_DIR_PATTERN = /-ch(\d+)-ep(\d+)/;
+// Use series config for episode discovery (supports both ch-based and flat naming)
+const discovered = discoverEpisodes(seriesDir);
 
-const episodeEntries = readdirSync(seriesDir, { withFileTypes: true })
-  .filter(e => e.isDirectory() && EP_DIR_PATTERN.test(e.name))
-  .map(e => {
-    const match = e.name.match(EP_DIR_PATTERN)!;
-    return {
-      dir: e.name,
-      ch: parseInt(match[1]),
-      ep: parseInt(match[2]),
-      epId: `ch${match[1]}ep${match[2]}`,
-      graphPath: resolve(seriesDir, e.name, "bun_graphify_out", "graph.json"),
-    };
-  })
+const episodeEntries = discovered
+  .map(e => ({
+    dir: e.dirname,
+    epId: e.epId,
+    sortKey: e.sortKey,
+    graphPath: resolve(seriesDir, e.dirname, "bun_graphify_out", "graph.json"),
+  }))
   .filter(e => existsSync(e.graphPath))
-  .sort((a, b) => a.ch * 100 + a.ep - (b.ch * 100 + b.ep));
+  .sort((a, b) => a.sortKey - b.sortKey);
 
 console.log(`Found ${episodeEntries.length} episode graphs:`);
 for (const e of episodeEntries) {
@@ -134,14 +129,29 @@ if (existsSync(planPath)) {
       .filter(l => l.startsWith("|") && !l.includes("---"));
     for (const row of rows) {
       const cells = row.split("|").map(c => c.trim()).filter(Boolean);
-      if (cells.length >= 5) {
-        const [epIdRaw, , , charsRaw, status] = cells;
-        const m = epIdRaw.match(/ch(\d+)-ep(\d+)/i);
+      if (cells.length >= 4) {
+        const [epIdRaw, , , statusOrChars, maybeStatus] = cells;
+        // Try ch-based: ch1-ep1 or ch1ep1
+        const m = epIdRaw.match(/ch(\d+)-?ep(\d+)/i);
+        // Try flat: ep1, ep2
+        const flatM = epIdRaw.match(/ep(\d+)/i);
         if (m) {
+          const charsRaw = cells.length >= 5 ? cells[3] : "";
+          const status = cells.length >= 5 ? cells[4] : cells[3];
           episodeMetas.push({
             epId: `ch${m[1]}ep${m[2]}`,
             ch: parseInt(m[1]),
             ep: parseInt(m[2]),
+            characters: charsRaw.split(",").map(c => c.trim().toLowerCase()).filter(Boolean),
+            status: status.trim(),
+          });
+        } else if (flatM) {
+          const charsRaw = cells.length >= 5 ? cells[3] : "";
+          const status = cells.length >= 5 ? cells[4] : cells[3];
+          episodeMetas.push({
+            epId: `ep${flatM[1]}`,
+            ch: 1,
+            ep: parseInt(flatM[1]),
             characters: charsRaw.split(",").map(c => c.trim().toLowerCase()).filter(Boolean),
             status: status.trim(),
           });
@@ -198,30 +208,36 @@ if (config.gagSource === "plan_md") {
     }
   }
 } else if (config.gagSource === "plot_lines_md" && config.gagFilePath) {
-  // Parse gag table from plot-lines.md (chapter-column format)
+  // Parse gag table from plot-lines.md
   const plotLinesPath = resolve(seriesDir, config.gagFilePath);
   if (existsSync(plotLinesPath)) {
     try {
       const plotLinesContent = readFileSync(plotLinesPath, "utf-8");
 
-      // Find gag table under ## 招牌梗追蹤
-      const gagSectionMatch = plotLinesContent.match(
+      // Detect format: chapter-columns (## 招牌梗追蹤) vs evolution-chain (## Signature Running Gags)
+      const chapterSectionMatch = plotLinesContent.match(
         /## 招牌梗追蹤\s*\n\s*\n((?:\|.*\n)+)/
       );
-      if (gagSectionMatch) {
-        const tableLines = gagSectionMatch[1].split("\n").filter(
+      const evolutionSectionMatch = plotLinesContent.match(
+        /## Signature Running Gags\s*\n\s*\n((?:\|.*\n)+)/
+      );
+
+      if (chapterSectionMatch) {
+        // my-core-is-boss style: chapter-column format
+        const tableLines = chapterSectionMatch[1].split("\n").filter(
           l => l.startsWith("|") && !l.includes("---")
         );
 
         if (tableLines.length >= 1) {
-          // Parse header to find chapter columns
           const headerCells = tableLines[0].split("|").map(c => c.trim()).filter(Boolean);
 
           // Map chapter column index → list of episode IDs in that chapter
           const chapterEpisodes: Map<number, string[]> = new Map();
           for (const entry of episodeEntries) {
-            if (!chapterEpisodes.has(entry.ch)) chapterEpisodes.set(entry.ch, []);
-            chapterEpisodes.get(entry.ch)!.push(entry.epId);
+            // For flat numbering, treat all as ch=1
+            const ch = entry.epId.match(/^ch(\d+)ep/)?.[1];
+            if (ch && !chapterEpisodes.has(parseInt(ch))) chapterEpisodes.set(parseInt(ch), []);
+            if (ch) chapterEpisodes.get(parseInt(ch))!.push(entry.epId);
           }
 
           for (let r = 1; r < tableLines.length; r++) {
@@ -231,7 +247,6 @@ if (config.gagSource === "plan_md") {
             const gagType = cells[0];
             const chain: GagChain = { gagType, manifestations: [] };
 
-            // Collect manifestations from all chapter columns
             for (let c = 1; c < cells.length && c < headerCells.length; c++) {
               const text = cells[c];
               if (!text || text === "TBD" || text === "—") continue;
@@ -240,7 +255,6 @@ if (config.gagSource === "plan_md") {
               if (!chMatch) continue;
               const chNum = parseInt(chMatch[1]);
 
-              // Map chapter to episode IDs that exist in our data
               const epIds = chapterEpisodes.get(chNum);
               if (epIds) {
                 for (const epId of epIds) {
@@ -252,6 +266,40 @@ if (config.gagSource === "plan_md") {
             if (chain.manifestations.length >= 2) {
               gagChains.push(chain);
             }
+          }
+        }
+      } else if (evolutionSectionMatch) {
+        // galgame-meme-theater style: Gag | Pattern | Episodes | Evolution
+        const tableLines = evolutionSectionMatch[1].split("\n").filter(
+          l => l.startsWith("|") && !l.includes("---")
+        );
+
+        // Build set of known epIds from actual episode data
+        const knownEpIds = new Set(episodeEntries.map(e => e.epId.toLowerCase()));
+
+        for (const row of tableLines) {
+          const cells = row.split("|").map(c => c.trim()).filter(Boolean);
+          if (cells.length < 4) continue;
+
+          const gagType = cells[0];
+          const evolutionCol = cells[3]; // "ep1奶茶→ep2再一局→..."
+
+          // Parse evolution chain into per-episode manifestations
+          const chain: GagChain = { gagType, manifestations: [] };
+          const parts = evolutionCol.split("→");
+          for (const part of parts) {
+            const epTagMatch = part.match(/(ep\d+)/i);
+            if (epTagMatch) {
+              const epTag = epTagMatch[1].toLowerCase();
+              const text = part.replace(/ep\d+/i, "").trim();
+              if (knownEpIds.has(epTag) && text) {
+                chain.manifestations.push({ epId: epTag, text });
+              }
+            }
+          }
+
+          if (chain.manifestations.length >= 2) {
+            gagChains.push(chain);
           }
         }
       }

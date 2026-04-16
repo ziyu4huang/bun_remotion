@@ -38,12 +38,16 @@ export interface PersistedRun {
 const runs = new Map<string, RunState>();
 
 let runsDir: string | null = null;
+let cleanupOpts: { maxAge: number; maxCount: number } | null = null;
 
 /** Initialize store with persistence directory */
-export function initStore(dir: string): void {
+export function initStore(dir: string, opts?: { maxAge: number; maxCount: number }): void {
   runsDir = dir;
+  cleanupOpts = opts ?? null;
+  runs.clear();
   mkdirSync(dir, { recursive: true });
   loadFromDisk();
+  if (cleanupOpts) cleanupRuns();
 }
 
 /** Get a run state by ID */
@@ -91,6 +95,38 @@ export function deleteRun(runId: string): boolean {
     }
   }
   return existed;
+}
+
+/** Remove runs older than maxAge and/or exceeding maxCount */
+export function cleanupRuns(): { removed: number } {
+  if (!cleanupOpts) return { removed: 0 };
+  const { maxAge, maxCount } = cleanupOpts;
+  let removed = 0;
+  const now = Date.now();
+
+  // Age-based cleanup
+  if (maxAge > 0) {
+    for (const [id, state] of runs) {
+      const createdAt = new Date(state.run.created_at).getTime();
+      if (now - createdAt > maxAge * 1000) {
+        deleteRun(id);
+        removed++;
+      }
+    }
+  }
+
+  // Count-based cleanup (remove oldest first)
+  if (maxCount > 0 && runs.size > maxCount) {
+    const sorted = Array.from(runs.entries())
+      .sort(([, a], [, b]) => new Date(a.run.created_at).getTime() - new Date(b.run.created_at).getTime());
+    const excess = sorted.length - maxCount;
+    for (let i = 0; i < excess; i++) {
+      deleteRun(sorted[i][0]);
+      removed++;
+    }
+  }
+
+  return { removed };
 }
 
 /** Load all persisted runs from disk into memory */
