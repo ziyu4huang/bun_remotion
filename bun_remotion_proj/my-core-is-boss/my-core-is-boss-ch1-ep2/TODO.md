@@ -1,5 +1,14 @@
 # TODO — 我的核心是大佬 第一章第二集：任務跳過
 
+> Parent PLAN: [../PLAN.md](../PLAN.md) | Parent TODO: [../TODO.md](../TODO.md) | Episode PLAN: [./PLAN.md](./PLAN.md)
+
+## Verification: Assets & Audio Migration (2026-04-17)
+
+- [ ] Verify images load in Remotion Studio (`setPublicDir("../assets")` → `characters/`, `backgrounds/`)
+- [ ] Regenerate TTS audio → .wav in `assets/audio/ch1-ep2/`, JSON in `audio/`
+- [ ] Verify `audio/durations.json` + `audio/segment-durations.json` load correctly
+- [ ] Render MP4 and confirm no black frames or missing assets
+
 ## Story
 
 宗門發布「清剿妖獸」例行任務，所有弟子嚴陣以待。林逸發現系統的任務面板有「跳過」按鈕，直接繞過妖獸洞穴領取獎勵。趙小七目睹全程，將此解讀為「以大乘期修為直取天道本源」，並更新《林逸師兄語錄》。

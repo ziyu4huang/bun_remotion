@@ -1,5 +1,5 @@
 import React from "react";
-import { AbsoluteFill, Audio, staticFile } from "remotion";
+import { AbsoluteFill, Audio } from "remotion";
 import { TransitionSeries, linearTiming } from "@remotion/transitions";
 import { fade } from "@remotion/transitions/fade";
 import { slide } from "@remotion/transitions/slide";
@@ -17,11 +17,11 @@ const TRANSITION_FRAMES = 15;
 const sceneNames = ["Title", "Content 1", "Content 2", "Content 3", "Outro"] as const;
 
 const scenes = [
-  { Scene: TitleScene, audio: "audio/01-title.wav" },
-  { Scene: ContentScene1, audio: "audio/02-content1.wav" },
-  { Scene: ContentScene2, audio: "audio/03-content2.wav" },
-  { Scene: ContentScene3, audio: "audio/04-content3.wav" },
-  { Scene: OutroScene, audio: "audio/05-outro.wav" },
+  { Scene: TitleScene, audio: require("../audio/01-title.wav") as string },
+  { Scene: ContentScene1, audio: require("../audio/02-content1.wav") as string },
+  { Scene: ContentScene2, audio: require("../audio/03-content2.wav") as string },
+  { Scene: ContentScene3, audio: require("../audio/04-content3.wav") as string },
+  { Scene: OutroScene, audio: require("../audio/05-outro.wav") as string },
 ];
 
 const transitions = [
@@ -41,7 +41,7 @@ export const MyCoreIsBossCh1Ep3: React.FC<Props> = ({ sceneDurations }) => {
           <React.Fragment key={i}>
             <TransitionSeries.Sequence durationInFrames={d(i)} name={sceneNames[i]}>
               <Scene />
-              <Audio src={staticFile(audio)} volume={1} />
+              <Audio src={audio} volume={1} />
             </TransitionSeries.Sequence>
 
             {i < transitions.length && (

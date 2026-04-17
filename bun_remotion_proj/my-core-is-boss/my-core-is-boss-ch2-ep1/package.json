@@ -1,0 +1,19 @@
+{
+  "name": "@bun-remotion/my-core-is-boss-ch2-ep1",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "remotion studio",
+    "build": "remotion render MyCoreIsBossCh2Ep1 out/my-core-is-boss-ch2-ep1.mp4",
+    "upgrade": "remotion upgrade",
+    "generate-tts": "bun run ../assets/scripts/generate-tts.ts"
+  },
+  "dependencies": {
+    "@bun-remotion/shared": "workspace:*",
+    "@remotion/cli": "4.0.290",
+    "@remotion/google-fonts": "4.0.290",
+    "@remotion/transitions": "4.0.290",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  }
+}

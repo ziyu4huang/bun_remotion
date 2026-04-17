@@ -1,5 +1,14 @@
 # TODO — 我的核心是大佬 第一章第三集：Bug 利用
 
+> Parent PLAN: [../PLAN.md](../PLAN.md) | Parent TODO: [../TODO.md](../TODO.md) | Episode PLAN: [./PLAN.md](./PLAN.md)
+
+## Verification: Assets & Audio Migration (2026-04-17)
+
+- [ ] Verify images load in Remotion Studio (`setPublicDir("../assets")` → `characters/`, `backgrounds/`)
+- [ ] Regenerate TTS audio → .wav in `assets/audio/ch1-ep3/`, JSON in `audio/`
+- [ ] Verify `audio/durations.json` + `audio/segment-durations.json` load correctly
+- [ ] Render MP4 and confirm no black frames or missing assets
+
 ## Story
 
 宗門大比展開，林逸在比武中被對手追趕時意外穿牆，發現碰撞體判定 Bug。他利用地形縫隙把對手全部卡住，連勝所有比賽。趙小七腦補為「空間禁錮之術」，蕭長老偷偷把「卡模型」改寫成「空間節點」記進修煉筆記。章節結尾埋下第二章「自動修煉腳本」伏筆。

@@ -5,7 +5,7 @@ import { MyCoreIsBossCh1Ep1 } from "./MyCoreIsBossCh1Ep1";
 // Written by scripts/generate-tts.ts — falls back to 210f per scene
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const sceneDurationsData: number[] = (() => {
-  try { return require("../public/audio/durations.json"); }
+  try { return require("../audio/durations.json"); }
   catch { return Array(5).fill(210); }
 })();
 

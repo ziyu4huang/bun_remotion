@@ -1,5 +1,14 @@
 # TODO — My Core Is Boss Ch1-EP1: 首次誤會
 
+> Parent PLAN: [../PLAN.md](../PLAN.md) | Parent TODO: [../TODO.md](../TODO.md) | Episode PLAN: [./PLAN.md](./PLAN.md)
+
+## Verification: Assets & Audio Migration (2026-04-17)
+
+- [ ] Verify images load in Remotion Studio (`setPublicDir("../assets")` → `characters/`, `backgrounds/`)
+- [ ] Regenerate TTS audio → .wav in `assets/audio/ch1-ep1/`, JSON in `audio/`
+- [ ] Verify `audio/durations.json` loads correctly in Root.tsx
+- [ ] Render MP4 and confirm no black frames or missing assets
+
 ## Code Review (2026-04-14)
 
 ### Done

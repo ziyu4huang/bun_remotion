@@ -13,7 +13,7 @@ import { getLineIndex } from "../../../assets/components/dialogTiming";
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const segmentDurations: Record<string, number[]> = (() => {
-  try { return require("../../public/audio/segment-durations.json"); }
+  try { return require("../../audio/segment-durations.json"); }
   catch { return {}; }
 })();
 
@@ -24,8 +24,8 @@ const dialogLines = [
   { character: "linyi" as const, text: "好，下一個。來來來，跟我到這裡來。", emotion: "smile" as const, effect: "sparkle" as ComicEffect },
   { character: "linyi" as const, text: "再過來一點……好，卡住了。", emotion: "laugh" as const, effect: "gloating" as ComicEffect, sfx: [{ text: "卡！", x: 1100, y: 380, color: "#EF4444", rotation: -10, fontSize: 130, font: "action" as const }] as MangaSfxEvent[] },
   { character: "narrator" as const, text: "第二位對手被卡在了比武台邊緣，掙扎不已。", emotion: "default" as const },
-  { character: "linyi" as const, text: "第三個……這個精一點，不肯靠牆。", emotion: "confused" as const, effect: "dots" as ComicEffect },
-  { character: "linyi" as const, text: "沒關係，右邊還有個縫隙。繞一下……好，也卡住了。", emotion: "smile" as const, effect: "gloating" as ComicEffect },
+  { character: "linyi" as const, text: "第三個……這個精一點，不肯靠牆。", emotion: "confused" as const },
+  { character: "linyi" as const, text: "沒關係，右邊還有個縫隙。繞一下……好，也卡住了。", emotion: "smile" as const },
   { character: "xiaoelder" as const, text: "這……這怎麼可能！他連手都沒抬！對手怎麼全動不了了！", emotion: "shock" as const, effect: "shock" as ComicEffect },
   { character: "linyi" as const, text: "碰撞判定失效，他們現在是無敵狀態但也動不了。不過 HP 歸零判定還在……慢慢磨就行了。", emotion: "default" as const },
 ];
@@ -44,7 +44,7 @@ export const ContentScene2: React.FC = () => {
 
   return (
     <AbsoluteFill>
-      <BackgroundLayer image="tournament-stage.png" />
+      <BackgroundLayer image="boss-arena.png" />
 
       {/* Scene indicator */}
       <SceneIndicator text="連勝" color="#EF4444" />

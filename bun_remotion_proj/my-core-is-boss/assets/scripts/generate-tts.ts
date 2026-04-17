@@ -9,7 +9,7 @@
  */
 
 import { writeFileSync, mkdirSync, existsSync, readFileSync, readdirSync, unlinkSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { join, dirname, basename } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
 
@@ -39,10 +39,12 @@ const voiceConfig = JSON.parse(readFileSync(VOICE_CONFIG_PATH, "utf-8")) as {
 
 // APP_DIR is the episode root (e.g., my-core-is-boss-ch1-ep1/)
 const APP_DIR = process.cwd();
+const EP_NAME = basename(APP_DIR).replace("my-core-is-boss-", ""); // e.g., "ch1-ep1"
 // REPO_ROOT is 3 levels up from episode: episode -> my-core-is-boss -> bun_remotion_proj -> repo root
 const REPO_ROOT = join(APP_DIR, "..", "..", "..");
-const AUDIO_DIR = join(APP_DIR, "public", "audio");
-const SEGMENTS_DIR = join(AUDIO_DIR, "_segments");
+// .wav + JSON output: episode/audio/ (loaded via require(), not staticFile)
+const EP_AUDIO_DIR = join(APP_DIR, "audio");
+const SEGMENTS_DIR = join(EP_AUDIO_DIR, "_segments");
 
 const MLX_TTS_ROOT = join(REPO_ROOT, "mlx_tts");
 const MLX_PYTHON = join(MLX_TTS_ROOT, ".venv", "bin", "python");
@@ -232,7 +234,7 @@ async function main() {
   const narrationModule = await import(narrationPath);
   const { narrations, NARRATOR_LANG = voiceConfig.language } = narrationModule;
 
-  mkdirSync(AUDIO_DIR, { recursive: true });
+  mkdirSync(EP_AUDIO_DIR, { recursive: true });
   mkdirSync(SEGMENTS_DIR, { recursive: true });
 
   const useMlxTts = process.platform === "darwin";
@@ -278,7 +280,7 @@ async function main() {
 
   for (let i = 0; i < filtered.length; i++) {
     const { scene, file, segments } = filtered[i];
-    const outputPath = join(AUDIO_DIR, file);
+    const outputPath = join(EP_AUDIO_DIR, file);
 
     if (skipExisting && existsSync(outputPath)) {
       console.log(`[${i + 1}/${filtered.length}] ${scene} — skipped (exists)`);
@@ -328,13 +330,13 @@ async function main() {
   }
 
   const durationsJson = filtered.map(({ file }: { file: string }) => {
-    const p = join(AUDIO_DIR, file);
+    const p = join(EP_AUDIO_DIR, file);
     return existsSync(p) ? wavDurationFrames(p, 30) : 240;
   });
-  writeFileSync(join(AUDIO_DIR, "durations.json"), JSON.stringify(durationsJson, null, 2) + "\n");
+  writeFileSync(join(EP_AUDIO_DIR, "durations.json"), JSON.stringify(durationsJson, null, 2) + "\n");
 
   // Write per-scene raw segment durations (seconds) for dialog sync
-  writeFileSync(join(AUDIO_DIR, "segment-durations.json"), JSON.stringify(sceneSegmentDurations, null, 2) + "\n");
+  writeFileSync(join(EP_AUDIO_DIR, "segment-durations.json"), JSON.stringify(sceneSegmentDurations, null, 2) + "\n");
 
   // Write voice manifest with centralized config data
   const manifest = filtered.map((n: { scene: string; file: string; segments: Array<{ character: string; text: string }> }) => ({
@@ -354,7 +356,7 @@ async function main() {
       };
     }),
   }));
-  writeFileSync(join(AUDIO_DIR, "voice-manifest.json"), JSON.stringify(manifest, null, 2) + "\n");
+  writeFileSync(join(EP_AUDIO_DIR, "voice-manifest.json"), JSON.stringify(manifest, null, 2) + "\n");
 
   try {
     const remaining = readdirSync(SEGMENTS_DIR);
@@ -364,7 +366,8 @@ async function main() {
   } catch { /* ignore */ }
 
   console.log(`\nDone. Generated: ${generated}, Skipped: ${skipped}`);
-  console.log(`Audio files:   ${AUDIO_DIR}`);
+  console.log(`Audio files:   ${EP_AUDIO_DIR}`);
+  console.log(`Audio config:  ${EP_AUDIO_DIR}`);
   console.log(`Voice config:  ${VOICE_CONFIG_PATH}`);
   console.log(`durations.json written (reload Remotion Studio to pick up new timings)`);
 }

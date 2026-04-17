@@ -1,0 +1,352 @@
+[
+  {
+    "scene": "TitleScene",
+    "file": "01-title.wav",
+    "segments": [
+      {
+        "character": "narrator",
+        "voice": "vivian",
+        "voiceDescription": {
+          "voice": "vivian",
+          "gender": "female",
+          "accent": "Clear, neutral storytelling voice"
+        },
+        "text": "蒼穹大陸，太平紀元三千年。一個自稱「玩家」的青年，踏入了天道宗的大門。他腦中裝著一個神秘系統——把整個修行世界，看成了遊戲。"
+      }
+    ]
+  },
+  {
+    "scene": "ContentScene1",
+    "file": "02-content1.wav",
+    "segments": [
+      {
+        "character": "narrator",
+        "voice": "vivian",
+        "voiceDescription": {
+          "voice": "vivian",
+          "gender": "female",
+          "accent": "Clear, neutral storytelling voice"
+        },
+        "text": "天道宗廣場，晨曦初照。弟子們正在晨練。"
+      },
+      {
+        "character": "linyi",
+        "voice": "ryan",
+        "voiceDescription": {
+          "voice": "ryan",
+          "gender": "male",
+          "accent": "Casual gamer tone, complains about bugs"
+        },
+        "text": "載入中……為什麼這麼慢啊？"
+      },
+      {
+        "character": "linyi",
+        "voice": "ryan",
+        "voiceDescription": {
+          "voice": "ryan",
+          "gender": "male",
+          "accent": "Casual gamer tone, complains about bugs"
+        },
+        "text": "這NPC的建模也太粗糙了吧……"
+      },
+      {
+        "character": "linyi",
+        "voice": "ryan",
+        "voiceDescription": {
+          "voice": "ryan",
+          "gender": "male",
+          "accent": "Casual gamer tone, complains about bugs"
+        },
+        "text": "等等，這個任務面板……新手教程在哪？"
+      },
+      {
+        "character": "linyi",
+        "voice": "ryan",
+        "voiceDescription": {
+          "voice": "ryan",
+          "gender": "male",
+          "accent": "Casual gamer tone, complains about bugs"
+        },
+        "text": "跳過對話，跳過對話……能不能全部跳過？"
+      },
+      {
+        "character": "narrator",
+        "voice": "vivian",
+        "voiceDescription": {
+          "voice": "vivian",
+          "gender": "female",
+          "accent": "Clear, neutral storytelling voice"
+        },
+        "text": "周圍的弟子們聽到了林逸的嘀咕，紛紛停下了動作。"
+      },
+      {
+        "character": "zhaoxiaoqi",
+        "voice": "serena",
+        "voiceDescription": {
+          "voice": "serena",
+          "gender": "female",
+          "accent": "Enthusiastic over-interpreter, warm energy"
+        },
+        "text": "「載入中」……這位師兄說的，莫非是在感悟天道？！"
+      },
+      {
+        "character": "zhaoxiaoqi",
+        "voice": "serena",
+        "voiceDescription": {
+          "voice": "serena",
+          "gender": "female",
+          "accent": "Enthusiastic over-interpreter, warm energy"
+        },
+        "text": "「不屑與凡人交流」……一定是看破紅塵了！"
+      },
+      {
+        "character": "zhaoxiaoqi",
+        "voice": "serena",
+        "voiceDescription": {
+          "voice": "serena",
+          "gender": "female",
+          "accent": "Enthusiastic over-interpreter, warm energy"
+        },
+        "text": "「跳過對話」……天哪，他是在說跳過修行的俗世煩惱！"
+      }
+    ]
+  },
+  {
+    "scene": "ContentScene2",
+    "file": "03-content2.wav",
+    "segments": [
+      {
+        "character": "zhaoxiaoqi",
+        "voice": "serena",
+        "voiceDescription": {
+          "voice": "serena",
+          "gender": "female",
+          "accent": "Enthusiastic over-interpreter, warm energy"
+        },
+        "text": "我一定要記下來！《林逸師兄語錄》第一篇！"
+      },
+      {
+        "character": "zhaoxiaoqi",
+        "voice": "serena",
+        "voiceDescription": {
+          "voice": "serena",
+          "gender": "female",
+          "accent": "Enthusiastic over-interpreter, warm energy"
+        },
+        "text": "「載入中」——師兄正在深度冥想，感悟天道運行之理。"
+      },
+      {
+        "character": "zhaoxiaoqi",
+        "voice": "serena",
+        "voiceDescription": {
+          "voice": "serena",
+          "gender": "female",
+          "accent": "Enthusiastic over-interpreter, warm energy"
+        },
+        "text": "「跳過對話」——師兄認為言語道斷，大道不可言說。"
+      },
+      {
+        "character": "zhaoxiaoqi",
+        "voice": "serena",
+        "voiceDescription": {
+          "voice": "serena",
+          "gender": "female",
+          "accent": "Enthusiastic over-interpreter, warm energy"
+        },
+        "text": "太深奧了……每一句話都蘊含著天地至理！"
+      },
+      {
+        "character": "linyi",
+        "voice": "ryan",
+        "voiceDescription": {
+          "voice": "ryan",
+          "gender": "male",
+          "accent": "Casual gamer tone, complains about bugs"
+        },
+        "text": "這也有 bug？我剛才明明點了跳過啊。"
+      },
+      {
+        "character": "zhaoxiaoqi",
+        "voice": "serena",
+        "voiceDescription": {
+          "voice": "serena",
+          "gender": "female",
+          "accent": "Enthusiastic over-interpreter, warm energy"
+        },
+        "text": "「這也有 bug」——師兄在質疑天道的運行！這是何等的氣魄！"
+      },
+      {
+        "character": "zhaoxiaoqi",
+        "voice": "serena",
+        "voiceDescription": {
+          "voice": "serena",
+          "gender": "female",
+          "accent": "Enthusiastic over-interpreter, warm energy"
+        },
+        "text": "我趙小七，從今天起，就是林逸師兄的頭號追隨者！"
+      }
+    ]
+  },
+  {
+    "scene": "ContentScene3",
+    "file": "04-content3.wav",
+    "segments": [
+      {
+        "character": "narrator",
+        "voice": "vivian",
+        "voiceDescription": {
+          "voice": "vivian",
+          "gender": "female",
+          "accent": "Clear, neutral storytelling voice"
+        },
+        "text": "消息傳到了蕭長老的耳中。煉器峰的資深長老，決定親自來看看這個「狂徒」。"
+      },
+      {
+        "character": "xiaoelder",
+        "voice": "uncle_fu",
+        "voiceDescription": {
+          "voice": "uncle_fu",
+          "gender": "male",
+          "accent": "Stern elder, gradually breaking down"
+        },
+        "text": "哪來的小子，竟敢在天道宗放肆！"
+      },
+      {
+        "character": "xiaoelder",
+        "voice": "uncle_fu",
+        "voiceDescription": {
+          "voice": "uncle_fu",
+          "gender": "male",
+          "accent": "Stern elder, gradually breaking down"
+        },
+        "text": "讓老夫看看……鍛體期？連修為都沒有，你憑什麼在此囂張？"
+      },
+      {
+        "character": "linyi",
+        "voice": "ryan",
+        "voiceDescription": {
+          "voice": "ryan",
+          "gender": "male",
+          "accent": "Casual gamer tone, complains about bugs"
+        },
+        "text": "等一下……這個老頭頭上怎麼飄著 Lv.85？"
+      },
+      {
+        "character": "linyi",
+        "voice": "ryan",
+        "voiceDescription": {
+          "voice": "ryan",
+          "gender": "male",
+          "accent": "Casual gamer tone, complains about bugs"
+        },
+        "text": "而且……隱藏等級：問號？這字體也太大了，擋到我視線了。"
+      },
+      {
+        "character": "xiaoelder",
+        "voice": "uncle_fu",
+        "voiceDescription": {
+          "voice": "uncle_fu",
+          "gender": "male",
+          "accent": "Stern elder, gradually breaking down"
+        },
+        "text": "你……你剛才說什麼？隱藏等級？"
+      },
+      {
+        "character": "narrator",
+        "voice": "vivian",
+        "voiceDescription": {
+          "voice": "vivian",
+          "gender": "female",
+          "accent": "Clear, neutral storytelling voice"
+        },
+        "text": "蕭長老聞言，臉色驟變。隱藏等級——那只有大乘期以上的存在才有的標記！"
+      },
+      {
+        "character": "xiaoelder",
+        "voice": "uncle_fu",
+        "voiceDescription": {
+          "voice": "uncle_fu",
+          "gender": "male",
+          "accent": "Stern elder, gradually breaking down"
+        },
+        "text": "這、這不可能……這小子明明沒有修為……"
+      },
+      {
+        "character": "linyi",
+        "voice": "ryan",
+        "voiceDescription": {
+          "voice": "ryan",
+          "gender": "male",
+          "accent": "Casual gamer tone, complains about bugs"
+        },
+        "text": "能不能把這個 UI 調小一點？真的很礙事。"
+      },
+      {
+        "character": "narrator",
+        "voice": "vivian",
+        "voiceDescription": {
+          "voice": "vivian",
+          "gender": "female",
+          "accent": "Clear, neutral storytelling voice"
+        },
+        "text": "蕭長老雙腿一軟，直接跪了下去。"
+      },
+      {
+        "character": "zhaoxiaoqi",
+        "voice": "serena",
+        "voiceDescription": {
+          "voice": "serena",
+          "gender": "female",
+          "accent": "Enthusiastic over-interpreter, warm energy"
+        },
+        "text": "長老跪了！長老跪了！我就知道師兄不是普通人！"
+      },
+      {
+        "character": "xiaoelder",
+        "voice": "uncle_fu",
+        "voiceDescription": {
+          "voice": "uncle_fu",
+          "gender": "male",
+          "accent": "Stern elder, gradually breaking down"
+        },
+        "text": "前輩……不，前輩在上！晚輩有眼不識泰山！"
+      },
+      {
+        "character": "linyi",
+        "voice": "ryan",
+        "voiceDescription": {
+          "voice": "ryan",
+          "gender": "male",
+          "accent": "Casual gamer tone, complains about bugs"
+        },
+        "text": "……啊？你在跪什麼啊？"
+      }
+    ]
+  },
+  {
+    "scene": "OutroScene",
+    "file": "05-outro.wav",
+    "segments": [
+      {
+        "character": "narrator",
+        "voice": "vivian",
+        "voiceDescription": {
+          "voice": "vivian",
+          "gender": "female",
+          "accent": "Clear, neutral storytelling voice"
+        },
+        "text": "就這樣，林逸在天道宗的第一天，就收穫了一個腦補狂魔粉絲，和一個嚇到腿軟的長老。而他本人，還在糾結系統 UI 的字體大小。"
+      },
+      {
+        "character": "narrator",
+        "voice": "vivian",
+        "voiceDescription": {
+          "voice": "vivian",
+          "gender": "female",
+          "accent": "Clear, neutral storytelling voice"
+        },
+        "text": "下集預告——宗門發布「清剿妖獸」任務，所有人都在認真準備。林逸發現了一個驚人的秘密——任務可以跳過！我的核心是大佬，第一章第二集：任務跳過。"
+      }
+    ]
+  }
+]

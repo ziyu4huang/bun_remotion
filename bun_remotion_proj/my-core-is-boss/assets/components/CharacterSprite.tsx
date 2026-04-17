@@ -151,9 +151,9 @@ export const CharacterSprite: React.FC<CharacterSpriteProps> = ({
   // Priority: explicit image > emotion-resolved > null (placeholder)
   const resolvedImage = image || resolveCharacterImage(character, emotion);
   const imgSrc = chibi && emotion === "chibi"
-    ? staticFile(`images/${character}-chibi.png`)
+    ? staticFile(`characters/${character}-chibi.png`)
     : resolvedImage
-    ? staticFile(`images/${resolvedImage}`)
+    ? staticFile(`characters/${resolvedImage}`)
     : null;
 
   return (

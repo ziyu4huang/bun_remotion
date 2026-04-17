@@ -7,6 +7,9 @@ dist/
 **/output/
 **/public/audio/*.wav
 **/public/audio/*.mp3
+# TTS-generated audio (JSON configs are committed; WAV/MP3 re-rendered via generate-tts)
+**/audio/*.wav
+**/audio/*.mp3
 .playwright-mcp/
 .DS_Store
 **/.DS_Store

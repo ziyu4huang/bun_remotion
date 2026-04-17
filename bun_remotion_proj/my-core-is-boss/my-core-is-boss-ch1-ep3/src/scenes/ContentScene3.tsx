@@ -11,7 +11,7 @@ import { getLineIndex } from "../../../assets/components/dialogTiming";
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const segmentDurations: Record<string, number[]> = (() => {
-  try { return require("../../public/audio/segment-durations.json"); }
+  try { return require("../../audio/segment-durations.json"); }
   catch { return {}; }
 })();
 

@@ -1,5 +1,7 @@
 # PLAN — 我的核心是大佬 Ch1 Ep3：Bug 利用
 
+> Parent: [../PLAN.md](../PLAN.md) | Parent TODO: [../TODO.md](../TODO.md) | Episode TODO: [./TODO.md](./TODO.md)
+
 ## Metadata
 
 | Field | Value |
@@ -9,7 +11,7 @@
 | Language | zh-TW |
 | Chapter | 第一章：系統覺醒（第 3/3 集） |
 | Arc position | cliffhanger（章節完結，埋第二章伏筆） |
-| Status | graphified |
+| Status | scaffolded |
 
 ## Characters
 
@@ -25,7 +27,7 @@ linyi, zhaoxiaoqi, xiaoelder, narrator
 |-------|-----------|------------|-----------|
 | TitleScene | narrator | — | 宗門大比開幕，林逸蹲在比武台旁戳牆壁 |
 | ContentScene1 | linyi, xiaoelder, narrator | tournament-stage | 被對手追趕→慌忙後退穿牆→意外發現碰撞 Bug→卡牆→NPC 尋路缺陷 |
-| ContentScene2 | linyi, xiaoelder, narrator | tournament-stage | 引對手到縫隙卡住（第二個不肯靠牆→繞到右邊另一個縫隙）→連勝 |
+| ContentScene2 | linyi, xiaoelder, narrator | boss-arena | 引對手到縫隙卡住（第二個不肯靠牆→繞到右邊另一個縫隙）→連勝 |
 | ContentScene3 | linyi, zhaoxiaoqi, xiaoelder, narrator | tournament-stage | 趙小七腦補「空間禁錮之術」（與蕭長老交替對話）→蕭長老偷偷記筆記 |
 | OutroScene | narrator | — | 語錄第三篇 + 蕭長老筆記 + 自動修煉腳本伏筆 |
 
