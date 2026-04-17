@@ -42,4 +42,4 @@ Chapter: 第一章：系統覺醒（第 3/3 集）
 
 - [x] Verify in Remotion Studio (built successfully at localhost:3006)
 - [x] Render final MP4 — `out/my-core-is-boss-ch1-ep3.mp4` (180.4 MB, 7037 frames, 3:54)
-- [ ] Episode-polish improvements
+- [x] Episode-polish improvements (effect pacing 87.5%→50%, background variety tournament-stage→sect-interior)

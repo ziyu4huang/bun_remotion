@@ -33,9 +33,9 @@
 - [x] Code review — normalizeEffects, ScreenShake, SceneIndicator, side mapping, name props
 - [x] Episode-polish pass — effect pacing ≤50%, background variety, TitleScene system stinger, OutroScene QuestBadge
 - [x] Render MP4 — `out/my-core-is-boss-ch1-ep1.mp4` (171.3 MB, 7078 frames, 3:55)
-- [ ] Verify migration: images load via setPublicDir("../assets")
-- [ ] Regenerate TTS audio → per-episode audio/ dir
-- [ ] Re-render MP4 post-migration
+- [x] Verify migration: images load via setPublicDir("../assets")
+- [x] Regenerate TTS audio → per-episode audio/ dir (already migrated)
+- [x] Re-render MP4 post-migration — out/my-core-is-boss-ch1-ep1.mp4 (171.2 MB)
 
 ## Phase 2.5: Ch1-EP2 — 任務跳過
 
@@ -50,9 +50,9 @@
 - [x] Shared dialogTiming.ts utility (proportional dialog-audio sync)
 - [x] Episode-polish pass
 - [x] Render MP4 — `out/my-core-is-boss-ch1-ep2.mp4` (155.9 MB, 6715 frames, 3:43)
-- [ ] Verify migration: images load via setPublicDir("../assets")
-- [ ] Regenerate TTS audio → per-episode audio/ dir
-- [ ] Re-render MP4 post-migration
+- [x] Verify migration: images load via setPublicDir("../assets")
+- [x] Regenerate TTS audio → per-episode audio/ dir (already migrated)
+- [x] Re-render MP4 post-migration — out/my-core-is-boss-ch1-ep2.mp4 (156.7 MB)
 
 ## Phase 2.75: Ch1-EP3 — Bug 利用
 
@@ -65,9 +65,9 @@
 - [x] Run `bun install` to link workspace
 - [x] Generate TTS audio
 - [x] Render MP4 — `out/my-core-is-boss-ch1-ep3.mp4` (180.4 MB, 7037 frames, 3:54)
-- [ ] Verify migration: images load via setPublicDir("../assets")
-- [ ] Episode-polish improvements
-- [ ] Re-render MP4 post-migration
+- [x] Verify migration: images load via setPublicDir("../assets")
+- [x] Episode-polish improvements (ContentScene3: effects 87.5%→50%, background→sect-interior)
+- [x] Re-render MP4 post-migration — out/my-core-is-boss-ch1-ep3.mp4 (168.9 MB, 7167 frames)
 
 ## Phase 3: Ch2-EP1 — 掛機修仙
 
