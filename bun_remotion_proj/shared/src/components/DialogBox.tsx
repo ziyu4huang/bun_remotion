@@ -9,6 +9,10 @@ interface DialogBoxProps {
   sceneFrame: number;
   sceneDuration: number;
   getCharacterConfig: (id: string) => CharacterConfig;
+  /** Override line index (when using segment-based timing) */
+  overrideLineIndex?: number;
+  /** Frame offset within the current line (when using segment-based timing) */
+  overrideLineFrame?: number;
 }
 
 export const DialogBox: React.FC<DialogBoxProps> = ({
@@ -16,11 +20,13 @@ export const DialogBox: React.FC<DialogBoxProps> = ({
   sceneFrame,
   sceneDuration,
   getCharacterConfig,
+  overrideLineIndex,
+  overrideLineFrame,
 }) => {
   const { fps } = useVideoConfig();
 
   const lineDuration = sceneDuration / lines.length;
-  const currentLineIndex = Math.min(
+  const currentLineIndex = overrideLineIndex ?? Math.min(
     Math.floor(sceneFrame / lineDuration),
     lines.length - 1
   );
@@ -28,7 +34,7 @@ export const DialogBox: React.FC<DialogBoxProps> = ({
   const character = getCharacterConfig(currentLine.character);
 
   // Typewriter effect
-  const lineFrame = sceneFrame - currentLineIndex * lineDuration;
+  const lineFrame = overrideLineFrame ?? (sceneFrame - currentLineIndex * lineDuration);
   const charsPerFrame = 2.5;
   const visibleChars = Math.floor(lineFrame * charsPerFrame);
   const displayText = currentLine.text.slice(0, visibleChars);

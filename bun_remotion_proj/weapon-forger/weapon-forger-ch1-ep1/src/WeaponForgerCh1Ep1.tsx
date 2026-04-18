@@ -2,7 +2,6 @@ import React from "react";
 import {
   AbsoluteFill,
   Audio,
-  staticFile,
 } from "remotion";
 import { TransitionSeries, linearTiming } from "@remotion/transitions";
 import { fade } from "@remotion/transitions/fade";
@@ -28,7 +27,7 @@ export const WeaponForgerCh1Ep1: React.FC<Props> = ({ sceneDurations }) => {
         {/* Title */}
         <TransitionSeries.Sequence durationInFrames={d(0)}>
           <TitleScene />
-          <Audio src={staticFile("audio/01-title.wav")} volume={1} />
+          <Audio src={require("../audio/01-title.wav") as string} volume={1} />
         </TransitionSeries.Sequence>
 
         {/* Title → Content1: slide from right */}
@@ -40,7 +39,7 @@ export const WeaponForgerCh1Ep1: React.FC<Props> = ({ sceneDurations }) => {
         {/* Content 1: 入宗考试任务 */}
         <TransitionSeries.Sequence durationInFrames={d(1)}>
           <ContentScene1 />
-          <Audio src={staticFile("audio/02-content1.wav")} volume={1} />
+          <Audio src={require("../audio/02-content1.wav") as string} volume={1} />
         </TransitionSeries.Sequence>
 
         {/* Content1 → Content2: wipe (sword slash feel) */}
@@ -52,7 +51,7 @@ export const WeaponForgerCh1Ep1: React.FC<Props> = ({ sceneDurations }) => {
         {/* Content 2: 自动寻路飞剑 */}
         <TransitionSeries.Sequence durationInFrames={d(2)}>
           <ContentScene2 />
-          <Audio src={staticFile("audio/03-content2.wav")} volume={1} />
+          <Audio src={require("../audio/03-content2.wav") as string} volume={1} />
         </TransitionSeries.Sequence>
 
         {/* Content2 → Outro: fade */}
@@ -64,7 +63,7 @@ export const WeaponForgerCh1Ep1: React.FC<Props> = ({ sceneDurations }) => {
         {/* Outro */}
         <TransitionSeries.Sequence durationInFrames={d(3)}>
           <OutroScene />
-          <Audio src={staticFile("audio/04-outro.wav")} volume={1} />
+          <Audio src={require("../audio/04-outro.wav") as string} volume={1} />
         </TransitionSeries.Sequence>
       </TransitionSeries>
     </AbsoluteFill>

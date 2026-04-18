@@ -1,9 +1,0 @@
-{
-  "file": "luyang-shocked.png",
-  "type": "pose",
-  "character": "luyang",
-  "pose": "shocked",
-  "facing": "LEFT",
-  "prompt": "anime style male cultivator, young man with sky-blue themed robes, neat short hair, comically startled expression, eyes impossibly wide, mouth agape in exaggerated shock, hair slightly standing up from surprise, half-body portrait, transparent background",
-  "backgroundStrategy": "solid magenta #FF00FF, remove with rembg"
-}

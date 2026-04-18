@@ -1,9 +1,0 @@
-{
-  "file": "luyang-angry.png",
-  "type": "pose",
-  "character": "luyang",
-  "pose": "angry",
-  "facing": "LEFT",
-  "prompt": "anime style male cultivator, young man with sky-blue themed robes, neat short hair, reluctant angry expression, puffed cheeks but still looks like he wants to surrender, fists clenched but trembling, comedic reluctant anger, half-body portrait, transparent background",
-  "backgroundStrategy": "solid magenta #FF00FF, remove with rembg"
-}

@@ -309,3 +309,22 @@ At any point, these MUST be consistent:
 2. Verify workspace TODO matches
 3. Verify episode PLAN.md status matches
 4. Verify episode TODO matches
+5. Verify every non-Planned episode has a PLAN.md file in its directory
+
+### When to run the sync check
+
+| Trigger | What to check |
+|---------|--------------|
+| Loading episode-setup topic for a series | Full 5-step check above |
+| Before creating a new episode | Steps 1-4 (sync state) |
+| After scaffolding an episode | Steps 1-4 (status change) |
+| After rendering an episode | Steps 1-4 (status change) |
+
+### Legacy series backfill
+
+For series created before this lifecycle spec was formalized:
+
+1. **Missing episode PLAN.md files** — create them retroactively using the template, populated from `assets/story/` reference files and existing narration.ts. Status = `scaffolded` (code exists and is rendered).
+2. **Missing workspace PLAN.md sections** — add Story Arcs and Running Gags inline (condensed from `assets/story/` files). Do NOT remove the Story Reference Files section — it still points to detailed versions.
+3. **TODO.md phase naming** — use "Backfill:" prefix for retroactive work items (not standard "Phase N" numbering which is reserved for the standard lifecycle).
+4. **Episode TODO.md format** — legacy episodes with non-standard format don't need restructuring if they're already Complete. Only fix format issues that affect active work tracking.

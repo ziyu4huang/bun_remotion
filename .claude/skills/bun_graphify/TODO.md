@@ -75,6 +75,28 @@
 
 ## Pipeline Run History
 
+### 2026-04-18 — my-core-is-boss (5 episodes, ch2-ep2 added)
+
+| Metric | Before (4 eps) | After (5 eps) |
+|--------|----------------|----------------|
+| Per-episode nodes | 19-33 | **13-33** (ch2ep2: 13) |
+| Per-episode edges | 24-42 | **19-42** (ch2ep2: 19) |
+| Merged nodes | 95 | **109** |
+| Merged edges | 164 | **215** |
+| Link edges | 24 | **40** |
+| Communities | 8 | **7** |
+| Consistency | 16 PASS, 2 WARN | **14 PASS, 6 WARN** |
+
+**New WARNs from ch2ep2:**
+- Trait Coverage: ch2ep2 linyi has 0 detected traits (regex missed "遊戲化世界觀")
+- Trait Coverage: ch2ep2 zhaoxiaoqi has 0 detected traits (regex missed "選擇性聽力")
+- Character Consistency: ch2ep2 xiaoelder missing core trait "三觀崩塌中"
+- All 3 are regex extraction gaps, not story-level issues. Human review confirms traits are present in dialog.
+
+**Root cause:** ch2ep2 uses metaphor-format brain-補 lines ("刷新率=天道輪迴") that don't match regex patterns designed for direct trait descriptors ("遊戲化世界觀", "選擇性聽力"). Suggests need for LLM-assisted trait extraction as P1.
+
+**Key lesson:** Episode pipeline must run `/bun_graphify` BEFORE subagent analysis. Previously skipped 3a → subagent fabricated node counts (claimed 22/30, real was 13/19). Updated `episode-creation.md` with verification gate to prevent this.
+
 ### 2026-04-15 v0.7.1 — my-core-is-boss (2 episodes, check improvements)
 
 | Metric | Before (v0.6.0) | After (v0.7.1) |

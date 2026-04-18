@@ -1,0 +1,362 @@
+[
+  {
+    "scene": "TitleScene",
+    "file": "01-title.wav",
+    "segments": [
+      {
+        "character": "narrator",
+        "voice": "vivian",
+        "voiceDescription": {
+          "voice": "vivian",
+          "gender": "female",
+          "accent": "Clear, neutral storytelling voice"
+        },
+        "text": "靈獸洞窟，天道宗弟子的試煉聖地。林逸前一集掛機升了五十級，覺得效率還可以更快。"
+      }
+    ]
+  },
+  {
+    "scene": "ContentScene1",
+    "file": "02-content1.wav",
+    "segments": [
+      {
+        "character": "narrator",
+        "voice": "vivian",
+        "voiceDescription": {
+          "voice": "vivian",
+          "gender": "female",
+          "accent": "Clear, neutral storytelling voice"
+        },
+        "text": "林逸接到了系統新任務——清剿靈獸洞窟妖獸。他第一次走進洞窟，立刻注意到一件事。"
+      },
+      {
+        "character": "linyi",
+        "voice": "ryan",
+        "voiceDescription": {
+          "voice": "ryan",
+          "gender": "male",
+          "accent": "Casual gamer tone, complains about bugs"
+        },
+        "text": "這個洞穴的怪物……刷新點是固定的？"
+      },
+      {
+        "character": "linyi",
+        "voice": "ryan",
+        "voiceDescription": {
+          "voice": "ryan",
+          "gender": "male",
+          "accent": "Casual gamer tone, complains about bugs"
+        },
+        "text": "入口左邊第三個岔路，一隻藍色妖狼，打死之後三十秒重生。這不就是經典的定點刷怪嗎？"
+      },
+      {
+        "character": "linyi",
+        "voice": "ryan",
+        "voiceDescription": {
+          "voice": "ryan",
+          "gender": "male",
+          "accent": "Casual gamer tone, complains about bugs"
+        },
+        "text": "太好了，找個定點站好，掛機刷經驗。效率比洞府裡打坐快多了。"
+      },
+      {
+        "character": "linyi",
+        "voice": "ryan",
+        "voiceDescription": {
+          "voice": "ryan",
+          "gender": "male",
+          "accent": "Casual gamer tone, complains about bugs"
+        },
+        "text": "誒，系統還有個「經驗值倍率」顯示？「連續擊殺加成 ×1.5」——這遊戲居然有連殺獎勵！"
+      },
+      {
+        "character": "narrator",
+        "voice": "vivian",
+        "voiceDescription": {
+          "voice": "vivian",
+          "gender": "female",
+          "accent": "Clear, neutral storytelling voice"
+        },
+        "text": "林逸找了一個怪物密集的十字路口，站定不動。妖獸們一隻接一隻撲過來，被系統基礎面板的隱藏加成一擊秒殺。經驗值開始以驚人的速度累積。"
+      }
+    ]
+  },
+  {
+    "scene": "ContentScene2",
+    "file": "03-content2.wav",
+    "segments": [
+      {
+        "character": "narrator",
+        "voice": "vivian",
+        "voiceDescription": {
+          "voice": "vivian",
+          "gender": "female",
+          "accent": "Clear, neutral storytelling voice"
+        },
+        "text": "趙小七循著靈力波動找到洞窟，看到一幕讓她畢生難忘的景象。"
+      },
+      {
+        "character": "zhaoxiaoqi",
+        "voice": "serena",
+        "voiceDescription": {
+          "voice": "serena",
+          "gender": "female",
+          "accent": "Enthusiastic over-interpreter, warm energy"
+        },
+        "text": "師、師兄？！"
+      },
+      {
+        "character": "narrator",
+        "voice": "vivian",
+        "voiceDescription": {
+          "voice": "vivian",
+          "gender": "female",
+          "accent": "Clear, neutral storytelling voice"
+        },
+        "text": "林逸站在洞窟中央，周圍的妖獸排著隊，一隻接一隻走過來，然後在他面前倒下。"
+      },
+      {
+        "character": "zhaoxiaoqi",
+        "voice": "serena",
+        "voiceDescription": {
+          "voice": "serena",
+          "gender": "female",
+          "accent": "Enthusiastic over-interpreter, warm energy"
+        },
+        "text": "妖獸們……排隊來朝拜師兄？這、這是傳說中的「萬獸朝聖」！"
+      },
+      {
+        "character": "linyi",
+        "voice": "ryan",
+        "voiceDescription": {
+          "voice": "ryan",
+          "gender": "male",
+          "accent": "Casual gamer tone, complains about bugs"
+        },
+        "text": "什麼朝聖？我在刷經驗值。這裡刷新率超高，站著不動就行。"
+      },
+      {
+        "character": "zhaoxiaoqi",
+        "voice": "serena",
+        "voiceDescription": {
+          "voice": "serena",
+          "gender": "female",
+          "accent": "Enthusiastic over-interpreter, warm energy"
+        },
+        "text": "「刷新率」——師兄是指天道輪迴的速度嗎？！妖獸們選擇在師兄面前倒下，是因為感應到了超越天道的氣息！"
+      },
+      {
+        "character": "linyi",
+        "voice": "ryan",
+        "voiceDescription": {
+          "voice": "ryan",
+          "gender": "male",
+          "accent": "Casual gamer tone, complains about bugs"
+        },
+        "text": "不是，牠們重生點就在這。打死三十秒又出來一隻，跟打地鼠一樣。"
+      },
+      {
+        "character": "zhaoxiaoqi",
+        "voice": "serena",
+        "voiceDescription": {
+          "voice": "serena",
+          "gender": "female",
+          "accent": "Enthusiastic over-interpreter, warm energy"
+        },
+        "text": "「三十秒」——三十秒即一輪生死輪迴！師兄是在超度這些妖獸啊！"
+      },
+      {
+        "character": "narrator",
+        "voice": "vivian",
+        "voiceDescription": {
+          "voice": "vivian",
+          "gender": "female",
+          "accent": "Clear, neutral storytelling voice"
+        },
+        "text": "趙小七拿出紙筆，開始瘋狂記錄。她的新日記標題已經想好了——《萬獸朝聖錄：林逸師兄超度妖獸全紀錄》。"
+      }
+    ]
+  },
+  {
+    "scene": "ContentScene3",
+    "file": "04-content3.wav",
+    "segments": [
+      {
+        "character": "narrator",
+        "voice": "vivian",
+        "voiceDescription": {
+          "voice": "vivian",
+          "gender": "female",
+          "accent": "Clear, neutral storytelling voice"
+        },
+        "text": "蕭長老接到弟子通報：靈獸洞窟出現異常靈力波動。他趕到現場，看到了讓他三觀再次碎裂的一幕。"
+      },
+      {
+        "character": "xiaoelder",
+        "voice": "uncle_fu",
+        "voiceDescription": {
+          "voice": "uncle_fu",
+          "gender": "male",
+          "accent": "Stern elder, gradually breaking down"
+        },
+        "text": "這、這是怎麼回事？整個洞窟的妖獸都集中在這裡？！"
+      },
+      {
+        "character": "zhaoxiaoqi",
+        "voice": "serena",
+        "voiceDescription": {
+          "voice": "serena",
+          "gender": "female",
+          "accent": "Enthusiastic over-interpreter, warm energy"
+        },
+        "text": "蕭長老！你看——師兄在進行「萬獸朝聖」！妖獸們自願歸順！"
+      },
+      {
+        "character": "xiaoelder",
+        "voice": "uncle_fu",
+        "voiceDescription": {
+          "voice": "uncle_fu",
+          "gender": "male",
+          "accent": "Stern elder, gradually breaking down"
+        },
+        "text": "萬獸朝聖……這、這是古籍中記載的上古神通！只有渡劫期以上的大能才能——"
+      },
+      {
+        "character": "linyi",
+        "voice": "ryan",
+        "voiceDescription": {
+          "voice": "ryan",
+          "gender": "male",
+          "accent": "Casual gamer tone, complains about bugs"
+        },
+        "text": "哦蕭長老你也來了。對了，你知不知道這洞窟有沒有更高級的怪物？這些低等的經驗值太少了。"
+      },
+      {
+        "character": "xiaoelder",
+        "voice": "uncle_fu",
+        "voiceDescription": {
+          "voice": "uncle_fu",
+          "gender": "male",
+          "accent": "Stern elder, gradually breaking down"
+        },
+        "text": "低等……這些都是築基期的妖獸！你居然說「經驗值太少」？！"
+      },
+      {
+        "character": "linyi",
+        "voice": "ryan",
+        "voiceDescription": {
+          "voice": "ryan",
+          "gender": "male",
+          "accent": "Casual gamer tone, complains about bugs"
+        },
+        "text": "對啊，一隻才給二百經驗。我現在升一級要三萬，得刷一百五十隻。有沒有金丹期的怪？那個經驗值應該比較高。"
+      },
+      {
+        "character": "xiaoelder",
+        "voice": "uncle_fu",
+        "voiceDescription": {
+          "voice": "uncle_fu",
+          "gender": "male",
+          "accent": "Stern elder, gradually breaking down"
+        },
+        "text": "金丹期的妖獸……在洞窟深處……但你、你一個人進去的話……"
+      },
+      {
+        "character": "linyi",
+        "voice": "ryan",
+        "voiceDescription": {
+          "voice": "ryan",
+          "gender": "male",
+          "accent": "Casual gamer tone, complains about bugs"
+        },
+        "text": "沒事，反正一刀一個。對了，系統顯示我已經刷了三百隻了，任務進度百分之六十。再刷兩百隻就搞定。"
+      },
+      {
+        "character": "xiaoelder",
+        "voice": "uncle_fu",
+        "voiceDescription": {
+          "voice": "uncle_fu",
+          "gender": "male",
+          "accent": "Stern elder, gradually breaking down"
+        },
+        "text": "三……三百隻……"
+      },
+      {
+        "character": "narrator",
+        "voice": "vivian",
+        "voiceDescription": {
+          "voice": "vivian",
+          "gender": "female",
+          "accent": "Clear, neutral storytelling voice"
+        },
+        "text": "蕭長老看著系統面板上的「擊殺統計：307」，又看了看周圍乖乖排隊的妖獸群，陷入了深深的沉思。"
+      },
+      {
+        "character": "xiaoelder",
+        "voice": "uncle_fu",
+        "voiceDescription": {
+          "voice": "uncle_fu",
+          "gender": "male",
+          "accent": "Stern elder, gradually breaking down"
+        },
+        "text": "老夫是不是……也應該去洞窟刷刷妖獸？"
+      },
+      {
+        "character": "zhaoxiaoqi",
+        "voice": "serena",
+        "voiceDescription": {
+          "voice": "serena",
+          "gender": "female",
+          "accent": "Enthusiastic over-interpreter, warm energy"
+        },
+        "text": "蕭長老！您也悟了嗎？！"
+      },
+      {
+        "character": "xiaoelder",
+        "voice": "uncle_fu",
+        "voiceDescription": {
+          "voice": "uncle_fu",
+          "gender": "male",
+          "accent": "Stern elder, gradually breaking down"
+        },
+        "text": "不……老夫什麼都沒說……"
+      },
+      {
+        "character": "narrator",
+        "voice": "vivian",
+        "voiceDescription": {
+          "voice": "vivian",
+          "gender": "female",
+          "accent": "Clear, neutral storytelling voice"
+        },
+        "text": "蕭長老的修行觀念，正在以肉眼可見的速度崩塌。"
+      }
+    ]
+  },
+  {
+    "scene": "OutroScene",
+    "file": "05-outro.wav",
+    "segments": [
+      {
+        "character": "narrator",
+        "voice": "vivian",
+        "voiceDescription": {
+          "voice": "vivian",
+          "gender": "female",
+          "accent": "Clear, neutral storytelling voice"
+        },
+        "text": "林逸在靈獸洞窟定點刷怪五百隻，創下了「萬獸朝聖」的傳說。趙小七的《萬獸朝聖錄》正式開篇，記錄了妖獸「自願歸順」的全過程。蕭長老開始懷疑，也許打坐不是唯一正確的修煉方式——也許「刷怪」才是。"
+      },
+      {
+        "character": "narrator",
+        "voice": "vivian",
+        "voiceDescription": {
+          "voice": "vivian",
+          "gender": "female",
+          "accent": "Clear, neutral storytelling voice"
+        },
+        "text": "但經驗值農場只是開始。當林逸打開技能點分配面板，把所有點數全砸在「採集」上的時候，一場更大的誤會即將誕生。我的核心是大佬，第二章第三集：技能點分配。"
+      }
+    ]
+  }
+]

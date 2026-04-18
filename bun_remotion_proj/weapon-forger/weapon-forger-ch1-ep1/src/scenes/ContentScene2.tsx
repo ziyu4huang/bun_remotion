@@ -1,13 +1,11 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate } from "remotion";
 import { BackgroundLayer } from "../../../assets/components/BackgroundLayer";
-import { CharacterSprite } from "../../../assets/components/CharacterSprite";
-import { ComicEffects } from "../../../assets/components/ComicEffects";
 import { SpeedLines, SlashEffect, ScreenFlash, BattleAura } from "../../../assets/components/BattleEffects";
-import { SystemNotification } from "../../../assets/components/SystemOverlay";
-import { DialogBox } from "../../../assets/components/DialogBox";
-import { notoSansTC } from "../../../assets/characters";
-import type { DialogLine, ComicEffect } from "../../../assets/characters";
+import { CharacterSprite, ComicEffects, DialogBox, SystemNotification } from "@bun-remotion/shared";
+import { notoSansTC } from "@bun-remotion/shared";
+import type { DialogLine, ComicEffect } from "@bun-remotion/shared";
+import { CHARACTERS, type Character } from "../../../assets/characters";
 
 /**
  * 第一集：周墨炼制"自动寻路飞剑"，飞剑锁定考官的储物袋
@@ -64,9 +62,10 @@ export const ContentScene2: React.FC = () => {
 
       <CharacterSprite
         character="zhoumo"
-        image="zhoumo.png"
+        characterConfig={CHARACTERS.zhoumo}
+        image="characters/zhoumo.png"
         chibi={isBattlePhase}
-        chibiImage="zhoumo-chibi.png"
+        chibiImage="characters/zhoumo-chibi.png"
         speaking={currentLine.character === "zhoumo"}
         side="left"
         background={currentLine.character !== "zhoumo"}
@@ -74,9 +73,10 @@ export const ContentScene2: React.FC = () => {
       />
       <CharacterSprite
         character="examiner"
-        image="examiner.png"
+        characterConfig={CHARACTERS.examiner}
+        image="characters/examiner.png"
         chibi={isBattlePhase}
-        chibiImage="examiner-chibi.png"
+        chibiImage="characters/examiner-chibi.png"
         speaking={currentLine.character === "examiner"}
         side="right"
         background={currentLine.character !== "examiner"}
@@ -105,7 +105,7 @@ export const ContentScene2: React.FC = () => {
         />
       )}
 
-      <DialogBox lines={dialogLines} sceneFrame={frame} sceneDuration={durationInFrames} />
+      <DialogBox lines={dialogLines} sceneFrame={frame} sceneDuration={durationInFrames} getCharacterConfig={(id) => CHARACTERS[id as Character]} />
 
       <div style={{
         position: "absolute", top: 40, left: 60,

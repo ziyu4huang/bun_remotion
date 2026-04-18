@@ -28,7 +28,7 @@ export const BackgroundLayer: React.FC<BackgroundLayerProps> = ({
     >
       {image ? (
         <Img
-          src={staticFile(`images/${image}`)}
+          src={staticFile(`backgrounds/${image}`)}
           style={{
             width: "100%",
             height: "100%",

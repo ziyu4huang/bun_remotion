@@ -14,7 +14,7 @@ function loadSegmentDurations(): Record<string, number[]> {
   if (cache) return cache;
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const data = require("../../public/audio/segment-durations.json");
+    const data = require("../../audio/segment-durations.json");
     const map: Record<string, number[]> = {};
     for (const entry of data) {
       map[entry.scene] = entry.segmentDurations;

@@ -2,6 +2,19 @@
   "name": "bun-remotion",
   "version": "1.0.0",
   "private": true,
+  "workspaces": [
+    "bun_remotion_proj/shared",
+    "bun_remotion_proj/claude-code-intro",
+    "bun_remotion_proj/taiwan-stock-market",
+    "bun_remotion_proj/three-little-pigs",
+    "bun_remotion_proj/galgame-youth-jokes",
+    "bun_remotion_proj/galgame-meme-theater/*",
+    "bun_remotion_proj/xianxia-system-meme-ep1",
+    "bun_remotion_proj/xianxia-system-meme-ep2",
+    "bun_remotion_proj/weapon-forger/weapon-forger-*",
+    "bun_remotion_proj/my-core-is-boss/my-core-is-boss-*",
+    "bun_remotion_proj/commentary-style"
+  ],
   "scripts": {
     "start": "bash scripts/dev.sh studio claude-code-intro",
     "start:claude": "bash scripts/dev.sh studio claude-code-intro",
@@ -87,6 +100,9 @@
     "start:mcb-ch2-ep1": "bash scripts/dev.sh studio my-core-is-boss-ch2-ep1",
     "build:mcb-ch2-ep1": "bash scripts/dev.sh render my-core-is-boss-ch2-ep1",
     "generate-tts:mcb-ch2-ep1": "bun run --cwd bun_remotion_proj/my-core-is-boss/my-core-is-boss-ch2-ep1 generate-tts",
+    "start:mcb-ch2-ep2": "bash scripts/dev.sh studio my-core-is-boss-ch2-ep2",
+    "build:mcb-ch2-ep2": "bash scripts/dev.sh render my-core-is-boss-ch2-ep2",
+    "generate-tts:mcb-ch2-ep2": "bun run --cwd bun_remotion_proj/my-core-is-boss/my-core-is-boss-ch2-ep2 generate-tts",
     "scaffold": "bun run bun_app/bun_scaffold/src/index.ts"
   },
   "dependencies": {

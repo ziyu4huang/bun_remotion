@@ -1,12 +1,10 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate } from "remotion";
 import { BackgroundLayer } from "../../../assets/components/BackgroundLayer";
-import { CharacterSprite } from "../../../assets/components/CharacterSprite";
-import { ComicEffects } from "../../../assets/components/ComicEffects";
-import { SystemNotification } from "../../../assets/components/SystemOverlay";
-import { DialogBox } from "../../../assets/components/DialogBox";
-import { notoSansTC } from "../../../assets/characters";
-import type { DialogLine, ComicEffect } from "../../../assets/characters";
+import { CharacterSprite, ComicEffects, DialogBox, SystemNotification } from "@bun-remotion/shared";
+import { notoSansTC } from "@bun-remotion/shared";
+import type { DialogLine, ComicEffect } from "@bun-remotion/shared";
+import { CHARACTERS, type Character } from "../../../assets/characters";
 
 /**
  * 第一集：入宗考试 — 周墨来到问道宗参加入宗考试，考官布置炼器任务
@@ -53,9 +51,10 @@ export const ContentScene1: React.FC = () => {
 
       <CharacterSprite
         character="zhoumo"
-        image="zhoumo.png"
+        characterConfig={CHARACTERS.zhoumo}
+        image="characters/zhoumo.png"
         chibi={false}
-        chibiImage="zhoumo-chibi.png"
+        chibiImage="characters/zhoumo-chibi.png"
         speaking={currentLine.character === "zhoumo"}
         side="left"
         background={currentLine.character !== "zhoumo"}
@@ -63,9 +62,10 @@ export const ContentScene1: React.FC = () => {
       />
       <CharacterSprite
         character="examiner"
-        image="examiner.png"
+        characterConfig={CHARACTERS.examiner}
+        image="characters/examiner.png"
         chibi={false}
-        chibiImage="examiner-chibi.png"
+        chibiImage="characters/examiner-chibi.png"
         speaking={currentLine.character === "examiner"}
         side="right"
         background={currentLine.character !== "examiner"}
@@ -85,7 +85,7 @@ export const ContentScene1: React.FC = () => {
         />
       )}
 
-      <DialogBox lines={dialogLines} sceneFrame={frame} sceneDuration={durationInFrames} />
+      <DialogBox lines={dialogLines} sceneFrame={frame} sceneDuration={durationInFrames} getCharacterConfig={(id) => CHARACTERS[id as Character]} />
 
       <div style={{
         position: "absolute", top: 40, left: 60,

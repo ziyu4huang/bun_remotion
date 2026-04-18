@@ -5,13 +5,26 @@ Read this when creating a new episode or video project.
 
 ---
 
+## Sync Invariant Check (run FIRST)
+
+Before any episode-setup work, verify the series PLAN/TODO state:
+
+1. **Workspace PLAN.md** must have these sections: Characters, Episode Guide, Story Arcs, Running Gags (if chapter-based), Commands
+2. **Every Complete/Scaffolding episode** must have a PLAN.md file in its directory
+3. **Workspace TODO.md** phases must match PLAN.md Episode Guide statuses
+4. If any check fails → fix it before proceeding (create missing files, add missing sections)
+
+This check takes 30 seconds and prevents the most common pipeline drift.
+
+---
+
 ## episode-creation -- Multi-episode workflow
 
 - **Read PLAN.md first** -- series bible. Create if absent.
 - **Confirm zh_TW story before code** -- stable confirm template, await approval.
 - **Chapters: sequential, 3-5 eps** -- never skip. >= 2 gags/ep.
-- **Scaffold order**: narration.ts → episode PLAN.md (draft) → **graphify scripts + subagent gate** → user approves → TODO.md → configs → scenes → workspace PLAN.md → dev.sh → root pkg → sync-images → bun install → TTS.
-- **Graphify quality gate** -- run graphify scripts (episode → merge → check), then **subagent** analyzes narration.ts + consistency report → appends gate summary section to episode PLAN.md. User reviews complete PLAN.md → PROCEED/NEEDS-FIX. TODO.md created only AFTER gate passes.
+- **Scaffold order**: narration.ts → episode PLAN.md (draft) → **`/bun_graphify` pipeline + subagent gate** → user approves → TODO.md → configs → scenes → workspace PLAN.md → dev.sh → root pkg → sync-images → bun install → TTS.
+- **Graphify quality gate** -- run `/bun_graphify <series-dir>` (pipeline mode: episode → merge → check), then **subagent** analyzes narration.ts + consistency report → appends gate summary section to episode PLAN.md. User reviews complete PLAN.md → PROCEED/NEEDS-FIX. TODO.md created only AFTER gate passes.
 - **Episode PLAN.md** -- story contract per episode with metadata, scene breakdown, running gags, and subagent-generated Graphify Quality Gate section.
 - **Naming**: weapon-forger `ch{N}-ep{M}/`/`WeaponForgerCh{N}Ep{M}`; galgame `ep{N}/`/`GalgameMemeTheaterEp{N}`.
 - Read `episode-creation.md` for full workflow.

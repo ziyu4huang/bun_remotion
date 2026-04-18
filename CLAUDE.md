@@ -201,6 +201,7 @@ All memory — project knowledge, user feedback, preferences — lives here. Thi
 - [confirm-format-zhtw](.agent/memory/feedback/confirm-format-zhtw.md) - When presenting episode content for user confirmation, show all story/dialog in zh_TW — never English summaries
 - [fixture-to-assets-migration](.agent/memory/feedback/fixture-to-assets-migration.md) - SOP: fixture→assets rename + story guides + genre presets. my-core-is-boss done, galgame-meme-theater & weapon-forger pending
 - [episode-polish-checklist](.agent/memory/feedback/episode-polish-checklist.md) - Post-scaffold polish: effect pacing (≤50%), background variety, title hook, outro QuestBadge
+- [plan-todo-sync-enforcement](.agent/memory/feedback/plan-todo-sync-enforcement.md) - Episode PLAN.md + workspace sections drift for legacy series — sync check runs first in episode-setup topic
 
 ## Convention
 

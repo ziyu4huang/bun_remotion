@@ -1,17 +1,16 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate } from "remotion";
 import { BackgroundLayer } from "../../../assets/components/BackgroundLayer";
-import { CharacterSprite } from "../../../assets/components/CharacterSprite";
-import { ComicEffects } from "../../../assets/components/ComicEffects";
+import {
+  CharacterSprite, ComicEffects, DialogBox, SystemNotification, SystemMessage, MangaSfx,
+  notoSansTC,
+} from "@bun-remotion/shared";
+import type { DialogLine, ComicEffect } from "@bun-remotion/shared";
 import {
   ScreenShake, ScreenFlash, ImpactBurst,
   PowerUpRings, SpeedLines,
 } from "../../../assets/components/BattleEffects";
-import { SystemNotification, SystemMessage } from "../../../assets/components/SystemOverlay";
-import { DialogBox } from "../../../assets/components/DialogBox";
-import { MangaSfx } from "../../../assets/components/MangaSfx";
-import { notoSansTC } from "../../../assets/characters";
-import type { DialogLine, ComicEffect } from "../../../assets/characters";
+import { CHARACTERS, type Character } from "../../../assets/characters";
 
 /**
  * ContentScene2 — 周墨升級丹爐：情緒管理系統、語音控制、音樂播放
@@ -106,9 +105,10 @@ export const ContentScene2: React.FC = () => {
         {/* Characters */}
         <CharacterSprite
           character="zhoumo"
-          image="zhoumo.png"
+          characterConfig={CHARACTERS.zhoumo}
+          image="characters/zhoumo.png"
           chibi={false}
-          chibiImage="zhoumo-chibi.png"
+          chibiImage="characters/zhoumo-chibi.png"
           speaking={currentLine.character === "zhoumo"}
           side="left"
           background={currentLine.character !== "zhoumo"}
@@ -117,7 +117,8 @@ export const ContentScene2: React.FC = () => {
 
         <CharacterSprite
           character="elder"
-          image="elder.png"
+          characterConfig={CHARACTERS.elder}
+          image="characters/elder.png"
           speaking={currentLine.character === "elder"}
           side="right"
           background={currentLine.character !== "elder"}
@@ -151,7 +152,7 @@ export const ContentScene2: React.FC = () => {
           />
         )}
 
-        <DialogBox lines={dialogLines} sceneFrame={frame} sceneDuration={durationInFrames} />
+        <DialogBox lines={dialogLines} sceneFrame={frame} sceneDuration={durationInFrames} getCharacterConfig={(id) => CHARACTERS[id as Character]} />
 
         {/* Scene indicator */}
         <div style={{

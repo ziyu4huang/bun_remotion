@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
-# Sync assets images to all episodes.
-# - Converts any existing symlinks to real files first (Remotion can't follow symlinks)
-# - Uses rsync --ignore-existing so episode-specific images are never overwritten
-# Run after adding new poses: bash bun_remotion_proj/weapon-forger/assets/scripts/sync-images.sh
+# DEPRECATED: This script is no longer needed.
+# Weapon-forger now uses remotion.config.ts with Config.setPublicDir("../assets")
+# to serve images directly from the central assets/ directory.
+# No per-episode public/images/ copies are needed.
+# Kept for reference only.
 set -eo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"

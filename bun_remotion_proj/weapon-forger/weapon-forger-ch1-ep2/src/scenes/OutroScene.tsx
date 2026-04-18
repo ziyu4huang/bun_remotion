@@ -1,7 +1,6 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, spring } from "remotion";
-import { notoSansTC, maShanZheng } from "../../../assets/characters";
-import { MangaSfx } from "../../../assets/components/MangaSfx";
+import { notoSansTC, maShanZheng, MangaSfx } from "@bun-remotion/shared";
 
 /**
  * OutroScene — Credits + next episode teaser with manga flair

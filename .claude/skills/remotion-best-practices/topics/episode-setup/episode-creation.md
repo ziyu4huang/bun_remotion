@@ -149,7 +149,7 @@ Running gags due: 忘加按鈕 (last: ch2-ep2 滄溟子忘加拔劍按鈕), 現�
 
 ## Step 1.5: Generate KG Constraints (before writing)
 
-Run the graphify generation prompt script to extract structural constraints from the existing knowledge graph:
+Run the graphify generation prompt script to extract structural constraints from the existing knowledge graph. This can also be done via `/bun_graphify` episode mode, but the direct script is faster for just the constraints:
 
 ```bash
 bun run --cwd bun_app/bun_graphify src/scripts/graphify-gen-prompt.ts <series-dir> --target-ep ch<N>ep<M>
@@ -380,32 +380,38 @@ The episode PLAN.md is a **story contract** — concise metadata capturing the c
 
 ---
 
-## Step 3: Graphify Quality Gate (subagent analysis)
+## Step 3: Graphify Quality Gate (`/bun_graphify` + subagent analysis)
 
-Run graphify scripts for structural extraction, then use a **Claude subagent** to analyze the story and write the quality gate summary directly into PLAN.md.
+This is a **two-phase gate**. Phase 1 generates real structural data. Phase 2 uses that data for story analysis. **Phase 2 is BLOCKED until Phase 1 produces output files.**
 
-### 3a: Run graphify scripts
+### 3a: Run `/bun_graphify` pipeline mode (**MUST complete before 3b**)
 
-```bash
-# Structural extraction (nodes, edges, communities)
-bun run --cwd bun_app/bun_graphify src/scripts/graphify-episode.ts <episode-dir> --series-dir <series-dir>
+Invoke the skill with the **series directory** as argument. This triggers pipeline mode which runs episode → merge → check automatically:
 
-# Merge into series graph
-bun run --cwd bun_app/bun_graphify src/scripts/graphify-merge.ts <series-dir>
-
-# Consistency check
-bun run --cwd bun_app/bun_graphify src/scripts/graphify-check.ts <series-dir>
+```
+/bun_graphify <series-dir>
 ```
 
-> **Note:** All paths must be absolute. `--cwd bun_app/bun_graphify` sets CWD for the spawned process only.
+For example: `/bun_graphify /Users/.../my-core-is-boss`
 
-### 3b: Subagent generates gate summary for PLAN.md
+**Verification gate — confirm these files exist before proceeding to 3b:**
+
+| File | Must exist | Contains |
+|------|-----------|----------|
+| `<series-dir>/bun_graphify_out/consistency-report.md` | Yes | PASS/WARN/FAIL checks with real data |
+| `<series-dir>/bun_graphify_out/merged-graph.json` | Yes | Merged node/edge counts |
+| `<series-dir>/bun_graphify_out/graph.html` | Yes | Visual graph |
+
+If any file is missing, re-run `/bun_graphify` or debug before proceeding. **Do NOT proceed to 3b with fabricated data.**
+
+### 3b: Subagent generates gate summary for PLAN.md (**requires 3a output**)
 
 Spawn a Claude subagent with these inputs:
 - The new episode's `scripts/narration.ts` (full dialog)
 - The series workspace `PLAN.md` (characters, arcs, episode guide)
 - The previous episode's `scripts/narration.ts` (for continuity comparison)
-- The graphify `consistency-report.md` (structural check results)
+- **`bun_graphify_out/consistency-report.md`** (real structural check results from 3a)
+- **`bun_graphify_out/MERGED_REPORT.md`** (merged graph summary from 3a)
 - The `assets/story/` files (world-building, characters, plot-arcs)
 
 The subagent should:
@@ -518,7 +524,7 @@ After scaffolding, check against the series style lock:
 ### Final graphify update
 
 After scaffolding and Studio verification:
-1. Re-run `graphify-pipeline` to update merged graph with any scene-level changes
+1. Re-run `/bun_graphify <series-dir>` to update merged graph with any scene-level changes
 2. Mark episode PLAN.md status as `scaffolded`
 
 ---
@@ -544,7 +550,7 @@ Chapter: 第[N]章：[章節標題]（第[M]/[K]集）
 
 - [x] Create episode directory + narration.ts
 - [x] Create episode PLAN.md (story contract)
-- [x] Run graphify pipeline (episode → merge → check)
+- [x] Run `/bun_graphify` pipeline (episode → merge → check)
 - [x] Subagent gate analysis → PLAN.md updated
 - [x] User approved gate results
 

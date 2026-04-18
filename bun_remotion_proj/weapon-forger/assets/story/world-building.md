@@ -28,9 +28,13 @@
 
 | 場景 | 背景圖 | 使用章節 |
 |------|--------|---------|
-| 煉器峰大門 | sect-gate.png | ch1, ch2 |
+| 煉器峰大門 | sect-gate.png | ch1-ep1, ch1-ep2 |
+| 煉器峰內部 | forge-interior.png | ch1-ep3, ch2-ep1 |
+| 後山低語洞窟 | cave.png | ch2-ep2 |
+| 後山藏經閣 | library.png | ch2-ep3 |
+| 宗門秘境 | secret-realm.png | ch3 |
 
-**注意：** 目前只有一張背景圖 (sect-gate.png)。新章節需生成對應背景。
+**背景圖存放：** `assets/backgrounds/` — 由 `remotion.config.ts` 的 `setPublicDir("../assets")` 統一提供，無需同步至各集。
 
 ## 視覺風格
 

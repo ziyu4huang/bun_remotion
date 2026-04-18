@@ -1,68 +1,58 @@
 ---
 name: generate-image-skill-lessons
-description: Lessons learned from using /generate-image skill with Playwright + Google AI Studio Nano Banana
+description: Lessons from /generate-image skill — image.z.ai rate limits, facing LEFT, rembg, browser session management
 type: feedback
 ---
 
-## Rule: Use `page.getByRole('button', { name: 'Run', exact: true }).click()` — NOT `page.evaluate()`
+## Rule: image.z.ai rate limit — close+reopen browser to reset
 
-**Why:** `page.evaluate(() => document.querySelector('[aria-label="Run the prompt"]').click())` silently fails to trigger generation — no error thrown, but the prompt never submits. The Run button must be clicked via Playwright's locator API, not DOM evaluate. Use `page.getByRole('button', { name: 'Run', exact: true }).click()` which reliably triggers the generation.
+**Why:** Free tier allows ~3 images per 5 min. After that, 429 "太火爆了" error. Waiting 5+ min works but closing browser (`playwright-cli close`) and reopening (`playwright-cli open --headed --persistent`) resets the rate limit faster.
+
+**How to apply:** Generate max 3 images, then close+reopen before continuing. Never try to wait in-page — the 429 persists across page reloads within the same browser session.
+
+## Rule: "facing LEFT" must be emphasized multiple times in prompt
+
+**Why:** AI models (both GLM-Image and Gemini) frequently ignore a single "facing LEFT" instruction. First yunzhi attempt produced a forward-facing character. Second attempt with 3+ mentions of LEFT succeeded.
+
+**How to apply:** In character prompts, include at least 2-3 directional cues:
+```
+...facing LEFT, the character is looking toward the left side of the image,
+face turned to face LEFT direction...
+```
+
+## Rule: Always use `--headed --persistent` for browser sessions
+
+**Why:** User explicitly requested headed Chrome so they can see/interact, and persistent profile so login survives across browser close/reopen. Non-persistent sessions require re-login every time.
+
+**How to apply:** `playwright-cli open --headed --persistent https://image.z.ai`
+
+## Rule: AI ignores solid color background requests — rembg still works
+
+**Why:** Requesting "solid magenta #FF00FF background" often produces black or other colors instead. rembg can still remove these backgrounds but edges may be less clean than with magenta.
+
+**How to apply:** Always plan for rembg post-processing regardless of prompt. Magenta prompt is still worth including for best results.
+
+## Rule: image.z.ai URL extraction via regex on img src
+
+**Why:** The generated image src is a Next.js proxy URL. The actual image URL is in the `url=` query parameter, URL-encoded. Must decode before use.
 
 **How to apply:**
 ```js
-// Type prompt first
-const textarea = page.locator('textarea').first();
-await textarea.click();
-await textarea.fill(prompt);
-await page.waitForTimeout(1000);
-
-// Click Run via role locator (NOT evaluate)
-await page.getByRole('button', { name: 'Run', exact: true }).click();
+const src = await genImg.getAttribute('src');
+const urlMatch = src.match(/url=([^&]+)/);
+const realUrl = decodeURIComponent(urlMatch[1]);
+// Then: curl -sL -o output.png realUrl
 ```
 
-## Rule: For batch generation, use new chat per image (`page.goto()`)
+## Rule: Use `run-code` for multi-step browser automation
 
-**Why:** Multi-turn chat accumulates DOM complexity — buttons get intercepted by overlays, scroll positions break, stale element references. Starting a fresh chat per image via `page.goto('https://aistudio.google.com/prompts/new_chat?model=gemini-2.5-flash-image')` is more reliable than reusing one chat.
+**Why:** Individual CLI commands (snapshot → click → type) are slow and refs go stale. `run-code` executes self-contained Playwright scripts atomically.
 
-**How to apply:** In a `browser_run_code` loop:
-```js
-for (const { file, prompt } of images) {
-  await page.goto('https://aistudio.google.com/prompts/new_chat?model=gemini-2.5-flash-image');
-  await page.waitForLoadState('networkidle').catch(() => {});
-  await page.waitForTimeout(1500);
-  // dismiss, fill, evaluate-click, wait, download...
-}
-```
+**How to apply:** Always wrap generate workflows in `playwright-cli run-code "async page => { ... }"`.
 
-## Rule: Use `browser_run_code` for image generation, not individual MCP tool calls
+## Legacy rules (Google AI Studio / Nano Banana)
 
-**Why:** Individual MCP calls (snapshot → click → type → snapshot) are extremely slow and fragile. The snapshot refs go stale between steps. Using `browser_run_code` to execute a self-contained Playwright script is 5-10x faster and much more reliable.
-
-**How to apply:** Always use `browser_run_code` for multi-step browser automation. Only use individual MCP tools for simple single-step actions like navigation.
-
-## Rule: Download images via Playwright download event — click image first to open overlay
-
-**Why:** The download button only appears in an overlay after clicking the generated image. You must: (1) click the image to open the overlay, (2) then click the Download button while listening for the download event. Clicking Download without the overlay open doesn't trigger a download event.
-
-**How to apply:**
-```js
-// First click the generated image to open the overlay
-await page.getByRole('img', { name: /Generated Image/ }).last().click();
-await page.waitForTimeout(1500);
-
-// Then download with event listener
-const [download] = await Promise.all([
-  page.waitForEvent('download', { timeout: 15000 }),
-  page.locator('button:has-text("Download")').first().click(),
-]);
-await download.saveAs('/absolute/path/to/output.png');
-
-// Close overlay before next image
-await page.locator('button:has-text("Close")').first().click();
-```
-
-## Rule: Wait for "Response ready." text, not fixed timeout
-
-**Why:** Image generation takes 5-30 seconds. Fixed timeouts either waste time or fail. Using `page.locator('text=Response ready.').last().waitFor({ timeout: 45000 })` is more reliable.
-
-**How to apply:** Always wait for the "Response ready." signal with 45s timeout after clicking Run.
+- Use `page.getByRole('button', { name: 'Run', exact: true })` — NOT `evaluate()`
+- Batch: new chat per image via `page.goto()`
+- Download: click image first → overlay → Download button → `waitForEvent('download')`
+- Wait for "Response ready." text, not fixed timeout

@@ -1,17 +1,14 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate } from "remotion";
 import { BackgroundLayer } from "../../../assets/components/BackgroundLayer";
-import { CharacterSprite } from "../../../assets/components/CharacterSprite";
-import { ComicEffects } from "../../../assets/components/ComicEffects";
+import { CharacterSprite, ComicEffects, DialogBox, SystemNotification, SystemMessage, MangaSfx } from "@bun-remotion/shared";
+import { notoSansTC } from "@bun-remotion/shared";
+import type { DialogLine, ComicEffect } from "@bun-remotion/shared";
 import {
   ScreenShake, ScreenFlash, ImpactBurst, DiamondShards,
   PowerUpRings, GroundCrack, ConcentrationLines, SpeedLines,
 } from "../../../assets/components/BattleEffects";
-import { SystemNotification, SystemMessage } from "../../../assets/components/SystemOverlay";
-import { DialogBox } from "../../../assets/components/DialogBox";
-import { MangaSfx } from "../../../assets/components/MangaSfx";
-import { notoSansTC } from "../../../assets/characters";
-import type { DialogLine, ComicEffect } from "../../../assets/characters";
+import { CHARACTERS, type Character } from "../../../assets/characters";
 
 /**
  * ContentScene2 — 長老評審、宣布結果、周墨通過考試
@@ -127,9 +124,10 @@ export const ContentScene2: React.FC = () => {
         {/* Characters */}
         <CharacterSprite
           character="zhoumo"
-          image="zhoumo.png"
+          characterConfig={CHARACTERS.zhoumo}
+          image="characters/zhoumo.png"
           chibi={false}
-          chibiImage="zhoumo-chibi.png"
+          chibiImage="characters/zhoumo-chibi.png"
           speaking={currentLine.character === "zhoumo"}
           side="left"
           background={currentLine.character !== "zhoumo"}
@@ -138,9 +136,10 @@ export const ContentScene2: React.FC = () => {
 
         <CharacterSprite
           character="examiner"
-          image="examiner.png"
+          characterConfig={CHARACTERS.examiner}
+          image="characters/examiner.png"
           chibi={false}
-          chibiImage="examiner-chibi.png"
+          chibiImage="characters/examiner-chibi.png"
           speaking={currentLine.character === "examiner"}
           side="right"
           background={currentLine.character !== "examiner"}
@@ -149,7 +148,8 @@ export const ContentScene2: React.FC = () => {
 
         <CharacterSprite
           character="elder"
-          image="elder.png"
+          characterConfig={CHARACTERS.elder}
+          image="characters/elder.png"
           speaking={currentLine.character === "elder"}
           side="center"
           background={currentLine.character !== "elder"}
@@ -183,7 +183,7 @@ export const ContentScene2: React.FC = () => {
           />
         )}
 
-        <DialogBox lines={dialogLines} sceneFrame={frame} sceneDuration={durationInFrames} />
+        <DialogBox lines={dialogLines} sceneFrame={frame} sceneDuration={durationInFrames} getCharacterConfig={(id) => CHARACTERS[id as Character]} />
 
         {/* Scene indicator */}
         <div style={{

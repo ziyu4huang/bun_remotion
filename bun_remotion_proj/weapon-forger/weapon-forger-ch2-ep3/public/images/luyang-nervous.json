@@ -1,9 +1,0 @@
-{
-  "file": "luyang-nervous.png",
-  "type": "pose",
-  "character": "luyang",
-  "pose": "nervous",
-  "facing": "LEFT",
-  "prompt": "anime style male cultivator, young man with sky-blue themed robes, neat short hair, anxious worried expression, eyes darting nervously, fidgeting hands, slightly hunched posture, comedic nervous energy, half-body portrait, transparent background",
-  "backgroundStrategy": "solid magenta #FF00FF, remove with rembg"
-}

@@ -180,9 +180,9 @@ export const CharacterSprite: React.FC<CharacterSpriteProps> = ({
   // ─── Image resolution ─────────────────────────────────────────────────────
   const resolvedImage = image || resolveCharacterImage(character, emotion);
   const imgSrc = chibi && chibiImage
-    ? staticFile(`images/${chibiImage}`)
+    ? staticFile(chibiImage)
     : resolvedImage
-    ? staticFile(`images/${resolvedImage}`)
+    ? staticFile(resolvedImage)
     : null;
 
   // ─── Drop shadow size ─────────────────────────────────────────────────────

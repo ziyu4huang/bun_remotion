@@ -1,13 +1,9 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate } from "remotion";
 import { BackgroundLayer } from "../../../assets/components/BackgroundLayer";
-import { CharacterSprite } from "../../../assets/components/CharacterSprite";
-import { ComicEffects } from "../../../assets/components/ComicEffects";
-import { SystemNotification } from "../../../assets/components/SystemOverlay";
-import { DialogBox } from "../../../assets/components/DialogBox";
-import { MangaSfx } from "../../../assets/components/MangaSfx";
-import { notoSansTC } from "../../../assets/characters";
-import type { DialogLine, ComicEffect } from "../../../assets/characters";
+import { CharacterSprite, ComicEffects, DialogBox, SystemNotification, MangaSfx, notoSansTC } from "@bun-remotion/shared";
+import type { DialogLine, ComicEffect } from "@bun-remotion/shared";
+import { CHARACTERS, type Character } from "../../../assets/characters";
 import { getSegmentTiming } from "./useSegmentTiming";
 
 /**
@@ -124,9 +120,10 @@ export const ContentScene2: React.FC = () => {
       {/* Characters */}
       <CharacterSprite
         character="zhoumo"
-        image="zhoumo.png"
+        characterConfig={CHARACTERS.zhoumo}
+        image="characters/zhoumo.png"
         chibi={false}
-        chibiImage="zhoumo-chibi.png"
+        chibiImage="characters/zhoumo-chibi.png"
         speaking={currentLine.character === "zhoumo"}
         side="left"
         background={currentLine.character !== "zhoumo"}
@@ -135,7 +132,8 @@ export const ContentScene2: React.FC = () => {
 
       <CharacterSprite
         character="luyang"
-        image="luyang.png"
+        characterConfig={CHARACTERS.luyang}
+        image="characters/luyang.png"
         speaking={currentLine.character === "luyang"}
         side="center"
         background={currentLine.character !== "luyang"}
@@ -144,7 +142,8 @@ export const ContentScene2: React.FC = () => {
 
       <CharacterSprite
         character="mengjingzhou"
-        image="mengjingzhou.png"
+        characterConfig={CHARACTERS.mengjingzhou}
+        image="characters/mengjingzhou.png"
         speaking={currentLine.character === "mengjingzhou"}
         side="right"
         background={currentLine.character !== "mengjingzhou"}
@@ -163,7 +162,7 @@ export const ContentScene2: React.FC = () => {
       {/* Manga SFX */}
       <MangaSfx events={currentSfx} />
 
-      <DialogBox lines={dialogLines} sceneFrame={frame} sceneDuration={durationInFrames} overrideLineIndex={currentLineIndex} overrideLineFrame={segLineFrame} />
+      <DialogBox lines={dialogLines} sceneFrame={frame} sceneDuration={durationInFrames} overrideLineIndex={currentLineIndex} overrideLineFrame={segLineFrame} getCharacterConfig={(id) => CHARACTERS[id as Character]} />
 
       {/* Scene indicator */}
       <div style={{

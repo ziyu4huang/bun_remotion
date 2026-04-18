@@ -14,7 +14,7 @@ const NUM_TRANSITIONS = NUM_SCENES - 1;
 const sceneDurationsData: number[] = (() => {
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    return require("../public/audio/durations.json");
+    return require("../audio/durations.json");
   } catch {
     return Array(NUM_SCENES).fill(240);
   }

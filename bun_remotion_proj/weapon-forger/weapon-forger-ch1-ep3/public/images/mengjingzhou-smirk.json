@@ -1,9 +1,0 @@
-{
-  "file": "mengjingzhou-smirk.png",
-  "type": "pose",
-  "character": "mengjingzhou",
-  "pose": "smirk",
-  "facing": "LEFT",
-  "prompt": "anime style male cultivator, young man with orange themed scholarly robes, refined neat hair tied back, intellectual smugness, knowing superior smile, one hand adjusting spectacles, looking down with scholarly pride, half-body portrait, transparent background",
-  "backgroundStrategy": "solid magenta #FF00FF, remove with rembg"
-}
