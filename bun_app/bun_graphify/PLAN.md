@@ -10,28 +10,55 @@
 >
 > **Rule:** Architecture decisions → skill PLAN.md. Code-level tasks → this TODO.md.
 
-## Current State (v0.6.0)
+## Current State (v0.12.0)
 
 See `.claude/skills/bun_graphify/PLAN.md` for full architecture.
 
 **Working:**
 - Regex pipeline: per-episode extraction from narration.ts (series-config-driven)
+- AI pipeline: NL extraction via pi-agent (8 node types)
+- **Hybrid pipeline (DEFAULT)**: Regex first, AI supplements exclusive types (plot_event, artifact, gag_manifestation)
 - Series config system: auto-detect series, load character/tech/gag patterns
 - Simplified merge: concatenate sub-graphs + cross-episode link edges (no synthetic nodes)
 - Episode-based coloring in merged HTML visualization
 - Consistency checking via link edge traversal
 - Auto-detect series pattern (generic `-chN-epM`)
-- Absolute path validation in episode + merge scripts
+- Absolute path validation in all 9 scripts
 - HTML escape in gen-story-html.ts
 - SKILL.md as operational playbook with knowledge capture
+- Leiden-inspired community system with analysis
+- Generation manifest in all output files (mode, model, timestamp, version)
+- Comparison tool: graphify-compare.ts runs all 3 modes side-by-side
 
-**Phase 23 foundation (partial):**
+**Phase 23 — AI Cross-Link Discovery (complete):**
 - StoryCrossLink type + CrossLinkType union in types.ts
 - story-algorithms.ts: PageRank, Jaccard similarity, character arc score, gag evolution score
-- subagent-prompt.ts: buildCrossLinkPrompt() with graph summary + metrics
-- graphology-pagerank dependency
+- subagent-prompt.ts: buildCrossLinkPrompt() with graph summary + metrics (exports NodeSummary, EdgeSummary)
+- ai-crosslink-generator.ts: full orchestration (metrics → prompt → validate → patch)
+- graphify-pipeline.ts: step 3.5 integration
+- gen-story-html.ts: AI cross-link dotted edges + PageRank glow + legend + toggle
 
-**Code-level tasks:** See `TODO.md` (same directory)
+**Phase 24 — Story Quality Gates (A/B/C/D complete, E/F blocked):**
+- 24-A: Duplicate content gate (Jaccard similarity gating + algorithm cross-links)
+- 24-B: Plot arc detector (PlotBeat type, tension curve analysis)
+- 24-C: Foreshadowing tracker (cross-episode setup/payoff)
+- 24-D: Character growth trajectory (direction-aware scoring)
+- 24-E/F: Blocked (need dialog_line_count + theme node type)
+
+**Phase 26 — Dual-Mode Pipeline (complete):**
+- ai-client.ts: pi-ai SDK wrapper (callAI, parseArgsForAI, zai/glm-4.7-flash default)
+- buildEpisodeExtractionPrompt(): 8 node types, 8 edge relations, ~3000 char context
+- graphify-episode.ts --mode ai: AI extraction with regex fallback
+- graphify-check.ts --mode ai: check enrichment via pi-agent
+- graphify-pipeline.ts: --mode ai passthrough to all subprocesses
+- @mariozechner/pi-ai@0.67.68 installed
+
+**Phase 27 — Hybrid Mode + Comparison (complete):**
+- --mode hybrid: regex first, AI supplements exclusive nodes/edges
+- graphify-compare.ts: runs all 3 modes, compares, recommends best default
+- Hybrid scores 97 vs regex 54 vs ai 32 on my-core-is-boss (5 eps)
+- Default mode changed from regex to hybrid
+- Generation manifest in graph.json, merged-graph.json, consistency-report.md, graph.html
 
 ## Existing Files to Reuse
 
@@ -40,41 +67,55 @@ See `.claude/skills/bun_graphify/PLAN.md` for full architecture.
 | `src/extract/narrative.ts` | `parseNarration()`, `extractSeriesNarrative()`, `narrativeToCorpus()`, `detectEpisodes()` |
 | `src/scripts/series-config.ts` | `SeriesConfig`, `detectSeries()`, `getSeriesConfigOrThrow()`, series configs |
 | `src/scripts/story-algorithms.ts` | `computePageRank()`, `computeJaccardSimilarity()`, `computeCharacterArcScore()`, `computeGagEvolutionScore()` |
-| `src/scripts/subagent-prompt.ts` | `buildCrossLinkPrompt()` — generates cross-link discovery prompt |
+| `src/scripts/subagent-prompt.ts` | `buildCrossLinkPrompt()`, `buildPlotArcPrompt()`, `buildForeshadowPrompt()`, `buildEpisodeExtractionPrompt()` |
+| `src/scripts/ai-crosslink-generator.ts` | Cross-link orchestration: read merged → compute metrics → write input → read output → validate → patch |
+| `src/ai-client.ts` | pi-ai SDK wrapper: `callAI()`, `parseArgsForAI()` |
 | `src/cli.ts` | `cmdFull()`, `cmdExtract()` — AST extraction pipeline |
 | `src/build.ts` | `buildFromExtraction()` — graph building |
 | `src/cluster.ts` | `cluster()`, `splitOversized()` — community detection |
 | `src/export/` | `writeGraphJSON()`, `writeGraphHTML()` — export |
 | `src/report.ts` | `writeReport()` — report generation |
-| `src/types.ts` | `GraphNode`, `GraphEdge`, `ExtractionResult`, `StoryCrossLink`, `CrossLinkType` — shared types |
+| `src/types.ts` | `GraphNode`, `GraphEdge`, `ExtractionResult`, `StoryCrossLink`, `CrossLinkType`, `PlotBeat`, `Foreshadow` — shared types |
 
-## Phase 23 — AI Cross-Link Discovery (partial)
+## Phase 23 — AI Cross-Link Discovery ✅
 
 See `.claude/skills/bun_graphify/PLAN.md` Phase 23 for architecture.
 
-### Done Files
+### All Files
 
-| File | Purpose |
-|------|---------|
-| `src/scripts/story-algorithms.ts` | ✅ PageRank, Jaccard similarity, character arc score, gag evolution score |
-| `src/scripts/subagent-prompt.ts` | ✅ Cross-link discovery prompt builder with graph summary + metrics |
-| `src/types.ts` | ✅ StoryCrossLink interface, CrossLinkType union |
-
-### Remaining New Files
-
-| File | Purpose |
-|------|---------|
-| `src/scripts/ai-crosslink-generator.ts` | 🔲 Claude subagent call, JSON parsing, cross-link edge creation |
-
-### Remaining Files to Modify
-
-| File | Change |
-|------|--------|
-| `src/scripts/graphify-pipeline.ts` | 🔲 Add step 4: run story-algorithms + ai-crosslink-generator |
-| `src/scripts/gen-story-html.ts` | 🔲 Render AI cross-links (dotted lines, colors, PageRank glow) |
-| `src/scripts/graphify-merge.ts` | 🔲 Include cross_links in merged output schema |
+| File | Purpose | Status |
+|------|---------|--------|
+| `src/scripts/story-algorithms.ts` | PageRank, Jaccard similarity, character arc score, gag evolution score | ✅ |
+| `src/scripts/subagent-prompt.ts` | Cross-link discovery prompt builder (exports NodeSummary, EdgeSummary) | ✅ |
+| `src/types.ts` | StoryCrossLink interface, CrossLinkType union | ✅ |
+| `src/scripts/ai-crosslink-generator.ts` | Orchestration: metrics → prompt → validate → patch merged-graph.json | ✅ |
+| `src/scripts/graphify-pipeline.ts` | Step 3.5: crosslink generator + HTML re-render | ✅ |
+| `src/scripts/gen-story-html.ts` | AI cross-link dotted edges + PageRank glow + legend + toggle | ✅ |
 
 ### Dependencies
 
 - `graphology` + `graphology-pagerank` — ✅ installed
-- Claude subagent — reuse existing SKILL.md subagent pattern
+- File-based subagent pattern — ✅ matches graphify-check.ts enrichment
+
+## Phase 26 — Dual-Mode Pipeline (in progress)
+
+### Completed Files
+
+| File | Purpose | Status |
+|------|---------|--------|
+| `src/ai-client.ts` | pi-ai SDK wrapper: callAI(), parseArgsForAI() | ✅ |
+| `src/scripts/subagent-prompt.ts` | Added buildEpisodeExtractionPrompt() | ✅ |
+| `src/scripts/graphify-episode.ts` | Added --mode ai branch with regex fallback | ✅ |
+
+### Remaining Files
+
+| File | Purpose | Status |
+|------|---------|--------|
+| `src/scripts/ai-crosslink-generator.ts` | Add --mode ai branch for direct API call | Planned |
+| `src/scripts/graphify-check.ts` | Add --mode ai branch for enrichment | Planned |
+| `src/scripts/graphify-pipeline.ts` | Add --mode ai passthrough to all subprocess calls | Planned |
+
+### Dependencies
+
+- `@mariozechner/pi-ai@0.67.68` — ✅ installed
+- `ZAI_API_KEY` env var — already configured

@@ -9,7 +9,7 @@
 >
 > **Rule:** Pipeline/architecture tasks → this file. Code implementation tasks → `bun_app/bun_graphify/TODO.md`.
 
-> **Status:** v0.7.0 — Leiden-inspired community system, community-based issue detection, community visualization
+> **Status:** v0.12.0 — Phase 23 complete, Phase 26 complete, Phase 27 (hybrid mode + comparison) complete, Phase 24-E (pacing) complete
 
 ## Known Issues (from 2026-04-15 v0.6.0 pipeline run)
 
@@ -27,6 +27,10 @@
 
 **Cross-cutting:**
 - **Subagent JSON extraction is fragile** — 2/7 weapon-forger episodes had broken JSON in prior runs. Need robust extraction: try JSON.parse → fix trailing commas → fix single quotes → `jsonrepair` npm package.
+- **AI cross-link invocation is manual** — Pipeline writes `crosslink-input.json` but doesn't call Claude directly. Requires manual subagent step (read input → send to Claude → write output → re-run generator). **Phase 26 adds `--mode ai`** to replace file-based handoff with direct pi-agent API calls.
+- **No algorithm-only cross-links** — `generated_by: "algorithm"` type is defined but never generated. PageRank/Jaccard/arc scores are only used as prompt context, not as cross-link outputs.
+- **PageRank bias toward high-degree nodes** — Raw PageRank scores favor plot nodes and scenes (highest degree). Character-specific filtering or normalized PageRank would be more meaningful for "influential character" use case.
+- **crosslink-input.json size** — 66KB for 5 episodes (109 nodes). Larger series (weapon-forger: 7 eps, 156 nodes) may produce input exceeding LLM context limits. Need summarization strategy.
 
 ## P0 — Fix next
 
@@ -36,6 +40,8 @@
 ## P1 — Feature completeness
 
 - [x] **Subagent prompt template** — Extracted into `bun_app/bun_graphify/src/scripts/subagent-prompt.ts` as `buildCrossLinkPrompt()`.
+- [ ] **Direct AI invocation for cross-links** — ~~Add `--api` flag to ai-crosslink-generator.ts that calls Claude API directly~~ **Superseded by Phase 26** — `--mode ai` uses pi-agent for all AI touchpoints (cross-links, check enrichment, episode extraction)
+- [ ] **Algorithm-only cross-links** — Generate `generated_by: "algorithm"` cross-links from PageRank/Jaccard/arc scores without AI. E.g., high-Jaccard episode pairs → `story_anti_pattern` cross-links.
 - [ ] **Batch per-episode HTML** — Pipeline only generates merged HTML. Add per-episode HTML generation step: `for each episode: gen-story-html.ts <ep-dir>`.
 - [ ] **gag_evolves ID normalization** — Regex creates `${EP_ID}_gag_${gagName.replace(/\s+/g, "_")}`, subagent creates `${EP_ID}_gag_${type}`. Different naming conventions. Merge script needs fuzzy ID matching or both pipelines should use same convention.
 - [ ] **Trait coverage: PLAN.md character baseline** — Read PLAN.md character personality descriptions and compare against detected traits. This would distinguish "regex missed it" (false positive WARN) from "character actually changed" (real drift).
@@ -48,12 +54,71 @@
 - [ ] **Dual pipeline merge** — Support mixing regex pipeline output (fast, shallow) with subagent output (slow, rich) for the same episode. Merge by node ID prefix matching.
 - [ ] **Confidence scoring** — Regex edges: confidence based on pattern match count. Subagent edges: confidence based on explicit vs inferred. Currently all confidence=1.0.
 - [ ] **Cross-series support** — Auto-detect series type (weapon-forger, galgame-meme-theater) and adapt node types/edge relations. ✅ Series config system added — `series-config.ts` with `detectSeries()`
+- [ ] **PageRank normalization** — Raw PageRank favors high-degree nodes. Add character-specific filtering or normalized scores for "influential character" use case.
+- [ ] **Input size management** — crosslink-input.json is 66KB for 5 episodes. Need summarization or chunking strategy for larger series (7+ episodes).
+- [ ] **Pipeline step renumbering** — Step 3.5 is awkward. Renumber to: 1=episode, 2=merge, 3=html, 4=check, 5=crosslink, 6=html-re-render.
 
-## Phase 23 — AI Cross-Link Discovery 🔲
+## Phase 26 — Dual-Mode Pipeline with pi-agent AI Integration
+
+> Replaces manual file-based subagent handoff with direct pi-agent API calls.
+> Orthogonal to Phase 24 (story quality) — benefits all phases that use subagent calls.
+
+### P0 — Core infrastructure
+
+- [ ] **26-A1: ai-client.ts** — pi-ai SDK wrapper
+  - `callAI(prompt, options)` with provider/model selection, JSON mode, retry
+  - Default: `zai` / `glm-4.5-flash`, fallback: graceful degradation to regex
+  - `parseArgsForAI(args)` to extract `--mode`, `--provider`, `--model` from CLI args
+  - File: `bun_app/bun_graphify/src/ai-client.ts`
+  - Depends on: `@mariozechner/pi-ai` in package.json
+
+- [ ] **26-A2: Add pi-ai dependency** — bun_graphify package.json
+  - `bun add --cwd bun_app/bun_graphify @mariozechner/pi-ai`
+  - Optional peer dep: graphify still works without API key (regex mode)
+
+### P1 — AI touchpoint automation (3 touchpoints)
+
+- [ ] **26-B1: Episode NL extraction (--mode ai)** — Replace Claude Code subagent with direct API call
+  - New `buildEpisodeExtractionPrompt()` in subagent-prompt.ts
+  - graphify-episode.ts: when `--mode ai`, call pi-agent instead of regex Steps 2-7
+  - Parse JSON response into GraphNode[] + GraphEdge[] (same format as regex output)
+  - Validate node IDs against series config, fall back to regex on failure
+  - File: `graphify-episode.ts`, `subagent-prompt.ts`
+
+- [ ] **26-B2: Cross-link discovery (--mode ai)** — Replace file handoff with direct API call
+  - ai-crosslink-generator.ts: when `--mode ai`, call `callAI(prompt)` instead of write-then-stop
+  - Reuse existing `buildCrossLinkPrompt()` + `validateCrossLinks()` logic
+  - Parse response, patch merged-graph.json, continue pipeline
+  - File: `ai-crosslink-generator.ts`
+
+- [x] **26-B3: Check enrichment (--mode ai)** — Replace file handoff with direct API call
+  - graphify-check.ts: when `--mode ai`, call `callAI(prompt)` after writing enrichment input
+  - Write `check-enrichment-output.md` from API response
+  - File: `graphify-check.ts`
+
+### P2 — Pipeline integration
+
+- [x] **26-C1: Pipeline --mode ai passthrough** — graphify-pipeline.ts passes `--mode ai` to all subprocess calls
+  - Each `Bun.spawnSync` call appends `--mode ai --provider X --model Y` if specified
+  - Pipeline runs end-to-end without human intervention in ai mode
+  - File: `graphify-pipeline.ts`
+
+- [ ] **26-C2: SKILL.md operation update** — Document `--mode ai` in episode.md and pipeline.md operations
+  - Add CLI examples for both modes
+  - Note: Claude Code subagent still works in regex mode for richer analysis
+  - Files: `.claude/skills/bun_graphify/operations/episode.md`, `operations/pipeline.md`
+
+- [x] **26-C3: Compare AI mode vs regex extraction quality** — Benchmark complete (my-core-is-boss, 5 episodes)
+  - **Result:** AI mode produces 3 exclusive node types (plot_event, gag_manifestation, artifact) and 3 exclusive edge relations (triggers, relates_to, uses) that regex cannot detect. Regex produces more traits (31 vs 18) and tech terms (29 vs 21) due to exhaustive pattern matching. AI fixes ch2ep2 trait gap (1→3 chars w/ trait). AI mode triggers more WARN/FAIL (15/6 vs regex 6/2) due to sparse trait edges. Trade-off: AI = richer types but sparser; Regex = denser but fewer types.
+  - See run history for full comparison table.
+
+---
+
+## Phase 23 — AI Cross-Link Discovery ✅
 
 ### P0 — Data model
 - [x] **Define StoryCrossLink type** — Added to `src/types.ts`: link_type union, confidence, evidence, generated_by, rationale
-- [ ] **Extend merged-graph.json schema** — Add `cross_links` array alongside `nodes`, `edges`, `link_edges`
+- [x] **Extend merged-graph.json schema** — Added optional `cross_links` array alongside `nodes`, `edges`, `link_edges`
 
 ### P1 — Graph algorithms
 - [x] **PageRank for characters** — `story-algorithms.ts`: `computePageRank()` via graphology-pagerank
@@ -63,17 +128,108 @@
 
 ### P2 — AI generation
 - [x] **Subagent prompt template for cross-links** — `subagent-prompt.ts`: `buildCrossLinkPrompt()` with graph summary + metrics
-- [ ] **ai-crosslink-generator.ts** — Orchestrate: read merged graph → call subagent → parse JSON → write cross_links
-- [ ] **Pipeline integration** — graphify-pipeline.ts step 4: run algorithms → run AI generator → write results
+- [x] **ai-crosslink-generator.ts** — File-based subagent orchestration: read merged graph → compute metrics → build prompt → write input → read output → validate → patch
+- [x] **Pipeline integration** — graphify-pipeline.ts step 3.5: run generator, re-render HTML if cross_links added
 
 ### P3 — Visualization
-- [ ] **vis.js AI cross-link rendering** — Dotted lines, distinct colors per link_type, confidence opacity
-- [ ] **PageRank glow effect** — High-rank nodes get highlighted border
-- [ ] **Cross-link legend + toggle** — Separate from deterministic link edges
+- [x] **vis.js AI cross-link rendering** — Dotted lines, distinct colors per link_type (pink/gold/teal/red-pink), confidence in tooltip
+- [x] **PageRank glow effect** — Top 10% nodes get borderWidth:4 + shadow effect
+- [x] **Cross-link legend + toggle** — Checkbox toggle, dotted-line legend items, separate from deterministic link edges
 
 ---
 
 ## Pipeline Run History
+
+### 2026-04-18 v0.10.0 — Phase 26-B3/C1 completion
+
+| Task | Status | Details |
+|------|--------|---------|
+| 26-B3: Check enrichment --mode ai | **Complete** | `graphify-check.ts` adds `buildEnrichmentPrompt()` + `callAI()` for direct LLM analysis |
+| 26-C1: Pipeline --mode ai passthrough | **Complete** | `graphify-pipeline.ts` builds `aiFlags[]` and passes to episode/check/crosslink spawns |
+
+**Changes:**
+- `graphify-check.ts`: `parseArgsForAI(args)`, `--mode ai` branch calls `callAI()` directly, writes `check-enrichment-output.md`, falls back gracefully
+- `graphify-pipeline.ts`: `aiFlags[]` array propagated to all 3 `Bun.spawnSync` calls (episode, check, crosslink)
+- Pipeline now supports end-to-end `--mode ai` without manual subagent file handoff
+
+### 2026-04-18 v0.10.0 — Phase 26-C3: AI vs Regex extraction comparison (my-core-is-boss, 5 episodes)
+
+**Per-Episode Node & Link Counts:**
+
+| Episode | Regex N | AI N | Δ | Regex L | AI L | Δ |
+|---------|---------|------|---|---------|------|---|
+| ch1-ep1 | 33 | 24 | -9 | 42 | 28 | -14 |
+| ch1-ep2 | 21 | 23 | +2 | 24 | 20 | -4 |
+| ch1-ep3 | 23 | 24 | +1 | 28 | 26 | -2 |
+| ch2-ep1 | 19 | 20 | +1 | 26 | 21 | -5 |
+| ch2-ep2 | 13 | 24 | +11 | 19 | 27 | +8 |
+| **TOTAL** | **109** | **115** | **+6** | **139** | **122** | **-17** |
+
+**Node Type Coverage:**
+
+| Node Type | Regex | AI | Regex-only | AI-only |
+|-----------|-------|-----|-----------|---------|
+| artifact | 0 | 6 | | ✓ |
+| character_instance | 19 | 19 | | |
+| character_trait | 31 | 18 | | |
+| episode_plot | 5 | 5 | | |
+| gag_manifestation | 0 | 11 | | ✓ |
+| plot_event | 0 | 16 | | ✓ |
+| scene | 25 | 19 | | |
+| tech_term | 29 | 21 | | |
+
+**Edge Relation Diversity:**
+
+| Relation | Regex | AI | AI-only |
+|----------|-------|-----|---------|
+| appears_in | 19 | 25 | |
+| character_speaks_like | 31 | 18 | |
+| interacts_with | 26 | 7 | |
+| part_of | 25 | 19 | |
+| relates_to | 0 | 12 | ✓ |
+| triggers | 0 | 13 | ✓ |
+| uses | 0 | 5 | ✓ |
+| uses_tech_term | 38 | 23 | |
+
+**Character Trait Coverage (chars with ≥1 trait):**
+
+| Episode | Regex | AI |
+|---------|-------|-----|
+| ch1-ep1 | 3/4 | 3/4 |
+| ch1-ep2 | 2/3 | 2/3 |
+| ch1-ep3 | 3/4 | 2/4 |
+| ch2-ep1 | 3/4 | 1/4 |
+| ch2-ep2 | 1/4 | 3/4 |
+
+**Consistency Check:** AI mode: 10 PASS, 15 WARN, 6 FAIL (vs regex: typically 14 PASS, 6 WARN).
+
+**Key Findings:**
+1. AI produces 3 exclusive node types (plot_event, gag_manifestation, artifact) — structurally richer
+2. AI produces 3 exclusive edge relations (triggers, relates_to, uses) — causality + thematic connections
+3. Regex produces more traits (31 vs 18) and tech terms (29 vs 21) — exhaustive pattern matching
+4. AI fixes ch2ep2 trait gap (1→3 chars w/ trait) — metaphor-format traits that regex misses
+5. AI sparser on interacts_with (7 vs 26) — misses implicit interactions
+6. AI triggers more WARN/FAIL due to sparser trait edges reducing trait coverage scores
+
+**Recommendation:** Hybrid approach — run regex first for dense extraction, then AI for plot_event/gag/artifact/triggers/relates_to types. Merge both into a richer graph.
+
+### 2026-04-18 v0.8.0 — Phase 23 implementation (my-core-is-boss, 5 episodes)
+
+| Metric | Before (v0.7.1) | After (v0.8.0) |
+|--------|-----------------|----------------|
+| Pipeline steps | 3 (episode → merge → check) | **4 (episode → merge → html → check → crosslink)** |
+| Phase 23 code | Types + algorithms + prompt only | **Full: generator + pipeline + visualization** |
+| crosslink-input.json | — | **66KB (prompt + graph + metrics)** |
+| HTML features | Episode/Type/Community coloring, link edges | **+ AI cross-links (dotted), PageRank glow, toggle** |
+
+**Changes applied:**
+- `ai-crosslink-generator.ts`: file-based subagent orchestration (metrics → prompt → validate → patch)
+- `gen-story-html.ts`: AI cross-link dotted edges, PageRank glow (top 10%), cross-link legend + toggle, PageRank in tooltips
+- `graphify-pipeline.ts`: step 3.5 (crosslink generator + HTML re-render if cross_links added)
+- `subagent-prompt.ts`: exported NodeSummary, EdgeSummary interfaces
+- Robust JSON parsing: markdown fence stripping, array extraction, per-item node ID validation
+
+**Bun 1.3.11 parser issue:** `?.` optional chaining inside multi-line arrow function callbacks within `.map()` causes "Unexpected }" error. Workaround: use ternary `(x ? x.prop : false)` instead.
 
 ### 2026-04-18 — my-core-is-boss (5 episodes, ch2-ep2 added)
 
@@ -262,6 +418,7 @@
 - [x] **v0.7.0: Enhanced merge report** — Community Health (modularity, avg cohesion, splits), Surprising Connections, Bridge Nodes sections
 - [x] **v0.6.0: my-core-is-boss KG** — 53 nodes, 72 edges, 17 tech terms, 17 character traits (was 20/33/1/0)
 - [x] **v0.6.0: Phase 23 foundation** — StoryCrossLink type, story-algorithms.ts (PageRank, Jaccard, arc/evolution), subagent-prompt.ts
+- [x] **v0.8.0: Phase 23 completion** — ai-crosslink-generator.ts (file-based subagent orchestration), pipeline step 3.5, AI cross-link dotted edges, PageRank glow, cross-link legend + toggle
 - [x] **v0.6.0: Absolute path validation** — graphify-episode.ts + graphify-merge.ts reject relative paths
 - [x] **v0.6.0: HTML escape** — gen-story-html.ts escapeHtml() on all dynamic content
 - [x] **v0.6.0: Generic episode detection** — narrative.ts uses generic pattern, no series-specific hardcoded regex

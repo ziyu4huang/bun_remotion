@@ -18,11 +18,16 @@ import { resolve, basename } from "node:path";
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import Graph from "graphology";
 import { leidenCluster, analyzeCommunities } from "../cluster";
-import type { CommunityReport } from "../types";
+import { computePageRank } from "./story-algorithms";
+import type { CommunityReport, StoryCrossLink } from "../types";
 
 // ─── Args ───
 
 const targetDir = resolve(process.argv[2] || ".");
+if (!targetDir.startsWith("/")) {
+  console.error(`Error: "${targetDir}" is not an absolute path. Use absolute paths.`);
+  process.exit(1);
+}
 
 // Auto-detect graph source
 const mergedPath = resolve(targetDir, "bun_graphify_out", "merged-graph.json");
@@ -56,6 +61,7 @@ const nodes = raw.nodes || [];
 const links = raw.links || [];
 const epId = raw.episode_id || basename(targetDir);
 const linkEdgesData: Array<{ source: string; target: string; relation: string }> = raw.link_edges || [];
+const crossLinksData: StoryCrossLink[] = raw.cross_links || [];
 
 // ─── Build graphology graph ───
 
@@ -84,6 +90,10 @@ for (const e of links) {
     } catch {}
   }
 }
+
+// ─── PageRank (for glow effect on merged graphs) ───
+
+const pageRankScores = isMerged ? computePageRank(G) : {};
 
 // ─── Community detection (Leiden-inspired) ───
 
@@ -160,6 +170,13 @@ const LINK_EDGE_COLORS: Record<string, string> = {
   same_character: "#FF6B6B",
   story_continues: "#4ECDC4",
   gag_evolves: "#FFE66D",
+};
+
+const AI_CROSS_LINK_COLORS: Record<string, string> = {
+  character_theme_affinity: "#FF85A1",
+  gag_character_synergy: "#FFD166",
+  narrative_cluster: "#06D6A0",
+  story_anti_pattern: "#EF476F",
 };
 
 const COMMUNITY_COLORS = [
@@ -244,6 +261,24 @@ G.forEachEdge((_key, attrs, src, tgt) => {
   }
 });
 
+// AI cross-link edges (dotted, not dashed — dashed is for deterministic link edges)
+const vizCrossLinks: any[] = [];
+for (const cl of crossLinksData) {
+  if (!G.hasNode(cl.from) || !G.hasNode(cl.to)) continue;
+  vizCrossLinks.push({
+    from: cl.from,
+    to: cl.to,
+    title: `[AI] ${cl.link_type.replace(/_/g, " ")} (confidence: ${cl.confidence.toFixed(2)})\n${cl.rationale}`,
+    dashes: [4, 4],
+    width: 2,
+    color_opacity: 0.7,
+    link_type: cl.link_type,
+    confidence: cl.confidence,
+    is_cross_link: true,
+    rationale: cl.rationale,
+  });
+}
+
 // ─── Episode stats ───
 
 const episodeCounts: Record<string, number> = {};
@@ -257,6 +292,12 @@ const episodeList = Object.entries(episodeCounts).sort(([a], [b]) => a.localeCom
 
 const title = isMerged ? `Merged Story KG — ${epId} (${raw.episode_count || "?"} episodes)` : `Story KG — ${epId}`;
 
+// Build manifest string from source graph
+const sourceManifest = raw.manifest ?? null;
+const manifestStr = sourceManifest
+  ? `${sourceManifest.generator} v${sourceManifest.version} | mode: ${sourceManifest.mode ?? "unknown"}${sourceManifest.ai_model ? ` | AI: ${sourceManifest.ai_model}` : ""} | ${sourceManifest.timestamp ?? new Date().toISOString()}`
+  : `bun_graphify | ${new Date().toISOString()}`;
+
 // ─── Generate HTML ───
 
 const html = `<!DOCTYPE html>
@@ -264,6 +305,7 @@ const html = `<!DOCTYPE html>
 <head>
   <title>${title}</title>
   <meta charset="utf-8">
+  <meta name="generator" content="${manifestStr}">
   <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -322,8 +364,17 @@ const html = `<!DOCTYPE html>
       <h3 id="legend-title">${isMerged ? 'Episodes' : 'Node Types'}</h3>
       <div id="legend"></div>
       ${isMerged && linkEdgesData.length > 0 ? `<h3 style="margin-top:12px">Link Edges</h3><div id="link-legend"></div>` : ''}
+      ${crossLinksData.length > 0 ? `
+      <div id="crosslink-wrap" style="padding:12px;border-bottom:1px solid #2a2a4e">
+        <h3 style="font-size:13px;color:#888;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">AI Cross-Links</h3>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;margin-bottom:8px">
+          <input type="checkbox" id="toggle-crosslinks" checked style="accent-color:#FF85A1">
+          Show AI cross-links (${crossLinksData.length})
+        </label>
+        <div id="crosslink-legend"></div>
+      </div>` : ''}
     </div>
-    <div id="stats">${isMerged ? `${raw.episode_count || '?'} episodes · ` : ''}${vizNodes.length} nodes · ${vizEdges.length} edges${isMerged ? ` · ${linkEdgesData.length} link edges` : ''} · ${Object.keys(communities).length} communities</div>
+    <div id="stats">${isMerged ? `${raw.episode_count || '?'} episodes · ` : ''}${vizNodes.length} nodes · ${vizEdges.length} edges${isMerged ? ` · ${linkEdgesData.length} link edges` : ''}${crossLinksData.length > 0 ? ` · ${crossLinksData.length} AI cross-links` : ''} · ${Object.keys(communities).length} communities</div>
   </div>
   <script>
 function escapeHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
@@ -337,6 +388,10 @@ const LINK_EDGE_COLORS = ${JSON.stringify(LINK_EDGE_COLORS)};
 const COMMUNITY_COLORS = ${JSON.stringify(COMMUNITY_COLORS)};
 const DEFAULT_EP_COLOR = '${defaultEpColor}';
 const COMMUNITY_ANALYSIS = ${JSON.stringify(communityAnalysis)};
+const RAW_CROSS_LINKS = ${JSON.stringify(vizCrossLinks)};
+const AI_CROSS_LINK_COLORS = ${JSON.stringify(AI_CROSS_LINK_COLORS)};
+const PAGE_RANK_SCORES = ${JSON.stringify(pageRankScores)};
+const HAS_CROSS_LINKS = ${crossLinksData.length > 0};
 
 let colorMode = IS_MERGED ? 'episode' : 'type';
 
@@ -350,19 +405,28 @@ function nodeColor(n) {
   return TYPE_COLORS[n.file_type] || '#BAB0AC';
 }
 
+// PageRank threshold: top 10% of nodes get glow effect
+const prValues = Object.values(PAGE_RANK_SCORES).sort((a, b) => b - a);
+const prThreshold = prValues.length > 0 ? prValues[Math.max(0, Math.floor(prValues.length * 0.1))] : 0;
+
 const nodesDS = new vis.DataSet(RAW_NODES.map(n => {
   const c = nodeColor(n);
+  const pr = PAGE_RANK_SCORES[n.id] || 0;
+  const isHighPR = pr > 0 && pr >= prThreshold;
   return {
     id: n.id,
     label: n.label,
     color: { background: c, border: c, highlight: { background: '#fff', border: c } },
     size: n.size,
     font: { size: n.font_size, color: '#fff', face: 'system-ui, sans-serif', strokeWidth: 2, strokeColor: '#0f0f1a' },
-    title: escapeHtml(n.label) + ' [' + n.file_type + ']',
+    title: escapeHtml(n.label) + ' [' + n.file_type + ']' + (pr > 0 ? ' [PR: ' + pr.toFixed(3) + ']' : ''),
     _type: n.file_type,
     _episode: n.episode,
     _properties: n.properties || {},
     _community: n.community,
+    _page_rank: pr,
+    borderWidth: isHighPR ? 4 : 2,
+    shadow: isHighPR ? { enabled: true, color: c, size: 15, x: 0, y: 0 } : { enabled: false },
   };
 }));
 
@@ -383,6 +447,28 @@ const edgesDS = new vis.DataSet(RAW_EDGES.map((e, i) => {
   }
   return base;
 }));
+
+// AI cross-link edges (dotted lines, separate from dashed link edges)
+var crossLinkStartId = RAW_EDGES.length;
+var crossLinkEdges = [];
+for (var ci = 0; ci < RAW_CROSS_LINKS.length; ci++) {
+  var ce = RAW_CROSS_LINKS[ci];
+  var clc = AI_CROSS_LINK_COLORS[ce.link_type] || '#FF85A1';
+  crossLinkEdges.push({
+    id: crossLinkStartId + ci,
+    from: ce.from, to: ce.to, title: ce.title,
+    arrows: { to: { enabled: true, scaleFactor: 0.4 } },
+    width: ce.width,
+    smooth: { type: 'curvedCW', roundness: 0.25 },
+    color: { opacity: ce.color_opacity, color: clc },
+    dashes: ce.dashes,
+    _is_cross_link: true,
+    _cross_link_type: ce.link_type,
+    _cross_link_confidence: ce.confidence,
+    _cross_link_rationale: ce.rationale,
+  });
+}
+crossLinkEdges.forEach(function(e) { edgesDS.add(e); });
 
 const network = new vis.Network(document.getElementById('graph'), { nodes: nodesDS, edges: edgesDS }, {
   physics: {
@@ -472,6 +558,15 @@ network.on('click', (params) => {
   if (n.is_god) h += '<div class="meta" style="color:#FF9DA7">Hub node (high connectivity)</div>';
   if (n.is_isolated) h += '<div class="meta" style="color:#E15759">Isolated (no intra-community edges)</div>';
 
+  // PageRank info
+  var pr = PAGE_RANK_SCORES[n.id];
+  if (pr !== undefined && pr > 0) {
+    var prColor = pr >= prThreshold ? '#FFD166' : '#888';
+    h += '<div class="meta" style="margin-top:4px"><b>PageRank:</b> <span style="color:' + prColor + '">' + pr.toFixed(4) + '</span>';
+    if (pr >= prThreshold) h += ' (top 10%)';
+    h += '</div>';
+  }
+
   h += '<div class="neighbors" style="margin-top:8px">';
   neighbors.slice(0, 12).forEach(nb => {
     const nc = nodeColor(nb);
@@ -560,7 +655,30 @@ if (linkLegend && IS_MERGED) {
     linkLegend.appendChild(d);
   });
 }
+
+// Cross-link legend and toggle
+var crossLinkToggle = document.getElementById('toggle-crosslinks');
+var crossLinkLegendEl = document.getElementById('crosslink-legend');
+if (crossLinkToggle && HAS_CROSS_LINKS) {
+  var clTypes = {};
+  RAW_CROSS_LINKS.forEach(function(cl) { clTypes[cl.link_type] = (clTypes[cl.link_type] || 0) + 1; });
+  Object.entries(clTypes).sort(function(a, b) { return b[1] - a[1]; }).forEach(function(entry) {
+    var type = entry[0], count = entry[1];
+    var c = AI_CROSS_LINK_COLORS[type] || '#FF85A1';
+    var d = document.createElement('div');
+    d.className = 'legend-item';
+    d.innerHTML = '<span class="legend-line" style="background:' + c + ';border-top:2px dotted ' + c + '"></span>' + type.replace(/_/g, ' ') + ' <span class="legend-count">' + count + '</span>';
+    crossLinkLegendEl.appendChild(d);
+  });
+  crossLinkToggle.addEventListener('change', function(e) {
+    var show = e.target.checked;
+    crossLinkEdges.forEach(function(edge) { edgesDS.update({ id: edge.id, hidden: !show }); });
+  });
+}
   </script>
+  <div style="position:fixed;bottom:0;left:0;right:360px;padding:4px 12px;background:#0f0f1a;border-top:1px solid #2a2a4e;font-size:10px;color:#666;z-index:100;">
+    ${manifestStr}
+  </div>
 </body>
 </html>`;
 

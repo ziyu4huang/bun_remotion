@@ -419,7 +419,11 @@ The subagent should:
 2. **Check running gag evolution** — verify gags evolve (not stagnate) and cite specific dialog lines
 3. **Evaluate story arc continuity** — verify the episode connects to previous episode's teaser and sets up next episode
 4. **Identify improvements** — suggest specific dialog or story improvements if any character feels off-tone or gags feel stale
-5. **Write the Graphify Quality Gate section** directly into the episode PLAN.md — **all descriptive text MUST be in zh_TW**, English only for professional terminology (PASS/WARN/FAIL, nodes, edges, Pipeline, Arc, etc.)
+5. **Check duplicate content** — review Jaccard similarity from consistency-report.md; flag any episode pair with Jaccard > 0.5 (WARN) or > 0.7 (FAIL)
+6. **Analyze plot arc** — classify each scene as a plot beat (inciting_incident / rising_action / climax / falling_action / resolution) with tension score; verify dramatic structure
+7. **Track foreshadowing** — identify newly planted setups (promises, unanswered questions, Chekhov's gun) and payoffs for previously planted foreshadowing; flag unpaid foreshadowing older than 2 episodes
+8. **Assess character growth trajectory** — classify each trait change as positive_growth / negative_decline / neutral_shift / reintroduction; compute arc direction per character; warn if main character has flat arc across 3+ episodes
+9. **Write the Graphify Quality Gate section** directly into the episode PLAN.md — **all descriptive text MUST be in zh_TW**, English only for professional terminology (PASS/WARN/FAIL, nodes, edges, Pipeline, Arc, etc.)
 
 ### Graphify Quality Gate section format (written by subagent)
 
@@ -469,6 +473,60 @@ The subagent appends this section to episode PLAN.md. **Language convention: zh_
 - **承接：** [prev ep teaser] → [this ep opening] — 無縫銜接/有缺口
 - **伏筆：** [this ep teaser] → [next ep plan] — 伏筆強度評估
 - **章節 Arc 位置：** [setup/escalation/cliffhanger] — 契合/不契合
+
+### 重複內容檢查
+
+| 集數對比 | Jaccard 相似度 | 狀態 |
+|---------|--------------|------|
+| [epA] ↔ [epB] | [score] | ✅ OK / ⚠️ WARN / ❌ FAIL |
+
+- **結果：** [所有集數對比 Jaccard ≤ 0.5，無重複風險 / 有 N 對超過閾值，需人工審查]
+- FAIL（>0.7）：結構上近乎重複，必須修改
+- WARN（>0.5）：顯著結構重疊，建議人工審查
+
+### 劇情弧分析
+
+| 場景 | 劇情節拍 | 緊張度 |
+|------|---------|-------|
+| [scene_id] | [beat_type] | [0.0-1.0] |
+| [scene_id] | climax | [peak tension] |
+
+- **弧線評分：** [0-100]
+- **判定：** 結構完整 / 缺乏高潮（FAIL） / 中段平淡（WARN） / 高潮過早（WARN） / 缺乏開場引子（WARN）
+- **建議：** [zh_TW — 針對結構問題的具體修改建議，例如：建議在 ContentScene2 加入衝突升級以強化 rising_action]
+
+### 伏筆追蹤
+
+| ID | 種植集數 | 狀態 | 描述 | 回收集數 |
+|----|---------|------|------|---------|
+| [foreshadow_id] | [ep] | ✅ 已回收 / ⏳ 待回收 | [zh_TW description] | [payoff ep or —] |
+
+- **統計：** 已種植 [N] 條伏筆，已回收 [N] 條，待回收 [N] 條
+- ⚠️ 待回收超過 2 集：[列出逾期伏筆，如無則省略]
+- INFO：本集新種植 [N] 條伏筆（追蹤中）
+
+### 角色成長軌跡
+
+| 角色 | 集數 | 弧線方向 | 評分 | 特質變化 |
+|------|------|---------|------|---------|
+| [charId] | [N] eps | 📈 positive / 📉 negative / ➡️ flat / 🔄 cyclical | [0-100]/100 | [trait changes summary] |
+
+- ⚠️ 主要角色 flat arc 超過 3 集：[列出，如無則省略]
+- 本集新增特質：[列出 positive_growth 特質]
+- 本集消失特質：[列出 negative_decline 特質]
+
+### 節奏分析
+
+| 場景 | 對白行數 | 緊張度 |
+|------|---------|-------|
+| TitleScene | [N] | [0.00] |
+| ContentScene1 | [N] | [0.00] |
+| ContentScene2 | [N] | [0.00] |
+| ContentScene3 | [N] | [0.00] |
+| OutroScene | [N] | [0.00] |
+
+- **Variance:** [0.0000]
+- **判定：** 節奏動態正常 / ⚠️ 節奏平坦 / ⚠️ 結尾張力過高（OutroScene > avg ContentScene）
 
 ### 修訂評估（如有修訂）
 

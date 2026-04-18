@@ -445,7 +445,113 @@ for (const chain of gagChains) {
   }
 }
 
-// (no canonical/arc nodes — pure sub-graph concatenation + link edges)
+// 4e. Foreshadow nodes + foreshadows link edges (from foreshadow-output.json)
+const foreshadowOutputPath = resolve(outDir, "foreshadow-output.json");
+let foreshadowCount = 0;
+let foreshadowEdgeCount = 0;
+
+if (existsSync(foreshadowOutputPath)) {
+  try {
+    const rawForeshadow = readFileSync(foreshadowOutputPath, "utf-8").trim();
+    let jsonStr = rawForeshadow;
+    const fenceMatch = jsonStr.match(/```(?:json)?\s*\n?([\s\S]*?)\n?\s*```/);
+    if (fenceMatch) jsonStr = fenceMatch[1].trim();
+
+    const foreshadowData = JSON.parse(jsonStr);
+    const planted: Array<{
+      id: string;
+      description: string;
+      confidence?: number;
+      scene_id?: string;
+      character_involved?: string | null;
+    }> = Array.isArray(foreshadowData.planted) ? foreshadowData.planted : [];
+
+    for (const item of planted) {
+      if (!item.id || typeof item.id !== "string") continue;
+
+      // Create foreshadow node
+      if (!G.hasNode(item.id)) {
+        G.addNode(item.id, {
+          label: item.description?.slice(0, 80) ?? item.id,
+          type: "foreshadow",
+          episode: item.id.split("_foreshadow")[0],
+        });
+        foreshadowCount++;
+      }
+
+      // foreshadows link: scene → foreshadow (if scene exists)
+      if (item.scene_id && G.hasNode(item.scene_id)) {
+        try {
+          G.addDirectedEdge(item.scene_id, item.id, {
+            relation: "foreshadows",
+            confidence: "INFERRED",
+            confidence_score: item.confidence ?? 0.8,
+            weight: 0.8,
+          });
+          linkEdges.push({
+            source: item.scene_id,
+            target: item.id,
+            relation: "foreshadows",
+            confidence: "INFERRED",
+            confidence_score: item.confidence ?? 0.8,
+            source_file: "foreshadow-output.json",
+          });
+          foreshadowEdgeCount++;
+        } catch { /* skip duplicate */ }
+      }
+    }
+
+    // Handle payoffs: link foreshadow node → payoff episode plot
+    const payoffs: Array<{
+      foreshadow_id: string;
+      payoff_episode: string;
+      payoff_description?: string;
+      confidence?: number;
+    }> = Array.isArray(foreshadowData.payoffs) ? foreshadowData.payoffs : [];
+
+    for (const p of payoffs) {
+      if (!p.foreshadow_id || !G.hasNode(p.foreshadow_id)) continue;
+
+      // Update foreshadow node with payoff info
+      if (G.hasNode(p.foreshadow_id)) {
+        const attrs = G.getNodeAttributes(p.foreshadow_id);
+        G.setNodeAttribute(p.foreshadow_id, "paid_off", true);
+        G.setNodeAttribute(p.foreshadow_id, "payoff_episode", p.payoff_episode);
+        if (p.payoff_description) {
+          G.setNodeAttribute(p.foreshadow_id, "payoff_description", p.payoff_description);
+        }
+      }
+
+      // Link: foreshadow → payoff episode plot node
+      const payoffPlotNode = `${p.payoff_episode}_plot`;
+      if (G.hasNode(payoffPlotNode)) {
+        try {
+          G.addDirectedEdge(p.foreshadow_id, payoffPlotNode, {
+            relation: "foreshadows",
+            confidence: "INFERRED",
+            confidence_score: p.confidence ?? 0.9,
+            weight: 0.9,
+          });
+          linkEdges.push({
+            source: p.foreshadow_id,
+            target: payoffPlotNode,
+            relation: "foreshadows",
+            confidence: "INFERRED",
+            confidence_score: p.confidence ?? 0.9,
+            source_file: "foreshadow-output.json",
+          });
+          foreshadowEdgeCount++;
+        } catch { /* skip duplicate */ }
+      }
+    }
+
+    console.log(`Foreshadow: ${foreshadowCount} nodes, ${foreshadowEdgeCount} link edges (${planted.length} planted, ${payoffs.length} payoffs)`);
+  } catch (e) {
+    console.warn(`Warning: Could not parse foreshadow-output.json: ${e}`);
+  }
+} else {
+  console.log(`Foreshadow: no foreshadow-output.json found (expected at ${foreshadowOutputPath})`);
+}
 
 console.log(`Link edges: ${linkEdges.length}`);
 console.log(`Merged graph: ${G.order} nodes, ${G.size} edges`);
@@ -480,6 +586,14 @@ const graphLinks = G.mapEdges((_key, attr, src, tgt) => ({
 }));
 
 const graphData = {
+  manifest: {
+    generator: "bun_graphify_merge",
+    version: "0.11.0",
+    timestamp: new Date().toISOString(),
+    episode_count: episodeGraphs.length,
+    link_edge_count: linkEdges.length,
+    community_count: Object.keys(communities).length,
+  },
   nodes: graphNodes,
   links: graphLinks,
   communities: Object.fromEntries(Object.entries(communities)),

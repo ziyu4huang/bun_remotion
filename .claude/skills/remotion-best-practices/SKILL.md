@@ -35,3 +35,17 @@ Detect what the user is working on from conversation context, then read ONLY the
 **Read ONLY the topic summary you need. Do NOT read all topic files.**
 If a topic summary references a specific rule file for details, read that single file.
 Multiple topics may apply — read up to 2 topic summaries if the task spans areas.
+
+## Strategic Roadmap
+
+Phase 24 (bun_graphify story quality) + Phase 25 (Remotion novel video gen).
+
+| Doc | What |
+|-----|------|
+| `PLAN.md` | Phases, architecture, gate integration spec, node/edge types |
+| `TODO.md` | Actionable tasks (P0/P1/P2), cross-references, run history |
+
+**Keywords:** story quality, novel, plot arc, foreshadowing, character growth, duplicate content, pacing, thematic coherence, narrative pipeline
+
+Read `PLAN.md` when planning bun_graphify enhancements or Remotion narrative features.
+Read `TODO.md` when picking next implementation task.

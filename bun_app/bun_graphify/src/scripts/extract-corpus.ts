@@ -35,6 +35,10 @@ Examples:
 }
 
 const seriesDir = resolve(args[0]);
+if (!seriesDir.startsWith("/")) {
+  console.error(`Error: "${seriesDir}" is not an absolute path. Use absolute paths.`);
+  process.exit(1);
+}
 
 // Find --output flag
 const outputIdx = args.indexOf("--output");

@@ -16,6 +16,10 @@ import type { ExtractionResult, GraphNode, GraphEdge, Hyperedge, Confidence } fr
 
 const args = process.argv.slice(2);
 const seriesDir = args[0] ? resolve(args[0]) : resolve(import.meta.dir, "../../../../bun_remotion_proj/weapon-forger");
+if (!seriesDir.startsWith("/")) {
+  console.error(`Error: "${seriesDir}" is not an absolute path. Use absolute paths.`);
+  process.exit(1);
+}
 const planPath = resolve(seriesDir, "PLAN.md");
 const outDir = resolve(seriesDir, "graphify-out", ".semantic");
 const outPath = resolve(outDir, "plan.json");

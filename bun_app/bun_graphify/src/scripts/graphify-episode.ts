@@ -26,6 +26,8 @@ import { parseNarration } from "../extract/narrative";
 import { getSeriesConfigOrThrow, extractEpId } from "./series-config";
 import type { SeriesConfig } from "./series-config";
 import type { ExtractionResult, GraphNode, GraphEdge, Confidence } from "../types";
+import { callAI, parseArgsForAI } from "../ai-client";
+import { buildEpisodeExtractionPrompt } from "./subagent-prompt";
 
 // ─── Args ───
 
@@ -34,11 +36,17 @@ if (args.length === 0 || args.includes("--help")) {
   console.log(`graphify-episode — Per-episode knowledge graph generation
 
 Usage:
-  bun run src/scripts/graphify-episode.ts <episode-dir> [--series-dir <path>]
+  bun run src/scripts/graphify-episode.ts <episode-dir> [options]
 
 Options:
   --series-dir <path>   Series directory (for PLAN.md gag matching)
                         Defaults to parent of episode directory.
+  --mode regex|ai|hybrid Extraction mode (default: hybrid)
+                        ai: use LLM for richer extraction (requires API key)
+                        regex: fast pattern-based extraction only
+                        hybrid: regex first, then AI supplements exclusive types (default)
+  --provider <name>     AI provider (default: zai)
+  --model <name>        AI model (default: glm-4.7-flash)
 `);
   process.exit(0);
 }
@@ -58,6 +66,9 @@ for (const dir of [episodeDir, seriesDir]) {
 }
 
 const outDir = resolve(episodeDir, "bun_graphify_out");
+
+// Parse --mode/--provider/--model
+const aiConfig = parseArgsForAI(args);
 
 // Load series config (auto-detected from directory name) — must be before EP_ID extraction
 const config: SeriesConfig = getSeriesConfigOrThrow(seriesDir);
@@ -120,21 +131,88 @@ if (!parsed) {
 
 console.log(`Parsed: ${parsed.scenes.length} scenes, ${parsed.characters.length} characters`);
 
-// ─── Step 2: Extract episode plot node ───
-
-// Try to extract title from narration file
+// Extract title from narration (needed by both AI and regex paths)
 let title = "";
 try {
   const narrationContent = readFileSync(narrationPath, "utf-8");
-  // Chapter-based: 第一章 第一集：標題
   const titleMatch = narrationContent.match(/第[一二三四五六七八九十]+章\s*第[一二三四五六七八九十]+集[：:]\s*(.+)/);
   if (titleMatch) title = titleMatch[1].trim();
-  // Flat numbering: 第七集：AI 時代求生 or 美少女梗圖劇場。今天要帶...
   if (!title) {
     const flatMatch = narrationContent.match(/第[一二三四五六七八九十\d]+集[：:]\s*(.+)/);
     if (flatMatch) title = flatMatch[1].trim().replace(/\n.*/, "");
   }
 } catch {}
+
+// ─── Step 1.5: AI extraction branch (--mode ai) ───
+
+let usedAI = false;
+
+if (aiConfig.mode === "ai") {
+  console.log(`\n[AI mode] Calling ${aiConfig.provider}/${aiConfig.model}...`);
+  try {
+    const narrationContent = readFileSync(narrationPath, "utf-8");
+    const prompt = buildEpisodeExtractionPrompt({
+      episode_id: EP_ID,
+      episode_title: title || EP_ID,
+      series_name: config.displayName,
+      narration_text: narrationContent,
+      charNames: config.charNames,
+      techPatterns: config.techPatterns.map(p => p.source),
+    });
+
+    const result = await callAI(prompt, {
+      provider: aiConfig.provider,
+      model: aiConfig.model,
+      jsonMode: true,
+      maxRetries: 1,
+    });
+
+    if (result) {
+      const parsed = JSON.parse(result);
+      const aiNodes: GraphNode[] = Array.isArray(parsed.nodes) ? parsed.nodes : [];
+      const aiEdges: GraphEdge[] = Array.isArray(parsed.edges) ? parsed.edges : [];
+
+      // Validate: all node IDs must start with EP_ID
+      const validNodes = aiNodes.filter((n: GraphNode) => n.id?.startsWith(`${EP_ID}_`));
+      const nodeIds = new Set(validNodes.map((n: GraphNode) => n.id));
+
+      // Validate: edge sources/targets must reference existing nodes
+      const validEdges = aiEdges.filter((e: GraphEdge) =>
+        nodeIds.has(e.source) && nodeIds.has(e.target) && e.source !== e.target
+      );
+
+      if (validNodes.length >= 2) {
+        // Fill in required GraphNode fields that AI may omit
+        for (const n of validNodes) {
+          n.file_type = n.file_type ?? "document";
+          n.source_file = n.source_file ?? `${EP_ID}/narration.ts`;
+          n.source_location = n.source_location ?? null;
+        }
+        for (const e of validEdges) {
+          e.confidence = e.confidence ?? "INFERRED";
+          e.confidence_score = e.confidence_score ?? 0.8;
+          e.source_file = e.source_file ?? `${EP_ID}/narration.ts`;
+          e.source_location = e.source_location ?? null;
+          e.weight = e.weight ?? 1.0;
+        }
+
+        nodes.push(...validNodes);
+        edges.push(...validEdges);
+        usedAI = true;
+        console.log(`[AI mode] Extracted ${validNodes.length} nodes, ${validEdges.length} edges`);
+      } else {
+        console.warn(`[AI mode] Too few valid nodes (${validNodes.length}), falling back to regex`);
+      }
+    } else {
+      console.warn(`[AI mode] callAI returned null, falling back to regex`);
+    }
+  } catch (err: any) {
+    console.warn(`[AI mode] Failed: ${err.message}, falling back to regex`);
+  }
+}
+
+if (!usedAI) {
+// ─── Step 2: Extract episode plot node (regex) ───
 
 addNode(
   `${EP_ID}_plot`,
@@ -147,7 +225,18 @@ addNode(
 
 for (const scene of parsed.scenes) {
   const sceneId = `${EP_ID}_scene_${scene.scene}`;
-  addNode(sceneId, scene.scene, "scene");
+  const uniqueChars = new Set(scene.lines.map(l => l.character));
+  const effectPattern = /闪电|爆炸|轰|砰|咻|嗙|轟|叮|咚|！{2,}|？！/g;
+  let effectCount = 0;
+  for (const line of scene.lines) {
+    const m = line.text.match(effectPattern);
+    if (m) effectCount += m.length;
+  }
+  addNode(sceneId, scene.scene, "scene", {
+    dialog_line_count: String(scene.lines.length),
+    character_count: String(uniqueChars.size),
+    effect_count: String(effectCount),
+  });
   addEdge(sceneId, `${EP_ID}_plot`, "part_of");
 }
 
@@ -420,6 +509,81 @@ for (const [charId, patterns] of Object.entries(config.traitPatterns)) {
   }
 }
 
+} // end if (!usedAI)
+
+// ─── Step 7.5: Hybrid AI supplement (--mode hybrid) ───
+
+if (aiConfig.mode === "hybrid") {
+  console.log(`\n[Hybrid mode] Calling ${aiConfig.provider}/${aiConfig.model} for exclusive nodes...`);
+  try {
+    const narrationContent = readFileSync(narrationPath, "utf-8");
+    const prompt = buildEpisodeExtractionPrompt({
+      episode_id: EP_ID,
+      episode_title: title || EP_ID,
+      series_name: config.displayName,
+      narration_text: narrationContent,
+      charNames: config.charNames,
+      techPatterns: config.techPatterns.map(p => p.source),
+    });
+
+    const result = await callAI(prompt, {
+      provider: aiConfig.provider,
+      model: aiConfig.model,
+      jsonMode: true,
+      maxRetries: 1,
+    });
+
+    if (result) {
+      const parsed = JSON.parse(result);
+      const aiNodes: GraphNode[] = Array.isArray(parsed.nodes) ? parsed.nodes : [];
+      const aiEdges: GraphEdge[] = Array.isArray(parsed.edges) ? parsed.edges : [];
+
+      const existingIds = new Set(nodes.map(n => n.id));
+      const existingEdgeKeys = new Set(edges.map(e => `${e.source}|${e.target}|${e.relation}`));
+
+      const exclusiveNodes: GraphNode[] = [];
+      const exclusiveEdges: GraphEdge[] = [];
+
+      for (const n of aiNodes) {
+        if (!n.id?.startsWith(`${EP_ID}_`)) continue;
+        if (existingIds.has(n.id)) continue;
+        n.file_type = n.file_type ?? "document";
+        n.source_file = n.source_file ?? `${EP_ID}/narration.ts`;
+        n.source_location = n.source_location ?? null;
+        exclusiveNodes.push(n);
+        existingIds.add(n.id);
+      }
+
+      const nodeIds = new Set(nodes.map(n => n.id).concat(exclusiveNodes.map(n => n.id)));
+      for (const e of aiEdges) {
+        if (e.source === e.target) continue;
+        if (!nodeIds.has(e.source) || !nodeIds.has(e.target)) continue;
+        const key = `${e.source}|${e.target}|${e.relation}`;
+        if (existingEdgeKeys.has(key)) continue;
+        e.confidence = e.confidence ?? "INFERRED";
+        e.confidence_score = e.confidence_score ?? 0.8;
+        e.source_file = e.source_file ?? `${EP_ID}/narration.ts`;
+        e.source_location = e.source_location ?? null;
+        e.weight = e.weight ?? 1.0;
+        exclusiveEdges.push(e);
+        existingEdgeKeys.add(key);
+      }
+
+      nodes.push(...exclusiveNodes);
+      edges.push(...exclusiveEdges);
+
+      const byType: Record<string, number> = {};
+      for (const n of exclusiveNodes) byType[n.type ?? "unknown"] = (byType[n.type ?? "unknown"] ?? 0) + 1;
+      const typeSummary = Object.entries(byType).map(([t, c]) => `${t}: ${c}`).join(", ");
+      console.log(`[Hybrid mode] Added ${exclusiveNodes.length} exclusive AI nodes (${typeSummary}), ${exclusiveEdges.length} exclusive edges`);
+    } else {
+      console.warn(`[Hybrid mode] callAI returned null, using regex-only output`);
+    }
+  } catch (err: any) {
+    console.warn(`[Hybrid mode] AI failed: ${err.message}, using regex-only output`);
+  }
+}
+
 // ─── Step 8: Build graph ───
 
 console.log(`\nNarrative extraction: ${nodes.length} nodes, ${edges.length} edges`);
@@ -495,6 +659,14 @@ const graphLinks = G.mapEdges((_key, attr, src, tgt) => ({
 }));
 
 const graphData = {
+  manifest: {
+    generator: "bun_graphify",
+    version: "0.11.0",
+    mode: aiConfig.mode,
+    ai_model: aiConfig.mode !== "regex" ? `${aiConfig.provider}/${aiConfig.model}` : null,
+    timestamp: new Date().toISOString(),
+    episode_id: EP_ID,
+  },
   nodes: graphNodes,
   links: graphLinks,
   communities: Object.fromEntries(Object.entries(communities)),

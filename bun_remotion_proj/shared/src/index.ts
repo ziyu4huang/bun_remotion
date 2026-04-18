@@ -42,4 +42,19 @@ export {
   MangaSfx,
   SystemNotification,
   SystemMessage,
+  PlotBeatOverlay,
+  TensionMeter,
+  CharacterStateOverlay,
 } from "./components";
+
+// ─── Story Graph Utilities ──────────────────────────────────────────────────
+export {
+  loadSceneTensions,
+  loadPlotBeats,
+  loadCharacterGrowth,
+} from "./story-graph";
+export type {
+  SceneTension,
+  PlotBeatData,
+  CharacterGrowthData,
+} from "./story-graph";

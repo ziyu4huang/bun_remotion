@@ -77,6 +77,35 @@ export interface CacheEntry {
   hyperedges: Hyperedge[];
 }
 
+// ─── Phase 24-C: Foreshadowing Tracker ───
+
+export interface Foreshadow {
+  id: string;
+  planted_episode: string;
+  paid_off: boolean;
+  description: string;
+  payoff_episode?: string;
+  payoff_description?: string;
+}
+
+// ─── Phase 24-B: Plot Arc Analysis ───
+
+export type PlotBeatType =
+  | "inciting_incident"
+  | "rising_action"
+  | "climax"
+  | "falling_action"
+  | "resolution";
+
+export interface PlotBeat {
+  id: string;
+  episode_id: string;
+  beat_type: PlotBeatType;
+  scene: string;
+  tension: number;
+  description: string;
+}
+
 // ─── Phase 23: AI Cross-Link Discovery ───
 
 export type CrossLinkType =

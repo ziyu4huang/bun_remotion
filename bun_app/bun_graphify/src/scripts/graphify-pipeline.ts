@@ -12,31 +12,56 @@
  */
 
 import { resolve } from "node:path";
-import { readdirSync, existsSync, rmSync, unlinkSync } from "node:fs";
+import { readdirSync, existsSync, rmSync, unlinkSync, readFileSync } from "node:fs";
 import { spawn } from "child_process";
 import { discoverEpisodes } from "./series-config";
+import { parseArgsForAI } from "../ai-client";
 
 const args = process.argv.slice(2);
 if (args.length === 0 || args.includes("--help")) {
   console.log(`graphify-pipeline — Run full federated graph pipeline
 
 Usage:
-  bun run src/scripts/graphify-pipeline.ts <series-dir>
+  bun run src/scripts/graphify-pipeline.ts <series-dir> [options]
+
+Options:
+  --mode regex|ai|hybrid Extraction mode (default: hybrid)
+                      ai: use LLM for extraction + enrichment (requires API key)
+                      regex: fast pattern-based extraction only
+                      hybrid: regex first, then AI supplements exclusive types (default)
+  --provider <name>   AI provider (default: zai)
+  --model <name>      AI model (default: glm-4.7-flash)
 
 Steps:
   1. graphify-episode on each episode
   2. graphify-merge to combine sub-graphs
   3. gen-story-html for merged visualization
+  3.5. ai-crosslink-generator for AI cross-link discovery
   4. graphify-check for consistency
 `);
   process.exit(0);
 }
 
+const aiConfig = parseArgsForAI(args);
 const seriesDir = resolve(args[0]);
+if (!seriesDir.startsWith("/")) {
+  console.error(`Error: "${seriesDir}" is not an absolute path. Use absolute paths.`);
+  process.exit(1);
+}
 const scriptDir = resolve(import.meta.dir);
 
+// Build AI flags to pass to subprocesses
+const aiFlags: string[] = [];
+if (aiConfig.mode === "ai" || aiConfig.mode === "hybrid") {
+  aiFlags.push("--mode", aiConfig.mode, "--provider", aiConfig.provider, "--model", aiConfig.model);
+}
+
 console.log(`=== Federated Graph Pipeline ===`);
-console.log(`Series: ${seriesDir}\n`);
+console.log(`Series: ${seriesDir}`);
+if (aiConfig.mode === "ai" || aiConfig.mode === "hybrid") {
+  console.log(`Mode: ${aiConfig.mode.toUpperCase()} (${aiConfig.provider}/${aiConfig.model})`);
+}
+console.log();
 
 // Discover episode directories using series config
 const discovered = discoverEpisodes(seriesDir);
@@ -83,6 +108,7 @@ for (const ep of episodes) {
       resolve(scriptDir, "graphify-episode.ts"),
       epDir,
       "--series-dir", seriesDir,
+      ...aiFlags,
     ], { stdio: ["inherit", "pipe", "pipe"] });
 
     if (result.stdout) {
@@ -102,6 +128,32 @@ for (const ep of episodes) {
   } catch (e) {
     console.log(`  ✗ Failed: ${e}`);
     step1Ok = false;
+  }
+}
+
+// Step 1.5: Generate per-episode HTML
+
+console.log(`\nStep 1.5: Generating per-episode HTML...`);
+
+for (const ep of episodes) {
+  const epDir = resolve(seriesDir, ep);
+  try {
+    const result = Bun.spawnSync([
+      "bun", "run",
+      resolve(scriptDir, "gen-story-html.ts"),
+      epDir,
+    ], { stdio: ["inherit", "pipe", "pipe"] });
+
+    if (result.stdout) {
+      const output = new TextDecoder().decode(result.stdout);
+      for (const line of output.split("\n")) {
+        if (line.includes("Wrote") || line.includes("Error")) {
+          console.log(`  ${line}`);
+        }
+      }
+    }
+  } catch (e) {
+    console.log(`  Per-episode HTML skipped for ${ep}: ${e}`);
   }
 }
 
@@ -158,6 +210,7 @@ try {
     "bun", "run",
     resolve(scriptDir, "graphify-check.ts"),
     seriesDir,
+    ...aiFlags,
   ], { stdio: ["inherit", "pipe", "pipe"] });
 
   if (result.stdout) {
@@ -170,6 +223,52 @@ try {
   }
 } catch (e) {
   console.log(`  ✗ Check failed: ${e}`);
+}
+
+// Step 3.5: AI Cross-Link Discovery
+console.log(`\n\nStep 3.5: AI Cross-Link Discovery...`);
+
+try {
+  const crosslinkResult = Bun.spawnSync([
+    "bun", "run",
+    resolve(scriptDir, "ai-crosslink-generator.ts"),
+    seriesDir,
+    ...aiFlags,
+  ], { stdio: ["inherit", "pipe", "pipe"] });
+
+  if (crosslinkResult.stdout) {
+    const output = new TextDecoder().decode(crosslinkResult.stdout);
+    for (const line of output.split("\n")) {
+      if (line.includes("cross-link") || line.includes("Cross-link") || line.includes("Error") || line.includes("Wrote") || line.includes("subagent") || line.includes("Done") || line.includes("Patched")) {
+        console.log(`  ${line}`);
+      }
+    }
+  }
+
+  // If cross-links were added, re-run HTML generation to include them
+  const mergedPath = resolve(seriesDir, "bun_graphify_out", "merged-graph.json");
+  if (existsSync(mergedPath)) {
+    const mergedData = JSON.parse(readFileSync(mergedPath, "utf-8"));
+    if (mergedData.cross_links && mergedData.cross_links.length > 0) {
+      console.log(`  Re-generating HTML with ${mergedData.cross_links.length} AI cross-links...`);
+      const htmlResult = Bun.spawnSync([
+        "bun", "run",
+        resolve(scriptDir, "gen-story-html.ts"),
+        seriesDir,
+      ], { stdio: ["inherit", "pipe", "pipe"] });
+
+      if (htmlResult.stdout) {
+        const htmlOutput = new TextDecoder().decode(htmlResult.stdout);
+        for (const line of htmlOutput.split("\n")) {
+          if (line.includes("Wrote") || line.includes("Error")) {
+            console.log(`  ${line}`);
+          }
+        }
+      }
+    }
+  }
+} catch (e) {
+  console.log(`  Cross-link discovery skipped: ${e}`);
 }
 
 console.log(`\n=== Pipeline complete ===`);

@@ -17,6 +17,8 @@
 
 import { resolve } from "node:path";
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { computeJaccardSimilarity, computePlotArcScore, computeThemeCoherence } from "./story-algorithms";
+import { callAI, parseArgsForAI } from "../ai-client";
 import type { CommunityReport } from "../types";
 
 // ─── Types ───
@@ -37,15 +39,28 @@ if (args.length === 0 || args.includes("--help")) {
   console.log(`graphify-check — Consistency checking via link edges
 
 Usage:
-  bun run src/scripts/graphify-check.ts <series-dir>
+  bun run src/scripts/graphify-check.ts <series-dir> [options]
 
-Reads graphify-out/merged-graph.json and link-edges.json.
-Outputs graphify-out/consistency-report.md.
+Options:
+  --mode regex|ai|hybrid Enrichment mode (default: hybrid)
+                      ai: use LLM for enrichment analysis (requires API key)
+                      regex: write input file for manual subagent
+                      hybrid: use LLM for enrichment (default, falls back to regex)
+  --provider <name>   AI provider (default: zai)
+  --model <name>      AI model (default: glm-4.7-flash)
+
+Reads bun_graphify_out/merged-graph.json and link-edges.json.
+Outputs bun_graphify_out/consistency-report.md.
 `);
   process.exit(0);
 }
 
+const aiConfig = parseArgsForAI(args);
 const seriesDir = resolve(args[0]);
+if (!seriesDir.startsWith("/")) {
+  console.error(`Error: "${seriesDir}" is not an absolute path. Use absolute paths.`);
+  process.exit(1);
+}
 const mergedPath = resolve(seriesDir, "bun_graphify_out", "merged-graph.json");
 const linkEdgesPath = resolve(seriesDir, "bun_graphify_out", "link-edges.json");
 const outPath = resolve(seriesDir, "bun_graphify_out", "consistency-report.md");
@@ -550,6 +565,562 @@ function checkCrossCommunityCoherence(analysis: CommunityReport): CheckResult[] 
   return results;
 }
 
+// ─── Check 9: Duplicate Content ───
+
+interface DupContentPair {
+  epA: string;
+  epB: string;
+  similarity: number;
+}
+
+function checkDuplicateContent(): { results: CheckResult[]; pairs: DupContentPair[] } {
+  const results: CheckResult[] = [];
+  const episodes = [...new Set((merged.nodes as any[]).map((n: any) => n.episode).filter(Boolean))].sort();
+
+  if (episodes.length < 2) {
+    return {
+      results: [{ check: "Duplicate Content", status: "PASS", details: "Only 1 episode — duplicate check not applicable", evidence: [] }],
+      pairs: [],
+    };
+  }
+
+  const nodeIdSet = new Set((merged.nodes as any[]).map((n: any) => n.id));
+  const episodeGraphs = episodes.map(ep => ({
+    episode_id: ep,
+    nodes: (merged.nodes as any[]).filter((n: any) => n.episode === ep),
+    links: (merged.links as any[]).filter((l: any) => {
+      const srcNode = (merged.nodes as any[]).find((n: any) => n.id === l.source);
+      const tgtNode = (merged.nodes as any[]).find((n: any) => n.id === l.target);
+      return nodeIdSet.has(l.source) && nodeIdSet.has(l.target) &&
+        (srcNode ? srcNode.episode === ep : false) &&
+        (tgtNode ? tgtNode.episode === ep : false);
+    }),
+  }));
+
+  const similarityMatrix = computeJaccardSimilarity(episodeGraphs);
+  const pairs: DupContentPair[] = [];
+
+  for (let i = 0; i < episodes.length; i++) {
+    for (let j = i + 1; j < episodes.length; j++) {
+      const sim = similarityMatrix[episodes[i]]?.[episodes[j]] ?? 0;
+      pairs.push({ epA: episodes[i], epB: episodes[j], similarity: sim });
+
+      if (sim > 0.7) {
+        results.push({
+          check: "Duplicate Content",
+          status: "FAIL",
+          details: `${episodes[i]} ↔ ${episodes[j]}: Jaccard similarity ${sim.toFixed(3)} > 0.7 — structurally near-duplicate`,
+          evidence: [episodes[i], episodes[j], `jaccard: ${sim.toFixed(3)}`],
+        });
+      } else if (sim > 0.5) {
+        results.push({
+          check: "Duplicate Content",
+          status: "WARN",
+          details: `${episodes[i]} ↔ ${episodes[j]}: Jaccard similarity ${sim.toFixed(3)} > 0.5 — significant structural overlap`,
+          evidence: [episodes[i], episodes[j], `jaccard: ${sim.toFixed(3)}`],
+        });
+      }
+    }
+  }
+
+  if (results.length === 0) {
+    results.push({
+      check: "Duplicate Content",
+      status: "PASS",
+      details: `No duplicate content detected across ${episodes.length} episodes (all Jaccard ≤ 0.5)`,
+      evidence: [],
+    });
+  }
+
+  return { results, pairs };
+}
+
+// ─── Check 10: Plot Arc ───
+
+interface PlotArcBeat {
+  scene: string;
+  beat_type: string;
+  tension: number;
+}
+
+function checkPlotArc(): { results: CheckResult[]; beats: PlotArcBeat[]; arcScore: number; diagnosis: string } {
+  // Look for plot_beat nodes in the merged graph
+  const plotBeats = (merged.nodes as any[]).filter((n: any) => n.type === "plot_beat");
+
+  if (plotBeats.length === 0) {
+    return {
+      results: [{ check: "Plot Arc", status: "PASS", details: "No plot_beat nodes found — plot arc analysis not yet run", evidence: [] }],
+      beats: [],
+      arcScore: -1,
+      diagnosis: "not_analyzed",
+    };
+  }
+
+  // Extract and sort beats by scene order (assuming IDs encode order)
+  const beats: PlotArcBeat[] = plotBeats
+    .map((n: any) => ({
+      scene: n.properties?.scene ?? n.id,
+      beat_type: n.properties?.beat_type ?? n.label ?? "unknown",
+      tension: parseFloat(n.properties?.tension ?? "0.5"),
+    }))
+    .sort((a, b) => a.scene.localeCompare(b.scene));
+
+  const arcResult = computePlotArcScore(beats);
+
+  const results: CheckResult[] = [];
+
+  switch (arcResult.diagnosis) {
+    case "no_climax":
+      results.push({
+        check: "Plot Arc",
+        status: "FAIL",
+        details: "No climax beat detected — the episode has no dramatic peak",
+        evidence: beats.map(b => `${b.scene}:${b.beat_type}`),
+      });
+      break;
+    case "inverted":
+      results.push({
+        check: "Plot Arc",
+        status: "WARN",
+        details: "Inverted arc — climax tension is lower than rising action tension",
+        evidence: beats.map(b => `${b.scene}:${b.beat_type}(${b.tension.toFixed(2)})`),
+      });
+      break;
+    case "flat_middle":
+      results.push({
+        check: "Plot Arc",
+        status: "WARN",
+        details: "Flat middle — tension variance between inciting incident and climax is too low",
+        evidence: beats.map(b => `${b.scene}:${b.beat_type}(${b.tension.toFixed(2)})`),
+      });
+      break;
+    case "no_inciting_incident":
+      results.push({
+        check: "Plot Arc",
+        status: "WARN",
+        details: "No inciting incident detected — the episode may lack a clear opening hook",
+        evidence: beats.map(b => `${b.scene}:${b.beat_type}`),
+      });
+      break;
+    case "complete":
+      results.push({
+        check: "Plot Arc",
+        status: "PASS",
+        details: `Plot arc score: ${arcResult.score}/100 — structure is complete with proper dramatic curve`,
+        evidence: beats.map(b => `${b.scene}:${b.beat_type}(${b.tension.toFixed(2)})`),
+      });
+      break;
+  }
+
+  return { results, beats, arcScore: arcResult.score, diagnosis: arcResult.diagnosis };
+}
+
+// ─── Check 11: Foreshadowing ───
+
+interface ForeshadowRecord {
+  id: string;
+  planted_episode: string;
+  paid_off: boolean;
+  description: string;
+  payoff_episode?: string;
+}
+
+function checkForeshadowing(): { results: CheckResult[]; records: ForeshadowRecord[] } {
+  const results: CheckResult[] = [];
+  const records: ForeshadowRecord[] = [];
+
+  // Look for foreshadow nodes in the merged graph
+  const foreshadowNodes = (merged.nodes as any[]).filter((n: any) => n.type === "foreshadow");
+
+  if (foreshadowNodes.length === 0) {
+    return {
+      results: [{ check: "Foreshadowing", status: "PASS", details: "No foreshadowing nodes found — foreshadow tracking not yet run", evidence: [] }],
+      records: [],
+    };
+  }
+
+  // Also check link_edges for foreshadows relation
+  const foreshadowLinks = linkEdges.filter((le: any) => le.relation === "foreshadows");
+
+  // Extract episode ordering from episode_plot nodes
+  const episodeOrder = (merged.nodes as any[])
+    .filter((n: any) => n.type === "episode_plot")
+    .map((n: any) => n.episode ?? n.id.match(/^ch\d+ep\d+/)?.[0] ?? "")
+    .filter(Boolean)
+    .sort();
+
+  // Build foreshadow records from nodes
+  for (const n of foreshadowNodes) {
+    const props = n.properties ?? {};
+    const paidOff = props.paid_off === "true" || props.paid_off === true;
+    const payoffEp = props.payoff_episode ?? undefined;
+
+    records.push({
+      id: n.id,
+      planted_episode: props.planted_episode ?? n.id.split("_foreshadow")[0] ?? "",
+      paid_off: paidOff,
+      description: n.label ?? props.description ?? "",
+      payoff_episode: payoffEp,
+    });
+  }
+
+  // Also extract from link edges (foreshadows relation)
+  for (const le of foreshadowLinks) {
+    const srcNode = nodesMap.get(le.source);
+    const tgtNode = nodesMap.get(le.target);
+    if (!srcNode || !tgtNode) continue;
+
+    // Avoid duplicates
+    if (records.some(r => r.id === le.source)) continue;
+
+    records.push({
+      id: le.source,
+      planted_episode: srcNode.properties?.planted_episode ?? le.source.split("_foreshadow")[0] ?? "",
+      paid_off: true,
+      description: srcNode.label ?? "",
+      payoff_episode: tgtNode.properties?.planted_episode ?? tgtNode.id.split("_foreshadow")[0] ?? "",
+    });
+  }
+
+  // Check for unpaid foreshadowing overdue by 2+ episodes
+  const unpaid = records.filter(r => !r.paid_off);
+  for (const f of unpaid) {
+    const plantedIdx = episodeOrder.indexOf(f.planted_episode);
+    if (plantedIdx >= 0 && episodeOrder.length - plantedIdx > 2) {
+      results.push({
+        check: "Foreshadowing",
+        status: "WARN",
+        details: `Unpaid foreshadow "${f.description}" planted in ${f.planted_episode} — ${episodeOrder.length - plantedIdx} episodes since planting (threshold: 2)`,
+        evidence: [f.id, f.planted_episode],
+      });
+    }
+  }
+
+  // Count stats
+  const plantedCount = records.length;
+  const paidOffCount = records.filter(r => r.paid_off).length;
+  const overdueCount = unpaid.filter(f => {
+    const idx = episodeOrder.indexOf(f.planted_episode);
+    return idx >= 0 && episodeOrder.length - idx > 2;
+  }).length;
+
+  if (results.length === 0) {
+    results.push({
+      check: "Foreshadowing",
+      status: "PASS",
+      details: `${plantedCount} foreshadowing tracked: ${paidOffCount} paid off, ${unpaid.length} pending${overdueCount > 0 ? `, ${overdueCount} overdue` : ""}`,
+      evidence: records.map(r => r.id),
+    });
+  }
+
+  return { results, records };
+}
+
+// ─── Check 12: Character Growth ───
+
+interface CharacterGrowthInfo {
+  charId: string;
+  charLabel: string;
+  episodes: number;
+  classification: string;
+  score: number;
+  traitChanges: Array<{ trait: string; direction: string; from: string; to: string }>;
+}
+
+function checkCharacterGrowth(): { results: CheckResult[]; characters: CharacterGrowthInfo[] } {
+  const results: CheckResult[] = [];
+  const characters: CharacterGrowthInfo[] = [];
+
+  // Group character instances by character_id using same_character link edges
+  const sameCharLinks = linkEdgesByRelation.get("same_character") ?? [];
+  if (sameCharLinks.length === 0) {
+    return {
+      results: [{ check: "Character Growth", status: "PASS", details: "No same_character link edges — growth analysis not applicable", evidence: [] }],
+      characters: [],
+    };
+  }
+
+  // Build charId → instances map
+  const charInstances = new Map<string, string[]>();
+  for (const le of sameCharLinks) {
+    const srcChar = le.source.split("_char_")[1]?.split("_")[0] ?? "";
+    const tgtChar = le.target.split("_char_")[1]?.split("_")[0] ?? "";
+    const charId = srcChar || tgtChar;
+    if (!charInstances.has(charId)) charInstances.set(charId, []);
+    const set = charInstances.get(charId)!;
+    if (!set.includes(le.source)) set.push(le.source);
+    if (!set.includes(le.target)) set.push(le.target);
+  }
+
+  // Also add characters without link edges but with character_id property
+  for (const n of merged.nodes) {
+    if (n.type !== "character_instance") continue;
+    const cid = n.properties?.character_id ?? "";
+    if (!cid || charInstances.has(cid)) continue;
+    charInstances.set(cid, [n.id]);
+  }
+
+  for (const [charId, instances] of charInstances) {
+    if (instances.length < 2) continue;
+
+    // Sort by episode
+    instances.sort((a, b) => a.localeCompare(b));
+
+    // Extract traits per instance
+    const perEpisode: Array<{ episode: string; traits: string[] }> = instances.map(id => {
+      const ep = id.match(/^ch\d+ep\d+/)?.[0] ?? id;
+      return { episode: ep, traits: getTraits(id) };
+    });
+
+    if (perEpisode.every(ep => ep.traits.length === 0)) continue;
+
+    // Compute trait changes between consecutive episodes
+    const traitChanges: Array<{ trait: string; direction: string; from: string; to: string }> = [];
+    const traitHistory: Map<string, Array<{ episode: string; present: boolean }>> = new Map();
+
+    for (let i = 0; i < perEpisode.length; i++) {
+      const { episode, traits } = perEpisode[i];
+      const traitSet = new Set(traits);
+
+      for (const trait of traitSet) {
+        if (!traitHistory.has(trait)) traitHistory.set(trait, []);
+        traitHistory.get(trait)!.push({ episode, present: true });
+      }
+
+      if (i > 0) {
+        const prevTraits = new Set(perEpisode[i - 1].traits);
+        for (const trait of prevTraits) {
+          if (!traitSet.has(trait)) {
+            if (!traitHistory.has(trait)) traitHistory.set(trait, []);
+            traitHistory.get(trait)!.push({ episode, present: false });
+          }
+        }
+      }
+    }
+
+    for (let i = 1; i < perEpisode.length; i++) {
+      const prev = new Set(perEpisode[i - 1].traits);
+      const curr = new Set(perEpisode[i].traits);
+      const gained = [...curr].filter(t => !prev.has(t));
+      const lost = [...prev].filter(t => !curr.has(t));
+      const paired = Math.min(gained.length, lost.length);
+
+      for (let j = 0; j < paired; j++) {
+        traitChanges.push({ trait: `${lost[j]} → ${gained[j]}`, direction: "neutral_shift", from: perEpisode[i - 1].episode, to: perEpisode[i].episode });
+      }
+      for (let j = paired; j < gained.length; j++) {
+        const history = traitHistory.get(gained[j]) ?? [];
+        const wasPresentBefore = history.some(h => h.present && h.episode !== perEpisode[i].episode && h.episode !== perEpisode[i - 1].episode);
+        traitChanges.push({ trait: gained[j], direction: wasPresentBefore ? "reintroduction" : "positive_growth", from: perEpisode[i - 1].episode, to: perEpisode[i].episode });
+      }
+      for (let j = paired; j < lost.length; j++) {
+        traitChanges.push({ trait: lost[j], direction: "negative_decline", from: perEpisode[i - 1].episode, to: perEpisode[i].episode });
+      }
+    }
+
+    if (traitChanges.length === 0) continue;
+
+    const positiveCount = traitChanges.filter(c => c.direction === "positive_growth" || c.direction === "reintroduction").length;
+    const negativeCount = traitChanges.filter(c => c.direction === "negative_decline").length;
+    const total = traitChanges.length;
+    const trajectory = (positiveCount - negativeCount) / total;
+
+    let classification: string;
+    if (trajectory > 0.3) classification = "positive";
+    else if (trajectory < -0.3) classification = "negative";
+    else if (Math.abs(trajectory) < 0.1) classification = "flat";
+    else classification = "cyclical";
+
+    const trajectoryScore = Math.abs(trajectory) * 50;
+    const diversityScore = Math.min(1, new Set(traitChanges.map(c => c.trait)).size / total) * 50;
+    const score = Math.round(trajectoryScore + diversityScore);
+
+    const charLabel = (nodesMap.get(instances[0])?.label ?? charId).replace(/\s*\(ch\d+ep\d+\)$/, "");
+
+    characters.push({ charId, charLabel, episodes: instances.length, classification, score, traitChanges });
+
+    // WARN: main character has flat arc across 3+ episodes
+    if (classification === "flat" && instances.length >= 3) {
+      results.push({
+        check: `Character Growth: ${charId}`,
+        status: "WARN",
+        details: `${charLabel} has a flat arc across ${instances.length} episodes (score: ${score}/100) — character may be stagnant`,
+        evidence: instances,
+      });
+    }
+  }
+
+  if (results.length === 0 && characters.length > 0) {
+    results.push({
+      check: "Character Growth",
+      status: "PASS",
+      details: `${characters.length} characters analyzed — arc classifications: ${characters.map(c => `${c.charLabel}=${c.classification}`).join(", ")}`,
+      evidence: characters.map(c => c.charId),
+    });
+  } else if (characters.length === 0) {
+    results.push({
+      check: "Character Growth",
+      status: "PASS",
+      details: "No multi-episode characters with traits to analyze",
+      evidence: [],
+    });
+  }
+
+  return { results, characters };
+}
+
+// ─── Check 13: Pacing Curve ───
+
+interface PacingSceneInfo {
+  scene: string;
+  episode: string;
+  dialogLines: number;
+  charCount: number;
+  effectCount: number;
+  tension: number;
+}
+
+function checkPacing(): { results: CheckResult[]; curves: Map<string, PacingSceneInfo[]> } {
+  const results: CheckResult[] = [];
+  const curves = new Map<string, PacingSceneInfo[]>();
+
+  // Group scene nodes by episode
+  const sceneByEpisode = new Map<string, PacingSceneInfo[]>();
+  for (const n of merged.nodes) {
+    if (n.type !== "scene") continue;
+    const epId = n.id.match(/^ch\d+ep\d+/)?.[0] ?? "";
+    if (!epId) continue;
+    const dialogLines = parseInt(n.properties?.dialog_line_count ?? "0", 10);
+    const charCount = parseInt(n.properties?.character_count ?? "0", 10);
+    const effectCount = parseInt(n.properties?.effect_count ?? "0", 10);
+    if (!sceneByEpisode.has(epId)) sceneByEpisode.set(epId, []);
+    sceneByEpisode.get(epId)!.push({
+      scene: n.id,
+      episode: epId,
+      dialogLines,
+      charCount,
+      effectCount,
+      tension: 0, // computed below
+    });
+  }
+
+  if (sceneByEpisode.size === 0) {
+    return {
+      results: [{ check: "Pacing", status: "PASS", details: "No scene nodes found — pacing analysis not applicable", evidence: [] }],
+      curves,
+    };
+  }
+
+  for (const [epId, scenes] of sceneByEpisode) {
+    if (scenes.length < 2) continue;
+
+    // Weighted tension: 0.4*dialog + 0.3*character + 0.3*effect
+    const maxDialog = Math.max(...scenes.map(s => s.dialogLines), 1);
+    const maxChars = Math.max(...scenes.map(s => s.charCount), 1);
+    const maxEffects = Math.max(...scenes.map(s => s.effectCount), 1);
+    for (const s of scenes) {
+      const dialogD = s.dialogLines / maxDialog;
+      const charD = s.charCount / maxChars;
+      const effectD = s.effectCount / maxEffects;
+      s.tension = 0.4 * dialogD + 0.3 * charD + 0.3 * effectD;
+    }
+
+    curves.set(epId, scenes);
+
+    const tensions = scenes.map(s => s.tension);
+    const m = tensions.reduce((a, b) => a + b, 0) / tensions.length;
+    const variance = tensions.reduce((s, t) => s + Math.pow(t - m, 2), 0) / tensions.length;
+
+    // Check flat pacing
+    if (variance < 0.01) {
+      results.push({
+        check: `Pacing: ${epId}`,
+        status: "WARN",
+        details: `Flat pacing — all scenes have similar dialog density (variance: ${variance.toFixed(4)})`,
+        evidence: scenes.map(s => `${s.scene}=${s.dialogLines} lines`),
+      });
+      continue;
+    }
+
+    // Check inverted pacing: OutroScene tension > avg ContentScene tension
+    const outroScene = scenes.find(s => s.scene.includes("OutroScene"));
+    const contentScenes = scenes.filter(s => s.scene.includes("ContentScene"));
+    if (outroScene && contentScenes.length > 0) {
+      const avgContent = contentScenes.reduce((s, c) => s + c.tension, 0) / contentScenes.length;
+      if (outroScene.tension > avgContent && avgContent > 0) {
+        results.push({
+          check: `Pacing: ${epId}`,
+          status: "WARN",
+          details: `Inverted pacing — OutroScene tension (${outroScene.tension.toFixed(2)}) > avg ContentScene (${avgContent.toFixed(2)})`,
+          evidence: scenes.map(s => `${s.scene}: ${s.tension.toFixed(2)}`),
+        });
+        continue;
+      }
+    }
+
+    results.push({
+      check: `Pacing: ${epId}`,
+      status: "PASS",
+      details: `Dynamic pacing (variance: ${variance.toFixed(4)}, ${scenes.length} scenes)`,
+      evidence: scenes.map(s => `${s.scene}: ${s.tension.toFixed(2)}`),
+    });
+  }
+
+  if (results.length === 0) {
+    results.push({
+      check: "Pacing",
+      status: "PASS",
+      details: "No episodes with enough scenes for pacing analysis",
+      evidence: [],
+    });
+  }
+
+  return { results, curves };
+}
+
+// ─── Phase 24-F: Thematic Coherence ───
+
+function checkThematicCoherence(): { results: CheckResult[]; coherence: number; themeTable: string[] } {
+  const themeResult = computeThemeCoherence(merged.nodes);
+  const results: CheckResult[] = [];
+  const themeTable: string[] = [];
+
+  if (themeResult.uniqueThemes.size === 0) {
+    return {
+      results: [{ check: "Thematic Coherence", status: "PASS", details: "No theme nodes found — thematic coherence not applicable (add --mode hybrid for AI theme extraction)", evidence: [] }],
+      coherence: 1,
+      themeTable: [],
+    };
+  }
+
+  // Build theme table for report
+  themeTable.push("| 主題關鍵字 | 出現集數 | 狀態 |");
+  themeTable.push("|-----------|---------|------|");
+  for (const [keyword, episodes] of themeResult.uniqueThemes) {
+    const isShared = episodes.length >= 2;
+    const status = isShared ? "✅ 跨集共享" : "📝 單集主題";
+    themeTable.push(`| ${keyword} | ${episodes.join(", ")} | ${status} |`);
+  }
+
+  if (themeResult.coherence < 0.3) {
+    results.push({
+      check: "Thematic Coherence",
+      status: "WARN",
+      details: `主題連貫性偏低 (${(themeResult.coherence * 100).toFixed(0)}%) — ${themeResult.sharedThemes.length}/${themeResult.uniqueThemes.size} 主題跨集共享`,
+      evidence: themeResult.sharedThemes.length > 0 ? themeResult.sharedThemes : ["No shared themes across episodes"],
+    });
+  } else {
+    results.push({
+      check: "Thematic Coherence",
+      status: "PASS",
+      details: `主題連貫性良好 (${(themeResult.coherence * 100).toFixed(0)}%) — ${themeResult.sharedThemes.length}/${themeResult.uniqueThemes.size} 主題跨集共享`,
+      evidence: themeResult.sharedThemes,
+    });
+  }
+
+  return { results, coherence: themeResult.coherence, themeTable };
+}
+
 // ─── Run all checks ───
 
 console.log("Running consistency checks...\n");
@@ -558,12 +1129,24 @@ console.log("Running consistency checks...\n");
 const communityAnalysis: CommunityReport | null = merged.community_analysis ?? null;
 
 const charConsistency = checkCharacterConsistency();
+const dupContent = checkDuplicateContent();
+const plotArc = checkPlotArc();
+const foreshadowing = checkForeshadowing();
+const charGrowth = checkCharacterGrowth();
+const pacing = checkPacing();
+const themeCoherence = checkThematicCoherence();
 const allChecks: CheckResult[] = [
   ...charConsistency.results,
   ...checkGagEvolution(),
   ...checkTechTermDiversity(),
   ...checkTraitCoverage(),
   ...checkInteractionDensity(),
+  ...dupContent.results,
+  ...plotArc.results,
+  ...foreshadowing.results,
+  ...charGrowth.results,
+  ...pacing.results,
+  ...themeCoherence.results,
   ...(communityAnalysis ? checkCommunityStructure(communityAnalysis) : []),
   ...(communityAnalysis ? checkIsolatedNodes(communityAnalysis) : []),
   ...(communityAnalysis ? checkCrossCommunityCoherence(communityAnalysis) : []),
@@ -575,9 +1158,14 @@ const report: string[] = [];
 report.push(`# Consistency Report`);
 report.push(``);
 report.push(`Generated: ${new Date().toISOString()}`);
+report.push(`Generator: bun_graphify_check v0.13.0`);
+report.push(`Mode: ${aiConfig.mode}${aiConfig.mode !== "regex" ? ` (${aiConfig.provider}/${aiConfig.model})` : ""}`);
 report.push(`Series: ${seriesDir}`);
 report.push(`Episodes: ${merged.episode_count ?? "unknown"}`);
 report.push(`Link edges: ${linkEdges.length}`);
+if (merged.manifest) {
+  report.push(`Source manifest: ${JSON.stringify(merged.manifest)}`);
+}
 report.push(``);
 
 const passCount = allChecks.filter(c => c.status === "PASS").length;
@@ -589,9 +1177,22 @@ report.push(``);
 report.push(`- **PASS:** ${passCount}`);
 report.push(`- **WARN:** ${warnCount}`);
 report.push(`- **FAIL:** ${failCount}`);
+
+// ─── Aggregate Quality Score ───
+
+let aggregateScore = 100;
+for (const c of allChecks) {
+  if (c.status === "PASS") aggregateScore += 5;
+  else if (c.status === "WARN") aggregateScore -= 5;
+  else aggregateScore -= 15;
+}
+aggregateScore = Math.max(0, Math.min(100, aggregateScore));
+const gateDecision: "PASS" | "WARN" | "FAIL" = aggregateScore >= 70 ? "PASS" : aggregateScore >= 40 ? "WARN" : "FAIL";
+
+report.push(`- **品質評分：** ${aggregateScore}/100 (${gateDecision})`);
 report.push(``);
 
-console.log(`Results: ${passCount} PASS, ${warnCount} WARN, ${failCount} FAIL`);
+console.log(`Results: ${passCount} PASS, ${warnCount} WARN, ${failCount} FAIL — Score: ${aggregateScore}/100 (${gateDecision})`);
 
 // Group by check type
 const checkGroups = new Map<string, CheckResult[]>();
@@ -660,11 +1261,131 @@ if (charConsistency.comparisons.length > 0) {
   }
 }
 
+// ─── Duplicate Content Table ───
+
+if (dupContent.pairs.length > 0) {
+  report.push(`## Duplicate Content Analysis`);
+  report.push(``);
+  report.push(`| Episode A | Episode B | Jaccard | Status |`);
+  report.push(`|-----------|-----------|---------|--------|`);
+
+  for (const pair of dupContent.pairs) {
+    const status = pair.similarity > 0.7 ? "FAIL" : pair.similarity > 0.5 ? "WARN" : "OK";
+    const icon = status === "FAIL" ? "❌" : status === "WARN" ? "⚠️" : "✅";
+    report.push(`| ${pair.epA} | ${pair.epB} | ${pair.similarity.toFixed(3)} | ${icon} ${status} |`);
+  }
+
+  report.push(``);
+}
+
+// ─── Plot Arc Table ───
+
+if (plotArc.beats.length > 0) {
+  report.push(`## Plot Arc Analysis`);
+  report.push(``);
+  report.push(`| Scene | Beat Type | Tension |`);
+  report.push(`|-------|-----------|---------|`);
+
+  for (const beat of plotArc.beats) {
+    report.push(`| ${beat.scene} | ${beat.beat_type} | ${beat.tension.toFixed(2)} |`);
+  }
+
+  const diagnosisLabel: Record<string, string> = {
+    complete: "結構完整",
+    no_climax: "缺乏高潮",
+    flat_middle: "中段平淡",
+    inverted: "高潮過早",
+    no_inciting_incident: "缺乏開場引子",
+    not_analyzed: "未分析",
+  };
+  report.push(``);
+  report.push(`- **弧線評分：** ${plotArc.arcScore}/100`);
+  report.push(`- **判定：** ${diagnosisLabel[plotArc.diagnosis] ?? plotArc.diagnosis}`);
+  report.push(``);
+}
+
+// ─── Foreshadowing Table ───
+
+if (foreshadowing.records.length > 0) {
+  report.push(`## Foreshadowing Tracking`);
+  report.push(``);
+  report.push(`| ID | Planted | Status | Description | Payoff |`);
+  report.push(`|----|---------|--------|-------------|--------|`);
+
+  for (const rec of foreshadowing.records) {
+    const status = rec.paid_off ? "✅ Paid" : "⏳ Pending";
+    const payoff = rec.payoff_episode ?? "—";
+    report.push(`| ${rec.id} | ${rec.planted_episode} | ${status} | ${rec.description} | ${payoff} |`);
+  }
+
+  const planted = foreshadowing.records.length;
+  const paid = foreshadowing.records.filter(r => r.paid_off).length;
+  const pending = planted - paid;
+  report.push(``);
+  report.push(`- **Planted:** ${planted}, **Paid off:** ${paid}, **Pending:** ${pending}`);
+  report.push(``);
+}
+
+// ─── Character Growth Table ───
+
+if (charGrowth.characters.length > 0) {
+  report.push(`## Character Growth Trajectory`);
+  report.push(``);
+  report.push(`| Character | Episodes | Arc | Score | Trait Changes |`);
+  report.push(`|-----------|----------|-----|-------|--------------|`);
+
+  for (const cg of charGrowth.characters) {
+    const arcEmoji = cg.classification === "positive" ? "📈" : cg.classification === "negative" ? "📉" : cg.classification === "flat" ? "➡️" : "🔄";
+    const changeSummary = cg.traitChanges.slice(0, 3).map(c => `${c.trait} (${c.direction})`).join("; ");
+    report.push(`| ${cg.charLabel} | ${cg.episodes} | ${arcEmoji} ${cg.classification} | ${cg.score}/100 | ${changeSummary} |`);
+  }
+
+  report.push(``);
+}
+
+// ─── Pacing Curve Table ───
+
+if (pacing.curves.size > 0) {
+  report.push(`## Pacing Curve Analysis`);
+  report.push(``);
+
+  for (const [epId, scenes] of pacing.curves) {
+    report.push(`### ${epId}`);
+    report.push(``);
+    report.push(`| Scene | Dialog | Chars | Effects | Tension |`);
+    report.push(`|-------|--------|-------|---------|---------|`);
+
+    for (const s of scenes) {
+      const bar = "█".repeat(Math.round(s.tension * 10));
+      report.push(`| ${s.scene} | ${s.dialogLines} | ${s.charCount} | ${s.effectCount} | ${bar} ${s.tension.toFixed(2)} |`);
+    }
+
+    const tensions = scenes.map(s => s.tension);
+    const m = tensions.reduce((a, b) => a + b, 0) / tensions.length;
+    const variance = tensions.reduce((s, t) => s + Math.pow(t - m, 2), 0) / tensions.length;
+    report.push(``);
+    report.push(`- **Variance:** ${variance.toFixed(4)} (weighted: 40% dialog, 30% characters, 30% effects)`);
+    report.push(``);
+  }
+}
+
+// ─── Theme Coherence Table ───
+
+if (themeCoherence.themeTable.length > 0) {
+  report.push(`## 主題連貫性分析`);
+  report.push(``);
+  report.push(...themeCoherence.themeTable);
+  report.push(``);
+  const bar = "█".repeat(Math.round(themeCoherence.coherence * 10));
+  report.push(`- **連貫性：** ${bar} ${(themeCoherence.coherence * 100).toFixed(0)}%`);
+  report.push(``);
+}
+
 // ─── Subagent Enrichment ───
 
-// Build a JSON payload for subagent-based enrichment analysis
-// This is written as a sidecar file that can be consumed by an LLM subagent
 const enrichmentPath = resolve(seriesDir, "bun_graphify_out", "check-enrichment-input.json");
+const enrichmentOutputPath = resolve(seriesDir, "bun_graphify_out", "check-enrichment-output.md");
+
 const enrichmentPayload = {
   report: {
     summary: { pass: passCount, warn: warnCount, fail: failCount },
@@ -683,9 +1404,75 @@ const enrichmentPayload = {
 writeFileSync(enrichmentPath, JSON.stringify(enrichmentPayload, null, 2));
 console.log(`Enrichment input: ${enrichmentPath}`);
 
-// Check for existing enrichment section from a previous subagent run
-const enrichmentOutputPath = resolve(seriesDir, "bun_graphify_out", "check-enrichment-output.md");
-if (existsSync(enrichmentOutputPath)) {
+// Build enrichment prompt from the structured payload
+function buildEnrichmentPrompt(payload: typeof enrichmentPayload): string {
+  const checkLines = payload.report.checks
+    .map(c => `- [${c.status}] ${c.check}: ${c.details}`)
+    .join("\n");
+
+  const charLines = payload.characterComparisons
+    .map(c => {
+      const traits = c.sharedTraits.length > 0 ? `shared: ${c.sharedTraits.join(", ")}` : "no shared traits";
+      return `- ${c.character} (${c.id}): ${traits}`;
+    })
+    .join("\n");
+
+  return `You are a story analysis assistant reviewing consistency check results for a comedy video series.
+
+## Summary
+- PASS: ${payload.report.summary.pass}, WARN: ${payload.report.summary.warn}, FAIL: ${payload.report.summary.fail}
+
+## Check Results
+${checkLines}
+
+## Character Comparisons
+${charLines || "No multi-episode characters to compare."}
+
+## Task
+Analyze the warnings and failures above. For each WARN/FAIL:
+1. Explain WHY this issue may have occurred
+2. Suggest a concrete fix in zh_TW (the series uses Traditional Chinese)
+3. Rate severity: low / medium / high
+
+After the markdown analysis, include a JSON block with per-check fix suggestions:
+\`\`\`json
+[
+  { "check_name": "exact check name from above", "fix_suggestion_zhTW": "One concrete sentence in zh_TW" }
+]
+\`\`\`
+
+Format the main analysis as markdown sections (2-3 sentences each).
+The JSON block must be at the end, containing entries for all WARN/FAIL checks.
+
+Analysis:`;
+}
+
+if (aiConfig.mode === "ai") {
+  // --mode ai: call LLM directly
+  console.log(`\n[AI mode] Calling ${aiConfig.provider}/${aiConfig.model} for enrichment...`);
+  const prompt = buildEnrichmentPrompt(enrichmentPayload);
+  const result = await callAI(prompt, {
+    provider: aiConfig.provider,
+    model: aiConfig.model,
+    jsonMode: false,
+    maxRetries: 1,
+  });
+
+  if (result) {
+    writeFileSync(enrichmentOutputPath, result);
+    report.push(`## LLM Analysis`);
+    report.push(``);
+    report.push(result);
+    report.push(``);
+    console.log(`[AI mode] Enrichment written: ${enrichmentOutputPath}`);
+  } else {
+    report.push(`## LLM Analysis`);
+    report.push(``);
+    report.push(`*AI enrichment call failed. See check-enrichment-input.json for manual subagent analysis.*`);
+    report.push(``);
+    console.warn(`[AI mode] callAI returned null for enrichment`);
+  }
+} else if (existsSync(enrichmentOutputPath)) {
   const enrichmentOutput = readFileSync(enrichmentOutputPath, "utf-8");
   report.push(`## LLM Analysis`);
   report.push(``);
@@ -702,6 +1489,46 @@ if (existsSync(enrichmentOutputPath)) {
 
 writeFileSync(outPath, report.join("\n"));
 console.log(`\nReport: ${outPath}`);
+
+// ─── Write gate.json ───
+
+// Parse fix suggestions from enrichment output (if available)
+const fixSuggestions = new Map<string, string>();
+if (existsSync(enrichmentOutputPath)) {
+  try {
+    const enrichmentText = readFileSync(enrichmentOutputPath, "utf-8");
+    const jsonMatch = enrichmentText.match(/```json\s*\n?([\s\S]*?)\n?```/);
+    if (jsonMatch) {
+      const parsed = JSON.parse(jsonMatch[1]);
+      if (Array.isArray(parsed)) {
+        for (const item of parsed) {
+          if (item.check_name && item.fix_suggestion_zhTW) {
+            fixSuggestions.set(item.check_name, item.fix_suggestion_zhTW);
+          }
+        }
+      }
+    }
+  } catch {
+    // Parsing failed — fix suggestions remain empty
+  }
+}
+
+const gateData = {
+  version: "1.0",
+  timestamp: new Date().toISOString(),
+  score: aggregateScore,
+  decision: gateDecision,
+  checks: allChecks.map(c => ({
+    name: c.check,
+    status: c.status,
+    score_impact: c.status === "PASS" ? 5 : c.status === "WARN" ? -5 : -15,
+    fix_suggestion_zhTW: fixSuggestions.get(c.check) ?? (c.status !== "PASS" ? "(see consistency-report.md for details)" : ""),
+  })),
+};
+
+const gatePath = resolve(seriesDir, "bun_graphify_out", "gate.json");
+writeFileSync(gatePath, JSON.stringify(gateData, null, 2));
+console.log(`Gate: ${gatePath} (score: ${aggregateScore}, decision: ${gateDecision})`);
 
 // Print summary to console
 for (const check of allChecks) {
