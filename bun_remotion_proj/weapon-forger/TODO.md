@@ -2,8 +2,8 @@
 
 > **Related docs:**
 > - [PLAN.md](PLAN.md) — Story arcs, characters, episode guide, KG stats
-> - Skill TODO: `.claude/skills/bun_graphify/TODO.md` — Pipeline bugs, run history
-> - Code TODO: `bun_app/bun_graphify/TODO.md` — Script-level implementation tasks
+> - Skill TODO: `.claude/skills/storygraph/TODO.md` — Pipeline bugs, run history
+> - Code TODO: `bun_app/storygraph/TODO.md` — Script-level implementation tasks
 
 ---
 
@@ -103,7 +103,7 @@ Pipeline per lifecycle spec (episode-creation workflow):
 - [ ] Run graphify generation prompt for KG constraints
 - [ ] Write story draft → present zh_TW confirm block → user approval
 - [ ] Write narration.ts + episode PLAN.md (draft)
-- [ ] Run graphify quality gate (`/bun_graphify` pipeline + subagent analysis)
+- [ ] Run graphify quality gate (`/storygraph` pipeline + subagent analysis)
 - [ ] User approves gate results
 - [ ] Create TODO.md (Quality Gate already [x])
 - [ ] Scaffold episode (configs + scenes + main component)
@@ -114,7 +114,7 @@ Pipeline per lifecycle spec (episode-creation workflow):
 - [ ] Generate TTS
 - [ ] Verify in Remotion Studio
 - [ ] Render MP4
-- [ ] Re-run `/bun_graphify` to update merged KG
+- [ ] Re-run `/storygraph` to update merged KG
 
 ---
 

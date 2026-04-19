@@ -100,6 +100,24 @@ bun-remotion/
       weapon-forger-ch1-ep3/            # Ep3 — Furnace repair
 ```
 
+## Video Categories
+
+Every Remotion project has a **category** that determines scene structure, animation style, and audio mode.
+Defined in `bun_app/remotion_types/src/category-types.ts`.
+
+| Category | zh_TW | Projects | Dialog System |
+|----------|-------|----------|---------------|
+| **Narrative Drama** | 敘事劇情 | weapon-forger, my-core-is-boss, xianxia-system-meme | dialogLines[] |
+| **Galgame VN** | 美少女遊戲風 | galgame-meme-theater, galgame-youth-jokes | dialogLines[] |
+| **Tech Explainer** | 技術講解 | claude-code-intro, *(storygraph-intro)* | narration_script |
+| **Data Story** | 數據故事 | taiwan-stock-market | narration_script |
+| **Listicle** | 盤點清單 | *(none yet)* | item_list |
+| **Tutorial** | 教學指南 | *(none yet)* | step_guide |
+| **Shorts / Meme** | 短影音迷因 | *(none yet)* | none (sfx only) |
+
+**Category ≠ Genre.** Genre = story content style (xianxia_comedy). Category = video format (narrative_drama).
+A series has BOTH: `weapon-forger → xianxia_comedy + narrative_drama`.
+
 ## Post-clone setup
 
 After a fresh clone, weapon-forger episodes need symlinks to shared images:
@@ -173,6 +191,7 @@ All memory — project knowledge, user feedback, preferences — lives here. Thi
 - [mlx-tts-models](.agent/memory/project/mlx-tts-models.md) - MLX-compatible TTS models for M1 8GB: Kokoro-82M-zh, Qwen3-TTS, Spark-TTS, edge-tts comparison
 - [weapon-forger-series](.agent/memory/project/weapon-forger-series.md) - Weapon-forger (誰讓他煉器的) 12-ep series: characters, zh_TW, style consistency rules
 - [galgame-meme-theater-series](.agent/memory/project/galgame-meme-theater-series.md) - Galgame meme theater series: PLAN.md pattern, ep1-ep5, zh_TW, workplace theme
+- [web-ui-vision](.agent/memory/project/web-ui-vision.md) - Web UI long-term plan: Bun + Hono + React SPA, Phase 35-39, full pipeline orchestration
 
 ### reference/
 - [tree-sitter-python](.agent/memory/reference/tree-sitter-python.md) - tree-sitter v0.25+ Python API, grammar packages, Windows-specific notes
@@ -187,7 +206,7 @@ All memory — project knowledge, user feedback, preferences — lives here. Thi
 - [generate-image-skill](.agent/memory/feedback/generate-image-skill.md) - Lessons learned: use browser_run_code for batch, Escape overlay before next prompt, aria-label selectors
 - [remotion-sequence-name](.agent/memory/feedback/remotion-sequence-name.md) - Always use name prop on Sequence for readable Studio timeline
 - [graphify-windows-lessons](.agent/memory/feedback/graphify-windows-lessons.md) - graphify v0.3.20 on Windows: extension patching, tree-sitter API, encoding, Verilog AST
-- [bun-graphify-story-kg](.agent/memory/feedback/bun-graphify-story-kg.md) - Story KG pipeline: subagent for NL analysis, federated merge, Playwright verify, HTML template bugs
+- [storygraph-story-kg](.agent/memory/feedback/storygraph-story-kg.md) - Story KG pipeline: subagent for NL analysis, federated merge, Playwright verify, HTML template bugs
 - [graphify-query-explain-lessons](.agent/memory/feedback/graphify-query-explain-lessons.md) - querying graph.json: links vs edges, node ID disambiguation, explain pipeline
 - [parallel-bash-failure-cascade](.agent/memory/feedback/parallel-bash-failure-cascade.md) - isolate risky Bash calls; one failure cancels all parallel siblings
 - [galimage-gen](.agent/memory/feedback/galimage-gen.md) - Galgame char images: always generate transparent BG + half-body upfront, never post-process

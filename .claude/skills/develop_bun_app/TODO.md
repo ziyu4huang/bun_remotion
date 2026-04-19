@@ -11,7 +11,7 @@
 
 **Operations are documentation, not automation:**
 - All 6 ops are markdown "how-to" files. Claude reads them then does the work manually.
-- No scripts exist under this skill. bun_graphify has real scripts; this skill doesn't.
+- No scripts exist under this skill. storygraph has real scripts; this skill doesn't.
 - **Impact:** Slower execution, more error-prone. Claude might skip steps.
 
 **No self-gating enforcement:**
@@ -22,11 +22,11 @@
 **`develop` operation is too generic:**
 - "Add features or refactor" covers everything. It's a cookbook of patterns (modules, CLI args, config, routes).
 - No specific commands, no inputs/outputs definition, no validation criteria.
-- Compare bun_graphify's `episode.md`: specific command, specific inputs, specific outputs, specific validation.
+- Compare storygraph's `episode.md`: specific command, specific inputs, specific outputs, specific validation.
 - **Impact:** Claude treats it as reference material, not a workflow.
 
 **No `post-run.md` (knowledge capture):**
-- bun_graphify has a post-run protocol: inspect output, record to TODO, capture lessons to memory, update SKILL.md.
+- storygraph has a post-run protocol: inspect output, record to TODO, capture lessons to memory, update SKILL.md.
 - develop_bun_app has nothing equivalent. Lessons from developing one bun_app don't feed back.
 - **Impact:** Same mistakes get made repeatedly across bun_apps.
 
@@ -49,7 +49,7 @@
 
 - [ ] **Enforce PLAN/TODO freshness** — When `status` op runs, check: when was PLAN.md last modified vs. how many source files changed since? Flag stale docs.
 - [ ] **Template versioning** — When app conventions change (e.g., new required scripts), detect apps using old conventions and suggest updates.
-- [ ] **Integration with bun_graphify skill** — When developing bun_graphify itself, both skills could cooperate: develop_bun_app for code structure, bun_graphify for codebase analysis of the app being developed.
+- [ ] **Integration with storygraph skill** — When developing storygraph itself, both skills could cooperate: develop_bun_app for code structure, storygraph for codebase analysis of the app being developed.
 
 ## Phase 2 — Script-backed Operations
 
@@ -94,7 +94,7 @@ Convert key operations from pure documentation to executable scripts.
 | Metric | Before (v1.0.0) | After (v1.1.0) |
 |--------|-----------------|----------------|
 | Operations | 5 (scaffold, test, build, develop, status) | **6 (+ plan)** |
-| Managed apps with PLAN/TODO | 1 (bun_graphify, pre-existing) | **2 (+ bun_pi_agent)** |
+| Managed apps with PLAN/TODO | 1 (storygraph, pre-existing) | **2 (+ bun_pi_agent)** |
 | Self-gating rules | None | **6 rules documented** |
 | Skill's own PLAN/TODO | None | **This + PLAN.md** |
 | post-run.md | None | Missing (P0) |
@@ -123,7 +123,7 @@ Convert key operations from pure documentation to executable scripts.
 | Conventions | snake_case, --cwd, ES modules, bun test |
 | Templates | package.json, tsconfig.json, src/index.ts, smoke test |
 
-**Created from:** bun_graphify skill pattern study + bun_pi_agent rename experience
+**Created from:** storygraph skill pattern study + bun_pi_agent rename experience
 
 ## Done
 

@@ -1,0 +1,21 @@
+{
+  "name": "episodeforge",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "bin": {
+    "episodeforge": "src/index.ts"
+  },
+  "scripts": {
+    "episodeforge": "bun run src/index.ts",
+    "test": "bun test src/"
+  },
+  "dependencies": {
+    "remotion_types": "workspace:*"
+  }
+}

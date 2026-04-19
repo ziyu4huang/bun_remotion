@@ -13,13 +13,15 @@ Scaffold, test, build, and maintain Bun/TypeScript utility apps under `bun_app/`
 
 | App | Package Name | Purpose |
 |-----|-------------|---------|
-| `bun_graphify` | `bun_graphify` | Knowledge graph generator (AST + story KG) |
+| `storygraph` | `storygraph` | Knowledge graph generator (AST + story KG) |
+| `episodeforge` | `episodeforge` | Remotion episode scaffold generator |
+| `remotion_types` | `remotion_types` | Shared category types + scene templates |
 | `bun_pi_agent` | `bun_pi_agent` | Coding assistant agent (CLI + HTTP SSE) |
 
 ## Conventions
 
 - All bun_apps live in `bun_app/<snake_case_name>/`
-- Package `name` uses snake_case (no scope): `"bun_graphify"`, `"bun_pi_agent"`
+- Package `name` uses snake_case (no scope): `"storygraph"`, `"bun_pi_agent"`
 - Every app has: `package.json`, `tsconfig.json`, `src/`, `src/index.ts`
 - Every app should have: `PLAN.md` (architecture) + `TODO.md` (tasks + run history)
 - Private packages: `"private": true`
@@ -193,7 +195,7 @@ bun bun_app/<name>/src/index.ts [args]
 
 - [PLAN.md](PLAN.md) — Skill's own architecture, operations reference, design decisions
 - [TODO.md](TODO.md) — Skill's own tasks, known issues, development history
-- [bun_graphify PLAN.md](../../bun_app/bun_graphify/PLAN.md) — Reference PLAN.md for a mature bun_app
-- [bun_graphify TODO.md](../../bun_app/bun_graphify/TODO.md) — Reference TODO.md with run history pattern
+- [storygraph PLAN.md](../../bun_app/storygraph/PLAN.md) — Reference PLAN.md for a mature bun_app
+- [storygraph TODO.md](../../bun_app/storygraph/TODO.md) — Reference TODO.md with run history pattern
 - [bun_pi_agent PLAN.md](../../bun_app/bun_pi_agent/PLAN.md) — PLAN.md for agent architecture
 - [bun_pi_agent TODO.md](../../bun_app/bun_pi_agent/TODO.md) — TODO.md with development history

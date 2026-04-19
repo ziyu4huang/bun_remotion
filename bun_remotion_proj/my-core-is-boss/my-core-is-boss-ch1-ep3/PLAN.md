@@ -59,9 +59,9 @@ linyi, zhaoxiaoqi, xiaoelder, narrator
 
 | 步驟 | 狀態 | 輸出 |
 |------|------|------|
-| Extract（萃取） | 完成 | `bun_graphify_out/graph.json` — 23 nodes, 28 edges |
-| Merge（合併） | 完成 | 系列 `bun_graphify_out/merged-graph.json` — 76 nodes, 115 edges, 12 cross-episode links |
-| Check（檢查） | 完成 | `bun_graphify_out/consistency-report.md` |
+| Extract（萃取） | 完成 | `storygraph_out/graph.json` — 23 nodes, 28 edges |
+| Merge（合併） | 完成 | 系列 `storygraph_out/merged-graph.json` — 76 nodes, 115 edges, 12 cross-episode links |
+| Check（檢查） | 完成 | `storygraph_out/consistency-report.md` |
 
 ### 檢查結果
 

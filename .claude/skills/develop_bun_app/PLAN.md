@@ -6,7 +6,7 @@
 > ---|---
 > `.claude/skills/develop_bun_app/PLAN.md` — **(this file)** Skill architecture, operations, state | `.claude/skills/develop_bun_app/SKILL.md` — Operational playbook
 > `.claude/skills/develop_bun_app/TODO.md` — Skill tasks + history | `.claude/skills/develop_bun_app/operations/` — 6 operation docs
-> — | `bun_app/bun_graphify/PLAN.md` + `TODO.md` — Reference bun_app with mature lifecycle
+> — | `bun_app/storygraph/PLAN.md` + `TODO.md` — Reference bun_app with mature lifecycle
 > — | `bun_app/bun_pi_agent/PLAN.md` + `TODO.md` — Second bun_app, first adopter of skill-created PLAN/TODO
 
 ## Current State (v1.2.0)
@@ -19,14 +19,14 @@
 - Self-gating rules documented (honor-system, not enforced)
 - Template-driven scaffold: generates package.json, tsconfig, PLAN.md, TODO.md, src/index.ts, smoke test
 - App anatomy diagram + convention set (snake_case, --cwd, ES modules)
-- Cross-linked doc pattern from bun_graphify
+- Cross-linked doc pattern from storygraph
 - Post-run knowledge capture protocol (update TODO, PLAN, feedback memory)
 
 **Managed Apps:**
 
 | App | Has PLAN.md | Has TODO.md | Tests | Notes |
 |-----|------------|------------|-------|-------|
-| bun_graphify | ✅ mature (v0.7+) | ✅ run history | — | Reference implementation, skill existed before develop_bun_app |
+| storygraph | ✅ mature (v0.7+) | ✅ run history | — | Reference implementation, skill existed before develop_bun_app |
 | bun_pi_agent | ✅ skill-created | ✅ skill-created | 93 pass | First app to get PLAN/TODO from this skill |
 
 ## Architecture
@@ -48,7 +48,7 @@ SKILL.md (always loaded by Claude on /develop_bun_app)
     └─ TODO.md              — Skill's own task tracking
 
 Managed bun_apps (each has own PLAN/TODO):
-    bun_app/bun_graphify/
+    bun_app/storygraph/
         PLAN.md — Architecture, node types, edge relations
         TODO.md — Pipeline tasks, run history, known issues
     bun_app/bun_pi_agent/
@@ -73,10 +73,10 @@ Managed bun_apps (each has own PLAN/TODO):
 ### Why load-on-demand operations
 - SKILL.md is loaded into context on every invocation. Keeping it short saves tokens.
 - Operations are only read when needed. A `test` invocation doesn't load `scaffold.md`.
-- Mode: bun_graphify uses the same pattern successfully.
+- Mode: storygraph uses the same pattern successfully.
 
-### Why no scripts (unlike bun_graphify)
-- bun_graphify has actual TypeScript scripts that do work. develop_bun_app is pure documentation.
+### Why no scripts (unlike storygraph)
+- storygraph has actual TypeScript scripts that do work. develop_bun_app is pure documentation.
 - **Trade-off:** Docs are easier to maintain but require Claude to execute each step manually. Scripts would be more reliable but need maintenance.
 - **Future:** Could add a `scaffold.ts` script for automated app generation.
 
@@ -85,7 +85,7 @@ Managed bun_apps (each has own PLAN/TODO):
 - The rules document *intent*. Claude follows them most of the time but may forget.
 - **Future:** Could add a pre-check list at the top of each operation that reminds Claude what to read first.
 
-## Key Patterns (from bun_graphify experience)
+## Key Patterns (from storygraph experience)
 
 1. **Two-level docs**: Skill-level (this) for architecture + code-level (`bun_app/<name>/PLAN.md`) for implementation
 2. **Priority gates**: P0 (fix now) / P1 (features) / P2 (architecture) — gives immediate next-task direction

@@ -1,6 +1,6 @@
 /**
  * Story graph data utilities for Remotion components.
- * Consumes graph.json / merged-graph.json produced by bun_graphify pipeline.
+ * Consumes graph.json / merged-graph.json produced by storygraph pipeline.
  *
  * These functions take parsed JSON objects (callers import via webpack).
  * Do NOT use Node.js fs/path — Remotion runs in browser context.

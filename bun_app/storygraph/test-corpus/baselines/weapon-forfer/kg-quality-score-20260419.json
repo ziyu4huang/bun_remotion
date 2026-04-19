@@ -1,0 +1,38 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-04-18T21:49:27.769Z",
+  "series": "weapon-forger",
+  "genre": "xianxia_comedy",
+  "generator": {
+    "mode": "regex",
+    "model": "glm-5"
+  },
+  "programmatic": {
+    "score": 0,
+    "decision": "FAIL",
+    "quality_breakdown": {
+      "consistency": 0.8333333333333334,
+      "arc_structure": null,
+      "pacing": 0.5,
+      "character_growth": 0.5575,
+      "thematic_coherence": 1,
+      "gag_evolution": null
+    }
+  },
+  "ai": {
+    "dimensions": {
+      "entity_accuracy": 7,
+      "relationship_correctness": 6,
+      "completeness": 5,
+      "cross_episode_coherence": 6,
+      "actionability": 7
+    },
+    "overall": 6.2,
+    "justification": "The graph captures the main character 周墨 and key supporting cast (陸陽, 孟景舟) with reasonable trait nodes (56) and tech terms (36) for a xianxia crafting comedy. However, the Programmatic Quality score of 0/100 with pacing at 50% suggests significant structural issues in how nodes relate temporally. Entity accuracy is decent but unverifiable without full graph contents—56 character traits across 29 character instances risks over-fragmentation (many trivial traits). 332 edges for 7 episodes is moderate density, but only 67 cross-episode links across 3 chapters seems low for tracking character arcs. The major concern: the source narration excerpts are extremely sparse (truncated TypeScript interfaces with no actual dialog content), making it impossible to verify relationship correctness thoroughly. The graph likely captures surface-level plot elements but may miss comedic timing cues and running gags critical to this parody series. Actionability benefits from clear scene nodes (28) and episode plots, but the pacing failures noted in Tier 0 evaluation undermine direct scene-builder usability."
+  },
+  "blended": {
+    "overall": 0.372,
+    "formula": "0.4 × programmatic + 0.6 × ai",
+    "decision": "REJECT"
+  }
+}

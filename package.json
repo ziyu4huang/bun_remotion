@@ -3,17 +3,14 @@
   "version": "1.0.0",
   "private": true,
   "workspaces": [
+    "bun_app/remotion_types",
+    "bun_app/episodeforge",
+    "bun_app/storygraph",
+    "bun_app/bun_pi_agent",
     "bun_remotion_proj/shared",
-    "bun_remotion_proj/claude-code-intro",
-    "bun_remotion_proj/taiwan-stock-market",
-    "bun_remotion_proj/three-little-pigs",
-    "bun_remotion_proj/galgame-youth-jokes",
     "bun_remotion_proj/galgame-meme-theater/*",
-    "bun_remotion_proj/xianxia-system-meme-ep1",
-    "bun_remotion_proj/xianxia-system-meme-ep2",
     "bun_remotion_proj/weapon-forger/weapon-forger-*",
-    "bun_remotion_proj/my-core-is-boss/my-core-is-boss-*",
-    "bun_remotion_proj/commentary-style"
+    "bun_remotion_proj/my-core-is-boss/my-core-is-boss-*"
   ],
   "scripts": {
     "start": "bash scripts/dev.sh studio claude-code-intro",
@@ -103,7 +100,9 @@
     "start:mcb-ch2-ep2": "bash scripts/dev.sh studio my-core-is-boss-ch2-ep2",
     "build:mcb-ch2-ep2": "bash scripts/dev.sh render my-core-is-boss-ch2-ep2",
     "generate-tts:mcb-ch2-ep2": "bun run --cwd bun_remotion_proj/my-core-is-boss/my-core-is-boss-ch2-ep2 generate-tts",
-    "scaffold": "bun run bun_app/bun_scaffold/src/index.ts"
+    "episodeforge": "bun run bun_app/episodeforge/src/index.ts",
+    "storygraph": "bun run bun_app/storygraph/src/cli.ts",
+    "test": "bun test tests/ bun_app/remotion_types/src/__tests__/ bun_app/episodeforge/src/__tests__/ bun_app/storygraph/src/__tests__/"
   },
   "dependencies": {
     "@remotion/cli": "4.0.290",

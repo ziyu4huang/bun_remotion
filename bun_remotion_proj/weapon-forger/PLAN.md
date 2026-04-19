@@ -274,7 +274,7 @@ Per-episode KG extraction from narration.ts (regenerated 2026-04-14):
 
 **Merged graph:** 177 nodes, 371 edges, 85 link edges (same_character: 61, gag_evolves: 18, story_continues: 6)
 
-**Visualization:** `bun_graphify_out/graph.html` (merged, episode-colored)
+**Visualization:** `storygraph_out/graph.html` (merged, episode-colored)
 
 **Observations:**
 - Tech terms decrease from ch1 (8) → ch3 (3) — ch3+ episodes should use more tech vocabulary

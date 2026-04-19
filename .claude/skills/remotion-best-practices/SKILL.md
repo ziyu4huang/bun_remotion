@@ -38,14 +38,16 @@ Multiple topics may apply — read up to 2 topic summaries if the task spans are
 
 ## Strategic Roadmap
 
-Phase 24 (bun_graphify story quality) + Phase 25 (Remotion novel video gen).
+Dual-LLM architecture: pi-agent (GLM, free) + Claude Code (paid) supervisor.
 
-| Doc | What |
-|-----|------|
-| `PLAN.md` | Phases, architecture, gate integration spec, node/edge types |
-| `TODO.md` | Actionable tasks (P0/P1/P2), cross-references, run history |
+| Doc | What | When to Read |
+|-----|------|-------------|
+| `NEXT.md` | Current status, next task, dependency graph | **Always read first** |
+| `TODO.md` | Active tasks (Phase 25/28-B/31/32/33) | Picking next task |
+| `PLAN.md` | Active phase specs (Phase 31–33) | Planning a phase |
+| `TODO-archive.md` | Completed tasks (Phase 24–30) | Reference only |
+| `PLAN-archive.md` | Completed phase specs (Phase 24–30) | Reference only |
 
-**Keywords:** story quality, novel, plot arc, foreshadowing, character growth, duplicate content, pacing, thematic coherence, narrative pipeline
+**Keywords:** story quality, dual-agent, tier, gate.json, quality scoring, deploy, subagent, narrative pipeline
 
-Read `PLAN.md` when planning bun_graphify enhancements or Remotion narrative features.
-Read `TODO.md` when picking next implementation task.
+Read `NEXT.md` first (~60 lines), then load TODO/PLAN sections only for the active task.

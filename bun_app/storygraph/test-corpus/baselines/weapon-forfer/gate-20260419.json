@@ -1,0 +1,415 @@
+{
+  "version": "2.0",
+  "timestamp": "2026-04-18T21:39:39.673Z",
+  "series": "weapon-forger",
+  "genre": "xianxia_comedy",
+  "generator": {
+    "mode": "regex",
+    "model": "glm-5",
+    "version": "0.16.0"
+  },
+  "score": 0,
+  "decision": "FAIL",
+  "previous_score": null,
+  "score_delta": null,
+  "checks": [
+    {
+      "name": "Character Consistency: zhoumo",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Character Consistency: examiner",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Character Consistency: luyang",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Character Consistency: mengjingzhou",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Gag Evolution",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Tech Term Diversity",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Tech Term Diversity",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Tech Term Diversity",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Tech Term Diversity",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Tech Term Diversity",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Tech Term Diversity",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Tech Term Diversity",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Trait Coverage",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Interaction Density",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Duplicate Content",
+      "status": "FAIL",
+      "score_impact": -15,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Duplicate Content",
+      "status": "FAIL",
+      "score_impact": -15,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Duplicate Content",
+      "status": "FAIL",
+      "score_impact": -15,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Duplicate Content",
+      "status": "FAIL",
+      "score_impact": -15,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Duplicate Content",
+      "status": "FAIL",
+      "score_impact": -15,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Duplicate Content",
+      "status": "FAIL",
+      "score_impact": -15,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Duplicate Content",
+      "status": "FAIL",
+      "score_impact": -15,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Duplicate Content",
+      "status": "FAIL",
+      "score_impact": -15,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Duplicate Content",
+      "status": "FAIL",
+      "score_impact": -15,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Duplicate Content",
+      "status": "FAIL",
+      "score_impact": -15,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Duplicate Content",
+      "status": "FAIL",
+      "score_impact": -15,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Duplicate Content",
+      "status": "FAIL",
+      "score_impact": -15,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Duplicate Content",
+      "status": "FAIL",
+      "score_impact": -15,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Duplicate Content",
+      "status": "FAIL",
+      "score_impact": -15,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Duplicate Content",
+      "status": "FAIL",
+      "score_impact": -15,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Duplicate Content",
+      "status": "FAIL",
+      "score_impact": -15,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Duplicate Content",
+      "status": "FAIL",
+      "score_impact": -15,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Duplicate Content",
+      "status": "FAIL",
+      "score_impact": -15,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Duplicate Content",
+      "status": "FAIL",
+      "score_impact": -15,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Duplicate Content",
+      "status": "FAIL",
+      "score_impact": -15,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Duplicate Content",
+      "status": "FAIL",
+      "score_impact": -15,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Plot Arc",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Foreshadowing",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Character Growth: zhoumo",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Character Growth: mengjingzhou",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Pacing: ch1ep1",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Pacing: ch1ep2",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Pacing: ch1ep3",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Pacing: ch2ep1",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Pacing: ch2ep2",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Pacing: ch2ep3",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Pacing: ch3ep1",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Thematic Coherence",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Community Structure",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Community Cohesion",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Community Cohesion",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Community Cohesion",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Isolated Nodes",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Cross-Community Coherence",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Surprising Connection",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Surprising Connection",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Surprising Connection",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Surprising Connection",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Surprising Connection",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    }
+  ],
+  "quality_breakdown": {
+    "consistency": 0.8333333333333334,
+    "arc_structure": null,
+    "pacing": 0.5,
+    "character_growth": 0.5575,
+    "thematic_coherence": 1,
+    "gag_evolution": null
+  },
+  "supervisor_hints": {
+    "focus_areas": [
+      "Character Consistency: mengjingzhou: Episode instance ch2ep3_char_mengjingzhou missing core tr...",
+      "Trait Coverage: ch3ep1_char_elder has no detected character traits",
+      "Duplicate Content: ch1ep1 ↔ ch1ep2: Jaccard similarity 1.000 > 0.7 — structu...",
+      "Duplicate Content: ch1ep1 ↔ ch1ep3: Jaccard similarity 1.000 > 0.7 — structu...",
+      "Duplicate Content: ch1ep1 ↔ ch2ep1: Jaccard similarity 1.000 > 0.7 — structu...",
+      "Duplicate Content: ch1ep1 ↔ ch2ep2: Jaccard similarity 1.000 > 0.7 — structu...",
+      "Duplicate Content: ch1ep1 ↔ ch2ep3: Jaccard similarity 1.000 > 0.7 — structu...",
+      "Duplicate Content: ch1ep1 ↔ ch3ep1: Jaccard similarity 1.000 > 0.7 — structu...",
+      "Duplicate Content: ch1ep2 ↔ ch1ep3: Jaccard similarity 1.000 > 0.7 — structu...",
+      "Duplicate Content: ch1ep2 ↔ ch2ep1: Jaccard similarity 1.000 > 0.7 — structu...",
+      "Duplicate Content: ch1ep2 ↔ ch2ep2: Jaccard similarity 1.000 > 0.7 — structu...",
+      "Duplicate Content: ch1ep2 ↔ ch2ep3: Jaccard similarity 1.000 > 0.7 — structu...",
+      "Duplicate Content: ch1ep2 ↔ ch3ep1: Jaccard similarity 1.000 > 0.7 — structu...",
+      "Duplicate Content: ch1ep3 ↔ ch2ep1: Jaccard similarity 1.000 > 0.7 — structu...",
+      "Duplicate Content: ch1ep3 ↔ ch2ep2: Jaccard similarity 1.000 > 0.7 — structu...",
+      "Duplicate Content: ch1ep3 ↔ ch2ep3: Jaccard similarity 1.000 > 0.7 — structu...",
+      "Duplicate Content: ch1ep3 ↔ ch3ep1: Jaccard similarity 1.000 > 0.7 — structu...",
+      "Duplicate Content: ch2ep1 ↔ ch2ep2: Jaccard similarity 1.000 > 0.7 — structu...",
+      "Duplicate Content: ch2ep1 ↔ ch2ep3: Jaccard similarity 1.000 > 0.7 — structu...",
+      "Duplicate Content: ch2ep1 ↔ ch3ep1: Jaccard similarity 1.000 > 0.7 — structu...",
+      "Duplicate Content: ch2ep2 ↔ ch2ep3: Jaccard similarity 1.000 > 0.7 — structu...",
+      "Duplicate Content: ch2ep2 ↔ ch3ep1: Jaccard similarity 1.000 > 0.7 — structu...",
+      "Duplicate Content: ch2ep3 ↔ ch3ep1: Jaccard similarity 1.000 > 0.7 — structu...",
+      "Character Growth: zhoumo: 周墨 has a flat arc across 7 episodes (score: 15/100) — cha...",
+      "Character Growth: mengjingzhou: 孟景舟 has a flat arc across 4 episodes (score: 25/100) — ch...",
+      "Pacing: ch1ep1: Flat pacing — all scenes have similar dialog density (var...",
+      "Pacing: ch1ep2: Flat pacing — all scenes have similar dialog density (var...",
+      "Pacing: ch1ep3: Flat pacing — all scenes have similar dialog density (var...",
+      "Pacing: ch2ep1: Flat pacing — all scenes have similar dialog density (var...",
+      "Pacing: ch2ep2: Flat pacing — all scenes have similar dialog density (var...",
+      "Pacing: ch2ep3: Flat pacing — all scenes have similar dialog density (var...",
+      "Pacing: ch3ep1: Flat pacing — all scenes have similar dialog density (var...",
+      "Community Cohesion: Community 0 (\"Multi-ep (4 eps)\") has very low cohesion (0...",
+      "Community Cohesion: Community 1 (\"Multi-ep (4 eps)\") has very low cohesion (0...",
+      "Community Cohesion: Community 2 (\"Characters: 陸陽 (ch2ep1), 孟景舟 (ch2ep1), 陸陽 (..."
+    ],
+    "suggested_rubric_overrides": [],
+    "escalation_reason": "Score 0 below threshold 70"
+  },
+  "requires_claude_review": true
+}

@@ -1,0 +1,161 @@
+{
+  "version": "2.0",
+  "timestamp": "2026-04-18T21:45:45.816Z",
+  "series": "xianxia-system-meme",
+  "genre": "xianxia_comedy",
+  "generator": {
+    "mode": "hybrid",
+    "model": "glm-5",
+    "version": "0.16.0"
+  },
+  "score": 100,
+  "decision": "PASS",
+  "previous_score": null,
+  "score_delta": null,
+  "checks": [
+    {
+      "name": "Character Consistency: xiuxiu",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Character Consistency: system",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Character Consistency: shijie",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Gag Evolution",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Tech Term Diversity",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Trait Coverage",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Interaction Density",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Duplicate Content",
+      "status": "FAIL",
+      "score_impact": -15,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Plot Arc",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Foreshadowing",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Character Growth",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Pacing",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Thematic Coherence",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Community Structure",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Isolated Nodes",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Cross-Community Coherence",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Surprising Connection",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Surprising Connection",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Surprising Connection",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Surprising Connection",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Surprising Connection",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    }
+  ],
+  "quality_breakdown": {
+    "consistency": 1,
+    "arc_structure": null,
+    "pacing": 1,
+    "character_growth": 0.75,
+    "thematic_coherence": 1,
+    "gag_evolution": null
+  },
+  "supervisor_hints": {
+    "focus_areas": [
+      "Tech Term Diversity: unknown has only 1 tech terms (minimum 2 expected)",
+      "Duplicate Content: ep1 ↔ ep2: Jaccard similarity 1.000 > 0.7 — structurally ...",
+      "Cross-Community Coherence: 15/50 edges cross community boundaries (30.0%): some comm..."
+    ],
+    "suggested_rubric_overrides": [],
+    "escalation_reason": "1 FAIL check(s) detected"
+  },
+  "requires_claude_review": true
+}

@@ -18,6 +18,7 @@ dist/
 **/node_modules/.cache/
 graphify-out/
 bun_graphify_out/
+storygraph_out/
 .graphify_detect.json
 **/.graphify_ast.json
 .playwright-cli/

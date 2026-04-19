@@ -1,6 +1,6 @@
 ---
 name: galgame-meme-theater-series
-description: Galgame meme theater series — PLAN.md pattern, ep1-ep7, zh_TW, characters, themes, bun_graphify support
+description: Galgame meme theater series — PLAN.md pattern, ep1-ep7, zh_TW, characters, themes, storygraph support
 type: project
 ---
 
@@ -56,7 +56,7 @@ The OutroScene lists 4 takeaway lines matching the 4 joke themes.
 - Single narrator voice (serena) vs per-character voice assignment (ep1-6 flat, ep7 per-character segments)
 - Narration format: ep1 uses flat text per scene, ep7 uses per-character segments
 
-## bun_graphify Support
+## storygraph Support
 
 Added 2026-04-16: series-config.ts has `galgameMemeTheaterConfig` with flat ep pattern.
 - EP_ID format: `ep1`, `ep2`, ... (not `ch1ep1`)

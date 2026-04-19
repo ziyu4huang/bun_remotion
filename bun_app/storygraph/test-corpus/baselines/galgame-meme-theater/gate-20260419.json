@@ -1,0 +1,182 @@
+{
+  "version": "2.0",
+  "timestamp": "2026-04-18T21:39:44.468Z",
+  "series": "galgame-meme-theater",
+  "genre": "galgame_meme",
+  "generator": {
+    "mode": "regex",
+    "model": "glm-5",
+    "version": "0.16.0"
+  },
+  "score": 0,
+  "decision": "FAIL",
+  "previous_score": 0,
+  "score_delta": 0,
+  "checks": [
+    {
+      "name": "Character Consistency",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Gag Evolution: 減肥/最後一杯",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Gag Evolution: 小月嘴硬",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Gag Evolution: 小樱社死",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Gag Evolution: 已讀不回",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Trait Coverage",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Interaction Density",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Duplicate Content",
+      "status": "FAIL",
+      "score_impact": -15,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Duplicate Content",
+      "status": "FAIL",
+      "score_impact": -15,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Duplicate Content",
+      "status": "FAIL",
+      "score_impact": -15,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Duplicate Content",
+      "status": "FAIL",
+      "score_impact": -15,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Duplicate Content",
+      "status": "FAIL",
+      "score_impact": -15,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Duplicate Content",
+      "status": "FAIL",
+      "score_impact": -15,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Duplicate Content",
+      "status": "FAIL",
+      "score_impact": -15,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Duplicate Content",
+      "status": "FAIL",
+      "score_impact": -15,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Duplicate Content",
+      "status": "FAIL",
+      "score_impact": -15,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Duplicate Content",
+      "status": "FAIL",
+      "score_impact": -15,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Comedy Arc",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Foreshadowing",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Gag Diversity",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Character Growth",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Pacing",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Thematic Coherence",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    }
+  ],
+  "quality_breakdown": {
+    "consistency": 0.8333333333333334,
+    "arc_structure": null,
+    "pacing": 1,
+    "character_growth": null,
+    "thematic_coherence": 1,
+    "gag_evolution": 0.9
+  },
+  "supervisor_hints": {
+    "focus_areas": [
+      "Trait Coverage: ep7_char_xiaoyue has no detected character traits",
+      "Duplicate Content: ep1 ↔ ep2: Jaccard similarity 1.000 > 0.7 — structurally ...",
+      "Duplicate Content: ep1 ↔ ep3: Jaccard similarity 1.000 > 0.7 — structurally ...",
+      "Duplicate Content: ep1 ↔ ep4: Jaccard similarity 1.000 > 0.7 — structurally ...",
+      "Duplicate Content: ep1 ↔ ep6: Jaccard similarity 1.000 > 0.7 — structurally ...",
+      "Duplicate Content: ep2 ↔ ep3: Jaccard similarity 1.000 > 0.7 — structurally ...",
+      "Duplicate Content: ep2 ↔ ep4: Jaccard similarity 1.000 > 0.7 — structurally ...",
+      "Duplicate Content: ep2 ↔ ep6: Jaccard similarity 1.000 > 0.7 — structurally ...",
+      "Duplicate Content: ep3 ↔ ep4: Jaccard similarity 1.000 > 0.7 — structurally ...",
+      "Duplicate Content: ep3 ↔ ep6: Jaccard similarity 1.000 > 0.7 — structurally ...",
+      "Duplicate Content: ep4 ↔ ep6: Jaccard similarity 1.000 > 0.7 — structurally ...",
+      "Gag Diversity: Low gag diversity (27%): 4 unique types across 15 manifes..."
+    ],
+    "suggested_rubric_overrides": [],
+    "escalation_reason": "Score 0 below threshold 70"
+  },
+  "requires_claude_review": true
+}
