@@ -79,15 +79,21 @@ interface EpisodeNodeSet {
 export function computeJaccardSimilarity(
   episodeGraphs: Array<{
     episode_id: string;
-    nodes: Array<{ id: string; type?: string }>;
+    nodes: Array<{ id: string; type?: string; label?: string }>;
     links: Array<{ source: string; target: string; relation?: string }>;
   }>
 ): Record<string, Record<string, number>> {
-  // Build per-episode sets of node types (not IDs, since IDs include ep prefix)
-  // and edge relations (normalized)
+  // Build per-episode sets:
+  // 1. Node labels (actual content, e.g. tech_term "AST" vs "PageRank")
+  // 2. Node types (structural, e.g. "scene", "tech_term")
+  // 3. Edge patterns (normalized srcType-relation-tgtType)
+  // Labels are prefixed with type to avoid cross-type collisions ("scene:TitleScene" vs "tech_term:TitleScene")
   const epSets: EpisodeNodeSet[] = episodeGraphs.map(eg => ({
     episodeId: eg.episode_id,
-    nodeIds: new Set(eg.nodes.map(n => n.type ?? "unknown")),
+    nodeIds: new Set([
+      ...eg.nodes.map(n => n.type ?? "unknown"),
+      ...eg.nodes.filter(n => n.label).map(n => `${n.type}:${n.label}`),
+    ]),
     edgeKeys: new Set(eg.links.map(l => {
       const srcType = eg.nodes.find(n => n.id === l.source)?.type ?? "?";
       const tgtType = eg.nodes.find(n => n.id === l.target)?.type ?? "?";
@@ -108,7 +114,7 @@ export function computeJaccardSimilarity(
       }
 
       const b = epSets[j];
-      // Jaccard = |A ∩ B| / |A ∪ B| over node types + edge patterns
+      // Jaccard = |A ∩ B| / |A ∪ B| over node types + node labels + edge patterns
       const allElements = new Set([...a.nodeIds, ...a.edgeKeys, ...b.nodeIds, ...b.edgeKeys]);
       const intersection = [...allElements].filter(
         e => (a.nodeIds.has(e) || a.edgeKeys.has(e)) && (b.nodeIds.has(e) || b.edgeKeys.has(e))

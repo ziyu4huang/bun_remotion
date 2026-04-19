@@ -14,7 +14,7 @@
  *
  * A series has BOTH a genre AND a category:
  *   weapon-forger → xianxia_comedy + narrative_drama
- *   storygraph-intro → (none) + tech_explainer
+ *   storygraph-explainer → (none) + tech_explainer
  *   taiwan-stock-market → (none) + data_story
  */
 
@@ -157,7 +157,7 @@ export const VIDEO_CATEGORIES: Record<VideoCategoryId, VideoCategory> = {
     fps: 30,
     dialogSystem: "narration_script",
     planTemplateKey: "tech_explainer",
-    examples: ["Claude Code Intro", "storygraph Intro", "Fireship-style explainers"],
+    examples: ["Claude Code Intro", "storygraph Explainer", "Fireship-style explainers"],
   },
 
   // ─── 4. Data Story (數據故事) ───

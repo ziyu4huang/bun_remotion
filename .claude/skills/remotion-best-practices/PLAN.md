@@ -9,7 +9,7 @@
 > `NEXT.md` — Entry point (read first) | —
 > — | `../storygraph/PLAN.md` — Code architecture, node types, edge relations
 
-> **Status:** v0.17.3 — 34-R done. Phase 34-B1 next
+> **Status:** v0.27.2 — Core engine mature. Phase 34 complete. Next: 33-I (my-core-is-boss rebuild) or Phase 35 (Web UI).
 
 ---
 

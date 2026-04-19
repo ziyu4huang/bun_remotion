@@ -4,7 +4,7 @@
  * Supports both episode-based and standalone (category-based) projects.
  */
 
-import { readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import type { ScaffoldContext } from "./templates";
 
@@ -12,7 +12,8 @@ import type { ScaffoldContext } from "./templates";
 
 export function updateDevSh(ctx: ScaffoldContext): void {
   const { naming } = ctx;
-  const devShPath = resolve(naming.seriesDir, "../..", "scripts/dev.sh");
+  const repoRoot = resolve(naming.seriesDir, naming.isStandalone ? ".." : "../..");
+  const devShPath = resolve(repoRoot, "scripts/dev.sh");
 
   // Check dev.sh exists
   if (!requireExists(devShPath, "dev.sh")) return;
@@ -51,7 +52,8 @@ export function updateDevSh(ctx: ScaffoldContext): void {
 
 export function updateRootPackageJson(ctx: ScaffoldContext): void {
   const { naming, config } = ctx;
-  const pkgPath = resolve(naming.seriesDir, "../..", "package.json");
+  const repoRoot = resolve(naming.seriesDir, naming.isStandalone ? ".." : "../..");
+  const pkgPath = resolve(repoRoot, "package.json");
 
   if (!requireExists(pkgPath, "package.json")) return;
 
@@ -84,7 +86,7 @@ export function updateRootPackageJson(ctx: ScaffoldContext): void {
 // ─── Helpers ──────────────────────────────────────────────────────────────────────
 
 function requireExists(path: string, label: string): boolean {
-  if (!readFileSync(path, { flag: "r" })) {
+  if (!existsSync(path)) {
     console.error(`  [WARN] ${label} not found at ${path} — manual update needed`);
     return false;
   }

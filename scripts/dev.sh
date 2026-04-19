@@ -84,6 +84,8 @@ invoke_app() {
         app_dir="$REPO_ROOT/bun_remotion_proj/galgame-meme-theater/$app_name"
     elif [[ -d "$REPO_ROOT/bun_remotion_proj/my-core-is-boss/$app_name" ]]; then
         app_dir="$REPO_ROOT/bun_remotion_proj/my-core-is-boss/$app_name"
+    elif [[ -d "$REPO_ROOT/bun_remotion_proj/$app_name/$app_name" ]]; then
+        app_dir="$REPO_ROOT/bun_remotion_proj/$app_name/$app_name"
     else
         app_dir="$REPO_ROOT/bun_remotion_proj/$app_name"
     fi

@@ -11,12 +11,12 @@ import type {
   NarrativeDramaData,
   SceneSpec,
 } from "../scene-templates";
-import { storygraphIntroData } from "../presets/tech-explainer-presets";
+import { storygraphExplainerData } from "../presets/tech-explainer-presets";
 
-// ─── buildTechExplainerSpec (with storygraphIntroData) ───
+// ─── buildTechExplainerSpec (with storygraphExplainerData) ───
 
-describe("buildTechExplainerSpec with storygraphIntroData", () => {
-  const spec = buildTechExplainerSpec(storygraphIntroData);
+describe("buildTechExplainerSpec with storygraphExplainerData", () => {
+  const spec = buildTechExplainerSpec(storygraphExplainerData);
 
   test("category is tech_explainer", () => {
     expect(spec.category).toBe("tech_explainer");
@@ -37,7 +37,7 @@ describe("buildTechExplainerSpec with storygraphIntroData", () => {
 
   test("feature scene count matches data.features.length", () => {
     const featureScenes = spec.scenes.filter((s) => s.name === "FeatureScene");
-    expect(featureScenes).toHaveLength(storygraphIntroData.features.length);
+    expect(featureScenes).toHaveLength(storygraphExplainerData.features.length);
   });
 
   test("includes ComparisonScene (data has comparison)", () => {

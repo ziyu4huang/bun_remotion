@@ -23,6 +23,13 @@ Follow these rules to prevent data loss and keep files in sync.
 
 **Rule: Workspace PLAN.md is ALWAYS the source of truth.** Episode PLAN.md reflects the confirmed story for that specific episode. TODOs reflect PLAN status, never the reverse.
 
+**CREATION ORDER ENFORCEMENT: Workspace files BEFORE episode files.**
+- Workspace `PLAN.md` + `TODO.md` must exist before ANY episode-level files are created.
+- The Agent needs workspace PLAN.md to write correct Remotion code.
+- Storygraph reads workspace PLAN.md for Knowledge Graph construction (character table, episode guide, story arcs).
+- Episode PLAN.md/TODO.md cannot substitute for workspace-level documentation.
+- Reference pattern: `bun_remotion_proj/my-core-is-boss/` (PLAN.md + TODO.md with full sections).
+
 ---
 
 ## Workspace PLAN.md — Section Order (stable, never reorder)
@@ -257,7 +264,13 @@ Chapter: 第<N>章：<Chapter Title>（第<M>/<K>集）
 ## Pipeline: How the Four Files Stay in Sync
 
 ```
-Episode Creation Flow (subagent-based graphify gate):
+Episode Creation Flow (workspace-first enforcement):
+
+0. Workspace-First Gate (HARD BLOCK)
+   → VERIFY workspace PLAN.md exists (if not → CREATE first)
+   → VERIFY workspace TODO.md exists (if not → CREATE first)
+   → VERIFY workspace PLAN.md has required sections
+   → Only after workspace files are confirmed → proceed to step 1
 
 1. User approves story
    → Create episode directory

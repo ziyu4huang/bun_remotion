@@ -7,7 +7,7 @@
  * Exports:
  *   category-types  — 7 video categories, detection, helpers
  *   scene-templates  — CompositionSpec builders per category
- *   presets/*        — Per-category preset data (storygraph intro, etc.)
+ *   presets/*        — Per-category preset data (storygraph explainer, etc.)
  */
 
 // Category taxonomy
@@ -56,8 +56,8 @@ export {
 // Presets
 export type { TechExplainerPreset } from "./presets/tech-explainer-presets";
 export {
-  storygraphIntroPreset,
-  storygraphIntroData,
+  storygraphExplainerPreset,
+  storygraphExplainerData,
   TECH_EXPLAINER_PRESETS,
   detectTechExplainerPreset,
 } from "./presets/tech-explainer-presets";

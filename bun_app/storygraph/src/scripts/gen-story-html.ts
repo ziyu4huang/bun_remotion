@@ -310,7 +310,7 @@ const html = `<!DOCTYPE html>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { background: #0f0f1a; color: #e0e0e0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans TC', sans-serif; display: flex; height: 100vh; overflow: hidden; }
-    #graph { flex: 1; position: relative; }
+    #graph { flex: 1; position: relative; overflow: hidden; }
     #sidebar { width: 360px; background: #1a1a2e; border-left: 1px solid #2a2a4e; display: flex; flex-direction: column; overflow-y: auto; }
     #search-wrap { padding: 12px; border-bottom: 1px solid #2a2a4e; }
     #search { width: 100%; padding: 8px 12px; background: #0f0f1a; border: 1px solid #2a2a4e; border-radius: 6px; color: #e0e0e0; font-size: 13px; outline: none; }
@@ -319,15 +319,22 @@ const html = `<!DOCTYPE html>
     .search-item { padding: 4px 8px; cursor: pointer; border-radius: 4px; font-size: 12px; display: flex; align-items: center; gap: 6px; }
     .search-item:hover { background: #2a2a4e; }
     .search-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-    #info-panel { padding: 12px; border-bottom: 1px solid #2a2a4e; min-height: 160px; }
-    #info-panel h3 { font-size: 13px; color: #888; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-    #info-content { font-size: 13px; line-height: 1.7; }
-    #info-content .label { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+    #info-panel { padding: 12px; border-bottom: 1px solid #2a2a4e; min-height: 60px; max-height: 40vh; overflow-y: auto; flex: 0 1 auto; }
+    #info-panel::-webkit-scrollbar { width: 6px; }
+    #info-panel::-webkit-scrollbar-track { background: transparent; }
+    #info-panel::-webkit-scrollbar-thumb { background: #4a4a6a; border-radius: 3px; }
+    #info-panel::-webkit-scrollbar-thumb:hover { background: #6a6a8a; }
+    #info-panel h3 { font-size: 13px; color: #888; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; position: sticky; top: -12px; background: #1a1a2e; padding: 4px 0; z-index: 1; }
+    #info-content { font-size: 13px; line-height: 1.7; word-break: break-word; overflow-wrap: break-word; }
+    #info-content .label { font-size: 15px; font-weight: 600; margin-bottom: 4px; word-break: break-word; }
     #info-content .type-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin-bottom: 6px; }
     #info-content .meta { color: #aaa; font-size: 12px; margin-bottom: 2px; }
     #info-content .meta b { color: #ddd; }
-    #info-content .neighbors { margin-top: 8px; }
-    #info-content .neighbor { display: inline-block; padding: 2px 8px; margin: 2px; border-radius: 10px; font-size: 11px; cursor: pointer; background: #2a2a4e; }
+    #info-content .neighbor-section { margin-top: 8px; }
+    #info-content .neighbor-header { font-size: 11px; color: #666; margin-bottom: 4px; }
+    #info-content .neighbors { display: flex; flex-wrap: wrap; gap: 4px; }
+    #info-content .neighbor { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; cursor: pointer; background: #2a2a4e; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    #info-content .show-more { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; cursor: pointer; background: #2a2a4e; color: #888; border: 1px dashed #4a4a6a; }
     #color-mode { padding: 12px; border-bottom: 1px solid #2a2a4e; }
     #color-mode h3 { font-size: 13px; color: #888; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
     .mode-btn { padding: 6px 16px; border: 1px solid #2a2a4e; border-radius: 6px; background: #0f0f1a; color: #e0e0e0; font-size: 12px; cursor: pointer; margin-right: 6px; }
@@ -478,7 +485,7 @@ const network = new vis.Network(document.getElementById('graph'), { nodes: nodes
     stabilization: { iterations: 300, fit: true },
   },
   interaction: { hover: true, tooltipDelay: 150, hideEdgesOnDrag: true, zoomView: true },
-  nodes: { shape: 'dot', borderWidth: 2 },
+  nodes: { shape: 'dot', borderWidth: 2, widthConstraint: { maximum: 150 } },
   edges: { selectionWidth: 3 },
 });
 
@@ -519,6 +526,24 @@ document.getElementById('search').addEventListener('input', (e) => {
     sr.appendChild(d);
   });
 });
+
+// Expand neighbors — called by "+N more" button
+var _pendingNeighbors = [];
+var INITIAL_NEIGHBORS = 15;
+function expandNeighbors() {
+  var pills = document.getElementById('neighbor-pills');
+  for (var i = 0; i < _pendingNeighbors.length; i++) {
+    var nb = _pendingNeighbors[i];
+    var s = document.createElement('span');
+    s.className = 'neighbor';
+    s.style.borderLeft = '2px solid ' + nb.nc;
+    s.textContent = nb.label;
+    (function(id) { s.onclick = function() { network.focus(id, {scale:1.5,animation:true}); }; })(nb.id);
+    pills.appendChild(s);
+  }
+  var btn = document.getElementById('expand-btn');
+  if (btn) btn.style.display = 'none';
+}
 
 // Node click
 network.on('click', (params) => {
@@ -567,12 +592,20 @@ network.on('click', (params) => {
     h += '</div>';
   }
 
-  h += '<div class="neighbors" style="margin-top:8px">';
-  neighbors.slice(0, 12).forEach(nb => {
+  h += '<div class="neighbor-section">';
+  h += '<div class="neighbor-header">Connected (' + neighbors.length + ')</div>';
+  h += '<div class="neighbors" id="neighbor-pills">';
+  neighbors.slice(0, INITIAL_NEIGHBORS).forEach(nb => {
     const nc = nodeColor(nb);
     h += '<span class="neighbor" style="border-left:2px solid ' + nc + '" onclick="network.focus(\\'' + escapeHtml(nb.id) + '\\',{scale:1.5,animation:true})">' + escapeHtml(nb.label) + '</span>';
   });
-  if (neighbors.length > 12) h += '<span class="neighbor">+' + (neighbors.length - 12) + '</span>';
+  h += '</div>';
+  if (neighbors.length > INITIAL_NEIGHBORS) {
+    _pendingNeighbors = neighbors.slice(INITIAL_NEIGHBORS).map(function(nn) { return {id: nn.id, label: nn.label, nc: nodeColor(nn)}; });
+    h += '<span class="show-more" id="expand-btn" onclick="expandNeighbors()">+ ' + (neighbors.length - INITIAL_NEIGHBORS) + ' more</span>';
+  } else {
+    _pendingNeighbors = [];
+  }
   h += '</div>';
   info.innerHTML = h;
 });

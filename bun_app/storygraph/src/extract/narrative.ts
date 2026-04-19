@@ -132,7 +132,7 @@ export function parseNarration(filePath: string): {
     const lines: DialogLine[] = [];
 
     // Extract each { character: "...", text: "..." } segment
-    const segPattern = /\{\s*character:\s*["'](\w+)["'],\s*text:\s*["']([^"']*(?:["'"][^"']*)*?)["']\s*\}/g;
+    const segPattern = /\{\s*character:\s*["'](\w+)["'],\s*text:\s*["']([^"']*(?:["'"][^"']*)*?)["'],?\s*\}/g;
     let segMatch: RegExpExecArray | null;
     while ((segMatch = segPattern.exec(segmentsBlock)) !== null) {
       lines.push({

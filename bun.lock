@@ -52,7 +52,7 @@
     },
     "bun_app/storygraph": {
       "name": "storygraph",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "bin": {
         "storygraph": "src/cli.ts",
       },
@@ -287,6 +287,78 @@
         "remotion": "4.0.290",
       },
     },
+    "bun_remotion_proj/storygraph-explainer/storygraph-explainer-ch1-ep1": {
+      "name": "@bun-remotion/storygraph-explainer-ch1-ep1",
+      "version": "1.0.0",
+      "dependencies": {
+        "@bun-remotion/shared": "workspace:*",
+        "@remotion/cli": "4.0.290",
+        "@remotion/google-fonts": "4.0.290",
+        "@remotion/transitions": "4.0.290",
+        "react": "^18.3.1",
+        "react-dom": "^18.3.1",
+      },
+    },
+    "bun_remotion_proj/storygraph-explainer/storygraph-explainer-ch1-ep2": {
+      "name": "@bun-remotion/storygraph-explainer-ch1-ep2",
+      "version": "1.0.0",
+      "dependencies": {
+        "@bun-remotion/shared": "workspace:*",
+        "@remotion/cli": "4.0.290",
+        "@remotion/google-fonts": "4.0.290",
+        "@remotion/transitions": "4.0.290",
+        "react": "^18.3.1",
+        "react-dom": "^18.3.1",
+      },
+    },
+    "bun_remotion_proj/storygraph-explainer/storygraph-explainer-ch1-ep3": {
+      "name": "@bun-remotion/storygraph-explainer-ch1-ep3",
+      "version": "1.0.0",
+      "dependencies": {
+        "@bun-remotion/shared": "workspace:*",
+        "@remotion/cli": "4.0.290",
+        "@remotion/google-fonts": "4.0.290",
+        "@remotion/transitions": "4.0.290",
+        "react": "^18.3.1",
+        "react-dom": "^18.3.1",
+      },
+    },
+    "bun_remotion_proj/storygraph-explainer/storygraph-explainer-ch1-ep4": {
+      "name": "@bun-remotion/storygraph-explainer-ch1-ep4",
+      "version": "1.0.0",
+      "dependencies": {
+        "@bun-remotion/shared": "workspace:*",
+        "@remotion/cli": "4.0.290",
+        "@remotion/google-fonts": "4.0.290",
+        "@remotion/transitions": "4.0.290",
+        "react": "^18.3.1",
+        "react-dom": "^18.3.1",
+      },
+    },
+    "bun_remotion_proj/storygraph-explainer/storygraph-explainer-ch1-ep5": {
+      "name": "@bun-remotion/storygraph-explainer-ch1-ep5",
+      "version": "1.0.0",
+      "dependencies": {
+        "@bun-remotion/shared": "workspace:*",
+        "@remotion/cli": "4.0.290",
+        "@remotion/google-fonts": "4.0.290",
+        "@remotion/transitions": "4.0.290",
+        "react": "^18.3.1",
+        "react-dom": "^18.3.1",
+      },
+    },
+    "bun_remotion_proj/storygraph-explainer/storygraph-explainer-ch1-ep6": {
+      "name": "@bun-remotion/storygraph-explainer-ch1-ep6",
+      "version": "1.0.0",
+      "dependencies": {
+        "@bun-remotion/shared": "workspace:*",
+        "@remotion/cli": "4.0.290",
+        "@remotion/google-fonts": "4.0.290",
+        "@remotion/transitions": "4.0.290",
+        "react": "^18.3.1",
+        "react-dom": "^18.3.1",
+      },
+    },
     "bun_remotion_proj/weapon-forger/weapon-forger-ch1-ep1": {
       "name": "@bun-remotion/weapon-forger-ch1-ep1",
       "version": "1.0.0",
@@ -513,6 +585,18 @@
     "@bun-remotion/my-core-is-boss-ch2-ep2": ["@bun-remotion/my-core-is-boss-ch2-ep2@workspace:bun_remotion_proj/my-core-is-boss/my-core-is-boss-ch2-ep2"],
 
     "@bun-remotion/shared": ["@bun-remotion/shared@workspace:bun_remotion_proj/shared"],
+
+    "@bun-remotion/storygraph-explainer-ch1-ep1": ["@bun-remotion/storygraph-explainer-ch1-ep1@workspace:bun_remotion_proj/storygraph-explainer/storygraph-explainer-ch1-ep1"],
+
+    "@bun-remotion/storygraph-explainer-ch1-ep2": ["@bun-remotion/storygraph-explainer-ch1-ep2@workspace:bun_remotion_proj/storygraph-explainer/storygraph-explainer-ch1-ep2"],
+
+    "@bun-remotion/storygraph-explainer-ch1-ep3": ["@bun-remotion/storygraph-explainer-ch1-ep3@workspace:bun_remotion_proj/storygraph-explainer/storygraph-explainer-ch1-ep3"],
+
+    "@bun-remotion/storygraph-explainer-ch1-ep4": ["@bun-remotion/storygraph-explainer-ch1-ep4@workspace:bun_remotion_proj/storygraph-explainer/storygraph-explainer-ch1-ep4"],
+
+    "@bun-remotion/storygraph-explainer-ch1-ep5": ["@bun-remotion/storygraph-explainer-ch1-ep5@workspace:bun_remotion_proj/storygraph-explainer/storygraph-explainer-ch1-ep5"],
+
+    "@bun-remotion/storygraph-explainer-ch1-ep6": ["@bun-remotion/storygraph-explainer-ch1-ep6@workspace:bun_remotion_proj/storygraph-explainer/storygraph-explainer-ch1-ep6"],
 
     "@bun-remotion/weapon-forger-ch1-ep1": ["@bun-remotion/weapon-forger-ch1-ep1@workspace:bun_remotion_proj/weapon-forger/weapon-forger-ch1-ep1"],
 

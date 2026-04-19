@@ -45,11 +45,11 @@ describe("getSeriesConfig", () => {
     expect(config!.chapterBased).toBe(false);
   });
 
-  test("returns config for storygraph-intro", () => {
-    const config = getSeriesConfig("storygraph-intro");
+  test("returns config for storygraph-explainer", () => {
+    const config = getSeriesConfig("storygraph-explainer");
     expect(config).not.toBeNull();
-    expect(config!.id).toBe("storygraph-intro");
-    expect(config!.standalone).toBe(true);
+    expect(config!.id).toBe("storygraph-explainer");
+    expect(config!.chapterBased).toBe(true);
     expect(config!.category).toBe("tech_explainer");
   });
 

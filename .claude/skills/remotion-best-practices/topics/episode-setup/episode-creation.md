@@ -12,9 +12,40 @@ follow this strict workflow. The key principle: **confirm the story in the user'
 
 ---
 
-## Step 0: Read PLAN.md and validate chapter structure
+## Pre-Step: Determine video category
 
-**Before doing anything else**, read the series `PLAN.md`.
+**Category = video format/structure. Genre = story content.** A series has both.
+
+1. Check if the series already has a registered category in `bun_app/remotion_types/src/category-types.ts` or `bun_app/episodeforge/src/series-config.ts`
+2. If registering a new series, choose a category using the decision tree in [category-guide.md](category-guide.md)
+3. Pass `--category <id>` to `episodeforge` when scaffolding
+
+| Category | Scene flow | Dialog system | Audio |
+|----------|-----------|---------------|-------|
+| narrative_drama | Title→Content×N→Battle?→Outro | dialogLines[] | character voices |
+| galgame_vn | Title→Joke×N→Outro | dialogLines[] | character voices |
+| tech_explainer | Title→Problem→Arch→Feature×N→Demo→Compare→Outro | narration_script | single narrator |
+| data_story | DataIntro→Chart×N→Trend×N→Conclusion | narration_script | narrator + sfx |
+| listicle | Hook→Item×N→Summary→Outro | item_list | narrator + sfx |
+| tutorial | Intro→Step×N→Result→Recap→Outro | step_guide | single narrator |
+| shorts_meme | Hook→Punchline→LoopOutro | none | music + sfx |
+
+Full details per category: [category-guide.md](category-guide.md)
+
+---
+
+## Step 0: Workspace-First Gate — verify workspace files exist
+
+**HARD BLOCK.** Before any episode work, verify BOTH workspace files exist:
+
+1. **`<series-dir>/PLAN.md`** — must exist with: Characters table, Episode Guide, Story Arcs, Running Gags (if chapter-based), Commands
+2. **`<series-dir>/TODO.md`** — must exist with: Phase 1 (Foundation), Phase 2+ (episodes)
+
+If either file is missing → **STOP. Create it before proceeding.** Reference pattern: `bun_remotion_proj/my-core-is-boss/PLAN.md`.
+
+**Why:** The Agent needs workspace PLAN.md as guidance to write Remotion code. Storygraph reads it for Knowledge Graph construction. Episode files cannot substitute for workspace-level documentation.
+
+After verifying workspace files, read the series `PLAN.md`.
 
 A PLAN.md is the series "bible" — it contains:
 - Characters table (name, voice, color, image)
@@ -796,6 +827,103 @@ export const narrations: NarrationScript[] = [
 8. **(chapter-based) Does adding this episode keep the chapter within 3-5 episodes?**
 9. **(chapter-based) Does the episode's arc position (setup/escalation/cliffhanger) fit the chapter's narrative flow?**
 10. **(chapter-based) If this is the chapter finale, does the outro cliffhanger set up the next chapter?**
+
+---
+
+## Deploy Mode: Streamlined Pipeline for Established Series
+
+When a series has 3+ completed episodes and a stable merged knowledge graph, you can use the **deploy mode** to skip manual subagent analysis and use storygraph CLI tools directly. This replaces Steps 3a-3b with automated equivalents.
+
+### When to use deploy mode
+
+- Series has ≥ 3 completed episodes with merged graph
+- `storygraph_out/gate.json` exists in v2.0 format
+- Previous episodes scored ≥ 70 blended (programmatic + AI)
+- No major structural changes since last pipeline run (same genre, same characters)
+
+### Deploy mode commands
+
+Replace Steps 3a-3b with these CLI commands:
+
+```bash
+# Full pipeline (episode → merge → check)
+bun run storygraph pipeline <series-dir> --mode hybrid
+
+# Quality scoring (optional — adds AI assessment)
+bun run storygraph score <series-dir>
+
+# Generate zh_TW gate report (replaces subagent gate summary)
+bun run storygraph write-gate <series-dir>
+
+# Check regression against baselines
+bun run storygraph regression --series <series-name>
+```
+
+### Deploy mode workflow
+
+1. **Step 0-2:** Same as full workflow (workspace check → context → write story)
+2. **Step 2.5:** Same (narration.ts + episode PLAN.md)
+3. **Step 3 (replaced):**
+   - Run `bun run storygraph pipeline <series-dir>` — generates gate.json v2 + merged graph
+   - Run `bun run storygraph write-gate <series-dir>` — generates zh_TW gate report
+   - Check gate.json: `score ≥ 70 && decision === "PASS"` → proceed
+   - If `requires_claude_review === true` → fall back to full workflow (Step 3b subagent)
+4. **Step 3c:** Present `MERGED_REPORT.md` + `consistency-report.md` to user (simpler than full gate section)
+5. **Step 3d:** Skip Tier 2 unless `requires_claude_review === true`
+6. **Step 4-5:** Same as full workflow
+
+### Deploy mode vs full workflow
+
+| Aspect | Full Workflow | Deploy Mode |
+|--------|--------------|-------------|
+| Gate analysis | Claude subagent (Step 3b) | `storygraph write-gate` CLI |
+| Gate report | Subagent writes to episode PLAN.md | Separate `gate-report.md` |
+| Tier 2 review | Always checked | Only if `requires_claude_review === true` |
+| Regression | Manual | `storygraph regression` CLI |
+| Story draft | Claude Code | Claude Code (same) |
+| KG constraints | `graphify-gen-prompt` (same) | `graphify-gen-prompt` (same) |
+| Best for | New series, first 3 episodes | Established series, batch episodes |
+
+---
+
+## Hybrid Mode: Dual-LLM Architecture
+
+The storygraph pipeline uses a **dual-LLM architecture** to balance cost and quality:
+
+- **pi-agent (GLM, free):** Structural extraction, quality scoring, cross-link discovery
+- **Claude Code (paid):** Creative writing, story analysis, Tier 2 review, user interaction
+
+### Which LLM handles what
+
+| Task | LLM | Why |
+|------|-----|-----|
+| Story writing (Step 2) | Claude Code | Creative quality requires paid model |
+| User confirmation | Claude Code | Interactive conversation |
+| KG extraction (hybrid mode) | GLM (via pi-agent) | Structured data extraction, free tier |
+| KG quality scoring (Tier 1) | GLM (via pi-agent) | Scoring rubrics are mechanical, free tier |
+| Subagent gate analysis (Step 3b) | Claude Code | Requires story understanding |
+| Tier 2 review (Step 3d) | Claude Code | Requires semantic judgment |
+| PLAN.md validation (Tier 0) | None (programmatic) | Pure code checks |
+| Write-gate report (deploy mode) | Template + optional GLM | Mostly template-based |
+| Regression comparison | None (programmatic) | Number comparison |
+
+### How hybrid extraction works
+
+The `--mode hybrid` flag (default for production runs) combines two extraction approaches:
+
+1. **Regex extraction** — Parses `narration.ts` structure (character IDs, dialog text, scene names). Fast, deterministic, no API calls. Produces: scene nodes, character_instance nodes, tech_term nodes from series config patterns.
+
+2. **AI extraction** — Sends narration text to GLM with extraction prompt. Produces: plot_beat nodes, theme nodes, additional tech_term nodes, character_trait nodes. These node types are impossible to extract via regex alone.
+
+3. **Merge** — Combines both results. AI-exclusive nodes add semantic depth. Regex nodes provide structural reliability. Together they produce community-rich graphs with plot beats and themes.
+
+**Never use `--mode regex` for production.** It produces flat star-topology graphs with no communities, no plot beats, no themes. Regex-only is only useful for structural debugging of the pipeline itself.
+
+### Cost optimization
+
+- **GLM calls:** ~1 per episode during extraction + 1 for scoring. Free tier (z.ai API).
+- **Claude calls:** Only for creative work (story writing, subagent analysis, Tier 2 review). ~2-3 calls per episode.
+- **Deploy mode:** Reduces Claude calls to 1 (story writing only) by replacing subagent gate with GLM write-gate.
 
 ---
 

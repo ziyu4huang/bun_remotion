@@ -120,29 +120,59 @@ These are implementation tasks in `bun_app/storygraph/src/`. For architecture an
   - Skip episode extraction if unchanged
   - File: `src/scripts/graphify-pipeline.ts`
 
-### Phase 30 — Genre-Aware KG Pipeline (planned)
+### Phase 30 — Genre-Aware KG Pipeline (DONE at skill level)
 
 > See `.claude/skills/remotion-best-practices/PLAN.md` Phase 30 for architecture.
-> Fixes hard-coded regex overfitting to my-core-is-boss.
+> Many of these were implemented during Phases 33-A/33-E/34-E as part of gate.json v2 and genre-aware checks.
+> Status synced from skill-level docs.
 
-- [ ] **30-A1: Genre enum + scoring profiles in SeriesConfig** — `series-config.ts`
-- [ ] **30-A2: Genre-weighted scoring** — `graphify-compare.ts`
-- [ ] **30-B1: Comedy arc analysis (checkComedyArc)** — `graphify-check.ts`
-- [ ] **30-B2: Gag diversity score** — `story-algorithms.ts`
-- [ ] **30-B3: Comedy subagent prompt** — `subagent-prompt.ts`
-- [ ] **30-C1: Effect pattern per genre** — `series-config.ts`, `graphify-episode.ts`
-- [ ] **30-C2: Title pattern per genre** — `series-config.ts`
+- [x] **30-A1: Genre enum + scoring profiles in SeriesConfig** — `series-config.ts` (genre field added per series)
+- [x] **30-A2: Genre-weighted scoring** — `graphify-check.ts` (quality_breakdown with genre-inapplicable null)
+- [x] **30-B1: Comedy arc analysis** — `graphify-check.ts` (comedy_arc check for galgame_meme)
+- [x] **30-B2: Gag diversity score** — `story-algorithms.ts` (computeGagEvolutionScore)
+- [x] **30-B3: Genre subagent prompt** — `subagent-prompt.ts` (genre-aware prompts)
+- [x] **30-C1: Effect pattern per genre** — `series-config.ts` (genre-specific patterns)
+- [x] **30-C2: Title pattern per genre** — `series-config.ts` (genre in config)
 
-### Phase 31 — Subagent-Based KG Quality Scoring (planned)
+### Phase 31 — Subagent-Based KG Quality Scoring (31-A DONE, 31-B pending)
 
 > Uses LLM subagent to evaluate KG quality instead of programmatic-only scoring.
 > See `.claude/skills/remotion-best-practices/PLAN.md` Phase 31 for architecture.
+> 31-A completed in skill-level docs. Code-level tasks synced below.
 
-- [ ] **31-A1: buildKGScorePrompt()** — `subagent-prompt.ts`
-- [ ] **31-A2: scoreKG() orchestrator** — `graphify-score.ts` (NEW)
-- [ ] **31-A3: Subagent scores in comparison report** — `graphify-compare.ts`
+- [x] **31-A1: buildKGScorePrompt()** — `subagent-prompt.ts`
+- [x] **31-A2: scoreKG() orchestrator** — `graphify-score.ts`
+- [x] **31-A3: Subagent scores in comparison report** — `graphify-compare.ts`
 - [ ] **31-B1: Test corpus** — `test-corpus/` directory
 - [ ] **31-B2: Regression runner** — `graphify-regression.ts` (NEW)
+
+### Phase 32 — KG→Remotion Feedback Loop (CRITICAL GAP — NOT STARTED)
+
+> This is the "so what" loop. The KG is diagnostic-only without this.
+> See `.claude/skills/remotion-best-practices/PLAN.md` Phase 32 for architecture.
+
+- [ ] **32-A1: buildRemotionPrompt()** — Inject KG context into episode writing prompts
+  - Previous episode summary (key events, character states)
+  - Active foreshadowing (planted, not yet paid off)
+  - Character growth trajectory (direction + recent traits)
+  - Gag evolution history (last 2 episodes)
+  - Pacing profile of previous episode
+  - File: `subagent-prompt.ts`
+
+- [ ] **32-A2: Story-graph loader functions** — Load KG data for prompt construction
+  - `loadPreviousEpisodeSummary()` — extract ep plot + scenes from merged graph
+  - `loadActiveForeshadowing()` — find planted-but-unpaid foreshadowing
+  - `loadGagEvolution()` — get last N evolutions per gag type
+  - `loadCharacterArcContext()` — get growth direction + recent trait changes
+  - File: `story-graph.ts` or new `graphify-context.ts`
+
+- [x] **32-B1: Post-render KG enrichment** — graphify-enrich.ts reads actual scene metrics
+  - File: `bun_app/storygraph/src/scripts/graphify-enrich.ts` (NEW)
+  - CLI: `bun run storygraph enrich <series-dir> [--ep <epId>]`
+
+- [x] **32-B2: Prompt calibration data** — prompt-calibration.ts tracks feature→score correlation
+  - File: `bun_app/storygraph/src/scripts/prompt-calibration.ts` (NEW)
+  - CLI: `bun run storygraph calibrate <series-dir> [--reset]`
 
 ## Scripts Reference
 

@@ -1,0 +1,283 @@
+{
+  "version": "2.0",
+  "timestamp": "2026-04-19T23:37:30.631Z",
+  "series": "my-core-is-boss",
+  "genre": "xianxia_comedy",
+  "generator": {
+    "mode": "hybrid",
+    "model": "glm-5",
+    "version": "0.16.0"
+  },
+  "score": 100,
+  "decision": "PASS",
+  "previous_score": 0,
+  "score_delta": 100,
+  "checks": [
+    {
+      "name": "Character Consistency: xiaoelder",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Character Consistency: xiaoelder",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Gag Evolution",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Tech Term Diversity",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Tech Term Diversity",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Tech Term Diversity",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Tech Term Diversity",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Tech Term Diversity",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Trait Coverage",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Trait Coverage",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Trait Coverage",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Trait Coverage",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Trait Coverage",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Interaction Density",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Interaction Density",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Interaction Density",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Duplicate Content",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Plot Arc",
+      "status": "FAIL",
+      "score_impact": -15,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Foreshadowing",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Character Growth",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Pacing: ch1ep1",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Pacing: ch1ep2",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Pacing: ch1ep3",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Pacing: ch2ep1",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Pacing: ch2ep2",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Thematic Coherence",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Community Structure",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Community Cohesion",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Community Cohesion",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Community Cohesion",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Community Cohesion",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Isolated Nodes",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Isolated Nodes",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Cross-Community Coherence",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Surprising Connection",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Surprising Connection",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Surprising Connection",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Surprising Connection",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Surprising Connection",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    }
+  ],
+  "quality_breakdown": {
+    "consistency": 0.5,
+    "arc_structure": 0.8,
+    "pacing": 1,
+    "character_growth": 0.7866666666666667,
+    "thematic_coherence": 0.3,
+    "gag_evolution": null
+  },
+  "supervisor_hints": {
+    "focus_areas": [
+      "Character Consistency: xiaoelder: Episode instance ch1ep1_char_xiaoelder missing core trait...",
+      "Character Consistency: xiaoelder: Episode instance ch2ep2_char_xiaoelder missing core trait...",
+      "Trait Coverage: ch2ep2_char_linyi has no detected character traits",
+      "Trait Coverage: ch2ep2_char_zhaoxiaoqi has no detected character traits",
+      "Trait Coverage: ch1ep2_char_xiaozhanglao has no detected character traits",
+      "Trait Coverage: ch1ep3_char_opponent has no detected character traits",
+      "Trait Coverage: ch2ep1_char_chenmo has no detected character traits",
+      "Interaction Density: ch1ep2_char_xiaozhanglao has no interactions in ch1ep2",
+      "Interaction Density: ch1ep3_char_opponent has no interactions in ch1ep3",
+      "Interaction Density: ch2ep1_char_chenmo has no interactions in ch2ep1",
+      "Plot Arc: No climax beat detected — the episode has no dramatic peak",
+      "Community Cohesion: Community 0 (\"Story: ch1ep1\") has very low cohesion (0.07...",
+      "Community Cohesion: Community 1 (\"Story: ch1ep3\") has very low cohesion (0.07...",
+      "Community Cohesion: Community 2 (\"Story: ch1ep2\") has very low cohesion (0.08...",
+      "Community Cohesion: Community 3 (\"Story: ch2ep1\") has very low cohesion (0.09...",
+      "Isolated Nodes: NPC (community 6) has no edges to other community members...",
+      "Isolated Nodes: 卡模型 (community 7) has no edges to other community members..."
+    ],
+    "suggested_rubric_overrides": [],
+    "escalation_reason": "1 FAIL check(s) detected"
+  },
+  "requires_claude_review": true
+}

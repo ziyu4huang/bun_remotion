@@ -25,7 +25,7 @@ import type { CommunityReport } from "../types";
 
 // ─── Types ───
 
-type Status = "PASS" | "WARN" | "FAIL";
+type Status = "PASS" | "WARN" | "FAIL" | "SKIP";
 
 interface CheckResult {
   check: string;
@@ -82,6 +82,13 @@ const linkEdges = existsSync(linkEdgesPath)
 const seriesConfig = detectSeries(seriesDir);
 const genre: StoryGenre = seriesConfig ? resolveGenre(seriesConfig) : "generic";
 console.log(`Genre: ${genre}`);
+
+// Detect narrator-only series (tech_explainer, etc.) — skip narrative checks
+const isNarratorOnly = (() => {
+  const chars = (merged.nodes as any[]).filter((n: any) => n.type === "character_instance");
+  return chars.length > 0 && chars.every((n: any) => (n.properties?.character_id ?? n.id.split("_char_")[1] ?? "") === "narrator");
+})();
+console.log(`Narrator-only: ${isNarratorOnly}`);
 
 // Build lookup maps
 const nodesMap = new Map<string, any>();
@@ -1226,14 +1233,23 @@ console.log("Running consistency checks...\n");
 // Load community analysis (if available from Leiden-inspired clustering)
 const communityAnalysis: CommunityReport | null = merged.community_analysis ?? null;
 
-const charConsistency = checkCharacterConsistency();
+// SKIP helper: checks that don't apply to narrator-only content
+const skipResult = (name: string, reason: string): CheckResult => ({
+  check: name, status: "SKIP", details: reason, evidence: [],
+});
+
+const charConsistency = isNarratorOnly
+  ? { results: [skipResult("Character Consistency", "Narrator-only — no multi-character consistency to check")], comparisons: [] as any[] }
+  : checkCharacterConsistency();
 const dupContent = checkDuplicateContent();
 
 // Genre-aware arc checks
 let arcChecks: CheckResult[] = [];
 let arcReportData: { beats: any[]; arcScore: number; diagnosis: string } | null = null;
 
-if (genre === "galgame_meme") {
+if (isNarratorOnly) {
+  arcChecks = [skipResult("Plot Arc", "Narrator-only — no dramatic arc to check")];
+} else if (genre === "galgame_meme") {
   const comedyArc = checkComedyArc();
   arcChecks = comedyArc.results;
   arcReportData = comedyArc;
@@ -1247,7 +1263,7 @@ if (genre === "galgame_meme") {
 // Foreshadowing only for novel/xianxia genres
 const foreshadowing = (genre === "xianxia_comedy" || genre === "novel_system")
   ? checkForeshadowing()
-  : { results: [{ check: "Foreshadowing", status: "PASS" as Status, details: "Foreshadowing check skipped for comedy genre", evidence: [] as string[] }], records: [] as any[] };
+  : { results: [skipResult("Foreshadowing", `Foreshadowing check not applicable for ${genre} genre`)], records: [] as any[] };
 
 // Gag diversity only for comedy genre
 const gagDiversityChecks = genre === "galgame_meme"
@@ -1255,19 +1271,21 @@ const gagDiversityChecks = genre === "galgame_meme"
   : [];
 
 // Tech term diversity only for genres that use tech terms
-const techDiversityChecks = (genre === "xianxia_comedy" || genre === "novel_system")
+const techDiversityChecks = (genre === "xianxia_comedy" || genre === "novel_system" || genre === "generic")
   ? checkTechTermDiversity()
   : [];
 
-const charGrowth = checkCharacterGrowth();
+const charGrowth = isNarratorOnly
+  ? { results: [skipResult("Character Growth", "Narrator-only — no character growth to track")], characters: [] as any[] }
+  : checkCharacterGrowth();
 const pacing = checkPacing();
 const themeCoherence = checkThematicCoherence();
 const allChecks: CheckResult[] = [
   ...charConsistency.results,
-  ...checkGagEvolution(),
+  ...(isNarratorOnly ? [skipResult("Gag Evolution", "Narrator-only — no gag evolution to check")] : checkGagEvolution()),
   ...techDiversityChecks,
-  ...checkTraitCoverage(),
-  ...checkInteractionDensity(),
+  ...(isNarratorOnly ? [skipResult("Trait Coverage", "Narrator-only — no character traits to check")] : checkTraitCoverage()),
+  ...(isNarratorOnly ? [skipResult("Interaction Density", "Narrator-only — no character interactions to check")] : checkInteractionDensity()),
   ...dupContent.results,
   ...arcChecks,
   ...foreshadowing.results,
@@ -1299,17 +1317,21 @@ report.push(``);
 const passCount = allChecks.filter(c => c.status === "PASS").length;
 const warnCount = allChecks.filter(c => c.status === "WARN").length;
 const failCount = allChecks.filter(c => c.status === "FAIL").length;
+const skipCount = allChecks.filter(c => c.status === "SKIP").length;
 
 report.push(`## Summary`);
 report.push(``);
 report.push(`- **PASS:** ${passCount}`);
 report.push(`- **WARN:** ${warnCount}`);
 report.push(`- **FAIL:** ${failCount}`);
+if (skipCount > 0) report.push(`- **SKIP:** ${skipCount} (not scored)`);
 
 // ─── Aggregate Quality Score ───
 
+// Only score non-SKIP checks
+const scoredChecks = allChecks.filter(c => c.status !== "SKIP");
 let aggregateScore = 100;
-for (const c of allChecks) {
+for (const c of scoredChecks) {
   if (c.status === "PASS") aggregateScore += 5;
   else if (c.status === "WARN") aggregateScore -= 5;
   else aggregateScore -= 15;
@@ -1320,7 +1342,7 @@ const gateDecision: "PASS" | "WARN" | "FAIL" = aggregateScore >= 70 ? "PASS" : a
 report.push(`- **品質評分：** ${aggregateScore}/100 (${gateDecision})`);
 report.push(``);
 
-console.log(`Results: ${passCount} PASS, ${warnCount} WARN, ${failCount} FAIL — Score: ${aggregateScore}/100 (${gateDecision})`);
+console.log(`Results: ${passCount} PASS, ${warnCount} WARN, ${failCount} FAIL, ${skipCount} SKIP — Score: ${aggregateScore}/100 (${gateDecision})`);
 
 // Group by check type
 const checkGroups = new Map<string, CheckResult[]>();
@@ -1335,7 +1357,7 @@ for (const [group, checks] of checkGroups) {
   report.push(``);
 
   for (const check of checks) {
-    const icon = check.status === "PASS" ? "✅" : check.status === "WARN" ? "⚠️" : "❌";
+    const icon = check.status === "PASS" ? "✅" : check.status === "WARN" ? "⚠️" : check.status === "SKIP" ? "⏭️" : "❌";
     report.push(`### ${icon} ${check.check} — ${check.status}`);
     report.push(``);
     report.push(check.details);
@@ -1685,10 +1707,11 @@ if (existsSync(gatePath)) {
 // ─── 33-A3: quality_breakdown per-dimension ───
 
 function passRatio(checks: CheckResult[]): number | null {
-  if (checks.length === 0) return null;
-  const pass = checks.filter(c => c.status === "PASS").length;
-  const warn = checks.filter(c => c.status === "WARN").length;
-  return (pass + warn * 0.5) / checks.length;
+  const scored = checks.filter(c => c.status !== "SKIP");
+  if (scored.length === 0) return null;
+  const pass = scored.filter(c => c.status === "PASS").length;
+  const warn = scored.filter(c => c.status === "WARN").length;
+  return (pass + warn * 0.5) / scored.length;
 }
 
 const consistencyChecks = allChecks.filter(c =>
@@ -1710,7 +1733,7 @@ const qualityBreakdown: Record<string, number | null> = {
 
 // ─── 33-A4: supervisor_hints ───
 
-const warnFailChecks = allChecks.filter(c => c.status !== "PASS");
+const warnFailChecks = allChecks.filter(c => c.status === "WARN" || c.status === "FAIL");
 const focusAreas = warnFailChecks.map(c => {
   const detail = c.details.length > 60 ? c.details.slice(0, 57) + "..." : c.details;
   return `${c.check}: ${detail}`;
@@ -1747,7 +1770,7 @@ const gateData = {
   checks: allChecks.map(c => ({
     name: c.check,
     status: c.status,
-    score_impact: c.status === "PASS" ? 5 : c.status === "WARN" ? -5 : -15,
+    score_impact: c.status === "PASS" ? 5 : c.status === "WARN" ? -5 : c.status === "SKIP" ? 0 : -15,
     fix_suggestion_zhTW: fixSuggestions.get(c.check) ?? (c.status !== "PASS" ? "(see consistency-report.md for details)" : ""),
   })),
   quality_breakdown: qualityBreakdown,
@@ -1766,6 +1789,6 @@ console.log(`Gate v2: ${gatePath} (score: ${aggregateScore}, decision: ${gateDec
 
 // Print summary to console
 for (const check of allChecks) {
-  const icon = check.status === "PASS" ? "✓" : check.status === "WARN" ? "⚠" : "✗";
+  const icon = check.status === "PASS" ? "✓" : check.status === "WARN" ? "⚠" : check.status === "SKIP" ? "⊘" : "✗";
   console.log(`  ${icon} ${check.check}: ${check.details.slice(0, 80)}`);
 }

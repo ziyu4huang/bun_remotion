@@ -324,6 +324,7 @@ for (const eg of episodeGraphs) {
         label: node.label,
         type: node.type ?? node.file_type ?? "unknown",
         episode: eg.episode_id,
+        ...(node.properties && Object.keys(node.properties).length > 0 ? { properties: node.properties } : {}),
       });
     }
   }

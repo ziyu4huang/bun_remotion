@@ -61,7 +61,7 @@ export function generateHTML(
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { background: #0f0f1a; color: #e0e0e0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; display: flex; height: 100vh; overflow: hidden; }
-    #graph { flex: 1; position: relative; }
+    #graph { flex: 1; position: relative; overflow: hidden; }
     #sidebar { width: 300px; background: #1a1a2e; border-left: 1px solid #2a2a4e; display: flex; flex-direction: column; overflow-y: auto; }
     #search-wrap { padding: 12px; border-bottom: 1px solid #2a2a4e; }
     #search { width: 100%; padding: 8px 12px; background: #0f0f1a; border: 1px solid #2a2a4e; border-radius: 6px; color: #e0e0e0; font-size: 13px; outline: none; }
@@ -70,13 +70,20 @@ export function generateHTML(
     .search-item { padding: 4px 8px; cursor: pointer; border-radius: 4px; font-size: 12px; display: flex; align-items: center; gap: 6px; }
     .search-item:hover { background: #2a2a4e; }
     .search-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-    #info-panel { padding: 12px; border-bottom: 1px solid #2a2a4e; }
-    #info-panel h3 { font-size: 13px; color: #888; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-    #info-content { font-size: 13px; line-height: 1.6; }
-    #info-content .label { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+    #info-panel { padding: 12px; border-bottom: 1px solid #2a2a4e; min-height: 60px; max-height: 40vh; overflow-y: auto; flex: 0 1 auto; }
+    #info-panel::-webkit-scrollbar { width: 6px; }
+    #info-panel::-webkit-scrollbar-track { background: transparent; }
+    #info-panel::-webkit-scrollbar-thumb { background: #4a4a6a; border-radius: 3px; }
+    #info-panel::-webkit-scrollbar-thumb:hover { background: #6a6a8a; }
+    #info-panel h3 { font-size: 13px; color: #888; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; position: sticky; top: -12px; background: #1a1a2e; padding: 4px 0; z-index: 1; }
+    #info-content { font-size: 13px; line-height: 1.6; word-break: break-word; overflow-wrap: break-word; }
+    #info-content .label { font-size: 15px; font-weight: 600; margin-bottom: 6px; word-break: break-word; }
     #info-content .meta { color: #888; font-size: 12px; }
-    #info-content .neighbors { margin-top: 8px; }
-    #info-content .neighbor { display: inline-block; padding: 2px 8px; margin: 2px; border-radius: 10px; font-size: 11px; cursor: pointer; background: #2a2a4e; }
+    #info-content .neighbor-section { margin-top: 8px; }
+    #info-content .neighbor-header { font-size: 11px; color: #666; margin-bottom: 4px; }
+    #info-content .neighbors { display: flex; flex-wrap: wrap; gap: 4px; }
+    #info-content .neighbor { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; cursor: pointer; background: #2a2a4e; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    #info-content .show-more { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; cursor: pointer; background: #2a2a4e; color: #888; border: 1px dashed #4a4a6a; }
     #legend-wrap { padding: 12px; border-bottom: 1px solid #2a2a4e; }
     #legend-wrap h3 { font-size: 13px; color: #888; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
     .legend-item { display: flex; align-items: center; gap: 8px; padding: 3px 0; cursor: pointer; font-size: 12px; }
@@ -146,7 +153,7 @@ const network = new vis.Network(container, { nodes: nodesDS, edges: edgesDS }, {
     stabilization: { iterations: 200, fit: true },
   },
   interaction: { hover: true, tooltipDelay: 100, hideEdgesOnDrag: true, navigationButtons: false, keyboard: false },
-  nodes: { shape: 'dot', borderWidth: 1.5 },
+  nodes: { shape: 'dot', borderWidth: 1.5, widthConstraint: { maximum: 120 } },
   edges: { smooth: { type: 'continuous', roundness: 0.2 }, selectionWidth: 3 }
 });
 
@@ -169,7 +176,25 @@ searchInput.addEventListener('input', (e) => {
   });
 });
 
+// Expand neighbors — called by "+N more" button
+var _pendingNeighbors = [];
+function expandNeighbors() {
+  var pills = document.getElementById('neighbor-pills');
+  for (var i = 0; i < _pendingNeighbors.length; i++) {
+    var nb = _pendingNeighbors[i];
+    var s = document.createElement('span');
+    s.className = 'neighbor';
+    s.style.borderLeft = '2px solid ' + color(nb.community);
+    s.textContent = nb.label;
+    (function(id) { s.onclick = function() { network.focus(id, {scale:1.5,animation:true}); }; })(nb.id);
+    pills.appendChild(s);
+  }
+  var btn = document.getElementById('expand-btn');
+  if (btn) btn.style.display = 'none';
+}
+
 // Node click → info panel
+var INITIAL_NEIGHBORS = 15;
 network.on('click', (params) => {
   const info = document.getElementById('info-content');
   if (params.nodes.length === 0) { info.innerHTML = 'Click a node to see details.'; return; }
@@ -185,11 +210,19 @@ network.on('click', (params) => {
   html += '<div class="meta">Community: ' + node.community_name + '</div>';
   html += '<div class="meta">File: ' + node.source_file + '</div>';
   html += '<div class="meta">Connections: ' + node.degree + '</div>';
-  html += '<div class="neighbors">';
-  neighborNodes.slice(0, 20).forEach(n => {
+  html += '<div class="neighbor-section">';
+  html += '<div class="neighbor-header">Connected (' + neighborNodes.length + ')</div>';
+  html += '<div class="neighbors" id="neighbor-pills">';
+  neighborNodes.slice(0, INITIAL_NEIGHBORS).forEach(n => {
     html += '<span class="neighbor" style="border-left: 2px solid ' + color(n.community) + '" onclick="network.focus(\\'' + n.id + '\\', {scale:1.5,animation:true})">' + n.label + '</span>';
   });
-  if (neighborNodes.length > 20) html += '<span class="neighbor">+' + (neighborNodes.length - 20) + ' more</span>';
+  html += '</div>';
+  if (neighborNodes.length > INITIAL_NEIGHBORS) {
+    _pendingNeighbors = neighborNodes.slice(INITIAL_NEIGHBORS).map(function(nn) { return {id: nn.id, label: nn.label, community: nn.community}; });
+    html += '<span class="show-more" id="expand-btn" onclick="expandNeighbors()">+ ' + (neighborNodes.length - INITIAL_NEIGHBORS) + ' more</span>';
+  } else {
+    _pendingNeighbors = [];
+  }
   html += '</div>';
   info.innerHTML = html;
 });

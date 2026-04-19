@@ -130,7 +130,7 @@ Available series:
   galgame-meme-theater    (flat, 4 content scenes)
 
 Category-based (no --ep needed):
-  bun run episodeforge --series storygraph-intro --category tech_explainer
+  bun run episodeforge --series storygraph-explainer --ch 1 --ep 1
 
 Episode-based examples:
   bun run episodeforge --series my-core-is-boss --ch 1 --ep 4

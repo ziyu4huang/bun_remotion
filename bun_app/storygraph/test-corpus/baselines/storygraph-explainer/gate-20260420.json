@@ -1,0 +1,200 @@
+{
+  "version": "2.0",
+  "timestamp": "2026-04-19T14:20:19.776Z",
+  "series": "storygraph-explainer",
+  "genre": "generic",
+  "generator": {
+    "mode": "hybrid",
+    "model": "glm-5",
+    "version": "0.16.0"
+  },
+  "score": 100,
+  "decision": "PASS",
+  "previous_score": 100,
+  "score_delta": 0,
+  "checks": [
+    {
+      "name": "Character Consistency",
+      "status": "SKIP",
+      "score_impact": 0,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Gag Evolution",
+      "status": "SKIP",
+      "score_impact": 0,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Tech Term Diversity",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Tech Term Diversity",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Tech Term Diversity",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Trait Coverage",
+      "status": "SKIP",
+      "score_impact": 0,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Interaction Density",
+      "status": "SKIP",
+      "score_impact": 0,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Duplicate Content",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Plot Arc",
+      "status": "SKIP",
+      "score_impact": 0,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Foreshadowing",
+      "status": "SKIP",
+      "score_impact": 0,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Character Growth",
+      "status": "SKIP",
+      "score_impact": 0,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Pacing: ch1ep1",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Pacing: ch1ep2",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Pacing: ch1ep3",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Thematic Coherence",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Community Structure",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Community Cohesion",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Community Cohesion",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Community Cohesion",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Community Cohesion",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Isolated Nodes",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Cross-Community Coherence",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Surprising Connection",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Surprising Connection",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Surprising Connection",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Surprising Connection",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Surprising Connection",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    }
+  ],
+  "quality_breakdown": {
+    "consistency": null,
+    "arc_structure": null,
+    "pacing": 1,
+    "character_growth": null,
+    "thematic_coherence": 0.2,
+    "gag_evolution": null
+  },
+  "supervisor_hints": {
+    "focus_areas": [
+      "Thematic Coherence: 主題連貫性偏低 (20%) — 1/5 主題跨集共享",
+      "Community Cohesion: Community 0 (\"Story: ch1ep2\") has very low cohesion (0.09...",
+      "Community Cohesion: Community 1 (\"Story: ch1ep3\") has very low cohesion (0.10...",
+      "Community Cohesion: Community 2 (\"Story: ch1ep3\") has very low cohesion (0.09...",
+      "Community Cohesion: Community 3 (\"Story: ch1ep2\") has very low cohesion (0.10...",
+      "Isolated Nodes: tree-sitter (community 6) has no edges to other community..."
+    ],
+    "suggested_rubric_overrides": [],
+    "escalation_reason": null
+  },
+  "requires_claude_review": false
+}

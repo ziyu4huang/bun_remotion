@@ -109,7 +109,7 @@ Defined in `bun_app/remotion_types/src/category-types.ts`.
 |----------|-------|----------|---------------|
 | **Narrative Drama** | 敘事劇情 | weapon-forger, my-core-is-boss, xianxia-system-meme | dialogLines[] |
 | **Galgame VN** | 美少女遊戲風 | galgame-meme-theater, galgame-youth-jokes | dialogLines[] |
-| **Tech Explainer** | 技術講解 | claude-code-intro, *(storygraph-intro)* | narration_script |
+| **Tech Explainer** | 技術講解 | claude-code-intro, storygraph-explainer | narration_script |
 | **Data Story** | 數據故事 | taiwan-stock-market | narration_script |
 | **Listicle** | 盤點清單 | *(none yet)* | item_list |
 | **Tutorial** | 教學指南 | *(none yet)* | step_guide |
@@ -196,6 +196,7 @@ All memory — project knowledge, user feedback, preferences — lives here. Thi
 ### reference/
 - [tree-sitter-python](.agent/memory/reference/tree-sitter-python.md) - tree-sitter v0.25+ Python API, grammar packages, Windows-specific notes
 - [zai-provider](.agent/memory/reference/zai-provider.md) - z.ai API provider: Z_AI_API_KEY alias, model IDs (glm-4.5/4.6), pi-ai compat
+- [playwright-visjs-debug](.agent/memory/reference/playwright-visjs-debug.md) - Playwright + vis.js: node positions, degrees, clicking, screenshots for graph.html debugging
 
 ### feedback/
 - [shared-component-architecture](.agent/memory/feedback/shared-component-architecture.md) - Unified @bun-remotion/shared: CharacterSprite, DialogBox, ComicEffects etc. — use `emotion` not `pose`, import from shared
@@ -221,6 +222,8 @@ All memory — project knowledge, user feedback, preferences — lives here. Thi
 - [fixture-to-assets-migration](.agent/memory/feedback/fixture-to-assets-migration.md) - SOP: fixture→assets rename + story guides + genre presets. my-core-is-boss done, galgame-meme-theater & weapon-forger pending
 - [episode-polish-checklist](.agent/memory/feedback/episode-polish-checklist.md) - Post-scaffold polish: effect pacing (≤50%), background variety, title hook, outro QuestBadge
 - [plan-todo-sync-enforcement](.agent/memory/feedback/plan-todo-sync-enforcement.md) - Episode PLAN.md + workspace sections drift for legacy series — sync check runs first in episode-setup topic
+- [always-update-roadmap](.agent/memory/feedback/always-update-roadmap.md) - After ANY dev step: update NEXT.md (status + reflection) + TODO.md (mark done). Mandatory, no exceptions.
+- [cli-cwd-bug-fix](.agent/memory/feedback/cli-cwd-bug-fix.md) - storygraph CLI delegate commands had wrong CWD and resolved flag values as paths
 
 ## Convention
 

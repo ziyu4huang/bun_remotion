@@ -57,23 +57,23 @@ describe("computeNaming", () => {
     expect(result.episodeDir).toContain("galgame-meme-theater/galgame-meme-theater-ep5");
   });
 
-  test("standalone: storygraph-intro with tech_explainer category", () => {
-    const config = getSeriesConfig("storygraph-intro")!;
-    const result = computeNaming(config, "tech_explainer", null, null, 7, REPO_ROOT);
+  test("chapter-based with category: storygraph-explainer ch1 ep1", () => {
+    const config = getSeriesConfig("storygraph-explainer")!;
+    const result = computeNaming(config, null, 1, 1, 7, REPO_ROOT);
 
-    expect(result.dirName).toBe("storygraph-intro");
-    expect(result.packageName).toBe("@bun-remotion/storygraph-intro");
-    expect(result.compositionId).toBe("StorygraphIntro");
-    expect(result.scriptAlias).toBe("bgi");
-    expect(result.outputPath).toBe("out/storygraph-intro.mp4");
-    expect(result.seriesId).toBe("storygraph-intro");
-    expect(result.chapter).toBeNull();
-    expect(result.episode).toBeNull();
-    expect(result.category).toBe("tech_explainer");
+    expect(result.dirName).toBe("storygraph-explainer-ch1-ep1");
+    expect(result.packageName).toBe("@bun-remotion/storygraph-explainer-ch1-ep1");
+    expect(result.compositionId).toBe("StorygraphExplainerCh1Ep1");
+    expect(result.scriptAlias).toBe("sge-ch1-ep1");
+    expect(result.outputPath).toBe("out/storygraph-explainer-ch1-ep1.mp4");
+    expect(result.seriesId).toBe("storygraph-explainer");
+    expect(result.chapter).toBe(1);
+    expect(result.episode).toBe(1);
+    expect(result.category).toBeNull();
     expect(result.numContentScenes).toBe(7);
     expect(result.numScenes).toBe(9); // title + 7 content + outro
     expect(result.numTransitions).toBe(8);
-    expect(result.isStandalone).toBe(true);
+    expect(result.isStandalone).toBe(false);
   });
 
   test("null config without category falls back to unknown", () => {
@@ -108,13 +108,13 @@ describe("computeNaming", () => {
     const wf = getSeriesConfig("weapon-forger")!;
     const mcb = getSeriesConfig("my-core-is-boss")!;
     const meme = getSeriesConfig("galgame-meme-theater")!;
-    const intro = getSeriesConfig("storygraph-intro")!;
+    const intro = getSeriesConfig("storygraph-explainer")!;
 
     const cases = [
       computeNaming(wf, null, 1, 3, 2, REPO_ROOT),
       computeNaming(mcb, null, 2, 1, 3, REPO_ROOT),
       computeNaming(meme, null, null, 5, 4, REPO_ROOT),
-      computeNaming(intro, "tech_explainer", null, null, 7, REPO_ROOT),
+      computeNaming(intro, null, 1, 1, 7, REPO_ROOT),
     ];
 
     for (const c of cases) {
@@ -125,10 +125,10 @@ describe("computeNaming", () => {
 
   test("episodeDir is always an absolute path", () => {
     const wf = getSeriesConfig("weapon-forger")!;
-    const intro = getSeriesConfig("storygraph-intro")!;
+    const intro = getSeriesConfig("storygraph-explainer")!;
 
     const ep = computeNaming(wf, null, 1, 1, 2, REPO_ROOT);
-    const standalone = computeNaming(intro, "tech_explainer", null, null, 7, REPO_ROOT);
+    const standalone = computeNaming(intro, null, 1, 1, 7, REPO_ROOT);
 
     expect(ep.episodeDir.startsWith("/")).toBe(true);
     expect(standalone.episodeDir.startsWith("/")).toBe(true);

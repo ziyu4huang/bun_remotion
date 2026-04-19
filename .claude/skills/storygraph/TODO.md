@@ -9,7 +9,7 @@
 >
 > **Rule:** Pipeline/architecture tasks → this file. Code implementation tasks → `bun_app/storygraph/TODO.md`.
 
-> **Status:** v0.12.0 — Phase 23 complete, Phase 26 complete, Phase 27 (hybrid mode + comparison) complete, Phase 24-E (pacing) complete
+> **Status:** v0.12.2 — Graph HTML info-panel scrollbar (flex: 0 1 auto, 40vh cap, custom scrollbar) + expandNeighbors() global function. Playwright debugging workflow established.
 
 ## Known Issues (from 2026-04-15 v0.6.0 pipeline run)
 

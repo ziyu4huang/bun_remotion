@@ -268,9 +268,46 @@ export const xianxiaSystemMemeConfig: SeriesConfig = {
   genre: "xianxia_comedy",
 };
 
+// ─── storygraph Explainer (tech_explainer category) ───
+
+export const storygraphExplainerConfig: SeriesConfig = {
+  seriesId: "storygraph-explainer",
+  displayName: "storygraph 知識圖譜建構系統",
+  charNames: {
+    narrator: "旁白",
+  },
+  traitPatterns: {
+    narrator: [],
+  },
+  techPatterns: [
+    /知識圖譜/g, /knowledge.?graph/gi,
+    /AST/g, /tree-sitter/gi,
+    /graphology/gi,
+    /pipeline/gi, /管線/g,
+    /federated/gi, /聯邦/g,
+    /community.?detection/gi, /社群偵測/g,
+    /PageRank/gi,
+    /graphify/gi, /storygraph/gi,
+    /JSON/g, /HTML/g,
+    /subagent/gi,
+    /Remotion/gi,
+    /節點/g, /邊/g, /聚類/g,
+    /跨集連結/g, /故事弧線/g,
+    /萃取/g, /一致性檢查/g,
+    /視覺化/g, /資訊碎片化/g,
+    /角色關係/g, /伏筆/g,
+    /TypeScript/gi, /Bun/g,
+    /語法樹/g, /子圖/g,
+    /品質閘門/g, /Markdown/gi,
+  ],
+  gagSource: "plan_md",
+  episodeDirPattern: /^storygraph-explainer-ch(\d+)-ep(\d+)$/,
+  genre: "generic",
+};
+
 // ─── Auto-detection ───
 
-const SERIES_CONFIGS: SeriesConfig[] = [weaponForgerConfig, myCoreIsBossConfig, galgameMemeTheaterConfig, xianxiaSystemMemeConfig];
+const SERIES_CONFIGS: SeriesConfig[] = [weaponForgerConfig, myCoreIsBossConfig, galgameMemeTheaterConfig, xianxiaSystemMemeConfig, storygraphExplainerConfig];
 
 /** Detect series config from series directory path */
 export function detectSeries(seriesDir: string): SeriesConfig | null {

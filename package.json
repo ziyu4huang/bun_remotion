@@ -102,7 +102,9 @@
     "generate-tts:mcb-ch2-ep2": "bun run --cwd bun_remotion_proj/my-core-is-boss/my-core-is-boss-ch2-ep2 generate-tts",
     "episodeforge": "bun run bun_app/episodeforge/src/index.ts",
     "storygraph": "bun run bun_app/storygraph/src/cli.ts",
-    "test": "bun test tests/ bun_app/remotion_types/src/__tests__/ bun_app/episodeforge/src/__tests__/ bun_app/storygraph/src/__tests__/"
+    "test": "bun test",
+    "test:fast": "bun test tests/ bun_app/remotion_types/src/__tests__/ bun_app/episodeforge/src/__tests__/ bun_app/storygraph/src/__tests__/",
+    "test:all": "bun test --path-ignore-patterns=''",
   },
   "dependencies": {
     "@remotion/cli": "4.0.290",

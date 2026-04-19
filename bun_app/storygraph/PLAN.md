@@ -10,7 +10,7 @@
 >
 > **Rule:** Architecture decisions → skill PLAN.md. Code-level tasks → this TODO.md.
 
-## Current State (v0.12.0)
+## Current State (v0.20.0)
 
 See `.claude/skills/storygraph/PLAN.md` for full architecture.
 
@@ -29,6 +29,12 @@ See `.claude/skills/storygraph/PLAN.md` for full architecture.
 - Leiden-inspired community system with analysis
 - Generation manifest in all output files (mode, model, timestamp, version)
 - Comparison tool: graphify-compare.ts runs all 3 modes side-by-side
+- **Tier 0 programmatic quality gate:** gate.json v2 with 13+ genre-aware checks, quality_breakdown, supervisor_hints, requires_claude_review
+- **Tier 1 GLM quality scoring:** Blended 0.4×programmatic + 0.6×AI, kg-quality-score.json
+- **Tier 2 Claude review:** Structured rubric, quality-review.json
+- **CLI:** `storygraph` CLI with score, write-gate, parse-plan, validate-plan, --ci mode
+- **PLAN.md parser + chapter validator:** plan-parser.ts, chapter-validator.ts
+- **Quality gate writer:** graphify-write-gate.ts with GLM dialog assessment
 
 **Phase 23 — AI Cross-Link Discovery (complete):**
 - StoryCrossLink type + CrossLinkType union in types.ts

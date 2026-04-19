@@ -1,7 +1,8 @@
 // CLI entry point for storygraph
 
-import { resolve } from 'node:path';
+import { resolve, join } from 'node:path';
 import { mkdir, writeFile, readFile } from 'node:fs/promises';
+import { existsSync, readFileSync } from 'node:fs';
 import { detect, detectMultiple, applyFilters } from './detect';
 import type { FilterOptions } from './detect';
 import { extractAST } from './extract/ast';
@@ -92,7 +93,20 @@ Commands:
   episode <ep-dir>      Per-episode graph generation (federated)
   merge <series-dir>    Merge per-episode graphs with link edges
   check <series-dir>    Consistency checking via link edges
+  score <series-dir>    AI-based KG quality scoring (Tier 1)
   pipeline <series-dir> Run episode → merge → check for all episodes
+  parse-plan <series-dir>  Parse PLAN.md → plan-struct.json
+  validate-plan <series-dir> Validate plan-struct.json against rules
+  write-gate <series-dir> Generate zh_TW quality gate report (Step 3b lite)
+  gen-prompt <series-dir> Generate story-writing constraint prompt from KG (Phase 32-A)
+  enrich <series-dir>     Post-render KG enrichment (Phase 32-B1)
+  calibrate <series-dir>  Track KG feature → quality correlation (Phase 32-B2)
+  gen-narration <ep-dir>  Generate narration.ts from dialog data (Phase 33-F4a)
+  gen-todo <ep-dir>       Generate episode TODO.md from PLAN.md (Phase 33-F4b)
+  regression              Compare pipeline results against baselines (Phase 33-G5)
+  tier-compare            Compare quality across series and modes (Phase 33-G1)
+  cost-matrix             Track pipeline step timing and cost (Phase 33-G3)
+  model-bench <series>    Benchmark AI models for KG extraction (Phase 28-B)
 
 Paths:
   Multiple input sources supported: full src/ lib/ tests/
@@ -108,6 +122,10 @@ Options:
   --exclude-dir <name,...> Skip these directory names
   --max-files <n>          Cap number of files to process
   --no-viz                 Skip HTML visualization
+  --mode <regex|ai|hybrid> AI enrichment mode (default: hybrid)
+  --provider <name>        AI provider (default: zai)
+  --model <name>           AI model (default: glm-5)
+  --ci                     CI mode: exit 0 on pass, 1 on fail (check/score/write-gate)
   --verbose                Detailed progress output
   --quiet                  Only print errors
 `);
@@ -453,18 +471,116 @@ switch (command) {
   case 'episode':
   case 'merge':
   case 'check':
+  case 'score':
   case 'pipeline':
+  case 'parse-plan':
+  case 'validate-plan':
+  case 'write-gate':
+  case 'gen-prompt':
+  case 'enrich':
+  case 'calibrate':
+  case 'gen-narration':
+  case 'gen-todo':
+  case 'regression':
+  case 'tier-compare':
+  case 'cost-matrix':
+  case 'model-bench':
     // Delegate to dedicated scripts
-    console.log(`Tip: Run directly for full output:`);
-    console.log(`  bun run src/scripts/graphify-${command}.ts ${args.slice(1).join(' ')}`);
-    console.log('');
-    import('child_process').then(({ spawn }) => {
-      const child = spawn('bun', ['run', `src/scripts/graphify-${command}.ts`, ...args.slice(1)], {
-        cwd: resolve(import.meta.dir, '..'),
-        stdio: 'inherit',
+    {
+      const scriptMap: Record<string, string> = {
+        'episode': 'graphify-episode',
+        'merge': 'graphify-merge',
+        'check': 'graphify-check',
+        'score': 'graphify-score',
+        'pipeline': 'graphify-pipeline',
+        'parse-plan': 'plan-parser',
+        'validate-plan': 'chapter-validator',
+        'write-gate': 'graphify-write-gate',
+        'gen-prompt': 'graphify-gen-prompt',
+        'enrich': 'graphify-enrich',
+        'calibrate': 'prompt-calibration',
+        'gen-narration': 'gen-narration',
+        'gen-todo': 'gen-episode-todo',
+        'regression': 'graphify-regression',
+        'tier-compare': 'graphify-tier-compare',
+        'cost-matrix': 'graphify-cost-matrix',
+        'model-bench': 'graphify-model-bench',
+      };
+      const script = scriptMap[command] ?? command;
+      const ciMode = hasFlag(args, '--ci');
+      const ciCommands = new Set(['check', 'score', 'write-gate', 'regression']);
+
+      if (ciMode && !ciCommands.has(command)) {
+        console.error(`--ci flag only applies to: check, score, write-gate`);
+        process.exit(1);
+      }
+
+      import('child_process').then(({ spawn }) => {
+        // Resolve positional args to absolute paths. Must handle flag-value pairs:
+        // flags like --mode consume the next arg as a value (not a path to resolve).
+        const flagsWithValues = new Set(['--mode', '--provider', '--model', '--series-dir', '--scenes', '--category', '--output', '--target-ep', '--series', '--threshold']);
+        const rawArgs = args.slice(1);
+        const childArgs: string[] = [];
+        for (let i = 0; i < rawArgs.length; i++) {
+          if (rawArgs[i].startsWith('-')) {
+            childArgs.push(rawArgs[i]);
+            if (flagsWithValues.has(rawArgs[i]) && rawArgs[i + 1]) {
+              childArgs.push(rawArgs[++i]); // pass flag value through as-is
+            }
+          } else {
+            childArgs.push(resolve(rawArgs[i])); // resolve positional paths
+          }
+        }
+        const scriptPath = resolve(import.meta.dir, 'scripts', `${script}.ts`);
+        const child = spawn('bun', [scriptPath, ...childArgs], {
+          stdio: 'inherit',
+        });
+        child.on('close', (code: number) => {
+          if (!ciMode || code !== 0) {
+            process.exit(code);
+            return;
+          }
+
+          // Regression handles CI mode internally
+          if (command === 'regression') {
+            process.exit(code);
+            return;
+          }
+
+          // CI mode: check gate.json result
+          const seriesArg = args.slice(1).find(a => !a.startsWith('--'));
+          if (!seriesArg) {
+            console.error('[CI] No series directory provided');
+            process.exit(1);
+            return;
+          }
+          const seriesDir = resolve(resolve(seriesArg));
+          const gatePath = join(seriesDir, 'storygraph_out', 'gate.json');
+          const kgPath = join(seriesDir, 'storygraph_out', 'kg-quality-score.json');
+
+          try {
+            if (command === 'score' && existsSync(kgPath)) {
+              const kg = JSON.parse(readFileSync(kgPath, 'utf-8'));
+              const decision = kg.blended?.decision ?? 'REJECT';
+              const ok = decision === 'ACCEPT';
+              console.log(`[CI] KG Score: ${(kg.blended?.overall * 100).toFixed(1)}% (${decision})`);
+              process.exit(ok ? 0 : 1);
+            } else if (existsSync(gatePath)) {
+              const gate = JSON.parse(readFileSync(gatePath, 'utf-8'));
+              const ok = gate.score >= 70 && gate.decision !== 'FAIL';
+              console.log(`[CI] Gate: ${gate.score}/100 (${gate.decision})`);
+              process.exit(ok ? 0 : 1);
+            } else {
+              console.error(`[CI] No gate.json found at ${gatePath}`);
+              process.exit(1);
+            }
+          } catch (e) {
+            console.error(`[CI] Failed to read gate result: ${e}`);
+            process.exit(1);
+          }
+        });
       });
-      child.on('close', (code: number) => process.exit(code));
-    });
+    }
     break;
   case '--version':
   case '-v':

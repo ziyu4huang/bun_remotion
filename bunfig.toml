@@ -1,0 +1,5 @@
+[test]
+# Exclude bun_pi_agent tests from default `bun test` — they make live API calls.
+# Run them explicitly: `bun test bun_app/bun_pi_agent/`
+# Or run everything: `bun test --include bun_app/bun_pi_agent/`
+pathIgnorePatterns = ["**/bun_pi_agent/**"]

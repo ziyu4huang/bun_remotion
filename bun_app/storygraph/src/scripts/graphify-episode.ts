@@ -295,9 +295,12 @@ for (const charId of parsed.characters) {
   }
 }
 
-// Create tech term nodes and edges (skip narrator — structural role, not story participant)
+// For narrator-only series (tech_explainer), narrator IS the content source — extract its tech terms.
+// For multi-character series, skip narrator (structural role, not story participant).
+const isNarratorOnly = parsed.characters.length === 1 && parsed.characters[0] === "narrator";
+
 for (const [charId, terms] of Object.entries(charTechTerms)) {
-  if (charId === "narrator") continue; // Narrator mentions tech terms in summaries, not as a participant
+  if (charId === "narrator" && !isNarratorOnly) continue;
   for (const term of terms) {
     const termId = `${EP_ID}_tech_${term.replace(/\s+/g, "_")}`;
     // Deduplicate term nodes
@@ -600,6 +603,7 @@ for (const node of nodes) {
     G.addNode(node.id, {
       label: node.label,
       type: node.type,
+      ...(node.properties && Object.keys(node.properties).length > 0 ? { properties: node.properties } : {}),
     });
   }
 }

@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "timestamp": "2026-04-18T21:39:39.673Z",
+  "timestamp": "2026-04-19T06:53:31.257Z",
   "series": "weapon-forger",
   "genre": "xianxia_comedy",
   "generator": {
@@ -10,8 +10,8 @@
   },
   "score": 0,
   "decision": "FAIL",
-  "previous_score": null,
-  "score_delta": null,
+  "previous_score": 0,
+  "score_delta": 0,
   "checks": [
     {
       "name": "Character Consistency: zhoumo",

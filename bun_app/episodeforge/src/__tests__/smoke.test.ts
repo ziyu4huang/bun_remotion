@@ -101,28 +101,22 @@ describe("computeNaming + getSeriesConfig integration", () => {
     expect(naming.numScenes).toBe(config.defaultContentScenes + 2);
   });
 
-  test("standalone series: storygraph-intro", () => {
-    const config = getSeriesConfig("storygraph-intro")!;
-    const naming = computeNaming(config, "tech_explainer", null, null, config.defaultContentScenes, REPO_ROOT);
+  test("chapter-based series with category: storygraph-explainer", () => {
+    const config = getSeriesConfig("storygraph-explainer")!;
+    const naming = computeNaming(config, null, 1, 1, config.defaultContentScenes, REPO_ROOT);
 
-    expect(naming.seriesId).toBe("storygraph-intro");
-    expect(naming.dirName).toBe("storygraph-intro");
-    expect(naming.isStandalone).toBe(true);
+    expect(naming.seriesId).toBe("storygraph-explainer");
+    expect(naming.dirName).toBe("storygraph-explainer-ch1-ep1");
+    expect(naming.isStandalone).toBe(false);
   });
 
   test("all series produce consistent naming", () => {
     for (const seriesId of Object.keys(SERIES_REGISTRY)) {
       const config = SERIES_REGISTRY[seriesId];
-      if (config.standalone) {
-        const naming = computeNaming(config, config.category ?? null, null, null, config.defaultContentScenes, REPO_ROOT);
-        expect(naming.seriesId).toBe(seriesId);
-        expect(naming.numScenes).toBeGreaterThanOrEqual(3);
-      } else {
-        const chapter = config.chapterBased ? 1 : null;
-        const naming = computeNaming(config, null, chapter, 1, config.defaultContentScenes, REPO_ROOT);
-        expect(naming.seriesId).toBe(seriesId);
-        expect(naming.numScenes).toBeGreaterThanOrEqual(3);
-      }
+      const chapter = config.chapterBased ? 1 : null;
+      const naming = computeNaming(config, null, chapter, 1, config.defaultContentScenes, REPO_ROOT);
+      expect(naming.seriesId).toBe(seriesId);
+      expect(naming.numScenes).toBeGreaterThanOrEqual(3);
     }
   });
 });
@@ -156,13 +150,13 @@ describe("genPackageJson", () => {
     expect(parsed.scripts.build).toContain("GalgameMemeTheaterEp5");
   });
 
-  test("produces valid JSON for standalone series", () => {
-    const ctx = buildStandaloneContext("storygraph-intro");
+  test("produces valid JSON for chapter-based series with category", () => {
+    const ctx = buildContext("storygraph-explainer", 1, 1);
     const output = genPackageJson(ctx);
     const parsed = JSON.parse(output);
 
-    expect(parsed.name).toBe("@bun-remotion/storygraph-intro");
-    expect(parsed.scripts.build).toContain("StorygraphIntro");
+    expect(parsed.name).toBe("@bun-remotion/storygraph-explainer-ch1-ep1");
+    expect(parsed.scripts.build).toContain("StorygraphExplainerCh1Ep1");
   });
 });
 
@@ -363,8 +357,8 @@ describe("getSceneNames", () => {
     expect(names).toEqual(["TitleScene", "JokeScene1", "JokeScene2", "JokeScene3", "OutroScene"]);
   });
 
-  test("returns tech_explainer scenes for standalone storygraph-intro", () => {
-    const ctx = buildStandaloneContext("storygraph-intro");
+  test("returns tech_explainer scenes for storygraph-explainer", () => {
+    const ctx = buildContext("storygraph-explainer", 1, 1);
     const names = getSceneNames(ctx);
 
     expect(names).toEqual([
@@ -417,8 +411,8 @@ describe("collectFiles integration", () => {
     expect(descriptions).toContain("src/scenes/JokeScene4.tsx");
   });
 
-  test("collects tech_explainer files for storygraph-intro", () => {
-    const ctx = buildStandaloneContext("storygraph-intro");
+  test("collects tech_explainer files for storygraph-explainer", () => {
+    const ctx = buildContext("storygraph-explainer", 1, 1);
     const files = collectFiles(ctx);
 
     const descriptions = files.map((f) => f.description);
@@ -459,7 +453,7 @@ describe("parseArgs", () => {
   });
 
   test("parses --category flag", () => {
-    const args = parseArgs(["--series", "storygraph-intro", "--category", "tech_explainer"]);
+    const args = parseArgs(["--series", "storygraph-explainer", "--category", "tech_explainer"]);
     expect(args.category).toBe("tech_explainer");
   });
 

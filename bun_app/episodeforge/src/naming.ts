@@ -15,10 +15,10 @@ export interface NamingContext {
   numContentScenes: number;
 
   // Derived names
-  dirName: string;           // "my-core-is-boss-ch1-ep4" or "storygraph-intro"
+  dirName: string;           // "my-core-is-boss-ch1-ep4" or "storygraph-explainer"
   packageName: string;       // "@bun-remotion/my-core-is-boss-ch1-ep4"
-  compositionId: string;     // "MyCoreIsBossCh1Ep4" or "StorygraphIntro"
-  scriptAlias: string;       // "mcb-ch1-ep4" or "bgi"
+  compositionId: string;     // "MyCoreIsBossCh1Ep4" or "StorygraphExplainer"
+  scriptAlias: string;       // "mcb-ch1-ep4" or "sge"
   outputPath: string;        // "out/my-core-is-boss-ch1-ep4.mp4"
   episodeDir: string;        // absolute path to episode/project directory
   seriesDir: string;         // absolute path to series directory (or parent for standalone)
@@ -58,7 +58,7 @@ export function computeNaming(
 
   if (isStandalone && seriesConfig === null) {
     // Pure category-based project: series ID IS the dir name
-    // e.g. --series storygraph-intro --category tech_explainer
+    // e.g. --series storygraph-explainer --category tech_explainer
     seriesId = category ? `${category}-project` : "standalone";
     dirName = `unknown-project`;
     scriptAlias = "unknown";
@@ -66,10 +66,11 @@ export function computeNaming(
     episodeDir = resolve(seriesDir, dirName);
   } else if (isStandalone && seriesConfig) {
     // Category-based project with a series config (standalone preset)
+    // Series wrapper: bun_remotion_proj/<seriesId>/<seriesId>/
     seriesId = seriesConfig.id;
-    dirName = seriesConfig.id; // e.g. "storygraph-intro"
+    dirName = seriesConfig.id; // e.g. "storygraph-explainer"
     scriptAlias = seriesConfig.abbreviation;
-    seriesDir = resolve(repoRoot, "bun_remotion_proj");
+    seriesDir = resolve(repoRoot, "bun_remotion_proj", seriesId);
     episodeDir = resolve(seriesDir, dirName);
   } else if (seriesConfig) {
     // Episode-based project (existing behavior)

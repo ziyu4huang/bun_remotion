@@ -784,7 +784,7 @@ ${sceneTasks}
 export function getSceneNames(ctx: ScaffoldContext): string[] {
   const { naming, config } = ctx;
 
-  if (naming.isStandalone && config.category === "tech_explainer") {
+  if (config.category === "tech_explainer") {
     return [
       "TitleScene",
       "ProblemScene",

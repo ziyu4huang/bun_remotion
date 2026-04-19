@@ -111,7 +111,7 @@ function collectTechExplainerFiles(ctx: ScaffoldContext): FileToWrite[] {
 }
 
 export function collectFiles(ctx: ScaffoldContext): FileToWrite[] {
-  if (ctx.naming.isStandalone && ctx.config.category === "tech_explainer") {
+  if (ctx.config.category === "tech_explainer") {
     return collectTechExplainerFiles(ctx);
   }
   return collectEpisodeFiles(ctx);

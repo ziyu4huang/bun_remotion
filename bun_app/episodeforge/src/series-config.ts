@@ -106,18 +106,18 @@ export const SERIES_REGISTRY: Record<string, SeriesConfig> = {
 
   // ─── Standalone Category-Based Presets ───
 
-  "storygraph-intro": {
-    id: "storygraph-intro",
+  "storygraph-explainer": {
+    id: "storygraph-explainer",
     displayName: "storygraph 知識圖譜建構系統介紹",
-    abbreviation: "bgi",
-    chapterBased: false,
-    standalone: true,
+    abbreviation: "sge",
+    chapterBased: true,
+    standalone: false,
     category: "tech_explainer",
     contentScenePrefix: "", // not used — tech explainer has named scenes
     defaultContentScenes: 7, // Problem + Architecture + Feature×3 + Demo + Comparison
     charactersImportPath: "../../shared/src/fonts",
     componentsImportPath: "../../shared/src/components",
-    ttsScriptPath: "../scripts/generate-tts.ts",
+    ttsScriptPath: "../assets/scripts/generate-tts.ts",
     language: "zh-TW",
     voiceCharacters: ["narrator"],
     transitions: [

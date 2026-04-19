@@ -44,8 +44,8 @@ describe("detectCategoryFromDirname", () => {
     expect(detectCategoryFromDirname("commentary-style")).toBe("narrative_drama");
   });
 
-  test("storygraph-intro -> tech_explainer", () => {
-    expect(detectCategoryFromDirname("storygraph-intro")).toBe("tech_explainer");
+  test("storygraph-explainer -> tech_explainer", () => {
+    expect(detectCategoryFromDirname("storygraph-explainer")).toBe("tech_explainer");
   });
 
   // Additional edge cases

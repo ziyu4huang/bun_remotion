@@ -93,3 +93,130 @@ export function loadCharacterGrowth(
     traits,
   };
 }
+
+// ─── Episode Summary & Foreshadowing (Phase 32-A2) ───
+
+export interface EpisodeScene {
+  id: string;
+  label: string;
+  dialog_lines: number;
+  characters: number;
+  effects: number;
+}
+
+export interface EpisodeCharacter {
+  id: string;
+  label: string;
+  dialog_count: number;
+}
+
+export interface EpisodeSummary {
+  ep_id: string;
+  plot_label: string;
+  scenes: EpisodeScene[];
+  key_characters: EpisodeCharacter[];
+  themes: string[];
+}
+
+export interface ForeshadowStatus {
+  id: string;
+  description: string;
+  planted_episode: string;
+  paid_off: boolean;
+  payoff_episode: string | null;
+  confidence: number;
+}
+
+function episodeSortKey(epId: string): number {
+  const m = epId.match(/ch(\d+)ep(\d+)/);
+  if (!m) return 0;
+  return parseInt(m[1]) * 100 + parseInt(m[2]);
+}
+
+/**
+ * Extract a structured summary of the previous episode from merged graph data.
+ * Pure data transformation — no I/O. Works on pre-loaded GraphJSON.
+ */
+export function loadPreviousEpisodeSummary(
+  graphData: GraphJSON,
+  targetEpId: string
+): EpisodeSummary | null {
+  // Find previous episode ID
+  const targetKey = episodeSortKey(targetEpId);
+  const epIds = new Set<string>();
+  for (const n of graphData.nodes) {
+    if (n.type === "episode_plot" && n.episode) epIds.add(n.episode);
+  }
+  const before = [...epIds]
+    .filter(id => episodeSortKey(id) < targetKey)
+    .sort((a, b) => episodeSortKey(b) - episodeSortKey(a));
+  const prevEpId = before[0];
+  if (!prevEpId) return null;
+
+  const nodes = graphData.nodes.filter(
+    n => n.episode === prevEpId || n.id.startsWith(`${prevEpId}_`)
+  );
+  if (nodes.length === 0) return null;
+
+  const plotNode = nodes.find(n => n.type === "episode_plot");
+
+  const scenes: EpisodeScene[] = nodes
+    .filter(n => n.type === "scene")
+    .map(n => ({
+      id: n.id,
+      label: n.label ?? n.id,
+      dialog_lines: parseInt(n.properties?.dialog_line_count ?? "0", 10),
+      characters: parseInt(n.properties?.character_count ?? "0", 10),
+      effects: parseInt(n.properties?.effect_count ?? "0", 10),
+    }));
+
+  const keyCharacters: EpisodeCharacter[] = nodes
+    .filter(n => n.type === "character_instance" && n.properties?.character_id !== "narrator")
+    .map(n => ({
+      id: n.properties?.character_id ?? n.id,
+      label: (n.label ?? n.id).replace(/\s*\(.*\)$/, ""),
+      dialog_count: parseInt(n.properties?.dialog_count ?? "0", 10),
+    }))
+    .sort((a, b) => b.dialog_count - a.dialog_count);
+
+  const themes = nodes
+    .filter(n => n.type === "theme")
+    .map(n => n.label ?? n.id);
+
+  return {
+    ep_id: prevEpId,
+    plot_label: plotNode?.label ?? prevEpId,
+    scenes,
+    key_characters: keyCharacters.slice(0, 5),
+    themes,
+  };
+}
+
+/**
+ * Extract active (planted but unpaid) foreshadowing from foreshadow output data.
+ * Pure data transformation — no I/O. Works on pre-loaded JSON.
+ */
+export function loadActiveForeshadowing(foreshadowData: {
+  planted?: Array<{
+    id: string;
+    description?: string;
+    planted_episode?: string;
+    confidence?: number;
+  }>;
+  payoffs?: Array<{ foreshadow_id: string }>;
+}): ForeshadowStatus[] {
+  const planted = foreshadowData.planted ?? [];
+  const payoffs = foreshadowData.payoffs ?? [];
+  const paidOffIds = new Set(payoffs.map(p => p.foreshadow_id));
+
+  return planted
+    .filter(f => !paidOffIds.has(f.id))
+    .map(f => ({
+      id: f.id,
+      description: f.description ?? "",
+      planted_episode: f.planted_episode ?? "",
+      paid_off: false,
+      payoff_episode: null,
+      confidence: f.confidence ?? 0.7,
+    }));
+}

@@ -1,0 +1,38 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-04-19T23:37:48.159Z",
+  "series": "my-core-is-boss",
+  "genre": "xianxia_comedy",
+  "generator": {
+    "mode": "hybrid",
+    "model": "glm-5"
+  },
+  "programmatic": {
+    "score": 100,
+    "decision": "PASS",
+    "quality_breakdown": {
+      "consistency": 0.5,
+      "arc_structure": 0.8,
+      "pacing": 1,
+      "character_growth": 0.7866666666666667,
+      "thematic_coherence": 0.3,
+      "gag_evolution": null
+    }
+  },
+  "ai": {
+    "dimensions": {
+      "entity_accuracy": 6,
+      "relationship_correctness": 6,
+      "completeness": 5,
+      "cross_episode_coherence": 5,
+      "actionability": 7
+    },
+    "overall": 5.8,
+    "justification": "The narration excerpts are truncated header boilerplate with no actual dialogue or plot content, making thorough verification impossible. However, the node type distribution (tech_term being the largest category at 44 nodes) aligns well with the xianxia_comedy genre that blends cultivation tropes with game-like mechanics. The 22 character_instances across 5 episodes suggests proper character tracking. The low thematic_coherence score (30%) from Tier 0 evaluation suggests the graph may be capturing isolated events without adequately linking them to overarching themes. Cross-episode links (40) seem reasonable for 5 episodes but could be inflated by superficial tech_term connections rather than narrative threads. The graph appears usable for scene construction given the high scene count (41) and plot_beats (17), but without access to full narration text, confidence in entity and relationship accuracy is limited."
+  },
+  "blended": {
+    "overall": 0.748,
+    "formula": "0.4 × programmatic + 0.6 × ai",
+    "decision": "ACCEPT"
+  }
+}

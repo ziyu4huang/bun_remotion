@@ -20,10 +20,10 @@ export interface TechExplainerPreset {
   featureKeywords: string[];
 }
 
-// ─── storygraph Intro ───
+// ─── storygraph Explainer ───
 
-export const storygraphIntroPreset: TechExplainerPreset = {
-  seriesId: "storygraph-intro",
+export const storygraphExplainerPreset: TechExplainerPreset = {
+  seriesId: "storygraph-explainer",
   displayName: "storygraph 知識圖譜建構系統介紹",
   category: "tech_explainer",
   techPatterns: [
@@ -45,7 +45,7 @@ export const storygraphIntroPreset: TechExplainerPreset = {
 };
 
 export const TECH_EXPLAINER_PRESETS: TechExplainerPreset[] = [
-  storygraphIntroPreset,
+  storygraphExplainerPreset,
 ];
 
 /** Detect tech explainer preset from directory name */
@@ -53,9 +53,9 @@ export function detectTechExplainerPreset(dirname: string): TechExplainerPreset 
   return TECH_EXPLAINER_PRESETS.find(p => dirname.includes(p.seriesId)) ?? null;
 }
 
-// ─── storygraph Intro Composition Data ───
+// ─── storygraph Explainer Composition Data ───
 
-export const storygraphIntroData: TechExplainerData = {
+export const storygraphExplainerData: TechExplainerData = {
   title: "storygraph",
   tagline: "任何輸入 → 知識圖譜",
   painPoint: "文件散落各處，程式碼、論文、對話記錄……資訊碎片化，找不到關聯",

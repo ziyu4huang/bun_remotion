@@ -5,7 +5,7 @@
  *   bun run episodeforge --series my-core-is-boss --ch 1 --ep 4
  *   bun run episodeforge --series weapon-forger --ch 2 --ep 1 --dry-run
  *   bun run episodeforge --series galgame-meme-theater --ep 6
- *   bun run episodeforge --series storygraph-intro --category tech_explainer
+ *   bun run episodeforge --series storygraph-explainer --ch 1 --ep 1
  */
 
 import { existsSync } from "node:fs";

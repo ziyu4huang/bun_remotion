@@ -11,6 +11,16 @@
 
 import type { StoryCrossLink } from "../types";
 import type { SeriesConfig } from "./series-config";
+import type {
+  EpisodeSummary,
+  ForeshadowStatus,
+  ScenePacing,
+  ThemeCluster,
+  CharacterConstraint,
+  GagEvolution,
+  InteractionPattern,
+  TechTermUsage,
+} from "./kg-loaders";
 
 // ─── Graph Summary Builder ───
 
@@ -474,106 +484,36 @@ export function buildEpisodeExtractionPrompt(input: EpisodeExtractionInput): str
     ? input.techPatterns.map(p => `- \`${p}\``).join("\n")
     : "- (none specified)";
 
-  // Truncate narration to ~3000 chars to fit context
-  const narration = input.narration_text.length > 3000
-    ? input.narration_text.slice(0, 3000) + "\n... (truncated)"
+  // Truncate narration to ~2000 chars to keep prompt compact
+  const narration = input.narration_text.length > 2000
+    ? input.narration_text.slice(0, 2000) + "\n... (truncated)"
     : input.narration_text;
 
-  return `You are a story analysis engine for a comedy video series.
-Extract structured knowledge graph nodes and edges from the narration below.
+  return `Extract knowledge graph nodes and edges from this narration.
 
-## Series: ${input.series_name}
-## Episode: ${input.episode_title} (${input.episode_id})
+Series: ${input.series_name} | Episode: ${input.episode_title} (${input.episode_id})
+Characters: ${Object.values(input.charNames).join(", ") || "narrator only"}
+Tech patterns: ${input.techPatterns.slice(0, 10).join(", ") || "none"}
 
-## Known Characters
-${charList}
-
-## Known Tech Patterns
-${techList}
-
-## Narration Text
-
+## Narration
 ${narration}
 
-## Node Types to Extract
+## Extract these node types (use minimal properties):
 
-Extract these node types from the narration:
+1. **episode_plot** (1 node, id: ${input.episode_id}_plot)
+2. **scene** (id: ${input.episode_id}_scene_{n})
+3. **character_instance** (id: ${input.episode_id}_char_{id})
+4. **tech_term** (id: ${input.episode_id}_tech_{term})
+5. **plot_beat** — key story turning points (id: ${input.episode_id}_beat_{n})
+6. **theme** — recurring concepts like 成長, 認同 (id: ${input.episode_id}_theme_{keyword})
 
-1. **episode_plot** — The episode's overall plot. Exactly one node.
-   - ID: \`${input.episode_id}_plot\`
-   - label: Episode title or summary
+## Edges: part_of, appears_in, uses_tech_term, triggers, illustrates
 
-2. **scene** — Each distinct scene/section.
-   - ID: \`${input.episode_id}_scene_{n}\` (n = 1, 2, 3...)
+## Output: JSON only, no markdown fences
 
-3. **character_instance** — Each character that appears.
-   - ID: \`${input.episode_id}_char_{character_id}\`
-   - properties: character_id, dialog_count, dialog_text (first 500 chars)
+{"nodes":[{"id":"${input.episode_id}_plot","label":"...","type":"episode_plot","properties":{}}],"edges":[{"source":"...","target":"...","relation":"part_of"}]}
 
-4. **tech_term** — Technical terms, abilities, or techniques mentioned.
-   - ID: \`${input.episode_id}_tech_{term}\`
-
-5. **gag_manifestation** — Running gags or comedic moments.
-   - ID: \`${input.episode_id}_gag_{gag_type}\`
-   - properties: gag_type, episode
-
-6. **character_trait** — Personality traits revealed through speech or behavior.
-   - ID: \`${input.episode_id}_trait_{char}_{trait}\`
-
-7. **plot_event** — Key story events (regex can't detect these).
-   - ID: \`${input.episode_id}_event_{n}\`
-
-8. **artifact** — Important objects or items in the story.
-   - ID: \`${input.episode_id}_artifact_{name}\`
-
-9. **theme** — Recurring thematic concept across the episode (e.g., 成長, 認同, 友情, 權力).
-   - ID: \`${input.episode_id}_theme_{keyword}\`
-   - label: Theme keyword in zh_TW
-   - properties: { keyword, description }
-
-## Edge Relation Types
-
-- \`part_of\` — scene → episode_plot
-- \`appears_in\` — character_instance → episode_plot, gag → episode_plot
-- \`uses_tech_term\` — character_instance → tech_term
-- \`interacts_with\` — character_instance ↔ character_instance (bidirectional)
-- \`character_speaks_like\` — character_trait → character_instance
-- \`triggers\` — plot_event → plot_event (causality chain)
-- \`uses\` — character_instance → artifact
-- \`relates_to\` — any → plot_event (thematic connection)
-- \`illustrates\` — theme → scene or theme → plot_event (thematic connection)
-
-## Output Format
-
-Return a JSON object:
-\`\`\`json
-{
-  "nodes": [
-    {
-      "id": "${input.episode_id}_plot",
-      "label": "Episode title or summary",
-      "type": "episode_plot",
-      "properties": {}
-    }
-  ],
-  "edges": [
-    {
-      "source": "${input.episode_id}_scene_1",
-      "target": "${input.episode_id}_plot",
-      "relation": "part_of"
-    }
-  ]
-}
-\`\`\`
-
-IMPORTANT:
-- All node IDs MUST start with \`${input.episode_id}_\`
-- Use known character IDs from the list above when possible
-- Include at least: 1 episode_plot, N scenes, M character_instances
-- dialog_text in character_instance should be truncated to 500 chars
-- Return ONLY the JSON object, no other text
-
-Extraction result:`;
+IMPORTANT: All IDs must start with ${input.episode_id}_. Keep properties minimal (1-2 fields). Limit to ≤20 nodes total.`;
 }
 
 // ─── KG Quality Scoring Prompt (Phase 31-A1) ───
@@ -683,4 +623,369 @@ IMPORTANT:
 - Return ONLY the JSON object, no other text
 
 Quality score:`;
+}
+
+// ─── Dialog Assessment Prompt (Phase 33-F2b, Step 3b lite) ───
+
+export interface DialogAssessmentInput {
+  series_name: string;
+  genre: string;
+  episode_count: number;
+  gate_score: number;
+  gate_decision: string;
+  warn_checks: Array<{ name: string; fix_suggestion_zhTW: string }>;
+  fail_checks: Array<{ name: string; fix_suggestion_zhTW: string }>;
+  quality_breakdown: Record<string, number | null>;
+  ai_scores: {
+    dimensions: Record<string, number>;
+    overall: number;
+    justification: string;
+  } | null;
+  supervisor_hints: string[];
+}
+
+export function buildDialogAssessmentPrompt(input: DialogAssessmentInput): string {
+  const warnLines = input.warn_checks
+    .slice(0, 10)
+    .map(c => `- [WARN] ${c.name}: ${c.fix_suggestion_zhTW || "(無建議)"}`)
+    .join("\n");
+
+  const failLines = input.fail_checks
+    .slice(0, 10)
+    .map(c => `- [FAIL] ${c.name}: ${c.fix_suggestion_zhTW || "(無建議)"}`)
+    .join("\n");
+
+  const breakdownLines = Object.entries(input.quality_breakdown)
+    .filter(([, v]) => v !== null)
+    .map(([dim, v]) => `- ${dim}: ${(v! * 100).toFixed(0)}%`)
+    .join("\n");
+
+  const aiSection = input.ai_scores
+    ? `## AI 評分
+- 整體: ${input.ai_scores.overall}/10
+- 實體準確性: ${input.ai_scores.dimensions.entity_accuracy}/10
+- 關係正確性: ${input.ai_scores.dimensions.relationship_correctness}/10
+- 完整性: ${input.ai_scores.dimensions.completeness}/10
+- 評語: ${input.ai_scores.justification.slice(0, 300)}`
+    : "(無 AI 評分)";
+
+  return `你是影片劇本品質評估助手。根據以下知識圖譜品質閘門資料，用繁體中文（zh_TW）撰寫一份簡潔的品質評估摘要。
+
+## 系列資訊
+- 系列：${input.series_name} (${input.genre})
+- 集數：${input.episode_count}
+
+## 品質閘門
+- 評分：${input.gate_score}/100 (${input.gate_decision})
+- 各維度：
+${breakdownLines}
+
+${aiSection}
+
+## 警告項目
+${warnLines || "(無)"}
+
+## 嚴重問題
+${failLines || "(無)"}
+
+## 關注焦點
+${input.supervisor_hints.slice(0, 5).join("\n") || "(無)"}
+
+## 任務
+
+用繁體中文寫一份 3-5 段的品質評估摘要，包含：
+1. 整體品質概況（1段）
+2. 各維度分析（依數據說明強項和弱項，1-2段）
+3. 改善建議（具體、可執行，1-2段）
+
+每段 2-3 句。不要用 markdown 格式（標題、列表），只用純文字段落。
+在摘要之後，附上一個 JSON 區塊，列出每個 WARN/FAIL 項目的改善建議：
+\`\`\`json
+[
+  { "check_name": "exact check name", "fix_suggestion_zhTW": "一句繁體中文改善建議" }
+]
+\`\`\`
+
+品質評估：`;
+}
+
+// ─── Remotion Prompt Builder (Phase 32-A1) ───
+
+export interface RemotionPromptInput {
+  series_name: string;
+  target_ep: string;
+  prev_episode_summary: EpisodeSummary | null;
+  active_foreshadowing: ForeshadowStatus[];
+  pacing_profile: ScenePacing[];
+  thematic_clusters: ThemeCluster[];
+  character_constraints: CharacterConstraint[];
+  tech_terms_used: TechTermUsage[];
+  gag_evolution: GagEvolution[];
+  interaction_history: InteractionPattern[];
+}
+
+/**
+ * Build a structured zh_TW story-writing constraint prompt from KG data.
+ *
+ * Combines all KG-derived context into 8 sections that guide episode creation.
+ * This closes the feedback loop: KG → generation prompt → story → KG extraction.
+ *
+ * Section order (by narrative importance):
+ * 1. 前集摘要 — what happened before
+ * 2. 活躍伏筆 — unresolved setups that need payoff
+ * 3. 角色特質約束 — character consistency rules
+ * 4. 招牌梗演進 — gag escalation history
+ * 5. 互動模式 — character pair dynamics
+ * 6. 節奏參考 — pacing profile from previous episodes
+ * 7. 主題一致性 — theme continuity
+ * 8. 科技術語 — tech term dedup
+ */
+export function buildRemotionPrompt(input: RemotionPromptInput): string {
+  const lines: string[] = [];
+
+  lines.push(`# 故事寫作約束 — ${input.series_name} ${input.target_ep}`);
+  lines.push("");
+  lines.push("由知識圖譜自動生成。目的：確保故事寫作符合已建立的結構約束。");
+  lines.push(`目標集數：${input.target_ep}`);
+  lines.push(`生成時間：${new Date().toISOString()}`);
+  lines.push("");
+
+  lines.push(...buildPrevEpisodeSection(input.prev_episode_summary));
+  lines.push(...buildForeshadowingSection(input.active_foreshadowing));
+  lines.push(...buildCharacterSection(input.character_constraints));
+  lines.push(...buildGagSection(input.gag_evolution));
+  lines.push(...buildInteractionSection(input.interaction_history));
+  lines.push(...buildPacingSection(input.pacing_profile));
+  lines.push(...buildThemeSection(input.thematic_clusters));
+  lines.push(...buildTechTermSection(input.tech_terms_used));
+
+  return lines.join("\n");
+}
+
+// ─── Prompt Section Builders ───
+
+function buildPrevEpisodeSection(summary: EpisodeSummary | null): string[] {
+  const lines: string[] = [];
+  lines.push("## 前集摘要");
+  lines.push("");
+
+  if (!summary) {
+    lines.push("*這是第一章第一集，無前集資料。*");
+    lines.push("");
+    return lines;
+  }
+
+  lines.push(`**${summary.ep_id}：${summary.plot_label}**`);
+  lines.push("");
+
+  // Scene breakdown
+  if (summary.scenes.length > 0) {
+    lines.push("場景結構：");
+    for (const s of summary.scenes) {
+      lines.push(`- ${s.label}：${s.dialog_lines} 句對話、${s.characters} 角色、${s.effects} 特效`);
+    }
+    lines.push("");
+  }
+
+  // Key characters
+  if (summary.key_characters.length > 0) {
+    const charList = summary.key_characters
+      .map(c => `${c.label}（${c.dialog_count} 句）`)
+      .join("、");
+    lines.push(`主要角色：${charList}`);
+    lines.push("");
+  }
+
+  // Themes
+  if (summary.themes.length > 0) {
+    lines.push(`主題：${summary.themes.join("、")}`);
+    lines.push("");
+  }
+
+  return lines;
+}
+
+function buildForeshadowingSection(foreshadows: ForeshadowStatus[]): string[] {
+  const lines: string[] = [];
+  lines.push("## 活躍伏筆");
+  lines.push("");
+
+  if (foreshadows.length === 0) {
+    lines.push("*尚無未回收的伏筆。*");
+    lines.push("");
+    return lines;
+  }
+
+  lines.push("以下伏筆已埋下但尚未回收。本集必須至少延續一條：");
+  lines.push("");
+
+  for (const f of foreshadows) {
+    lines.push(`- **${f.id}**（${f.planted_episode}）：${f.description}`);
+  }
+  lines.push("");
+
+  return lines;
+}
+
+function buildCharacterSection(constraints: CharacterConstraint[]): string[] {
+  const lines: string[] = [];
+  lines.push("## 角色特質約束");
+  lines.push("");
+
+  if (constraints.length === 0) {
+    lines.push("*尚無跨集角色特質資料。請參考角色指南。*");
+    lines.push("");
+    return lines;
+  }
+
+  for (const c of constraints) {
+    lines.push(`### ${c.char_name}（${c.char_id}）`);
+
+    if (c.stable_traits.length > 0) {
+      lines.push(`- **穩定特質（必須展現）：** ${c.stable_traits.join("、")}`);
+    } else {
+      lines.push("- **穩定特質：** 尚未建立（集數不足）");
+    }
+
+    if (c.recent_variant_traits.length > 0) {
+      lines.push(`- **近集變體：** ${c.recent_variant_traits.join("、")}`);
+    }
+
+    lines.push("- **本集要求：** 至少展現 1 項穩定特質 + 1 項新變體特質");
+    lines.push("");
+  }
+
+  return lines;
+}
+
+function buildGagSection(gags: GagEvolution[]): string[] {
+  const lines: string[] = [];
+  lines.push("## 招牌梗演進");
+  lines.push("");
+
+  if (gags.length === 0) {
+    lines.push("*尚無招牌梗資料。*");
+    lines.push("");
+    return lines;
+  }
+
+  for (const g of gags) {
+    lines.push(`### ${g.gag_type}`);
+    lines.push("");
+    for (const m of g.manifestations) {
+      lines.push(`- ${m.ep_id}：${m.label}`);
+    }
+    lines.push("- 本集期望：演化升級，不要停滯（避免與前集相同的表現方式）");
+    lines.push("");
+  }
+
+  return lines;
+}
+
+function buildInteractionSection(patterns: InteractionPattern[]): string[] {
+  const lines: string[] = [];
+  lines.push("## 互動模式");
+  lines.push("");
+
+  if (patterns.length === 0) {
+    lines.push("*尚無目標角色互動資料。*");
+    lines.push("");
+    return lines;
+  }
+
+  for (const p of patterns) {
+    if (p.is_first_interaction) {
+      lines.push(`- ${p.char_a_name} ↔ ${p.char_b_name}：首次互動，建立兩人關係動態`);
+    } else {
+      lines.push(
+        `- ${p.char_a_name} ↔ ${p.char_b_name}：前集已有互動（${p.history_episodes.join("、")}），本集需深化或展現新面向`
+      );
+    }
+  }
+
+  lines.push("");
+  return lines;
+}
+
+function buildPacingSection(profile: ScenePacing[]): string[] {
+  const lines: string[] = [];
+  lines.push("## 節奏參考（前集場景張力）");
+  lines.push("");
+
+  if (profile.length === 0) {
+    lines.push("*尚無前集節奏資料。*");
+    lines.push("");
+    return lines;
+  }
+
+  lines.push("前集各場景張力分布（供本集節奏設計參考）：");
+  lines.push("");
+
+  for (const s of profile) {
+    const bar = "█".repeat(Math.round(s.tension * 10)) + "░".repeat(10 - Math.round(s.tension * 10));
+    lines.push(`- ${s.label}：${bar} ${s.tension.toFixed(2)}（對話${s.dialog_density.toFixed(1)} 角色${s.character_density.toFixed(1)} 特效${s.effect_density.toFixed(1)}）`);
+  }
+
+  // Summary stats
+  const avgTension = profile.reduce((sum, s) => sum + s.tension, 0) / profile.length;
+  const maxTension = Math.max(...profile.map(s => s.tension));
+  const minTension = Math.min(...profile.map(s => s.tension));
+  lines.push("");
+  lines.push(`平均張力：${avgTension.toFixed(2)}，最高：${maxTension.toFixed(2)}，最低：${minTension.toFixed(2)}`);
+  lines.push("建議：本集節奏應有明顯起伏，張力峰值應超過前集平均。");
+  lines.push("");
+
+  return lines;
+}
+
+function buildThemeSection(clusters: ThemeCluster[]): string[] {
+  const lines: string[] = [];
+  lines.push("## 主題一致性");
+  lines.push("");
+
+  if (clusters.length === 0) {
+    lines.push("*尚無主題節點資料。*");
+    lines.push("");
+    return lines;
+  }
+
+  lines.push("已建立的主題及其跨集出現：");
+  lines.push("");
+
+  for (const tc of clusters) {
+    lines.push(`- **${tc.label}**：出現在 ${tc.episodes.join("、")}（${tc.episodes.length} 集）`);
+  }
+
+  lines.push("");
+  lines.push("建議：本集至少延續一個已有主題，並可引入一個新主題。");
+  lines.push("");
+
+  return lines;
+}
+
+function buildTechTermSection(usage: TechTermUsage[]): string[] {
+  const lines: string[] = [];
+  lines.push("## 科技術語");
+  lines.push("");
+
+  if (usage.length === 0) {
+    lines.push("*尚無科技術語資料。*");
+    lines.push("");
+    return lines;
+  }
+
+  lines.push("### 已使用（避免重複）");
+  lines.push("");
+
+  for (const u of usage) {
+    lines.push(`- ${u.ep_id}：${u.terms.join("、")}`);
+  }
+
+  // All used terms
+  const allTerms = new Set(usage.flatMap(u => u.terms));
+  lines.push("");
+  lines.push(`共 ${allTerms.size} 個不重複術語。本集應避免重複使用，選擇新術語或創造新的黑話。`);
+  lines.push("");
+
+  return lines;
 }
