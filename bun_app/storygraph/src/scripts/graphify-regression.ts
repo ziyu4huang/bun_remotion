@@ -209,6 +209,84 @@ export function saveBaseline(corpusDir: string, seriesName: string, gate: GateDa
   }
 }
 
+// ─── Trend tracking (Phase 33-D4b) ───
+
+export interface TrendPoint {
+  date: string;
+  gate_score: number;
+  blended_score: number | null;
+  node_count: number;
+}
+
+export interface SeriesTrend {
+  series: string;
+  points: TrendPoint[];
+  gate_trend: "improving" | "stable" | "decling";
+  avg_delta: number;
+}
+
+export function computeTrend(corpusDir: string, seriesName: string, projDir: string): SeriesTrend | null {
+  const seriesDir = join(corpusDir, seriesName);
+  if (!existsSync(seriesDir)) return null;
+
+  // Collect all timestamped baseline files
+  const gateFiles = readdirSync(seriesDir)
+    .filter(f => f.match(/^gate-(\d{8})\.json$/))
+    .sort();
+
+  if (gateFiles.length === 0) return null;
+
+  const points: TrendPoint[] = [];
+
+  for (const gf of gateFiles) {
+    const dateMatch = gf.match(/^gate-(\d{4})(\d{2})(\d{2})\.json$/);
+    if (!dateMatch) continue;
+    const date = `${dateMatch[1]}-${dateMatch[2]}-${dateMatch[3]}`;
+
+    try {
+      const gate: GateData = JSON.parse(readFileSync(join(seriesDir, gf), "utf-8"));
+      const dateStr = gf.replace("gate-", "").replace(".json", "");
+      const qFile = `kg-quality-score-${dateStr}.json`;
+      let blended: number | null = null;
+      if (existsSync(join(seriesDir, qFile))) {
+        try {
+          const q: QualityData = JSON.parse(readFileSync(join(seriesDir, qFile), "utf-8"));
+          blended = q.blended?.overall ?? null;
+        } catch { /* skip */ }
+      }
+
+      // Get node count from current data (baselines don't store this)
+      let nodeCount = 0;
+      const mergedPath = join(projDir, seriesName, "storygraph_out", "merged-graph.json");
+      if (existsSync(mergedPath)) {
+        try {
+          const mg = JSON.parse(readFileSync(mergedPath, "utf-8"));
+          nodeCount = mg.nodes?.length ?? 0;
+        } catch { /* skip */ }
+      }
+
+      points.push({ date, gate_score: gate.score, blended_score: blended, node_count: nodeCount });
+    } catch { /* skip corrupt baseline */ }
+  }
+
+  if (points.length === 0) return null;
+
+  // Compute average delta
+  let avgDelta = 0;
+  if (points.length >= 2) {
+    const deltas: number[] = [];
+    for (let i = 1; i < points.length; i++) {
+      deltas.push(points[i].gate_score - points[i - 1].gate_score);
+    }
+    avgDelta = deltas.reduce((a, b) => a + b, 0) / deltas.length;
+  }
+
+  const gateTrend: SeriesTrend["gate_trend"] =
+    avgDelta > 2 ? "improving" : avgDelta < -2 ? "declining" : "stable";
+
+  return { series: seriesName, points, gate_trend: gateTrend, avg_delta: Math.round(avgDelta * 100) / 100 };
+}
+
 // ─── CLI ───
 
 const args = process.argv.slice(2);
@@ -355,6 +433,24 @@ if (import.meta.main) {
   const reportPath = join(corpusDir, "..", "regression-report.md");
   writeFileSync(reportPath, report, "utf-8");
   console.log(`\nReport: ${reportPath}`);
+
+  // Trend display (Phase 33-D4b)
+  if (args.includes("--trend")) {
+    console.log(`\n=== Score Trend ===`);
+    for (const series of seriesNames) {
+      const trend = computeTrend(corpusDir, series, projDir);
+      if (!trend || trend.points.length === 0) {
+        console.log(`${series}: no trend data`);
+        continue;
+      }
+      const arrow = trend.gate_trend === "improving" ? "↑" : trend.gate_trend === "declining" ? "↓" : "→";
+      console.log(`${series}: ${arrow} ${trend.gate_trend} (avg delta: ${trend.avg_delta > 0 ? "+" : ""}${trend.avg_delta})`);
+      for (const p of trend.points) {
+        const blendedStr = p.blended_score !== null ? ` blended=${(p.blended_score * 100).toFixed(1)}%` : "";
+        console.log(`  ${p.date}: gate=${p.gate_score}${blendedStr}`);
+      }
+    }
+  }
 
   // CI mode
   if (ciMode) {

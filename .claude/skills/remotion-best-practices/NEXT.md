@@ -12,26 +12,23 @@
 > - `../develop_bun_app/TODO.md` — bun_app code-level tasks
 > - `../develop_bun_app/PLAN.md` — bun_app architecture
 
-> **Status:** v0.28.1 — Episode-creation deploy mode + hybrid mode docs + SKILL.md kg-review topic. All documentation gaps closed.
+> **Status:** v0.30.0 — Phase 33-D complete (feedback loop calibration + cross-project regression). Remaining: 33-F3 (experimental), Phase 35-39 (Web UI).
 
 ## Next Task
 
-**Phase 33-H: COMPLETE.** Next options:
+All planned phases through 34 + 33-D + 33-I are COMPLETE. Remaining work:
 
-### Phase 33-C3: CI Integration Guide completion (MEDIUM IMPACT)
-- Complete GitHub Actions workflow file (guide exists but no actual `.github/workflows/`)
-- Add multi-series matrix test pattern
+### Phase 33-F3: Story Draft Generator (EXPERIMENTAL, HIGH RISK)
+- GLM story draft generation from constraints (60-70% quality target)
+- Story quality self-evaluation
+- Blocked by: nothing (independent)
 
-### Phase 35: Web UI Foundation (HIGH IMPACT, LONG TERM)
+### Phase 35-39: Web UI (HIGH IMPACT, LONG TERM)
 - 35-A/B/C: Hono API server + React SPA + script module exports
 - Replaces Claude Code skill interactions with web UI
-- 33-H1: Episode-creation.md deploy path
-- 33-H2: Hybrid mode instructions
-- 33-H3: SKILL.md topic detection update
+- Full pipeline orchestration: scaffold → story → graphify → render
 
-**Recommendation:** Phase 33-I (my-core-is-boss rebuild) — real-world validation of the full pipeline at scale. Documentation can follow.
-
-**Long-term:** Phase 35-39 (Web UI: Bun + Hono + React SPA, full pipeline orchestration)
+**Recommendation:** Phase 35 (Web UI Foundation) — the core engine is mature enough for a visual interface. Phase 33-F3 is experimental and can proceed in parallel.
 
 ## Goal Reflection: Storygraph Progress
 
@@ -42,22 +39,30 @@
 - **CLI:** `storygraph` CLI with CI mode, score, write-gate, parse-plan, validate-plan
 - **Category system:** 7 video categories, scene templates, category-aware scaffolding (episodeforge)
 - **Episode pipeline:** Workspace-first enforcement, PLAN/TODO lifecycle, graphify quality gate
+- **KG feedback loop:** Context injection (Phase 32-A) + enrichment + calibration (Phase 32-B) — structurally closed
+- **Evaluation framework:** Regression runner, tier comparison, cost matrix, model benchmark (Phase 33-G/28-B/31-B)
+- **Documentation:** CI guide (33-C3), deploy mode + hybrid mode workflow (33-H), category guide (34-D)
 
-### What's NOT done (critical gaps):
-1. **Phase 33-F3 — Deploy automation story draft (0%):** Story draft generator missing. Human-in-the-loop still mandatory for creative decisions.
-2. **Phase 33-C3 — CI guide (0%):** CI mode works but no documentation.
-3. **Phase 33-H — Workflow docs (0%):** No deploy-mode path documented.
+### What's NOT done:
+1. **Phase 33-F3 — Deploy automation story draft (0%):** GLM creative writing for zh_TW dialog. Experimental — quality uncertain.
+2. **Phase 33-D — Feedback loop calibration:** Track suggestion→score correlations. Needs more episode data.
 
 ### What's partially done:
-- **Phase 32-B — Post-render enrichment + calibration:** graphify-enrich.ts + prompt-calibration.ts implemented. Enrichment works (28 scenes enriched for weapon-forger). Calibration shows 4/8 sections never populated for narrative series. The full loop is structurally closed but needs more episodes to produce actionable correlations.
-- **Phase 33-C3 — CI guide (0%):** CI mode works but no documentation
-- **Phase 33-H — Workflow docs (0%):** No deploy-mode path documented
-
-### bun_app/storygraph sync issues:
-- Phase 30 (genre-aware) code-level tasks marked "planned" but many exist as done in skill-level docs
-- Phase 31 code-level tasks also out of sync — skill says 31-A complete, code TODO still lists as planned
+- **Phase 32-B calibration:** Structurally complete but needs more episodes across series to produce actionable correlations. weapon-forger shows 4/8 sections never populated.
 
 ## Reflections
+
+### Phase 33-D: Feedback Loop Calibration + Cross-Project Regression (this session)
+
+- **33-D1: graphify-review.ts** — Tier 2 quality review tool. Reads gate.json + kg-quality-score.json + merged-graph.json → builds review prompt → parses AI response → writes quality-review.json. Template mode (--mode regex) generates programmatic review without AI call. AI mode calls GLM for structured review.
+- **33-D2: suggestion-log.ts** — Fix suggestion tracking. Stores suggestion-log.json per series. Tracks fix_suggestions from reviews with status (open/applied/dismissed). Resolves suggestions when gate score changes by ≥5 points. Computes per-target suggestion deltas.
+- **33-D3: Enhanced prompt-calibration** — Added suggestion delta display to calibrate CLI output. Shows per-target avg delta and open suggestion count.
+- **33-D4a: Cross-project smoke tests** — 34 tests validating pipeline output for all 5 series: file existence, gate.json parsing (v2.0, valid decisions/statuses), merged-graph structure, link-edges, graph.html. All pass.
+- **33-D4b: Regression score trending** — Added --trend flag to regression runner. Reads all timestamped baselines, shows per-series score history with trend direction (improving/stable/declining).
+- **33-D4c: Quality examples reporter** — graphify-quality-examples.ts reads merged-graph.json per series, shows node type distribution, AI-exclusive nodes (plot_beat, theme from hybrid mode), top nodes by degree. CLI: `bun run storygraph quality-examples`.
+- **CLI integration** — Added `review` and `quality-examples` commands to cli.ts dispatch.
+- **57 new tests** (10 review + 13 suggestion-log + 34 cross-project smoke). **450 total tests pass** in 258ms.
+- **Honest assessment:** The suggestion tracking is structurally complete but has no data yet — no reviews have produced fix suggestions that were then applied. The cross-project smoke tests are the most immediately valuable: they catch pipeline breakage across all 5 series in <100ms. The quality examples reporter clearly shows which series benefit from hybrid mode (my-core-is-boss and storygraph-explainer have plot_beat/theme nodes; the others don't). The communities field shows 0 for all series — the merged-graph.json may store communities differently than expected. The trending feature needs multiple baseline snapshots per series to produce meaningful trends — currently each series has only one baseline.
 
 ### Phase 33-H: Episode-Setup Workflow Adjustment (this session)
 
@@ -401,66 +406,28 @@
 ## Implementation Order
 
 ```
-Phase A — Foundation                              — ✅ ALL COMPLETE
-Phase B — Genre Validation                        — ✅ ALL COMPLETE
-Phase C — Tier 1 + Cross-Genre Data               — ✅ ALL COMPLETE
-Phase D — Tier 2 (MVP)                            — ✅ ALL COMPLETE — **MVP COMPLETE**
-Phase 34 — Video Category System                   — ✅ ALL COMPLETE — **PHASE 34 COMPLETE**
-Phase E — Deploy Lite Steps (F1, F2)              — ✅ COMPLETE
-Phase F — CLI + Test Speedup                       — ✅ COMPLETE
+═══ ALL PHASES THROUGH 34 + 33-D + 33-I COMPLETE ═══
+See Completed Phases table below for details.
 
 ═══ REMAINING WORK (sorted by impact) ═══
 
-Phase J — KG Feedback Loop (CRITICAL — closes the "so what" gap)
-  1. 32-A1 (buildRemotionPrompt)                  — ✅ DONE
-  2. 32-A2 (story-graph loader functions)         — ✅ DONE
-  3. 32-B1 (post-render enrichment)               — ✅ DONE
-  4. 32-B2 (prompt calibration)                   — ✅ DONE — **PHASE 32 COMPLETE**
-
-Phase G — More Deploy Steps (low risk)
-  5. 33-F4 (Step 4 lite, 2 tasks)                 — ✅ DONE — **PHASE 33-F4 COMPLETE**
-
-Phase K — Evaluation + Validation
-  6. 33-G1 (Tier comparison)                      — ✅ DONE
-  7. 33-G3 (Cost/latency matrix)                  — ✅ DONE
-  8. 33-G5 (Regression runner)                    — ✅ DONE — **PHASE 33-G COMPLETE**
-  9. 31-B1 (Test corpus curation)                 — ✅ DONE — **PHASE 31-B COMPLETE**
-  10. 33-I (my-core-is-boss rebuild)              — ✅ DONE — **PHASE 33-I COMPLETE**
-
-Phase L — Documentation + Polish
-  11. 28-B (Model benchmark)                       — ✅ DONE — **PHASE 28-B COMPLETE**
-  12. 33-C3 (CI integration guide)                 — GitHub Actions examples
-  13. 33-H (Workflow adjustment, 3 tasks)         — ✅ DONE — **PHASE 33-H COMPLETE**
-
 Phase M — Experimental (high risk)
-  14. 33-F3 (Step 2 lite, 2 tasks)                — GLM story draft (experimental)
-  15. 33-D (Feedback loop calibration)            — Suggestion → score tracking
+  1. 33-F3 (Step 2 lite, 2 tasks)                — GLM story draft (experimental)
 
 Phase 35-39 — Web UI (LONG TERM)
-  16. 35-A/B/C (Foundation: Hono + React + module exports)
-  17. 36-A/B (Project CRUD + story editor)
-  18. 37-A/B (Pipeline + quality dashboard)
-  19. 38-A/B (Assets + render management)
-  17. 39 (Full orchestration + automation)
+  2. 35-A/B/C (Foundation: Hono + React + module exports)
+  3. 36-A/B (Project CRUD + story editor)
+  4. 37-A/B (Pipeline + quality dashboard)
+  5. 38-A/B (Assets + render management)
+  6. 39 (Full orchestration + automation)
 ```
 
 ## Dependency Graph
 
 ```
-33-A ──→ 33-E smoke ──→ 31-A ──→ 33-E detail ──→ 33-B ──→ 33-F2 → 33-C
-  │                                               │
-  └─────→ 33-F1 (independent)                    └──→ 32-A ──→ 32-B (feedback loop)
-                                                          │
-  34-A ──→ 34-B0 ──→ 34-B1-B9 ──→ 34-D                    └──→ 33-D (calibration)
-    │
-    └──→ 35-A/B/C ──→ 36/37/38 ──→ 39
-
 Remaining work (no completed deps blocking):
-  33-F4 ← independent
-  31-B ← independent
-  33-G ← needs 33-F4 for full comparison
-  28-B ← needs 31-A (done)
   33-F3 ← experimental, independent
+  35-A/B/C ← independent (new phase)
 ```
 
 ## Completed Phases
@@ -504,6 +471,7 @@ Remaining work (no completed deps blocking):
 | GRAPH-UI | Graph HTML info-panel scrollbar (flex: 0 1 auto, 40vh cap, custom scrollbar) + expandNeighbors() global function replacing broken inline onclick | 2026-04-20 |
 | 33-I | my-core-is-boss Storygraph Rebuild: 173 nodes, 315 edges, 8 communities, gate v2.0 100/100, blended 74.8%, regression baseline added | 2026-04-20 |
 | 33-H | Episode-Setup Workflow Adjustment: deploy mode + hybrid mode docs + SKILL.md kg-review topic | 2026-04-20 |
+| 33-D | Feedback Loop Calibration: graphify-review + suggestion-log + cross-project smoke + trending + quality examples, 57 new tests, 450 total | 2026-04-20 |
 
 ## Archive
 

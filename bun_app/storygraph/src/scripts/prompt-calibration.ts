@@ -13,6 +13,7 @@
 import { resolve, basename } from "node:path";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { loadMergedGraph } from "./kg-loaders";
+import { loadSuggestionLog, computeSuggestionDeltas } from "./suggestion-log";
 
 // ─── Types ───
 
@@ -418,5 +419,16 @@ for (const c of correlations) {
 console.log(`\nRecommendations:`);
 for (const r of recommendations) {
   console.log(`  - ${r}`);
+}
+
+// Suggestion deltas (Phase 33-D3)
+const sugLog = loadSuggestionLog(outDir);
+if (sugLog.entries.length > 0) {
+  const deltas = computeSuggestionDeltas(sugLog);
+  console.log(`\nSuggestion Deltas:`);
+  for (const d of deltas) {
+    const indicator = d.avg_delta > 0 ? "+" : "";
+    console.log(`  ${d.target}: avg delta ${indicator}${d.avg_delta} (${d.applied} applied, ${d.open} open)`);
+  }
 }
 } // end import.meta.main

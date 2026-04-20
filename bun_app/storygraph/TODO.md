@@ -134,61 +134,61 @@ These are implementation tasks in `bun_app/storygraph/src/`. For architecture an
 - [x] **30-C1: Effect pattern per genre** — `series-config.ts` (genre-specific patterns)
 - [x] **30-C2: Title pattern per genre** — `series-config.ts` (genre in config)
 
-### Phase 31 — Subagent-Based KG Quality Scoring (31-A DONE, 31-B pending)
+### Phase 31 — Subagent-Based KG Quality Scoring ✅
 
 > Uses LLM subagent to evaluate KG quality instead of programmatic-only scoring.
-> See `.claude/skills/remotion-best-practices/PLAN.md` Phase 31 for architecture.
-> 31-A completed in skill-level docs. Code-level tasks synced below.
 
 - [x] **31-A1: buildKGScorePrompt()** — `subagent-prompt.ts`
 - [x] **31-A2: scoreKG() orchestrator** — `graphify-score.ts`
 - [x] **31-A3: Subagent scores in comparison report** — `graphify-compare.ts`
-- [ ] **31-B1: Test corpus** — `test-corpus/` directory
-- [ ] **31-B2: Regression runner** — `graphify-regression.ts` (NEW)
+- [x] **31-B1: Test corpus** — `test-corpus/baselines/` (4 series: weapon-forger, storygraph-explainer, galgame-meme-theater, xianxia-system-meme)
+- [x] **31-B2: Regression runner** — `graphify-regression.ts` (merged into 33-G5)
 
-### Phase 32 — KG→Remotion Feedback Loop (CRITICAL GAP — NOT STARTED)
+### Phase 32 — KG→Remotion Feedback Loop ✅
 
-> This is the "so what" loop. The KG is diagnostic-only without this.
-> See `.claude/skills/remotion-best-practices/PLAN.md` Phase 32 for architecture.
+> The "so what" loop — KG context injection into episode writing prompts.
 
-- [ ] **32-A1: buildRemotionPrompt()** — Inject KG context into episode writing prompts
-  - Previous episode summary (key events, character states)
-  - Active foreshadowing (planted, not yet paid off)
-  - Character growth trajectory (direction + recent traits)
-  - Gag evolution history (last 2 episodes)
-  - Pacing profile of previous episode
+- [x] **32-A1: buildRemotionPrompt()** — 8-section zh_TW constraint prompt from KG data
   - File: `subagent-prompt.ts`
+  - Sections: 前集摘要, 活躍伏筆, 角色特質約束, 招牌梗演進, 互動模式, 節奏參考, 主題一致性, 科技術語
 
-- [ ] **32-A2: Story-graph loader functions** — Load KG data for prompt construction
-  - `loadPreviousEpisodeSummary()` — extract ep plot + scenes from merged graph
-  - `loadActiveForeshadowing()` — find planted-but-unpaid foreshadowing
-  - `loadGagEvolution()` — get last N evolutions per gag type
-  - `loadCharacterArcContext()` — get growth direction + recent trait changes
-  - File: `story-graph.ts` or new `graphify-context.ts`
+- [x] **32-A2: kg-loaders.ts + story-graph.ts** — Server-side + browser-side loaders
+  - `bun_app/storygraph/src/scripts/kg-loaders.ts` — 8 server-side loaders
+  - `bun_remotion_proj/shared/src/story-graph.ts` — browser-side loaders
 
 - [x] **32-B1: Post-render KG enrichment** — graphify-enrich.ts reads actual scene metrics
-  - File: `bun_app/storygraph/src/scripts/graphify-enrich.ts` (NEW)
-  - CLI: `bun run storygraph enrich <series-dir> [--ep <epId>]`
+  - File: `bun_app/storygraph/src/scripts/graphify-enrich.ts`
 
 - [x] **32-B2: Prompt calibration data** — prompt-calibration.ts tracks feature→score correlation
-  - File: `bun_app/storygraph/src/scripts/prompt-calibration.ts` (NEW)
-  - CLI: `bun run storygraph calibrate <series-dir> [--reset]`
+  - File: `bun_app/storygraph/src/scripts/prompt-calibration.ts`
 
 ## Scripts Reference
 
 | Script | Lines | Status |
 |--------|-------|--------|
-| `src/cli.ts` | ~250 | Stable |
-| `src/ai-client.ts` | ~120 | **New (Phase 26)** — pi-ai SDK wrapper: callAI(), parseArgsForAI() |
-| `src/scripts/series-config.ts` | ~130 | **New** — SeriesConfig type + configs + detectSeries() |
-| `src/scripts/graphify-episode.ts` | ~550 | **+--mode ai** — AI extraction with regex fallback, config-driven, path validation |
-| `src/scripts/graphify-merge.ts` | ~470 | Refactored — config-driven, plot-lines.md gag chains, path validation |
-| `src/scripts/graphify-check.ts` | ~450 | Needs false positive reduction; Phase 26: +--mode ai enrichment |
-| `src/scripts/graphify-pipeline.ts` | ~150 | Needs per-episode HTML + step 4; Phase 26: +--mode ai passthrough |
-| `src/scripts/gen-story-html.ts` | ~340 | HTML escape done |
-| `src/scripts/story-algorithms.ts` | ~170 | **New** — PageRank, Jaccard, arc/evolution scores |
-| `src/scripts/subagent-prompt.ts` | ~250 | Cross-link + plot arc + foreshadow + episode extraction prompt builders |
-| `src/scripts/ai-crosslink-generator.ts` | ~240 | File-based subagent orchestration; Phase 26: +--mode ai direct call |
+| `src/cli.ts` | ~250 | Stable — Full CLI with score, write-gate, parse-plan, validate-plan, --ci |
+| `src/ai-client.ts` | ~120 | Stable — pi-ai SDK wrapper, truncation repair, maxTokens |
+| `src/scripts/series-config.ts` | ~130 | Stable — SeriesConfig + detectSeries() + genre support |
+| `src/scripts/graphify-episode.ts` | ~550 | Stable — Hybrid extraction, config-driven |
+| `src/scripts/graphify-merge.ts` | ~470 | Stable — Config-driven, plot-lines.md gag chains |
+| `src/scripts/graphify-check.ts` | ~450 | Stable — gate.json v2, genre-aware SKIP, quality_breakdown |
+| `src/scripts/graphify-pipeline.ts` | ~150 | Stable — Hybrid mode passthrough |
+| `src/scripts/gen-story-html.ts` | ~340 | Stable — Overflow fix, expand-neighbors |
+| `src/scripts/story-algorithms.ts` | ~170 | Stable — PageRank, Jaccard, arc/evolution scores |
+| `src/scripts/subagent-prompt.ts` | ~500+ | Stable — 8 prompt builders (crosslink, extraction, scoring, dialog, etc.) |
+| `src/scripts/ai-crosslink-generator.ts` | ~240 | Stable — --mode ai direct call |
+| `src/scripts/kg-loaders.ts` | ~420 | **New (Phase 32)** — 8 server-side KG data loaders |
+| `src/scripts/plan-parser.ts` | ~630 | **New (Phase 33)** — PLAN.md parser with hybrid regex+AI |
+| `src/scripts/chapter-validator.ts` | ~390 | **New (Phase 33)** — 8 structural validation rules |
+| `src/scripts/graphify-write-gate.ts` | ~410 | **New (Phase 33)** — Template-based zh_TW gate report |
+| `src/scripts/graphify-enrich.ts` | ~380 | **New (Phase 32)** — Post-render KG enrichment |
+| `src/scripts/prompt-calibration.ts` | ~420 | **New (Phase 32)** — Feature→score correlation tracking |
+| `src/scripts/graphify-regression.ts` | ~370 | **New (Phase 33)** — Baseline comparison + --ci mode |
+| `src/scripts/graphify-tier-compare.ts` | ~260 | **New (Phase 33)** — Cross-series comparison tables |
+| `src/scripts/graphify-cost-matrix.ts` | ~290 | **New (Phase 33)** — Pipeline step timing |
+| `src/scripts/graphify-model-bench.ts` | ~490 | **New (Phase 28)** — Multi-model benchmarking |
+| `src/scripts/gen-narration.ts` | ~295 | **New (Phase 33)** — Template-based narration.ts generator |
+| `src/scripts/gen-episode-todo.ts` | ~260 | **New (Phase 33)** — Episode TODO.md generator |
 
 ---
 

@@ -103,23 +103,18 @@ See `.claude/skills/storygraph/PLAN.md` Phase 23 for architecture.
 - `graphology` + `graphology-pagerank` — ✅ installed
 - File-based subagent pattern — ✅ matches graphify-check.ts enrichment
 
-## Phase 26 — Dual-Mode Pipeline (in progress)
+## Phase 26 — Dual-Mode Pipeline (complete)
 
-### Completed Files
+### All Files
 
 | File | Purpose | Status |
 |------|---------|--------|
 | `src/ai-client.ts` | pi-ai SDK wrapper: callAI(), parseArgsForAI() | ✅ |
 | `src/scripts/subagent-prompt.ts` | Added buildEpisodeExtractionPrompt() | ✅ |
 | `src/scripts/graphify-episode.ts` | Added --mode ai branch with regex fallback | ✅ |
-
-### Remaining Files
-
-| File | Purpose | Status |
-|------|---------|--------|
-| `src/scripts/ai-crosslink-generator.ts` | Add --mode ai branch for direct API call | Planned |
-| `src/scripts/graphify-check.ts` | Add --mode ai branch for enrichment | Planned |
-| `src/scripts/graphify-pipeline.ts` | Add --mode ai passthrough to all subprocess calls | Planned |
+| `src/scripts/ai-crosslink-generator.ts` | --mode ai branch for direct API call | ✅ |
+| `src/scripts/graphify-check.ts` | --mode ai branch for enrichment | ✅ |
+| `src/scripts/graphify-pipeline.ts` | --mode ai passthrough to all subprocess calls | ✅ |
 
 ### Dependencies
 

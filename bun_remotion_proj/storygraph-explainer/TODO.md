@@ -51,21 +51,6 @@
 - [x] **ep3 PLAN.md** — Story contract: 5 scenes, 22 tech concepts, hybrid extraction stats
 - [x] **ep3 TODO.md** — Quality gate [x], setup tasks [ ] (awaiting scaffold)
 
-- [x] **2B-1: Jaccard similarity fix** — Compare actual node labels (not just types). False positive 1.000 → honest 0.523-0.610.
-- [x] **2B-2: Scene properties fix** — graphify-episode.ts + graphify-merge.ts now preserve `dialog_line_count`, `character_count`, `effect_count` on scene nodes through to merged graph.
-- [x] **2B-3: SKIP status** — Narrator-only series: Character Consistency, Trait Coverage, Interaction Density, Gag Evolution, Character Growth → SKIP (not scored). Score: 95/100 (was 75/100 with 3 false FAILs).
-- [x] **2B-4: Tech term diversity** — Now enabled for generic genre (not just xianxia/novel).
-- [x] **2B-5: Foreshadowing** — Changed from fake "PASS for comedy" to proper SKIP for non-applicable genres.
-
-## Phase 2C: Hybrid/AI Re-run — DONE
-
-- [x] **2C-1: Fix AI response parsing** — GLM-5 returns markdown-fenced JSON that `stripMarkdownFence` can't clean. Fixed with greedy regex + truncation repair.
-- [x] **2C-2: Full pipeline rebuild** — `bun run storygraph pipeline` with `--mode hybrid`. ep1: 33 nodes, ep2: 47 nodes, ep3: 47 nodes.
-- [x] **2C-3: Merged graph validated** — 127 nodes, 144 edges, 7 communities, 5 link edges, score 100/100.
-- [x] **2C-4: Scene properties verified** — Survive through merge.
-- [x] **2C-5: CLI CWD bug fixed** — `storygraph episode/merge/check/pipeline` now correctly resolve paths and pass --mode flag.
-- [x] **2C-6: Plot Arc SKIP for narrator-only** — tech_explainer no longer gets false FAIL for "No climax beat".
-
 ## Phase 3: Scaffold Remotion Code（待 Phase 2C 通過）
 
 - [ ] **3-1: ep1 scaffold** — episodeforge + tech_explainer template

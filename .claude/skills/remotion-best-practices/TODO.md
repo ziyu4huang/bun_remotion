@@ -3,476 +3,48 @@
 > **Cross-linked docs:**
 > - `NEXT.md` — Entry point (read first — status, next task, dependency graph)
 > - `PLAN.md` — Active phase specs (Phase 31–33)
-> - `TODO-archive.md` — Completed tasks (Phase 24–30)
+> - `TODO-archive.md` — Completed tasks (Phase 24–34)
 > - `PLAN-archive.md` — Completed phase specs (Phase 24–30)
 > - `../storygraph/PLAN.md` — storygraph code-level architecture
 > - `../storygraph/TODO.md` — storygraph code-level tasks
 
 > **Rule:** Strategic/pipeline tasks → this file. Code implementation tasks → `../storygraph/TODO.md`.
 
-> **Status:** v0.27.3 — Graph HTML info-panel scrollbar + expand-neighbors fix. Core engine mature. Next: my-core-is-boss pipeline rebuild.
+> **Status:** v0.30.0 — Phase 33-D complete. Remaining: 33-F3 (experimental), Phase 35-39 (Web UI).
 
 ---
 
-## P0: Speed Up Test Suite (DONE)
+## Phase 33-D: Feedback Loop (P2, calibration) — COMPLETE
 
-> 422 tests across 22 files took ~14s. Root cause: bun_pi_agent live API tests.
-> **Result:** `bun test` now 180ms (254 tests, 10 files). 74x speedup.
+- [x] **33-D1: graphify-review.ts** — Tier 2 review tool → quality-review.json. Template + AI modes. 10 tests.
+  - File: `bun_app/storygraph/src/scripts/graphify-review.ts`
 
-- [x] **P0-A: Profile slow test files** — Ran each file individually. Top 3: zai-models (7.5s live API), server (5.9s live agent), binary (2.3s server spawn)
-- [x] **P0-B: Isolate heavy tests** — Added `bunfig.toml` with `pathIgnorePatterns` excluding bun_pi_agent. Added `test:all` for full suite.
-- [x] **P0-C: Root cause was not AST/parsing** — All storygraph/episodeforge/remotion_types tests are <100ms. Slowness was entirely from bun_pi_agent live network calls.
-- [x] **P0-D: Test timeout** — Default 5s already sufficient for unit tests. bun_pi_agent tests use 30s timeout (appropriate for integration).
+- [x] **33-D2: suggestion-log.ts** — Fix suggestion tracking with delta computation. 13 tests.
+  - File: `bun_app/storygraph/src/scripts/suggestion-log.ts`
 
----
+- [x] **33-D3: Enhanced prompt-calibration** — Suggestion delta display in calibrate CLI.
+  - File: `bun_app/storygraph/src/scripts/prompt-calibration.ts` (EDIT)
 
-## Phase 34-R — Rename Verification Tests (DONE)
+- [x] **33-D4a: Cross-project smoke tests** — 34 tests validating all 5 series pipeline output.
+  - File: `bun_app/storygraph/src/scripts/__tests__/cross-project-smoke.test.ts`
 
-> Verify the bun_graphify→storygraph, bun_scaffold→episodeforge rename didn't break any pipeline.
+- [x] **33-D4b: Regression score trending** — --trend flag for regression runner.
+  - File: `bun_app/storygraph/src/scripts/graphify-regression.ts` (EDIT)
 
-### 34-R1: storygraph tests
+- [x] **33-D4c: Quality examples reporter** — Per-series AI extraction summary.
+  - File: `bun_app/storygraph/src/scripts/graphify-quality-examples.ts`
 
-- [x] **CLI runs** — Fixed: added `storygraph` script to root package.json (entry: `bun_app/storygraph/src/cli.ts`)
-- [x] **Pipeline single episode** — `bun run storygraph full` runs all 5 steps (0 nodes = pre-existing Python env issue, not rename)
-- [ ] **Pipeline merge** — Deferred (not rename-sensitive)
-- [ ] **Check/Compare/Score** — Deferred (not rename-sensitive)
-- [x] **Skill trigger** — `/storygraph` skill loads
-
-### 34-R2: episodeforge tests
-
-- [x] **CLI runs** — `bun run episodeforge --help` exits 0
-- [x] **--series list** — `bun run episodeforge --series weapon-forger --dry-run` correctly requires `--ep`
-- [x] **--category flag** — `bun run episodeforge --series storygraph-intro --category tech_explainer --dry-run` works
-- [x] **Usage text fixed** — `bun run scaffold` → `bun run episodeforge` in args.ts + index.ts
-
-### 34-R3: remotion_types tests
-
-- [x] **Import works** — `VIDEO_CATEGORIES` exports 7 categories
-
-### 34-R4: skill cross-reference tests
-
-- [x] **`/develop_bun_app`** — Updated with episodeforge + remotion_types entries
-- [x] **No old names** in storygraph or develop_bun_app skill files
-
-### 34-R5: stale reference sweep
-
-- [x] **bun_app/** has zero old names in `.ts` and `.json` files
-- [x] **Only references** in TODO/PLAN/NEXT docs are historical rename descriptions
-
-### Fixes applied
-
-1. Added `"storygraph"` script to root `package.json` (was missing after rename)
-2. Fixed entry point: `index.ts` → `cli.ts`
-3. Updated episodeforge help text: `bun run scaffold` → `bun run episodeforge`
-4. Added episodeforge + remotion_types to develop_bun_app skill
+- [x] **CLI integration** — review + quality-examples commands in cli.ts.
 
 ---
 
-## Phase 34 — Video Category System (ACTIVE)
-
-> Full spec: `PLAN.md §Phase 34`
->
-> **Core insight:** Category ≠ Genre. Category = video format (tech_explainer). Genre = story content (xianxia_comedy). A series has BOTH.
-
-### 34-A: Category Taxonomy + Templates (DONE)
-
-- [x] **34-A1: category-types.ts** — 7 VideoCategoryId, scene structures, component mapping, dirname detection
-  - File: `bun_app/remotion_types/src/category-types.ts`
-  - Detects: weapon-forger→narrative_drama, galgame-meme-theater→galgame_vn, claude-code-intro→tech_explainer, etc.
-
-- [x] **34-A2: scene-templates.ts** — CompositionSpec builders for all 7 categories
-  - File: `bun_app/remotion_types/src/scene-templates.ts`
-  - Each builder: input data → SceneSpec[] with start frames, durations, props
-  - Tech Explainer: per-feature duration capped at 10s, auto-extends total if needed
-
-- [x] **34-A3: tech-explainer-presets.ts** — storygraph intro preset + composition data
-  - File: `bun_app/remotion_types/src/presets/tech-explainer-presets.ts`
-  - storygraphIntroData: 5-stage pipeline, 3 features, comparison, CTA
-  - Total: 61s (9 scenes) when targetDuration=90s
-
-- [x] **34-A4: CLAUDE.md** — Added Video Categories section with mapping table
-
-### 34-B: episodeforge Extension + storygraph Intro (POC, P0, NEXT)
-
-> **Revised:** Extend episodeforge to support `--category tech_explainer`, then scaffold through CLI.
-> Merges 34-C into 34-B. Future categories reuse the same `--category` flow.
-
-#### 34-B0: Extend episodeforge for tech_explainer (DONE)
-
-- [x] **34-B0a: --category flag** — Add `--category <VideoCategoryId>` to scaffold CLI
-  - File: `bun_app/episodeforge/src/args.ts`
-
-- [x] **34-B0b: Category-aware naming** — Non-episode naming for standalone projects (no ch/ep)
-  - `storygraph-intro` → dirName, packageName, compositionId
-  - File: `bun_app/episodeforge/src/naming.ts`
-
-- [x] **34-B0c: Category-aware templates** — Scene files, PLAN.md, narration system vary by category
-  - Tech Explainer: Title + Problem + Architecture + Feature×N + Demo + Comparison + Outro
-  - Import scene-templates.ts builders for scene layout
-  - File: `bun_app/episodeforge/src/templates-tech-explainer.ts` (NEW)
-
-- [x] **34-B0d: storygraph-intro series config** — Register as tech_explainer preset
-  - File: `bun_app/episodeforge/src/series-config.ts`
-
-- [x] **34-B0e: Workspace registration** — Update root package.json workspaces + dev.sh
-  - File: `bun_app/episodeforge/src/updaters.ts`
-
-- [x] **remotion_types shared package** — Extracted category types, scene templates, presets from storygraph
-  - File: `bun_app/remotion_types/` (NEW)
-
-#### 34-B1-B9: Scaffold + Assets + Scenes + Render (DONE — renamed to storygraph-explainer)
-
-> **Full pipeline:** scaffold → generate-images → generate-tts → implement scenes → render
-> **Renamed:** storygraph-intro → storygraph-explainer. Restructured to chapter-based.
-
-- [x] **34-B1: Scaffold workspace** — `bun run episodeforge --series storygraph-intro --category tech_explainer`
-  - Creates `bun_remotion_proj/storygraph-intro/storygraph-intro/` with all scene files
-  - 9 scenes from `storygraphIntroData` composition spec
-
-- [x] **34-B1b: Generate images** — CSS/SVG-generated visuals (no image assets needed)
-
-- [x] **34-B1c: Generate TTS** — mlx_tts serena voice, 9 scenes, durations.json
-
-- [x] **34-B2: TitleScene** — "storygraph" title + "任何輸入 → 知識圖譜" tagline
-
-- [x] **34-B3: ProblemScene** — "資料碎片化" pain point with scattered items animation
-
-- [x] **34-B4: ArchitectureScene** — Pipeline flow diagram with 5 stages
-
-- [x] **34-B5: FeatureScene ×3** — AST analysis (code tree), federated KG (graph viz), quality scoring (bar chart dashboard)
-
-- [x] **34-B6: DemoScene** — Terminal-like CLI workflow
-
-- [x] **34-B7: ComparisonScene** — Before vs after comparison
-
-- [x] **34-B8: OutroScene** — "Star on GitHub" CTA + links
-
-- [x] **34-B9: Render + verify** — 3681 frames, 8.3 MB MP4 output
-
-### 34-C: Category-Aware Scaffolding (MERGED into 34-B0)
-
-> Merged. 34-B0 extends episodeforge with `--category` flag. Remaining category presets:
-> - [ ] listicle, tutorial, shorts_meme presets when needed
-
-### 34-D: Skill Documentation (P1, DONE)
-
-- [x] **34-D1: SKILL.md topic detection** — Add category keywords to detection table
-  - File: `.claude/skills/remotion-best-practices/SKILL.md`
-
-- [x] **34-D2: category-guide.md** — Per-category: scene templates, component choices, animation style, decision tree
-  - File: `.claude/skills/remotion-best-practices/topics/episode-setup/category-guide.md` (NEW)
-
-- [x] **34-D3: episode-creation.md update** — Add category selection step before scaffolding
-  - File: `.claude/skills/remotion-best-practices/topics/episode-setup/episode-creation.md`
-
----
-
-### 34-E: Storygraph Consistency Checker Fixes (DONE)
-
-> Three bugs found via storygraph-explainer testing. All narrator-only / tech_explainer false positives.
-
-- [x] **34-E1: Jaccard similarity content-aware** — Compare node labels (not just types). tech_explainer: 1.000 → 0.523-0.610.
-  - File: `bun_app/storygraph/src/scripts/story-algorithms.ts`
-- [x] **34-E2: Scene properties preservation** — graphify-episode.ts + graphify-merge.ts now keep `dialog_line_count` etc. through to merged graph.
-  - Files: `bun_app/storygraph/src/scripts/graphify-episode.ts`, `graphify-merge.ts`
-- [x] **34-E3: SKIP status for inapplicable checks** — Narrator-only: 6 checks → SKIP (not scored). Score: 75→95.
-  - File: `bun_app/storygraph/src/scripts/graphify-check.ts`
-- [x] **34-E4: SKILL.md enforcement** — Regex mode deprecated for production. Must use hybrid/ai.
-  - File: `.claude/skills/remotion-best-practices/SKILL.md`
-
-### 34-F: Storygraph AI Mode Fix (DONE)
-
-> **Fixed:** Greedy regex for nested backticks, truncation repair, maxTokens=4096, simplified prompt.
-> Result: 131 nodes/8 communities (regex: 83 nodes/0 communities). Score 100/100.
-
-- [x] **34-F1: Fix stripMarkdownFence** — Greedy match + balanced JSON extraction fallback
-  - File: `bun_app/storygraph/src/ai-client.ts` — 17 tests pass
-- [x] **34-F2: Hybrid re-run storygraph-explainer** — All 3 eps: stopReason "stop", 48 AI-exclusive nodes total
-- [x] **34-F3: Verify merge properties survive** — 131 nodes, 149 edges, 8 communities, 5 link edges
-- [x] **34-F4: Make `--mode hybrid` the default** — Already default in `parseArgsForAI()`
-
----
-
-## Phase 25 — Remotion Framework (sketched)
-
-> Detailed spec: `PLAN-archive.md §Phase 25`
-
-- [ ] **25-A1: DialogScene template** — Multi-character dialog with reactions, proportional timing
-- [ ] **25-A2: ActionScene template** — Dynamic battle/action with ComicEffects, ScreenShake
-- [ ] **25-B1: PlotBeatOverlay** — Visual arc position indicator (reads plot_beat nodes)
-- [ ] **25-C1: CharacterStateOverlay** — Current emotional state (reads growth trajectory)
-
----
-
-## Phase 28-B — Improved Model Benchmark (DONE)
-
-> New script: graphify-model-bench.ts with accuracy sampling, reliability runs, CLI wired.
-
-- [x] **28-B1: Accuracy sampling** — buildAccuracyPrompt + parseAccuracyResponse, 10-20 nodes per model
-  - Filters episode_plot + narrator nodes, random sampling
-  - AI evaluates each node as real/hallucinated with reason
-  - File: `bun_app/storygraph/src/scripts/graphify-model-bench.ts`
-
-- [x] **28-B2: Quality-weighted score** — Already implemented as blended formula (0.4×programmatic + 0.6×AI) in Phase 31-A
-
-- [x] **28-B3: Reliability testing** — `--runs N` flag, mean±stddev per metric
-  - summarizeModel() computes avg ± stddev for gate/blended/nodes/edges/duration
-  - File: `bun_app/storygraph/src/scripts/graphify-model-bench.ts`
-
-- [x] **28-B4: --models flag** — `--models glm-4.5-flash,glm-4.6,glm-5` with per-model pipeline runs
-  - Backs up + restores storygraph_out between model runs
-  - CLI: `bun run storygraph model-bench <series-dir> [--models ...] [--runs N] [--accuracy]`
-  - 19 new tests, 393 total pass
-
----
-
-## Phase 31 — Subagent-Based KG Quality Scoring
-
-> Full spec: `PLAN.md §Phase 31`
-
-### 31-A: Subagent Scoring Infrastructure
-
-- [x] **31-A1: buildKGScorePrompt()** — Sends merged graph summary + rubric to AI
-  - 5 dimensions: entity accuracy, relationship correctness, completeness, cross-episode coherence, actionability
-  - Returns: JSON per-dimension scores + overall + justification
-  - File: `bun_app/storygraph/src/scripts/subagent-prompt.ts`
-
-- [x] **31-A2: scoreKG() orchestrator** — Pipeline + callAI + blended score → kg-quality-score.json
-  - Blended: 0.4 × programmatic + 0.6 × subagent
-  - File: `bun_app/storygraph/src/scripts/graphify-score.ts` (NEW)
-
-- [x] **31-A3: graphify-compare.ts integration** — Subagent score column + AI quality assessment section
-  - File: `bun_app/storygraph/src/scripts/graphify-compare.ts`
-
-### 31-B: Regression Test Suite
-
-- [x] **31-B1: Test corpus** — Curate regression episodes across 4 series
-  - weapon-forger (xianxia_comedy), galgame-meme-theater (galgame_meme), xianxia-system-meme (xianxia_comedy), storygraph-explainer (generic/tech_explainer)
-  - Fixed `weapon-forfer` typo → `weapon-forger` in baselines dir
-  - Added storygraph-explainer baseline (gate 100/100)
-  - my-core-is-boss excluded (gate v1.0 format, needs pipeline re-run)
-  - Added `quality_breakdown` null guard to regression runner
-  - File: `bun_app/storygraph/test-corpus/baselines/`
-
-- [x] **31-B2: Regression runner** — Merged into 33-G5 (graphify-regression.ts)
-  - Pipeline + scoring on corpus, delta > 10% = regression
-  - CLI: `bun run storygraph regression [--ci] [--update]`
-
----
-
-## Phase 32 — KG-Driven LLM Prompt Enhancement
-
-> Full spec: `PLAN.md §Phase 32`
-
-### 32-A: KG Context Injection (DONE)
-
-- [x] **32-A1: buildRemotionPrompt()** — 8-section zh_TW constraint prompt from KG data
-  - File: `bun_app/storygraph/src/scripts/subagent-prompt.ts`
-  - Sections: 前集摘要, 活躍伏筆, 角色特質約束, 招牌梗演進, 互動模式, 節奏參考, 主題一致性, 科技術語
-  - CLI: `bun run storygraph gen-prompt <series-dir> --target-ep <epId>`
-  - 10 tests pass
-
-- [x] **32-A2: kg-loaders.ts + story-graph.ts enhancements** — Server-side + browser-side loaders
-  - `bun_app/storygraph/src/scripts/kg-loaders.ts` — 8 server-side loaders (NEW)
-  - `bun_remotion_proj/shared/src/story-graph.ts` — loadPreviousEpisodeSummary(), loadActiveForeshadowing() (browser-side)
-  - `bun_app/storygraph/src/scripts/graphify-gen-prompt.ts` — Refactored to use new functions (570→150 lines)
-  - 16 loader tests pass
-
-### 32-B: Remotion Scene Quality Feedback Loop (DONE)
-
-- [x] **32-B1: Post-render KG enrichment** — Actual scene durations → update KG predictions
-  - File: `bun_app/storygraph/src/scripts/graphify-enrich.ts` (NEW)
-  - Reads voice-manifest.json + durations.json, matches scenes to KG nodes, writes enrich-report.json
-  - CLI: `bun run storygraph enrich <series-dir> [--ep <epId>]`
-  - weapon-forger: 7 episodes, 28 scenes enriched (28 matched, 0 unmatched)
-
-- [x] **32-B2: Prompt calibration data** — Track prompt→quality correlation
-  - File: `bun_app/storygraph/src/scripts/prompt-calibration.ts` (NEW)
-  - 8 KG features tracked per episode, correlates with gate.json scores
-  - CLI: `bun run storygraph calibrate <series-dir> [--reset]`
-  - weapon-forger: 4/8 sections never populated (foreshadowing, gag, pacing, themes)
-  - storygraph-explainer: pacing/themes/tech_terms correlate with score 100
-
----
-
-## Phase 33 — Dual-LLM Architecture
-
-> Full spec + implementation order + dependency graph: `PLAN.md §Phase 33`
->
-> **Core insight:** Two LLM paths (pi-agent GLM free, Claude paid) separated into three-tier quality pipeline.
-> **MVP:** Phases 1–5 (33-A + 33-E smoke + 31-A + 33-E detail + 33-B).
-
-### 33-A: gate.json v2 (P0, foundation)
-
-- [x] **33-A1: Add provenance fields** — `series`, `genre`, `generator` (mode, model, version)
-  - File: `bun_app/storygraph/src/scripts/graphify-check.ts`
-
-- [x] **33-A2: Regression detection** — Read previous gate.json, compute `previous_score` + `score_delta`
-  - File: `bun_app/storygraph/src/scripts/graphify-check.ts`
-
-- [x] **33-A3: quality_breakdown** — Per-dimension normalized scores (consistency, arc, pacing, growth, theme, gag)
-  - null for genre-inapplicable dimensions
-  - File: `bun_app/storygraph/src/scripts/graphify-check.ts`
-
-- [x] **33-A4: supervisor_hints** — focus_areas, suggested_rubric_overrides, escalation_reason
-  - File: `bun_app/storygraph/src/scripts/graphify-check.ts`
-
-- [x] **33-A5: requires_claude_review** — true if score < 70 OR any FAIL OR score_delta < -10
-  - File: `bun_app/storygraph/src/scripts/graphify-check.ts`
-
-### 33-B: Claude Code Review Skill Topic (P1, Tier 2)
-
-- [x] **33-B1: Create kg-review topic** — `topics/kg-review/_topic.md` with Tier 2 rubric
-  - 5 dimensions + genre extensions, reads gate.json v2 + quality-score.json
-  - File: `.claude/skills/remotion-best-practices/topics/kg-review/_topic.md` (NEW)
-
-- [x] **33-B2: Integrate with episode-setup** — Add Tier 2 review step after Step 3b
-  - File: `.claude/skills/remotion-best-practices/topics/episode-setup/episode-creation.md`
-
-- [x] **33-B3: quality-review.json schema** — Per-dimension scores + fix suggestions + regression notes
-  - File: Documented in kg-review topic
-
-### 33-C: CLI Packaging (P1, 33-C1/C2 DONE)
-
-- [x] **33-C1: cli.ts entry point** — `storygraph <series-dir> [options]` with --mode/--ci
-  - File: `bun_app/storygraph/src/cli.ts` (ENHANCED)
-  - Added: `score` command, `--ci` flag (exit 0/1 on quality gate), `--mode/--provider/--model` in help
-  - CI mode: `bun run storygraph check <dir> --ci` exits 1 on FAIL
-
-- [x] **33-C2: package.json bin field** — Already existed, bumped to v0.3.0
-  - File: `bun_app/storygraph/package.json`
-
-- [x] **33-C3: CI integration guide** — GitHub Actions, pre-commit hooks, regression baselines, multi-series matrix
-  - File: `.claude/skills/remotion-best-practices/topics/kg-review/ci-guide.md` (NEW)
-  - Covers: quality gate check, regression detection, full pipeline + score, Husky/Lefthook/shell hooks, threshold tuning, env vars
-
-### 33-D: Feedback Loop (P2, calibration)
-
-- [ ] **33-D1: graphify-review.ts** — Claude writes quality-review.json from gate.json + quality-score.json
-  - File: `bun_app/storygraph/src/scripts/graphify-review.ts` (NEW)
-
-- [ ] **33-D2: Prompt calibration** — Track suggestions applied → score delta
-  - File: `bun_app/storygraph/src/scripts/prompt-calibration.ts` (NEW)
-
-### 33-E: Multi-Series Evaluation Suite (P1)
-
-- [x] **33-E1: weapon-forger benchmark** — xianxia_comedy, 7 eps, chapter-based
-  - File: `bun_app/storygraph/test-corpus/weapon-forger/`
-
-- [x] **33-E2: galgame-meme-theater benchmark** — galgame_meme, 5 eps, comedy arc
-  - File: `bun_app/storygraph/test-corpus/galgame-meme-theater/`
-
-- [x] **33-E3: xianxia-system-meme benchmark** — xianxia_comedy, 2 eps, minimal cross-ep
-  - File: `bun_app/storygraph/test-corpus/xianxia-system-meme/`
-
-- [x] **33-E4: Cross-genre comparison report** — Side-by-side metrics table
-  - File: `bun_app/storygraph/test-corpus/cross-genre-comparison.md`
-
-- [x] **33-E5: Regression baseline commit** — Store benchmark snapshots
-  - File: `bun_app/storygraph/test-corpus/baselines/`
-
-### 33-F: Beyond-Graphify Deployment (P1)
-
-#### 33-F1: Step 0 lite — PLAN.md Validation (DONE)
-
-- [x] **33-F1a: PLAN.md parser** — Extract characters, episodes, rules → plan-struct.json
-  - File: `bun_app/storygraph/src/scripts/plan-parser.ts` (NEW)
-  - Hybrid mode: regex for tables, optional LLM for unstructured prose
-  - Tested on 4 series: weapon-forger (7 chars, 12 eps, 4 arcs), my-core-is-boss (5 chars, 34 eps), galgame-meme-theater (4 chars, 7 eps), storygraph-explainer (6 eps)
-  - 39 tests pass
-
-- [x] **33-F1b: Chapter rule validator** — 8 rules (EPISODE_COUNT, SEQUENTIAL_COMPLETION, CHARACTER_CONSISTENCY, ARC_POSITION_VALIDITY, GAG_EVOLUTION_MINIMUM, DUPLICATE_EPISODE_IDS, EPISODE_ID_FORMAT, MISSING_REQUIRED_SECTIONS)
-  - File: `bun_app/storygraph/src/scripts/chapter-validator.ts` (NEW)
-  - CLI integration: `bun run storygraph parse-plan <dir>`, `bun run storygraph validate-plan <dir>`
-  - **Limitation:** Tier 0 only (programmatic). Cannot evaluate story quality, arc coherence, humor effectiveness, or pacing suitability.
-
-- [ ] **33-F1c: Tier 1 PLAN.md quality assessment** — GLM evaluates parsed plan-struct.json for semantic quality
-  - File: `bun_app/storygraph/src/scripts/plan-quality-score.ts` (NEW)
-  - Uses `callAI()` to assess: arc coherence, pacing balance, gag evolution quality, character arc progression
-  - Produces `plan-quality.json` with per-dimension scores + overall + justification
-  - Feeds into chapter-validator output (or runs as separate `bun run storygraph assess-plan <dir>`)
-  - Depends on: 33-F1a (parser)
-
-#### 33-F2: Step 3b lite — Quality Gate Writer (DONE)
-
-- [x] **33-F2a: graphify-write-gate.ts** — Template-based zh_TW gate section from pipeline output
-  - File: `bun_app/storygraph/src/scripts/graphify-write-gate.ts` (NEW)
-  - Reads gate.json + kg-quality-score.json → gate-report.md
-  - Per-dimension breakdown, issue deduplication, supervisor hints, statistics
-  - Optional AI enrichment: GLM zh_TW assessment → updates fix_suggestion_zhTW in gate.json
-  - CLI: `bun run storygraph write-gate <series-dir>`
-
-- [x] **33-F2b: GLM dialog assessment** — callAI() with dialog quality rubric
-  - File: `bun_app/storygraph/src/scripts/subagent-prompt.ts` (+buildDialogAssessmentPrompt)
-  - Prompt: sends gate data, requests 3-5 paragraph zh_TW assessment + per-check fix suggestions
-  - 10 tests pass (template, AI scores, escalation, dedup, null dim, prompt gen)
-
-#### 33-F3: Step 2 lite — Story Draft (experimental)
+## Phase 33-F3: Step 2 lite — Story Draft (experimental)
 
 - [ ] **33-F3a: GLM story draft** — Generate zh_TW dialog from constraints (60-70% quality)
   - File: `bun_app/storygraph/src/scripts/subagent-prompt.ts` (+buildStoryDraftPrompt)
 
 - [ ] **33-F3b: Story quality evaluation** — GLM evaluates own draft
   - File: `bun_app/storygraph/src/scripts/subagent-prompt.ts` (+buildStoryQualityPrompt)
-
-#### 33-F4: Step 4 lite — Episode Scaffold Generation (DONE)
-
-- [x] **33-F4a: narration.ts generator** — Template-based from confirmed dialog
-  - File: `bun_app/storygraph/src/scripts/gen-narration.ts` (NEW)
-  - Supports 3 categories: narrative_drama (multi-char), tech_explainer (narrator-only), galgame_vn
-  - CLI: `bun run storygraph gen-narration <ep-dir> --from-plan` or `--scenes <scenes.json>`
-  - Extracts scene names from PLAN.md tables, generates TypeScript with types + voice maps
-
-- [x] **33-F4b: Episode TODO.md generator** — Standard TODO.md structure from PLAN.md
-  - File: `bun_app/storygraph/src/scripts/gen-episode-todo.ts` (NEW)
-  - Category-specific templates: drama (character setup), tech_explainer (narrator), galgame
-  - CLI: `bun run storygraph gen-todo <ep-dir> [--category <cat>]`
-  - Auto-detects category from directory name, links parent TODO.md if exists
-
-### 33-G: Develop-Deploy Evaluation Framework (P1, DONE)
-
-> **Result:** 3 tools built (regression runner, tier comparison, cost matrix), 40 tests, CLI wired.
-
-- [x] **33-G1: Full-pipeline Tier comparison** — graphify-tier-compare.ts
-  - File: `bun_app/storygraph/src/scripts/graphify-tier-compare.ts` (NEW)
-  - CLI: `bun run storygraph tier-compare`
-  - 9 tests pass
-
-- [x] **33-G2: Step-by-step quality delta** — Merged into tier-compare (quality breakdown + AI dimension tables)
-  - File: `bun_app/storygraph/src/scripts/graphify-tier-compare.ts`
-
-- [x] **33-G3: Cost/latency matrix** — graphify-cost-matrix.ts
-  - File: `bun_app/storygraph/src/scripts/graphify-cost-matrix.ts` (NEW)
-  - CLI: `bun run storygraph cost-matrix`
-  - 9 tests pass
-
-- [ ] **33-G4: End-to-end deploy simulation** — Full lite pipeline without Claude Code
-  - File: `bun_app/storygraph/test-corpus/deploy-simulation/`
-  - Blocked by: 33-F3 (story draft generator)
-
-- [x] **33-G5: Regression runner** — graphify-regression.ts
-  - File: `bun_app/storygraph/src/scripts/graphify-regression.ts` (NEW)
-  - CLI: `bun run storygraph regression [--ci] [--update] [--threshold N]`
-  - 22 tests pass
-
-### 33-H: Episode-Setup Workflow Adjustment (P1, DONE)
-
-- [x] **33-H1: Episode-creation.md deploy path** — Deploy Mode section + CLI commands, comparison table
-  - File: `.claude/skills/remotion-best-practices/topics/episode-setup/episode-creation.md`
-- [x] **33-H2: Hybrid mode instructions** — Dual-LLM architecture section, GLM vs Claude task table
-  - File: `.claude/skills/remotion-best-practices/topics/episode-setup/episode-creation.md`
-- [x] **33-H3: SKILL.md topic detection update** — Added kg-review row with keywords
-  - File: `.claude/skills/remotion-best-practices/SKILL.md`
-
-### 33-I: my-core-is-boss Storygraph Rebuild (P0, DONE)
-
-> 5 episodes (of planned 34), hybrid mode. Gate v2.0, regression baseline added.
-
-- [x] **33-I1: Full pipeline run** — 173 nodes, 315 edges, 8 communities, 40 link edges
-- [x] **33-I2: Quality scoring** — Gate 100/100, AI 5.8/10, blended 74.8%
-- [x] **33-I3: HTML verification** — Overflow fixes confirmed (3× overflow:hidden, widthConstraint, expandNeighbors, flex:0 1 auto)
-- [x] **33-I4: Graph analysis** — 林逸 hub (deg 21-31), 5 episode communities + narrator (cohesion 1.0) + 2 orphans
-- [x] **33-I5: Regression baseline** — Added via --update bugfix. 5-series suite all PASS.
 
 ---
 
@@ -609,3 +181,21 @@
 - [ ] **39-A3: Monitoring dashboard** — Series health, quality trends, completion rate
 - [ ] **39-A4: CI/CD integration** — Webhook triggers, scheduled pipeline runs
 - [ ] **39-A5: Export/import** — Project configs as JSON for reproducibility
+
+---
+
+## Done
+
+- [x] Phase 24-A–F (6 quality checks)
+- [x] Phase 25 (sketched, archived)
+- [x] Phase 26 (pi-agent AI integration)
+- [x] Phase 27 (hybrid mode + comparison)
+- [x] Phase 28 + 28-B (model benchmark, glm-5 default)
+- [x] Phase 29 (quality pipeline + overlays)
+- [x] Phase 30 (genre-aware KG pipeline)
+- [x] Phase 31 (subagent KG quality scoring)
+- [x] Phase 32 (KG-driven LLM prompt enhancement)
+- [x] Phase 33-A–C, E, F1, F2, F4, G, H, I (dual-LLM architecture)
+- [x] Phase 33-D (feedback loop calibration + cross-project regression)
+- [x] Phase 34-A–F (video category system)
+- [x] P0: Speed Up Test Suite (74x speedup)

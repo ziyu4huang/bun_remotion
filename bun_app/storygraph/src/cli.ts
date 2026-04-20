@@ -98,6 +98,7 @@ Commands:
   parse-plan <series-dir>  Parse PLAN.md → plan-struct.json
   validate-plan <series-dir> Validate plan-struct.json against rules
   write-gate <series-dir> Generate zh_TW quality gate report (Step 3b lite)
+  review <series-dir>     Tier 2 quality review → quality-review.json (Phase 33-D1)
   gen-prompt <series-dir> Generate story-writing constraint prompt from KG (Phase 32-A)
   enrich <series-dir>     Post-render KG enrichment (Phase 32-B1)
   calibrate <series-dir>  Track KG feature → quality correlation (Phase 32-B2)
@@ -107,6 +108,7 @@ Commands:
   tier-compare            Compare quality across series and modes (Phase 33-G1)
   cost-matrix             Track pipeline step timing and cost (Phase 33-G3)
   model-bench <series>    Benchmark AI models for KG extraction (Phase 28-B)
+  quality-examples        Show AI extraction summary across all series (Phase 33-D4c)
 
 Paths:
   Multiple input sources supported: full src/ lib/ tests/
@@ -484,7 +486,9 @@ switch (command) {
   case 'regression':
   case 'tier-compare':
   case 'cost-matrix':
+  case 'review':
   case 'model-bench':
+  case 'quality-examples':
     // Delegate to dedicated scripts
     {
       const scriptMap: Record<string, string> = {
@@ -505,6 +509,8 @@ switch (command) {
         'tier-compare': 'graphify-tier-compare',
         'cost-matrix': 'graphify-cost-matrix',
         'model-bench': 'graphify-model-bench',
+        'review': 'graphify-review',
+        'quality-examples': 'graphify-quality-examples',
       };
       const script = scriptMap[command] ?? command;
       const ciMode = hasFlag(args, '--ci');
