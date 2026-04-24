@@ -15,7 +15,7 @@ REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 # Use system Chrome instead of per-app downloaded chrome-headless-shell
 export REMOTION_CHROME_EXECUTABLE_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 
-ALL_APPS="claude-code-intro taiwan-stock-market three-little-pigs galgame-youth-jokes galgame-meme-theater-ep1 galgame-meme-theater-ep2 galgame-meme-theater-ep3 galgame-meme-theater-ep4 galgame-meme-theater-ep5 galgame-meme-theater-ep6 galgame-meme-theater-ep7 galgame-meme-theater-test-image xianxia-system-meme-ep1 xianxia-system-meme-ep2 weapon-forger-ch1-ep1 weapon-forger-ch1-ep2 weapon-forger-ch1-ep3 weapon-forger-ch2-ep1 weapon-forger-ch2-ep2 weapon-forger-ch2-ep3 weapon-forger-ch3-ep1 commentary-style my-core-is-boss-ch1-ep1 my-core-is-boss-ch1-ep2 my-core-is-boss-ch1-ep3 my-core-is-boss-ch2-ep1 my-core-is-boss-ch2-ep2"
+ALL_APPS="claude-code-intro taiwan-stock-market three-little-pigs galgame-youth-jokes galgame-meme-theater-ep1 galgame-meme-theater-ep2 galgame-meme-theater-ep3 galgame-meme-theater-ep4 galgame-meme-theater-ep5 galgame-meme-theater-ep6 galgame-meme-theater-ep7 galgame-meme-theater-test-image xianxia-system-meme-ep1 xianxia-system-meme-ep2 weapon-forger-ch1-ep1 weapon-forger-ch1-ep2 weapon-forger-ch1-ep3 weapon-forger-ch2-ep1 weapon-forger-ch2-ep2 weapon-forger-ch2-ep3 weapon-forger-ch3-ep1 commentary-style my-core-is-boss-ch1-ep1 my-core-is-boss-ch1-ep2 my-core-is-boss-ch1-ep3 my-core-is-boss-ch2-ep1 my-core-is-boss-ch2-ep2 weapon-forger-ch99-ep99 weapon-forger-ch3-ep2 my-core-is-boss-ch2-ep3"
 
 # Resolve composition ID from app directory name
 get_comp_id() {
@@ -47,6 +47,9 @@ get_comp_id() {
         my-core-is-boss-ch1-ep3) echo "MyCoreIsBossCh1Ep3" ;;
         my-core-is-boss-ch2-ep1) echo "MyCoreIsBossCh2Ep1" ;;
         my-core-is-boss-ch2-ep2) echo "MyCoreIsBossCh2Ep2" ;;
+        weapon-forger-ch99-ep99) echo "WeaponForgerCh99Ep99" ;;
+        weapon-forger-ch3-ep2) echo "WeaponForgerCh3Ep2" ;;
+        my-core-is-boss-ch2-ep3) echo "MyCoreIsBossCh2Ep3" ;;
         *) return 1 ;;
     esac
 }

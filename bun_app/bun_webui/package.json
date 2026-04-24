@@ -1,0 +1,29 @@
+{
+  "name": "bun_webui",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "src/server/index.ts",
+  "scripts": {
+    "dev": "bun run src/server/index.ts",
+    "dev:client": "vite",
+    "dev:full": "bun run src/server/index.ts & vite",
+    "build": "vite build",
+    "test": "bun test src/"
+  },
+  "dependencies": {
+    "hono": "^4.7.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "remotion_types": "workspace:*",
+    "bun_tts": "workspace:*",
+    "bun_image": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/react": "18.3.18",
+    "@types/react-dom": "18.3.5",
+    "vite": "^6.2.0",
+    "@vitejs/plugin-react": "^4.3.0"
+  }
+}

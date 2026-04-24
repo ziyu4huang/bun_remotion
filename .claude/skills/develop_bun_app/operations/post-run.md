@@ -26,6 +26,10 @@ Knowledge capture after completing an operation on a bun_app. Run this after sca
    - Path: `.agent/memory/feedback/<topic>.md`
    - Content: rule, **Why:** context, **How to apply:** scope
 
+## Reflections Pattern (for skill-level docs only)
+
+When updating **skill** roadmap docs (e.g., remotion-best-practices), write reflections to a separate `REFLECTIONS.md` file, NOT in `NEXT.md`. Skill docs are loaded every session — reflections waste context tokens. bun_app TODO.md dev history sections are already on-demand (loaded only when developing that app), so they don't need a separate reflections file.
+
 ## Development History Entry Format
 
 ```markdown

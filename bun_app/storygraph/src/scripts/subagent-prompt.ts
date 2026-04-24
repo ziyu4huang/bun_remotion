@@ -989,3 +989,275 @@ function buildTechTermSection(usage: TechTermUsage[]): string[] {
 
   return lines;
 }
+
+// ─── Story Draft Generator Prompt (Phase 33-F3a) ───
+
+export interface StoryDraftCharacter {
+  id: string;
+  name: string;
+  side: "left" | "center" | "right";
+  voice: string;
+  traits: string[];
+}
+
+export interface StoryDraftConstraints {
+  series_name: string;
+  genre: string;
+  category: string;
+  episode_id: string;
+  episode_title: string;
+  target_scenes: number;
+  target_duration_sec: number;
+  characters: StoryDraftCharacter[];
+  prev_episode_summary: string;
+  active_foreshadowing: string[];
+  character_constraints: string[];
+  gag_history: string[];
+  thematic_requirements: string[];
+}
+
+const EMOTIONS = [
+  "default", "angry", "shocked", "smirk", "nervous",
+  "smile", "laugh", "sweat", "think", "cry", "gloating", "confused", "chibi",
+] as const;
+
+const COMIC_EFFECTS = [
+  "surprise", "shock", "sweat", "sparkle", "heart",
+  "anger", "dots", "cry", "laugh", "fire", "shake", "gloating",
+] as const;
+
+export function buildStoryDraftPrompt(input: StoryDraftConstraints): string {
+  const charEntries = input.characters
+    .map(c => `- \`${c.id}\`（${c.name}）${c.side}側，voice=${c.voice}，特質：${c.traits.join("、") || "無"}`)
+    .join("\n");
+
+  const genreGuide = getGenreGuide(input.genre);
+
+  return `你是繁體中文（zh_TW）影視劇本寫作助手。根據以下約束，為影片生成完整劇本。
+
+## 系列：${input.series_name}（${input.genre} / ${input.category}）
+## 集數：${input.episode_id} — ${input.episode_title}
+
+## 角色列表
+
+${charEntries}
+
+## 結構約束
+
+- 目標場景數：${input.target_scenes}
+- 目標時長：${input.target_duration_sec} 秒（每秒約 3-4 個中文字）
+- 類型：${input.category === "narrative_drama" ? "敘事劇情（有完整起承轉合）" : input.category === "galgame_vn" ? "美少女遊戲風（對話驅動，視覺小說感）" : "通用"}
+
+## 前情提要
+
+${input.prev_episode_summary || "這是第一章第一集。"}
+
+## 未回收伏筆（本集至少延續一條）
+
+${input.active_foreshadowing.length > 0 ? input.active_foreshadowing.map(f => `- ${f}`).join("\n") : "尚無伏筆。"}
+
+## 角色約束
+
+${input.character_constraints.length > 0 ? input.character_constraints.map(c => `- ${c}`).join("\n") : "無特殊約束。"}
+
+## 招牌梗歷史（本集需演化升級）
+
+${input.gag_history.length > 0 ? input.gag_history.map(g => `- ${g}`).join("\n") : "尚無招牌梗。"}
+
+## 主題要求
+
+${input.thematic_requirements.length > 0 ? input.thematic_requirements.map(t => `- ${t}`).join("\n") : "無特殊主題要求。"}
+
+${genreGuide}
+
+## 輸出格式
+
+嚴格回傳以下 JSON 結構，不要加 markdown 圍欄：
+
+{"title":"本集標題","scenes":[{"id":"scene_1","background":"背景描述","tension":0.5,"dialog":[{"character":"角色id","text":"對話內容","emotion":"情緒","effect":"特效或null"}]}],"new_foreshadowing":["新埋下的伏筆"],"payoffs":["回收的伏筆"]}
+
+## 可用情緒（emotion）
+
+${EMOTIONS.join("、")}
+
+## 可用特效（effect，選一個或 null）
+
+${COMIC_EFFECTS.join("、")}
+
+## 品質要求
+
+1. 對話自然口語，像真人在講話，不要書面語
+2. 每個場景 3-6 句對話，張力先低後高再收尾
+3. 角色性格一致——${input.characters.map(c => c.name).join("、")}說話各有特色
+4. 喜劇系列要有笑點，每場景至少一個笑料或反轉
+5. 結尾要留鉤子（cliffhanger 或新伏筆），吸引觀眾看下一集
+6. 所有對話用繁體中文
+
+劇本：`;
+}
+
+function getGenreGuide(genre: string): string {
+  switch (genre) {
+    case "xianxia_comedy":
+      return `## 修仙喜劇風格指南
+
+- 對話夾雜修仙術語但用日常口語包裝（如「你的丹爐比我的廚藝還爛」）
+- 反差萌：嚴肅場景突然變搞笑，搞笑場景突然認真
+- 戰鬥場面用誇張特效，日常場面用吐槽和冷笑話
+- 主角經常打破第四面牆或吐槽系統設定`;
+    case "galgame_meme":
+      return `## 美少女遊戲迷因風格指南
+
+- 每集一個日常主題，用誇張方式呈現平凡情境
+- 角色用經典美少女遊戲對白風格（傲嬌、病嬌、天然呆）
+- 大量使用網路迷因和時事梗
+- 結尾反轉：觀眾以為要浪漫，結果是搞笑`;
+    case "novel_system":
+      return `## 系統小說風格指南
+
+- 系統提示音和任務通知穿插在對話中
+- 主角經常在心裡吐槽系統
+- 任務失敗的後果越來越荒謬
+- 配角對系統的存在毫無察覺，產生認知落差笑點`;
+    default:
+      return "";
+  }
+}
+
+// ─── Story Quality Evaluation Prompt (Phase 33-F3b) ───
+
+export interface StoryQualityInput {
+  series_name: string;
+  genre: string;
+  episode_id: string;
+  draft_json: string;
+  constraints_summary: string;
+}
+
+export function buildStoryQualityPrompt(input: StoryQualityInput): string {
+  const draftPreview = input.draft_json.length > 3000
+    ? input.draft_json.slice(0, 3000) + "\n... (truncated)"
+    : input.draft_json;
+
+  return `你是影視劇本品質評估助手。評估以下由 AI 生成的劇本草稿品質。
+
+## 系列：${input.series_name}（${input.genre}）
+## 集數：${input.episode_id}
+
+## 原始約束
+
+${input.constraints_summary}
+
+## AI 生成的劇本
+
+${draftPreview}
+
+## 評估維度（每項 0-10 分）
+
+1. **character_consistency** — 角色性格是否前後一致、符合設定
+2. **dialog_naturalness** — 對話是否自然口語、不生硬
+3. **humor_quality** — 笑點是否好笑、有創意（喜劇系列尤其重要）
+4. **plot_structure** — 起承轉合是否完整、張力是否合理
+5. **pacing** — 節奏是否恰當、不拖沓也不趕
+6. **genre_fit** — 是否符合該類型（修仙/美少女/系統）的風格特徵
+7. **foreshadowing** — 伏筆鋪設是否自然、回收是否合理
+8. **creativity** — 是否有驚喜元素、避免套路化
+
+## 輸出格式
+
+嚴格回傳以下 JSON，不要加 markdown 圍欄：
+
+{"dimensions":{"character_consistency":0,"dialog_naturalness":0,"humor_quality":0,"plot_structure":0,"pacing":0,"genre_fit":0,"foreshadowing":0,"creativity":0},"overall":0.0,"strengths":["優點1","優點2"],"weaknesses":["弱點1","弱點2"],"suggestions":["改善建議1","改善建議2"]}
+
+IMPORTANT:
+- overall = 8 個維度的平均值
+- 不要高分放水——60-70% 的草稿得分應在 5-7 之間
+- strengths 和 weaknesses 各列 2-4 點
+- suggestions 列 2-3 點具體、可執行的改善建議
+- 回傳純 JSON，無其他文字
+
+品質評估：`;
+}
+
+// ─── Response Parsers ───
+
+export interface StoryDraftScene {
+  id: string;
+  background: string;
+  tension: number;
+  dialog: Array<{
+    character: string;
+    text: string;
+    emotion: string;
+    effect: string | null;
+  }>;
+}
+
+export interface StoryDraft {
+  title: string;
+  scenes: StoryDraftScene[];
+  new_foreshadowing: string[];
+  payoffs: string[];
+}
+
+export interface StoryQualityResult {
+  dimensions: Record<string, number>;
+  overall: number;
+  strengths: string[];
+  weaknesses: string[];
+  suggestions: string[];
+}
+
+const VALID_EMOTIONS = new Set<string>(EMOTIONS);
+const VALID_EFFECTS = new Set<string>(COMIC_EFFECTS);
+
+export function parseStoryDraftResponse(raw: string): StoryDraft {
+  const json: StoryDraft = JSON.parse(raw);
+
+  if (!json.title || !Array.isArray(json.scenes)) {
+    throw new Error("Invalid story draft: missing title or scenes");
+  }
+
+  for (const scene of json.scenes) {
+    if (!scene.id || !Array.isArray(scene.dialog)) {
+      throw new Error(`Invalid scene: ${JSON.stringify(scene)}`);
+    }
+    scene.tension = typeof scene.tension === "number" ? Math.max(0, Math.min(1, scene.tension)) : 0.5;
+    for (const line of scene.dialog) {
+      if (!VALID_EMOTIONS.has(line.emotion)) line.emotion = "default";
+      if (line.effect && !VALID_EFFECTS.has(line.effect)) line.effect = null;
+    }
+  }
+
+  json.new_foreshadowing = json.new_foreshadowing ?? [];
+  json.payoffs = json.payoffs ?? [];
+
+  return json;
+}
+
+export function parseStoryQualityResponse(raw: string): StoryQualityResult {
+  const json: StoryQualityResult = JSON.parse(raw);
+
+  const dims = json.dimensions ?? {};
+  const dimKeys = [
+    "character_consistency", "dialog_naturalness", "humor_quality",
+    "plot_structure", "pacing", "genre_fit", "foreshadowing", "creativity",
+  ];
+  for (const key of dimKeys) {
+    if (typeof dims[key] !== "number") dims[key] = 0;
+    else dims[key] = Math.max(0, Math.min(10, Math.round(dims[key])));
+  }
+  json.dimensions = dims;
+
+  if (typeof json.overall !== "number") {
+    const vals = Object.values(dims);
+    json.overall = vals.length > 0 ? vals.reduce((a, b) => a + b, 0) / vals.length : 0;
+  }
+  json.overall = Math.max(0, Math.min(10, Math.round(json.overall * 10) / 10));
+
+  json.strengths = Array.isArray(json.strengths) ? json.strengths : [];
+  json.weaknesses = Array.isArray(json.weaknesses) ? json.weaknesses : [];
+  json.suggestions = Array.isArray(json.suggestions) ? json.suggestions : [];
+
+  return json;
+}

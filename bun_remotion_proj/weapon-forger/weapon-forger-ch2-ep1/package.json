@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "remotion studio",
-    "build": "remotion render WeaponForgerCh2Ep1 out/weapon-forger-ch2-ep1.mp4",
+    "build": "remotion render WeaponForgerCh2Ep1 out/weapon-forger-ch2-ep1.mp4 --timeout 120000",
     "upgrade": "remotion upgrade",
     "generate-tts": "bun run ../assets/scripts/generate-tts.ts"
   },

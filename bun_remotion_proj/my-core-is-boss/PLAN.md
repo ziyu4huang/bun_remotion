@@ -140,7 +140,7 @@ Each background has a `{name}.json` manifest with fields: `file`, `description`,
 | 1 | 3 | Bug 利用 | linyi, zhaoxiaoqi, xiaoelder | Rendered (161M, 3:57) |
 | 2 | 1 | 掛機修仙 | linyi, zhaoxiaoqi, xiaoelder | Rendered (181M, 4:47) |
 | 2 | 2 | 經驗值農場 | linyi, zhaoxiaoqi, xiaoelder | Rendered (199M, 5:19) |
-| 2 | 3 | 技能點分配 | linyi, zhaoxiaoqi, xiaoelder | Planned |
+| 2 | 3 | 技能點分配 | linyi, zhaoxiaoqi, xiaoelder | Rendered (247M, 7:10) |
 | 3 | 1 | 速通記錄 | linyi, zhaoxiaoqi, xiaoelder | Planned |
 | 3 | 2 | 隱藏關卡 | linyi, zhaoxiaoqi, xiaoelder | Planned |
 | 3 | 3 | 秘境 BOSS | linyi, zhaoxiaoqi, xiaoelder | Planned |
@@ -170,6 +170,8 @@ bash scripts/dev.sh render my-core-is-boss-ch1-ep3
 bash scripts/dev.sh render my-core-is-boss-ch2-ep1
 bash scripts/dev.sh studio my-core-is-boss-ch2-ep2
 bash scripts/dev.sh render my-core-is-boss-ch2-ep2
+bash scripts/dev.sh studio my-core-is-boss-ch2-ep3
+bash scripts/dev.sh render my-core-is-boss-ch2-ep3
 
 # TTS
 bun run generate-tts:mcb-ch1-ep1
@@ -177,6 +179,7 @@ bun run generate-tts:mcb-ch1-ep2
 bun run generate-tts:mcb-ch1-ep3
 bun run generate-tts:mcb-ch2-ep1
 bun run generate-tts:mcb-ch2-ep2
+bun run generate-tts:mcb-ch2-ep3
 ```
 
 ## Adding a New Episode

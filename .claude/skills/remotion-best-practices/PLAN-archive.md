@@ -221,3 +221,265 @@ The composite score formula has known biases:
 | `bun_app/storygraph/src/scripts/graphify-merge.ts` | manifest in merged-graph.json |
 | `bun_app/storygraph/src/scripts/graphify-check.ts` | manifest in consistency report |
 | `bun_app/storygraph/src/scripts/gen-story-html.ts` | manifest in HTML meta + footer |
+
+---
+
+## Phase 31: Subagent-Based KG Quality Scoring — COMPLETE
+
+### Architecture
+
+```
+graphify-score.ts (NEW)
+  │
+  ├── 1. Run pipeline (existing)
+  │
+  ├── 2. Build scoring prompt
+  │     Input: merged-graph.json summary + narration.ts excerpts
+  │     Rubric:
+  │       - Entity accuracy (0-10)
+  │       - Relationship correctness (0-10)
+  │       - Completeness (0-10)
+  │       - Cross-episode coherence (0-10)
+  │       - Actionability (0-10)
+  │
+  ├── 3. Call subagent (callAI)
+  │
+  ├── 4. Compute blended score
+  │     blended = 0.4 * programmatic + 0.6 * subagent_overall
+  │
+  └── 5. Write kg-quality-score.json
+```
+
+### Why subagent, not programmatic
+
+- **Accuracy requires reading comprehension** — NL understanding needed
+- **Edge validity is semantic** — Context needed for relationship validation
+- **Actionability is subjective** — Design judgment required
+
+---
+
+## Phase 32: KG-Driven LLM Prompt Enhancement — COMPLETE
+
+### Architecture
+
+```
+merged-graph.json
+  │
+  ├── buildRemotionPrompt()
+  │     ├── Previous episode summary
+  │     ├── Active foreshadowing
+  │     ├── Character growth trajectory
+  │     ├── Gag evolution history
+  │     ├── Pacing profile
+  │     └── Thematic coherence data
+  │
+  ├── Episode-creation Step 3b
+  │
+  └── Post-render feedback
+        ├── Actual scene durations vs pacing predictions
+        ├── Effect usage vs effect_count predictions
+        └── Updates KG → calibrates future prompts
+```
+
+### New Files
+
+| File | Purpose |
+|------|---------|
+| `subagent-prompt.ts` + `buildRemotionPrompt()` | KG context injection into episode prompts |
+| `graphify-enrich.ts` (NEW) | Post-render KG enrichment |
+| `prompt-calibration.ts` (NEW) | Track which KG features correlate with quality scores |
+
+---
+
+## Phase 33: Dual-LLM Architecture — COMPLETE
+
+### Architecture — Three-Tier Quality Pipeline
+
+```
+Tier 0: Programmatic (free, fast, always runs)
+  Jaccard similarity, PageRank, arc scores, type counts
+  13+ genre-aware consistency checks → PASS/WARN/FAIL
+  Output: gate.json (score 0-100)
+
+Tier 1: pi-agent AI scoring (free, slow, runs on pipeline)
+  GLM-5 evaluates its own KG quality across 5 dimensions
+  Blended score: 0.4 × programmatic + 0.6 × ai_overall
+  Output: quality-score.json (per-dimension)
+
+Tier 2: Claude Code review (paid, manual, human-in-loop)
+  Deep evaluation: semantic correctness, creative quality, genre fit, regression
+  Output: quality-review.json + review notes in PLAN.md
+```
+
+### gate.json v2 Design
+
+```json
+{
+  "version": "2.0",
+  "series": "my-core-is-boss",
+  "genre": "novel_system",
+  "score": 75,
+  "decision": "PASS",
+  "previous_score": 72,
+  "score_delta": 3,
+  "quality_breakdown": {
+    "consistency": 0.8,
+    "arc_structure": 0.7,
+    "pacing": 0.65,
+    "character_growth": 0.9,
+    "thematic_coherence": 0.75,
+    "gag_evolution": null
+  },
+  "supervisor_hints": {
+    "focus_areas": ["pacing_curve_flat_ch2ep2"],
+    "escalation_reason": null
+  },
+  "requires_claude_review": false
+}
+```
+
+### Sub-phases (all complete)
+
+- 33-A: gate.json v2 (provenance, regression, quality_breakdown, supervisor_hints)
+- 33-B: Claude Code Review Skill Topic (kg-review + Tier 2 rubric)
+- 33-C: CLI Packaging (cli.ts + CI mode)
+- 33-E: Multi-Series Evaluation Suite (weapon-forger, galgame-meme-theater, xianxia-system-meme)
+- 33-F1: PLAN.md Parser + Chapter Validator
+- 33-F2: Quality Gate Writer + GLM Dialog Assessment
+- 33-F3: Story Draft Generator (experimental)
+- 33-F4: Narration + TODO Generators
+- 33-G: Evaluation Framework (regression runner + tier comparison + cost matrix)
+- 33-H: Episode-Setup Workflow Adjustment (deploy mode + hybrid mode docs)
+- 33-I: my-core-is-boss Storygraph Rebuild (173 nodes, blended 74.8%)
+
+---
+
+## Phase 34: Video Category System — COMPLETE
+
+### Key insight: Category ≠ Genre
+
+- **Genre** = story content style (xianxia_comedy, galgame_meme)
+- **Category** = video format/structure (narrative_drama, tech_explainer)
+- A series has BOTH: `weapon-forger → xianxia_comedy + narrative_drama`
+
+### 7 Video Categories
+
+| Category | zh_TW | Projects | Dialog System |
+|----------|-------|----------|---------------|
+| Narrative Drama | 敘事劇情 | weapon-forger, my-core-is-boss, xianxia-system-meme | dialogLines[] |
+| Galgame VN | 美少女遊戲風 | galgame-meme-theater, galgame-youth-jokes | dialogLines[] |
+| Tech Explainer | 技術講解 | claude-code-intro, storygraph-explainer | narration_script |
+| Data Story | 數據故事 | taiwan-stock-market | narration_script |
+| Listicle | 盤點清單 | *(none yet)* | item_list |
+| Tutorial | 教學指南 | *(none yet)* | step_guide |
+| Shorts / Meme | 短影音迷因 | *(none yet)* | none (sfx only) |
+
+### Files Created
+
+| File | Purpose |
+|------|---------|
+| `bun_app/remotion_types/src/category-types.ts` | 7 category definitions, detection, helpers |
+| `bun_app/remotion_types/src/scene-templates.ts` | Composition spec builders for all 7 categories |
+| `bun_app/remotion_types/src/presets/tech-explainer-presets.ts` | storygraph intro preset + data |
+
+### Sub-phases (all complete)
+
+- 34-A: Category Taxonomy + Templates
+- 34-B: episodeforge Extension + storygraph Intro (→ storygraph-explainer)
+- 34-D: Skill Documentation (category guide + topic detection)
+- 34-E: Storygraph Consistency Checker Fixes (Jaccard, SKIP status)
+- 34-F: Storygraph AI Mode Fix (nested backticks, truncation repair)
+
+---
+
+## Phase 35: Web UI Foundation — COMPLETE
+
+### Architecture
+
+```
+bun_app/bun_webui/
+├── src/server/          # Hono API server
+│   ├── index.ts         # Entry point, Bun.serve()
+│   ├── routes/          # projects, pipeline, quality, assets, render, etc.
+│   ├── services/        # project-scanner, workflow-engine, monitoring, etc.
+│   └── middleware/       # job-queue (SSE streaming)
+├── src/client/          # React SPA (Vite)
+│   ├── App.tsx          # Router + layout
+│   ├── pages/           # Dashboard, Projects, Pipeline, Quality, etc.
+│   └── api.ts           # Typed fetch wrapper with SSE
+└── src/shared/types.ts  # Shared API types
+```
+
+### Sub-phases (all complete)
+
+- 35-A: Hono API Server (health, job queue with SSE)
+- 35-B: React SPA (Vite + React + Dashboard)
+- 35-C: Script Module Exports (episodeforge, storygraph, bun_image, bun_tts)
+
+---
+
+## Phase 36: Project Management UI — COMPLETE
+
+- 36-A: Project CRUD (project-scanner, scaffold API, Projects page)
+- 36-B: Story Editor (plan-editor, plans routes, StoryEditor page)
+
+---
+
+## Phase 37: Pipeline & Quality UI — COMPLETE
+
+- 37-A: Pipeline Runner (pipeline routes, Pipeline page)
+- 37-B: Quality Dashboard (quality routes, Quality page, cross-series comparison)
+
+---
+
+## Phase 38: Asset & Render UI — COMPLETE
+
+- 38-A: Asset Management (asset-scanner, 6 API endpoints, Assets page)
+- 38-B: TTS & Render (tts API + page, render API + page, remotion-renderer service)
+
+---
+
+## Phase 39: Full Pipeline Orchestration — COMPLETE
+
+- 39-A1: Workflow Templates (4 templates, workflow engine, Workflows page)
+- 39-A2: Automation Rules (3 triggers, file watcher, automation API)
+- 39-A3: Monitoring Dashboard (series health aggregator, Monitoring page)
+- 39-A4: CI/CD Integration (webhook + scheduler services, 15 endpoints)
+- 39-A5: Export/Import (series config export/import, 4 endpoints)
+
+---
+
+## Phase 40: End-to-End Pipeline Verification — COMPLETE
+
+- 40-A: WebUI Server + Playwright smoke (all 11 pages load)
+- 40-B: Scaffold ch3-ep2 via API (11 files created)
+- 40-C: Pipeline run (8 eps, 300 nodes)
+- 40-D: Image gen via CDP bridge (test-warrior.png)
+- 40-E: TTS generation (4 WAV files)
+- 40-F: Render (86MB MP4)
+- 40-G: Full workflow (image + TTS + render, 152.6MB MP4)
+
+---
+
+## Phase 41-C: Roadmap Refactor — COMPLETE
+
+### Problem
+
+Roadmap docs grew to 1804 lines total. ~90% was dead weight consuming context tokens.
+
+### Solution
+
+1. Moved Phase 31-39 specs from PLAN.md → PLAN-archive.md
+2. Moved completed TODO items → TODO-archive.md
+3. Extracted reflections from NEXT.md → REFLECTIONS.md (new on-demand file)
+4. Slimmed NEXT.md to ~40 lines (status + next task + phases table)
+5. Added REFLECTIONS.md to SKILL.md Strategic Roadmap table
+
+### Result
+
+| File | Before | After |
+|------|--------|-------|
+| PLAN.md | 795 lines | ~80 lines |
+| NEXT.md | 708 lines | ~40 lines |
+| TODO.md | 388 lines | ~80 lines |
+| Total | 1891 lines | ~200 lines |

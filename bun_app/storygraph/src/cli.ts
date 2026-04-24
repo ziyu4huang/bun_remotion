@@ -1,4 +1,7 @@
 // CLI entry point for storygraph
+// Re-export pipeline API for programmatic use
+export { runPipeline, runScore, runCheck, getPipelineStatus } from "./pipeline-api";
+export type { AIPipelineOptions, PipelineResult, ScoreResult, CheckResult, PipelineStatusResult } from "./pipeline-api";
 
 import { resolve, join } from 'node:path';
 import { mkdir, writeFile, readFile } from 'node:fs/promises';
@@ -109,6 +112,7 @@ Commands:
   cost-matrix             Track pipeline step timing and cost (Phase 33-G3)
   model-bench <series>    Benchmark AI models for KG extraction (Phase 28-B)
   quality-examples        Show AI extraction summary across all series (Phase 33-D4c)
+  story-draft <series>    Generate AI story draft from KG constraints (Phase 33-F3)
 
 Paths:
   Multiple input sources supported: full src/ lib/ tests/
@@ -489,6 +493,7 @@ switch (command) {
   case 'review':
   case 'model-bench':
   case 'quality-examples':
+  case 'story-draft':
     // Delegate to dedicated scripts
     {
       const scriptMap: Record<string, string> = {
@@ -511,6 +516,7 @@ switch (command) {
         'model-bench': 'graphify-model-bench',
         'review': 'graphify-review',
         'quality-examples': 'graphify-quality-examples',
+        'story-draft': 'graphify-story-draft',
       };
       const script = scriptMap[command] ?? command;
       const ciMode = hasFlag(args, '--ci');

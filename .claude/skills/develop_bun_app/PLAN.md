@@ -8,6 +8,7 @@
 > `.claude/skills/develop_bun_app/TODO.md` — Skill tasks + history | `.claude/skills/develop_bun_app/operations/` — 6 operation docs
 > — | `bun_app/storygraph/PLAN.md` + `TODO.md` — Reference bun_app with mature lifecycle
 > — | `bun_app/bun_pi_agent/PLAN.md` + `TODO.md` — Second bun_app, first adopter of skill-created PLAN/TODO
+> — | `.claude/skills/remotion-best-practices/PLAN.md` + `TODO.md` — bun_webui strategic roadmap (Web UI phases 35-39)
 
 ## Current State (v1.2.0)
 
@@ -28,6 +29,7 @@
 |-----|------------|------------|-------|-------|
 | storygraph | ✅ mature (v0.7+) | ✅ run history | — | Reference implementation, skill existed before develop_bun_app |
 | bun_pi_agent | ✅ skill-created | ✅ skill-created | 93 pass | First app to get PLAN/TODO from this skill |
+| bun_webui | ✅ (in remotion-best-practices) | ✅ (in remotion-best-practices) | 64 pass | Hono API + React SPA, 8 pages, workflow engine |
 
 ## Architecture
 
@@ -54,6 +56,10 @@ Managed bun_apps (each has own PLAN/TODO):
     bun_app/bun_pi_agent/
         PLAN.md — Agent architecture, modules, HTTP API
         TODO.md — Tasks, known issues, dev history
+    bun_app/bun_webui/
+        PLAN/TODO in .claude/skills/remotion-best-practices/
+        8 pages: Dashboard, Projects, Pipeline, Quality, Assets, TTS, Render, Workflows
+        Workflow engine chains storygraph + episodeforge + bun_tts + remotion-renderer
 ```
 
 ## Operations Reference

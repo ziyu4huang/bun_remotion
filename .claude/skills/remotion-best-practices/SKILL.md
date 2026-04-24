@@ -46,21 +46,22 @@ Dual-LLM architecture: pi-agent (GLM, free) + Claude Code (paid) supervisor.
 | Doc | What | When to Read |
 |-----|------|-------------|
 | `NEXT.md` | Current status, next task, dependency graph | **Always read first** |
-| `TODO.md` | Active tasks (Phase 25/28-B/31/32/33) | Picking next task |
-| `PLAN.md` | Active phase specs (Phase 31–33) | Planning a phase |
-| `TODO-archive.md` | Completed tasks (Phase 24–30) | Reference only |
-| `PLAN-archive.md` | Completed phase specs (Phase 24–30) | Reference only |
+| `TODO.md` | Active tasks (Phase 42/43) | Picking next task |
+| `PLAN.md` | Active phase specs (Phase 42–43) | Planning a phase |
+| `REFLECTIONS.md` | Historical session logs | Investigating past decisions |
+| `TODO-archive.md` | Completed tasks (Phase 24–41) | Reference only |
+| `PLAN-archive.md` | Completed phase specs (Phase 24–41) | Reference only |
 
 **Keywords:** story quality, dual-agent, tier, gate.json, quality scoring, deploy, subagent, narrative pipeline
 
-Read `NEXT.md` first (~60 lines), then load TODO/PLAN sections only for the active task.
+Read `NEXT.md` first (~40 lines), then load TODO/PLAN sections only for the active task.
 
 ## Post-Development Protocol (MANDATORY — never skip)
 
-**After completing ANY development step**, you MUST update the roadmap before reporting done. No exceptions.
+**After completing ANY development step**, you MUST update the roadmap before reporting done. No exceptions. This is saved in feedback memory (`roadmap-update-enforcement`) for recall across all sessions.
 
-1. **NEXT.md** — Update status line, next task, add reflection entry (what built, bugs found, honest assessment of limitations), update Completed Phases table
+1. **NEXT.md** — Update status line, next task, update Completed Phases table. Add reflection entry (what built, bugs found, honest assessment) to `REFLECTIONS.md` (NOT NEXT.md — reflections waste context tokens).
 2. **TODO.md** — Mark task `[x]`, add brief result note (files, test counts, what was tested)
-3. **PLAN.md** — Update only if the task changed architecture or spec (rare)
+3. **PLAN.md** — Update only if the task changed architecture or spec (rare). Add planned-but-not-started phases for user to review before implementation.
 
 A task is NOT complete until the roadmap reflects it. If you skip this, the next session starts with stale context and loses work.

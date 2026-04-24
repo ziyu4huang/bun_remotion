@@ -40,6 +40,16 @@ For full Video API, read `videos.md`.
 
 For Img component and staticFile patterns, read `images.md`.
 
+## image-gen — AI image generation (z.ai)
+
+- **ALWAYS use CDP mode** (`chromium.connectOverCDP`) to connect to user's real Chrome. Never launch Playwright-controlled Chrome for login-required sites — Google blocks automation.
+- User launches Chrome: `/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222`
+- Module: `bun_app/bun_image/` — `generateImageBatch()` with `browserConfig: { mode: "cdp" }`
+- WebUI: `POST /api/image/generate` with `browserMode: "cdp"` (default)
+- Rate limit: ~3 images per 5 minutes. Auto-restart after 3 images.
+- Character sprites: always face LEFT, solid magenta background, rembg for transparency.
+- See `/generate-image` skill for full workflow and prompt templates.
+
 ## assets — Asset imports
 
 - All local assets live in `public/`. **Always use `staticFile()`** to reference them — handles encoding and subdirectory deployment.

@@ -6,7 +6,7 @@ description: >
   "z.ai image".
   Triggers on: image generation.
 metadata:
-  version: 4.0.0
+  version: 5.0.0
 ---
 
 # /generate-image — AI Image Generation
@@ -16,17 +16,47 @@ Fallback: Google AI Studio Nano Banana (see bottom section).
 
 ---
 
+## CRITICAL: Always use CDP (Chrome DevTools Protocol)
+
+**Never launch Playwright-controlled Chrome for login-required sites.** Google detects automation and blocks login with "this browser or app may not be secure."
+
+**Always connect to user's real Chrome via CDP:**
+
+1. User launches Chrome with remote debugging:
+   ```bash
+   /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222
+   ```
+
+2. Code uses `chromium.connectOverCDP("http://localhost:9222")` to connect
+
+3. Uses existing browser context (with cookies/login sessions)
+
+4. When done, only close our page — never close the user's browser
+
+**Why:** Google and other OAuth providers detect Playwright's automation flags and block login. CDP reuses the user's authenticated Chrome session.
+
+---
+
 ## image.z.ai Workflow
 
-### Step 1: Open browser (headed + persistent)
+### Via bun_app/bun_image module (recommended)
 
-```bash
-playwright-cli open --headed --persistent https://image.z.ai
+```typescript
+import { generateImageBatch } from "bun_image";
+const result = await generateImageBatch({
+  images: [{ filename: "hero.png", prompt: "...", aspectRatio: "1:1" }],
+  outputDir: "/path/to/assets/characters",
+  browserConfig: { mode: "cdp" },  // ALWAYS use CDP
+});
 ```
 
-If redirected to `chat.z.ai/auth`, ask user to log in. Persistent profile preserves login.
+### Via WebUI API
 
-### Step 2: Generate + extract URL
+```bash
+curl -X POST http://localhost:5173/api/image/generate \
+  -H "Content-Type: application/json" \
+  -d '{"seriesId":"weapon-forger","images":[{"filename":"hero.png","prompt":"...","aspectRatio":"1:1"}],"browserMode":"cdp"}'
+```
 
 ```bash
 playwright-cli run-code "async page => {

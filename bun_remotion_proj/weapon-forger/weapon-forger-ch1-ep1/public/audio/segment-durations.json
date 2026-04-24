@@ -1,0 +1,55 @@
+[
+  {
+    "scene": "TitleScene",
+    "file": "01-title.wav",
+    "segmentDurations": [
+      181,
+      546
+    ]
+  },
+  {
+    "scene": "ContentScene1",
+    "file": "02-content1.wav",
+    "segmentDurations": [
+      279,
+      119,
+      97,
+      176,
+      212,
+      63,
+      140,
+      150,
+      56,
+      332,
+      140,
+      188
+    ]
+  },
+  {
+    "scene": "ContentScene2",
+    "file": "03-content2.wav",
+    "segmentDurations": [
+      195,
+      107,
+      68,
+      152,
+      61,
+      195,
+      99,
+      174,
+      116,
+      205,
+      78,
+      145
+    ]
+  },
+  {
+    "scene": "OutroScene",
+    "file": "04-outro.wav",
+    "segmentDurations": [
+      227,
+      311,
+      318
+    ]
+  }
+]

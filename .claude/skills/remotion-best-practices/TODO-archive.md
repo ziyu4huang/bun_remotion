@@ -563,3 +563,149 @@
 - [x] Phase 25: Remotion Framework (sketched, archived)
 - [x] PLAN.md + TODO.md created
 - [x] Gate integration spec
+
+---
+
+## Phase 33-D: Feedback Loop — COMPLETE
+
+- [x] **33-D1: graphify-review.ts** — Tier 2 review tool → quality-review.json. Template + AI modes. 10 tests.
+- [x] **33-D2: suggestion-log.ts** — Fix suggestion tracking with delta computation. 13 tests.
+- [x] **33-D3: Enhanced prompt-calibration** — Suggestion delta display in calibrate CLI.
+- [x] **33-D4a: Cross-project smoke tests** — 34 tests validating all 5 series pipeline output.
+- [x] **33-D4b: Regression score trending** — --trend flag for regression runner.
+- [x] **33-D4c: Quality examples reporter** — Per-series AI extraction summary.
+- [x] **CLI integration** — review + quality-examples commands in cli.ts.
+
+---
+
+## Phase 33-F3: Story Draft — COMPLETE
+
+- [x] **33-F3a: GLM story draft** — Generate zh_TW dialog from constraints.
+- [x] **33-F3b: Story quality evaluation** — GLM evaluates own draft.
+- [x] **Orchestrator script** — graphify-story-draft.ts.
+- [x] **CLI integration** — `story-draft` command wired in cli.ts.
+- [x] **Tests** — 30 tests, 480 total pass.
+
+---
+
+## Phase 35 — Web UI Foundation — COMPLETE
+
+### 35-A: Hono API Server
+
+- [x] **35-A1: bun_app/bun_webui/ scaffold** — Package.json, tsconfig, workspace registered.
+- [x] **35-A2: API server entry** — Hono app with CORS, health endpoint, job routes.
+- [x] **35-A3: Job queue middleware** — In-memory JobQueue with SSE streaming.
+- [x] **35-A4: Shared types** — Project, Episode, Job, GateResult, Pipeline types.
+
+### 35-B: React SPA
+
+- [x] **35-B1: Vite + React setup** — index.html, App.tsx with nav sidebar, production serving.
+- [x] **35-B2: API client** — Typed fetch wrapper with SSE streaming.
+- [x] **35-B3: Dashboard page** — Server status badge, job queue table, demo job button.
+
+### 35-C: Script Module Exports
+
+- [x] **35-C1: episodeforge scaffold module** — scaffold(ScaffoldOptions) → ScaffoldResult, 6 tests.
+- [x] **35-C2: storygraph pipeline API** — pipeline-api.ts with 4 functions, 3 tests.
+- [x] **35-C3: bun_image module** — image-engine + image-pipeline + url-utils, 29 tests, 709 total.
+- [x] **35-C4: bun_tts module** — tts-engine + tts-pipeline, 7 tests.
+
+---
+
+## Phase 36 — Project Management UI — COMPLETE
+
+### 36-A: Project CRUD
+
+- [x] **36-A1: Projects API** — project-scanner (5 series, auto-category, gate scores), 10 tests.
+- [x] **36-A2: Scaffold API** — POST /api/scaffold → background job, 2 tests.
+- [x] **36-A3: ProjectCreate page** — List/detail/create views, scaffold wizard.
+
+### 36-B: Story Editor
+
+- [x] **36-B1: PLAN.md parser/editor** — plan-editor.ts + plans routes (6 endpoints).
+- [x] **36-B2: Auto-save + preview** — StoryEditor.tsx with 3 views, auto-save debounce.
+
+---
+
+## Phase 37 — Pipeline & Quality UI — COMPLETE
+
+### 37-A: Pipeline Runner
+
+- [x] **37-A1: Pipeline API** — GET status, POST run/check/score with job queue, 6 tests.
+- [x] **37-A2: Graphify service** — Uses pipeline-api.ts from Phase 35-C2.
+- [x] **37-A3: Pipeline page** — Series selector + mode + buttons, status table, progress bar.
+
+### 37-B: Quality Dashboard
+
+- [x] **37-B1: Quality API** — GET gate + quality score combined, 3 tests.
+- [x] **37-B2: Quality page** — Score cards, breakdown grid, checks table.
+- [x] **37-B3: Quality comparison service** — Cross-series comparison, regression, history.
+- [x] **37-B4: Enhanced quality API routes** — /compare, /regression, /history/:seriesId.
+- [x] **37-B5: Enhanced Quality page** — Two-view layout, regression banner, AI dimensions. 15 new tests.
+
+---
+
+## Phase 38 — Asset & Render UI — COMPLETE
+
+### 38-A: Asset Management
+
+- [x] **38-A1: Assets API** — asset-scanner + 6 endpoints, 20 tests.
+- [x] **38-A2: Assets page** — Image grid with modal, audio player.
+
+### 38-B: TTS & Render
+
+- [x] **38-B1: TTS API + page** — tts route + TTS.tsx, 16 new tests.
+- [x] **38-B2: Render API + page** — render route + remotion-renderer + Render.tsx.
+
+---
+
+## Phase 39 — Full Pipeline Orchestration — COMPLETE
+
+### 39-A: Workflow Templates
+
+- [x] **39-A1: Workflow templates** — 4 templates, 3 API endpoints, Workflows page, 13 tests.
+- [x] **39-A2: Automation rules** — 3 trigger types, file watcher, 7 API endpoints, 24 tests.
+- [x] **39-A3: Monitoring dashboard** — Series health aggregator, Monitoring page, 8 tests.
+- [x] **39-A4: CI/CD integration** — Webhooks + scheduler, 15 endpoints, 39 tests.
+- [x] **39-A5: Export/import** — Series config export/import, 4 endpoints, 22 tests.
+
+---
+
+## P0 — CLAUDE.md Token Efficiency Refactor — COMPLETE
+
+- [x] **P0-1:** Move feedback index → `.agent/memory/feedback/_index.md` (39 entries).
+- [x] **P0-2:** Move project structure → `.agent/memory/project/project-structure.md`.
+- [x] **P0-3:** Move Remotion API reference → `.agent/memory/project/remotion-api-reference.md`.
+- [x] **P0-4:** Verify no stale content. CLAUDE.md: 237 → 107 lines (55% reduction).
+
+---
+
+## Phase 40 — E2E Pipeline Verification — COMPLETE
+
+- [x] **40-A1:** WebUI dev server (Hono :5173 + Vite :3000) started, all 11 pages load.
+- [x] **40-A2:** Playwright headed browser launch. Fixed Workflows.tsx JSX bug.
+- [x] **40-B1:** Scaffold ch3-ep2 via API, 11 files created.
+- [x] **40-C1:** Pipeline run — 8 eps, 300 nodes, gate 0/100.
+- [x] **40-D1:** Image gen via CDP bridge — test-warrior.png (197KB, 1280x1280).
+- [x] **40-E1:** TTS — 4 scenes, 4 WAV files (7.5MB).
+- [x] **40-F1:** Render — 86MB MP4, 304s.
+- [x] **40-G1:** Full workflow — image + TTS + render (152.6MB MP4, 8146 frames).
+
+---
+
+## Phase 41-B: Batch Character Generation — COMPLETE
+
+- [x] **41-B1:** soul.json manifest for 滄溟子 (remnant soul).
+- [x] **41-B2:** CDP batch generation — 13/13 images (~8 min total).
+- [x] **41-B3:** CDP login detection — ensureLoggedIn() auto-detects OAuth.
+
+---
+
+## Phase 41-C: Roadmap Refactor — COMPLETE
+
+- [x] **41-C1:** Archive PLAN.md Phase 31-39 specs → PLAN-archive.md.
+- [x] **41-C2:** Archive TODO.md completed items → TODO-archive.md.
+- [x] **41-C3:** Extract NEXT.md reflections → REFLECTIONS.md (new).
+- [x] **41-C4:** Update SKILL.md with REFLECTIONS.md.
+- [x] **41-C5:** Update /develop_bun_app post-run operation.
+- [x] **41-C6:** Verify sizes: PLAN.md <100, NEXT.md <40, TODO.md <100.

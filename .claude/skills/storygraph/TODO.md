@@ -11,6 +11,8 @@
 
 > **Status:** v0.29.0 — All core phases complete. Pipeline mature. Remaining: per-episode HTML, incremental updates, dual pipeline merge.
 
+**Note:** `pipeline-api.ts` (runPipeline, runCheck, runScore, getPipelineStatus) is consumed by `bun_webui` workflow engine (Phase 39-A1). Breaking changes to these exports require webui route/tests update.
+
 ---
 
 ## Known Issues
