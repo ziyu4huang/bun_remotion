@@ -73,7 +73,7 @@ import { ${naming.compositionId} } from "./${naming.compositionId}";
 
 // Written by scripts/generate-tts.ts — falls back to 210f per scene
 const sceneDurationsData: number[] = (() => {
-  try { return require("../public/audio/durations.json"); }
+  try { return require("../audio/durations.json"); }
   catch { return Array(${naming.numScenes}).fill(210); }
 })();
 
@@ -120,20 +120,20 @@ export function genMainComponent(ctx: ScaffoldContext): string {
   const { compositionId, numContentScenes } = naming;
 
   // Build scene list: Title, Content1..N, Outro
-  const scenes: { name: string; audio: string }[] = [
-    { name: "TitleScene", audio: "audio/01-title.wav" },
+  const scenes: { name: string; audioFile: string }[] = [
+    { name: "TitleScene", audioFile: "../audio/01-title.wav" },
   ];
   for (let i = 1; i <= numContentScenes; i++) {
     const audioNum = String(i + 1).padStart(2, "0");
     const lowerPrefix = config.contentScenePrefix.toLowerCase();
     scenes.push({
       name: `${config.contentScenePrefix}Scene${i}`,
-      audio: `audio/${audioNum}-${lowerPrefix}${i}.wav`,
+      audioFile: `../audio/${audioNum}-${lowerPrefix}${i}.wav`,
     });
   }
   scenes.push({
     name: "OutroScene",
-    audio: `audio/${String(numContentScenes + 2).padStart(2, "0")}-outro.wav`,
+    audioFile: `../audio/${String(numContentScenes + 2).padStart(2, "0")}-outro.wav`,
   });
 
   // Build transition imports (deduplicated)
@@ -157,7 +157,7 @@ export function genMainComponent(ctx: ScaffoldContext): string {
 
   // Build scenes array entries
   const sceneEntries = scenes.map((s) => {
-    return `  { Scene: ${s.name}, audio: "${s.audio}" },`;
+    return `  { Scene: ${s.name}, audio: require("${s.audioFile}") as string },`;
   }).join("\n");
 
   // Build transitions array (cycle through config.transitions)
@@ -169,7 +169,7 @@ export function genMainComponent(ctx: ScaffoldContext): string {
   const sceneImports = scenes.map((s) => `import { ${s.name} } from "./scenes/${s.name}";`).join("\n");
 
   return `import React from "react";
-import { AbsoluteFill, Audio, staticFile } from "remotion";
+import { AbsoluteFill, Audio } from "remotion";
 import { TransitionSeries, linearTiming } from "@remotion/transitions";
 ${transitionImportLines.join("\n")}
 import type { Props } from "./Root";
@@ -197,7 +197,7 @@ export const ${compositionId}: React.FC<Props> = ({ sceneDurations }) => {
           <React.Fragment key={i}>
             <TransitionSeries.Sequence durationInFrames={d(i)} name={sceneNames[i]}>
               <Scene />
-              <Audio src={staticFile(audio)} volume={1} />
+              <Audio src={audio} volume={1} />
             </TransitionSeries.Sequence>
 
             {i < transitions.length && (
@@ -427,7 +427,7 @@ import { getLineIndex } from "${config.componentsImportPath}/dialogTiming";
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const segmentDurations: Record<string, number[]> = (() => {
-  try { return require("../../public/audio/segment-durations.json"); }
+  try { return require("../../audio/segment-durations.json"); }
   catch { return {}; }
 })();
 
@@ -473,18 +473,13 @@ export const ${sceneName}: React.FC = () => {
       />
 
       {/* Dialog box */}
-      <DialogBox
-        character={currentLine.character}
-        text={currentLine.text}
-        lineIndex={currentLineIndex}
-        totalLines={dialogLines.length}
-        durationInFrames={durationInFrames}
-      />
+      <DialogBox lines={dialogLines} sceneFrame={frame} sceneDuration={durationInFrames} />
 
       {/* Comic effects — add effect field to dialogLines for reactions */}
-      {currentLine.effect && (
-        <ComicEffects effect={currentLine.effect as ComicEffect} side={side} />
-      )}
+      <ComicEffects
+        effects={normalizeEffects(currentLine.effect)}
+        side={CHARACTERS[currentLine.character].position}
+      />
     </AbsoluteFill>
   );
 };
