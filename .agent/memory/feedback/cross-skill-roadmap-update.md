@@ -17,4 +17,4 @@ After ANY development step, update roadmap files across ALL related skills — n
    - `.claude/skills/develop_bun_app/` — managed apps table + architecture
    - `.claude/skills/generate-tts/` — if TTS pipeline changed
    - `.claude/skills/generate-image/` — if image generation changed
-4. Cross-link: mention in each skill's TODO that the change affects other skills (e.g., "pipeline-api.ts is consumed by bun_webui workflow engine")
+4. Cross-link: mention in each skill's TODO that the change affects other skills (e.g., "pipeline-api.ts is consumed by remotion_studio workflow engine")

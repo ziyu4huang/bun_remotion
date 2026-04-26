@@ -5,7 +5,7 @@
 > - Skill TODO: `.claude/skills/develop_bun_app/TODO.md` — **(this file)** Tasks + history
 > - Skill SKILL: `.claude/skills/develop_bun_app/SKILL.md` — Operational playbook
 
-> **Status:** v1.2.0 — 7 operations (with post-run), pre-check lists + validation criteria added
+> **Status:** v1.3.0 — develop op rewritten as structured workflow (7 change types)
 
 ## Known Issues
 
@@ -37,7 +37,60 @@
 
 ## P0 — Fix next
 
-- [ ] **Make `develop` op into a workflow** — Instead of a pattern cookbook, define a structured workflow: (1) read PLAN.md architecture, (2) identify where new code fits, (3) write code + tests, (4) update PLAN.md module table, (5) update TODO.md. Specific to the type of change (new module, new route, new config).
+- [x] **52-A: agent-bridge.ts** — Import `createAgentFromDef()` + `discoverAgents()` from `bun_pi_agent/src/agents/` into `remotion_studio/src/server/agent-bridge.ts`
+  - `runAgentTask(agentName, prompt)` → creates agent, subscribes to events, returns result
+  - `listAvailableAgents()` → discovers and returns agent definitions
+  - `isBridgeAvailable()` → checks if bun_pi_agent import works + API key available
+  - Same-process mode: direct function calls, no IPC
+  - Lazy imports: bun_pi_agent loaded on first use, not at module scope
+
+- [x] **52-B: Agent API routes** — `remotion_studio/src/server/routes/agent.ts`
+  - `GET /api/agent/agents` — List available sub-agents
+  - `GET /api/agent/status` — Check bridge availability
+  - `POST /api/agent/chat` — Send prompt to agent, stream response via SSE (hono/streaming)
+  - `POST /api/agent/tasks` — Start named task (returns job ID, tracked by job-queue)
+  - 6 route tests in `agent-bridge.test.ts`, all pass
+
+- [ ] **52-C: Agent Chat page** — React page for direct agent interaction
+  - Agent selector dropdown (lists from `/api/agent/agents`)
+  - Chat input with streaming response display
+  - Tool call visualization
+
+- [ ] **52-D: Agent-backed workflow steps** — Replace some direct `pipeline-api.ts` calls with agent delegation
+  - Benchmark page → uses sg-benchmark-runner agent
+  - Quality page → uses sg-quality-gate agent
+  - Backward compatible: direct calls still work, agent path is opt-in
+
+- [ ] **52-E: Studio sub-agent definitions** — `.agent/agents/studio-*.md`
+  - studio-scaffold: scaffold generation (Read, Write, Bash, Grep, Glob)
+  - studio-reviewer: full quality review (sg_pipeline, sg_check, sg_score, rm_analyze, rm_lint, Read, Grep)
+  - studio-advisor: content suggestions (sg_suggest, sg_health, rm_analyze, rm_suggest, Read, Grep, Glob)
+
+## P1 — Standalone mode (Phase 53)
+
+- [ ] **53-A: Agent-backed workflow engine** — Workflow steps delegate to sub-agents via spawn_task
+  - Each WorkflowStepKind maps to an agent: scaffold→studio-scaffold, pipeline→studio-pipeline, etc.
+  - Steps check previous step results before proceeding
+  - On failure: report + retry option
+
+- [ ] **53-B: LLM config API + Settings page** — Configure LLM through the UI
+  - `remotion_studio/data/llm-config.json` — provider, apiKey, model, baseUrl
+  - `GET/POST /api/settings/llm` — API endpoints
+  - Settings page with provider selector, key input, model dropdown
+  - Config feeds into bun_pi_agent's `getConfig()`
+
+- [ ] **53-C: "Build Episode" autonomous flow** — One-click episode creation
+  - UI button on episode detail page
+  - Triggers: scaffold → pipeline → quality → TTS → render
+  - Each step streams progress to UI
+
+## P2 — Expanded agent library (Phase 54)
+
+- [ ] **54-A: studio-scaffold agent** — Episode scaffolding + PLAN.md generation
+- [ ] **54-B: studio-tts agent** — Voice synthesis + voice map management
+- [ ] **54-C: studio-render agent** — Episode rendering + queue management
+- [ ] **54-D: studio-image agent** — Character/background image generation
+- [ ] **54-E: studio-coordinator agent** — Master orchestrator using spawn_task
 
 ## P1 — Feature completeness
 
@@ -72,6 +125,25 @@ Convert key operations from pure documentation to executable scripts.
 ---
 
 ## Development History
+
+### 2026-04-25 v1.3.0 — develop op rewritten as workflow
+
+| Metric | Before (v1.2.0) | After (v1.3.0) |
+|--------|-----------------|----------------|
+| develop.md structure | Pattern cookbook (5 patterns) | **5-step workflow** (identify → plan → implement → test → update docs) |
+| Change types covered | Implicit (patterns) | **7 explicit types** (new-module, new-route, new-cli-flag, new-config, new-tool, bugfix, refactor) |
+| Planning step | None | **Step 2: state files/exports/tests before coding** |
+| Confirmation gate | None | **3+ files → ask user for confirmation** |
+| Pattern reference | Inline, unstructured | **Per-change-type recipes in Step 3** |
+
+**Changes applied:**
+- Rewrote `operations/develop.md` from cookbook to structured 5-step workflow
+- Added change type taxonomy (7 types) with explicit routing
+- Added "Plan the Change" step (state files/exports/tests before coding)
+- Added confirmation gate for 3+ file changes
+- Added `new-tool` change type (absent from original)
+- Preserved all original patterns as recipes within Step 3
+- Bumped version to 1.3.0
 
 ### 2026-04-16 v1.2.0 — Pre-check lists, validation criteria, post-run op
 
@@ -127,6 +199,7 @@ Convert key operations from pure documentation to executable scripts.
 
 ## Done
 
+- [x] v1.3.0: develop.md rewritten as 5-step workflow (7 change types, plan step, confirmation gate)
 - [x] v1.2.0: Pre-check lists added to all 6 operations
 - [x] v1.2.0: Validation criteria added to all 6 operations
 - [x] v1.2.0: `operations/post-run.md` — knowledge capture protocol

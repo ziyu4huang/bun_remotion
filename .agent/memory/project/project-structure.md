@@ -82,7 +82,7 @@ bun_app/
     src/
       index.ts                      # CLI entry
       scaffold.ts                   # Exportable scaffold() function
-  bun_webui/         # Web UI — Hono API + React SPA for pipeline orchestration
+  remotion_studio/   # Web UI — Hono API + React SPA for pipeline orchestration
     src/
       server/
         index.ts                    # Hono app + Bun.serve()

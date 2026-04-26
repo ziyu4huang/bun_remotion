@@ -70,9 +70,21 @@
 
 - [ ] Ch2-EP3 — 技能點分配 (linyi, zhaoxiaoqi, xiaoelder)
 
-## Phase 5: Ch3+ (Future)
+## Phase 5: Ch3 — 秘境速通
 
-- [ ] Ch3 (3 ep) — 秘境速通
+### Ch3-EP1 — 速通記錄
+
+> Episode PLAN: [./my-core-is-boss-ch3-ep1/PLAN.md](./my-core-is-boss-ch3-ep1/PLAN.md) | Episode TODO: [./my-core-is-boss-ch3-ep1/TODO.md](./my-core-is-boss-ch3-ep1/TODO.md)
+
+- [x] Write narration.ts + episode PLAN.md (graphify gate passed: PROCEED)
+- [x] Scaffold + all scenes + main component + TransitionSeries
+- [x] TTS audio generated
+- [x] Rendered MP4 — out/my-core-is-boss-ch3-ep1.mp4 (152M, 10841 frames, 6:01)
+
+## Phase 6: Remaining Ch3 Episodes
+
+- [ ] Ch3-EP2 — 隱藏關卡 (linyi, zhaoxiaoqi, xiaoelder)
+- [ ] Ch3-EP3 — 秘境 BOSS (linyi, zhaoxiaoqi, xiaoelder)
 - [ ] Ch4 (4 ep) — 副本開團
 - [ ] Ch5–Ch10 (remaining 22 episodes)
 

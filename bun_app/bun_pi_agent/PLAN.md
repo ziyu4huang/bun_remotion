@@ -9,7 +9,7 @@
 >
 > **Rule:** Architecture decisions → this PLAN.md. Task tracking → TODO.md.
 
-## Current State (v0.5.0)
+## Current State (v0.7.0)
 
 **Working:**
 - **ACP stdio mode (default)**: JSON-RPC 2.0 over stdin/stdout using `@agentclientprotocol/sdk` — compatible with Zed, JetBrains, and other ACP editors
@@ -17,6 +17,11 @@
 - Server mode: HTTP SSE with legacy `/chat` + IBM/BeeAI ACP endpoints (`/agents`, `/runs` CRUD)
 - Agent creation: multi-provider via pi-ai (`getModel`, `getEnvApiKey`)
 - 7 coding tools via pi-coding-agent (read, write, bash, grep, find, ls, edit)
+- 9 storygraph tools (sg_pipeline, sg_check, sg_score, sg_status, sg_regression, sg_baseline_update, sg_baseline_list, sg_suggest, sg_health)
+- **3 Remotion content tools** (rm_analyze, rm_suggest, rm_lint) — hybrid data strategy (storygraph + src parsing)
+- **rm_analyze**: Episode content analysis — dialog, characters, scenes, effects, timing, voice assignments
+- **rm_suggest**: Series content suggestions — character gaps, pacing anomalies, gag stagnation
+- **rm_lint**: 6 lint rules — naming, staticFile, animation, imports, assets, structure
 - Skill loading: pi-coding-agent defaults + `.claude/skills` + `.agent/skills`
 - ACP lifecycle: `initialize` → `session/new` → `session/prompt` → `session/cancel`
 - Session model: each session gets its own agent instance with independent conversation history
@@ -29,6 +34,12 @@
 - Comprehensive help with examples, env vars, mode descriptions
 - 160 tests passing across 11 files (28 new ACP tests)
 - Standalone binary build via `bun build --compile`
+- **Multi-agent definition system** — `.agent/agents/*.md` files define agents with scoped tools, model overrides, custom prompts
+- **Agent factory** — `createAgentFromDef()` creates agents with filtered tools + composed prompt
+- **Tool registry** — `createToolsByNames()` for name-based tool scoping
+- **CLI flags** — `--agent <name>` selects agent, `--list-agents` shows available agents
+- **5 predefined agents** — sg-story-advisor (7 tools), sg-quality-gate (9 tools), sg-benchmark-runner (12 tools), rm-content-analyst (5 tools), pi-developer (all tools)
+- 283 tests passing across 19 files (20 new remotion-tools tests)
 
 **Test Coverage:**
 | Module | Tests | Coverage |
@@ -48,10 +59,19 @@
 ## Architecture
 
 ```
-index.ts ─── CLI arg parsing → ensurePackageJson() → dynamic import → mode dispatch
+index.ts ─── CLI arg parsing → ensurePackageJson() → agent resolution → dynamic import → mode dispatch
     │         ↑ handles --help/--version before any heavy imports
+    │         ↑ --agent <name> resolves agent def from .agent/agents/
+    │         ↑ --list-agents discovers and prints available agents
     │         ↑ writes package.json next to binary if missing (self-contained)
     │         ↑ default mode: stdio (ACP), --cli for readline, --server for HTTP
+    │
+    ├─ [agents/]
+    │   ├─ types.ts — AgentDefinition interface
+    │   ├─ parser.ts — parseAgentDef(), discoverAgents() — .agent/agents/*.md
+    │   ├─ tool-registry.ts — name→factory mapping, createToolsByNames(), createAllTools()
+    │   ├─ factory.ts — createAgentFromDef(), createDefaultAgent()
+    │   └─ index.ts — barrel exports
     │
     ├─ [acp/stdio.ts] ACP stdio mode (default) — JSON-RPC 2.0 over stdin/stdout
     │   │   AgentSideConnection + ndJsonStream from @agentclientprotocol/sdk
@@ -70,20 +90,32 @@ index.ts ─── CLI arg parsing → ensurePackageJson() → dynamic import �
     │       └─ acp.ts    — IBM/BeeAI ACP: /ping, /agents, /runs CRUD
     │                       uses store.ts for persistence + usage tracking
     │
-    ├─ agent.ts — createAgent(): config → model → tools → skills → Agent
+    ├─ agent.ts — createAgent() (delegates to factory), setAgentDefinition()
     ├─ config.ts — getConfig(): env var parsing with defaults
     ├─ store.ts — File-backed run store + token usage accumulation
-    ├─ tools/index.ts — 7 coding tools from pi-coding-agent
+    ├─ tools/index.ts — 7 coding tools + 9 storygraph tools + 3 remotion tools
     └─ skills/index.ts — Skill discovery + system prompt injection
+
+.agent/agents/               ← Project-level agent definitions
+    ├─ sg-story-advisor.md  Creative writing (7 tools: sg_suggest, sg_health, sg_status, rm_analyze, rm_suggest, Read, Grep)
+    ├─ sg-quality-gate.md   Quality enforcement (9 tools: sg_pipeline/check/score/regression, baselines, rm_lint, Read, Grep)
+    ├─ sg-benchmark-runner.md Autonomous benchmark (12 tools: all sg_* + all rm_*)
+    ├─ rm-content-analyst.md Remotion content analysis (5 tools: rm_analyze, rm_suggest, rm_lint, Read, Grep)
+    └─ pi-developer.md      Full access (all 20 tools, no model override)
 ```
 
 ## Module Reference
 
 | File | Exports | Lines | Status |
 |------|---------|-------|--------|
-| `src/index.ts` | CLI arg loop, `ensurePackageJson()`, dynamic imports, help/version | ~95 | Updated |
-| `src/config.ts` | `AgentConfig`, `getConfig()` | ~30 | Stable |
-| `src/agent.ts` | `createAgent()`, `AgentEvent` type | ~49 | Stable |
+| `src/index.ts` | CLI arg loop, `ensurePackageJson()`, dynamic imports, help/version, `--agent`, `--list-agents` | ~140 | Updated |
+| `src/config.ts` | `AgentConfig`, `getConfig()` | ~35 | Updated |
+| `src/agent.ts` | `createAgent()`, `setAgentDefinition()`, `getAgentDefinition()`, `AgentEvent` type | ~35 | Updated |
+| `src/agents/types.ts` | `AgentDefinition` type | ~10 | New |
+| `src/agents/parser.ts` | `parseAgentDef()`, `discoverAgents()` | ~90 | New |
+| `src/agents/tool-registry.ts` | `createToolByName()`, `createToolsByNames()`, `createAllTools()`, `ALL_TOOL_NAMES` | ~70 | New |
+| `src/agents/factory.ts` | `createAgentFromDef()`, `createDefaultAgent()` | ~95 | New |
+| `src/agents/index.ts` | Barrel exports for agents module | ~5 | New |
 | `src/cli/index.ts` | `startCli()` | ~80 | Stable |
 | `src/cli/renderer.ts` | `renderEvent()` | ~61 | Stable |
 | `src/server/index.ts` | `startServer()` | ~106 | Stable |
@@ -95,7 +127,8 @@ index.ts ─── CLI arg parsing → ensurePackageJson() → dynamic import �
 | `src/acp/event-mapper.ts` | `mapAgentEventToSessionUpdate()` — event translation | ~100 | New |
 | `src/acp/session-store.ts` | `createSession`, `getSession`, `deleteSession`, `listSessions` | ~60 | New |
 | `src/store.ts` | `initStore`, `getRun`, `setRun`, `saveRun`, `deleteRun`, `listRuns`, `accumulateUsage`, `cleanupRuns` | ~170 | Stable |
-| `src/tools/index.ts` | `createTools()` | ~17 | Stable |
+| `src/tools/remotion-tools.ts` | `createRemotionAnalyzeTool()`, `createRemotionSuggestTool()`, `createRemotionLintTool()`, `createRemotionTools()` | ~400 | New |
+| `src/tools/index.ts` | `createTools()` | ~20 | Updated |
 | `src/skills/index.ts` | `loadAgentSkills()`, `getSkillsPromptSection()` | ~56 | Stable |
 | `src/demo.ts` | IBM/BeeAI HTTP demo client | ~180 | Stable |
 | `src/acp-demo.ts` | ACP stdio demo client | ~180 | New |

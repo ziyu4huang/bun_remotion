@@ -28,7 +28,7 @@ export const SystemNotification: React.FC<SystemNotificationProps> = ({
     success: { bg: "#78350F", border: "#FBBF24", text: "#FDE68A", accent: "#F59E0B" },
     info: { bg: "#1E3A5F", border: "#60A5FA", text: "#BFDBFE", accent: "#3B82F6" },
   };
-  const colors = typeColors[type];
+  const colors = typeColors[type] ?? typeColors.mission;
 
   const slideIn = spring({ frame: f, fps, config: { damping: 12, stiffness: 100, mass: 0.8 } });
   const translateY = interpolate(slideIn, [0, 1], [-100, 0]);

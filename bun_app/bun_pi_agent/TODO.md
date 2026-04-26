@@ -7,7 +7,7 @@
 >
 > **Rule:** Architecture decisions → PLAN.md. Task tracking → this file.
 
-> **Status:** v0.5.0 — ACP stdio mode migration, 160 tests passing
+> **Status:** v0.7.0 — Remotion content tools (rm_analyze, rm_suggest, rm_lint), 283 tests passing
 
 ## Known Issues
 
@@ -33,6 +33,37 @@
 - [ ] **ACP cancel detection** — `prompt()` handler needs a per-session cancelled flag that `cancel()` sets, so `prompt()` returns `{ stopReason: "cancelled" }` properly.
 - [ ] **Streaming response in chat endpoint** — Verify that `/chat` SSE properly streams text deltas end-to-end (code exists, needs integration test).
 
+## Phase 3 — Autonomous Storygraph Benchmark Agent (DONE)
+
+> bun_pi_agent runs storygraph pipeline + regression autonomously, no claude-code subagent needed.
+> Completed as strategic Phases 44-45 (2026-04-25).
+
+### P0 — Core integration
+- [x] **3-A1: storygraph-tools.ts** — 5 agent tools (sg_pipeline, sg_check, sg_score, sg_regression, sg_status)
+  - Imports pipeline-api.ts directly from storygraph workspace
+  - Tests: `src/__tests__/storygraph-tools.test.ts` (10 tests)
+
+- [x] **3-A2: storygraph-benchmark skill** — `.agent/skills/storygraph-benchmark.md`
+  - 7-step workflow: discover → status → pipeline → check → regression → score → report
+  - Works in both CLI and ACP stdio mode
+  - Tests: `src/__tests__/skills.test.ts` (4 tests)
+
+### P1 — Workflow automation
+- [x] **3-B1: Automated baseline management**
+  - `sg_baseline_update` — saves current gate.json as baseline-gate.json
+  - `sg_baseline_list` — discovers series, shows baselines + deltas
+
+- [x] **3-B2: Multi-series regression** — sg_baseline_list discovers all series, reports per-series deltas
+
+### P2 — Advanced
+- [ ] **3-C1: Continuous monitoring** — Watch for narration.ts changes, auto-trigger pipeline
+- [ ] **3-C2: Model benchmark orchestration** — Run storygraph with multiple models, compare scores
+- [x] **3-C3: Web UI integration** — Phase 45: remotion_studio Benchmark page (5 endpoints + React page)
+
+### CI integration
+- [x] **CI exit codes + structured JSON** — `src/ci.ts` standalone entry point (pipeline → check → regression → exit 0/1)
+  - `sg_regression` tool: `ci: true` parameter returns structured JSON + exitCode
+
 ## P1 — Feature completeness
 
 - [ ] **Client-side method support** — When client advertises `fs.readTextFile`/`fs.writeTextFile`, use them instead of agent's own tools.
@@ -43,16 +74,11 @@
 - [ ] **Skill hot-reload** — Watch `.claude/skills/` and `.agent/skills/` for changes. Reload without restart.
 - [ ] **Rate limiting** — Add basic rate limiting to HTTP endpoints.
 
-- [ ] **Conversation history** — Persist agent state to disk. Resume previous sessions.
-- [ ] **Model validation on switch** — Check that `provider/model` exists in pi-ai MODELS const before applying.
-- [ ] **Skill hot-reload** — Watch `.claude/skills/` and `.agent/skills/` for changes. Reload without restart.
-- [ ] **Rate limiting** — Add basic rate limiting to HTTP endpoints.
-
 ## P2 — Architecture improvements
 
 - [ ] **Router abstraction** — Manual regex routing in server/index.ts is getting long. Extract a simple router: `app.get("/path", handler)`, `app.post("/path", handler)`.
 - [ ] **Plugin system** — Allow registering custom tools, routes, and event handlers without modifying core.
-- [ ] **Multi-agent support** — Support multiple agent configurations (coding, research, etc.) via ACP agent manifests.
+- [ ] **Multi-agent support** — Support multiple agent configurations (coding, research, etc.) via ACP agent manifests. ← **Phase 47 done** (agent definitions via .agent/agents/*.md)
 - [ ] **Middleware chain** — CORS, auth, logging, rate-limiting as composable middleware.
 
 ## Phase 2 — Enhanced Agent Capabilities
@@ -71,6 +97,82 @@
 ---
 
 ## Development History
+
+### 2026-04-25 — Remotion content tools (v0.7.0)
+
+| Metric | Before (v0.6.1) | After (v0.7.0) |
+|--------|-----------------|----------------|
+| Tools | 17 (7 coding + 9 sg + 1 spawn_task) | **20** (+3 rm_*) |
+| Agent definitions | 4 | **5** (+rm-content-analyst) |
+| Tests | 263 pass | **283 pass** (+20) |
+| Test files | 18 | **19** (+remotion-tools.test.ts) |
+| expect() calls | 685 | **793** (+108) |
+
+**Changes applied:**
+- `src/tools/remotion-tools.ts` — 3 new tools: rm_analyze, rm_suggest, rm_lint
+  - rm_analyze: Episode content analysis (dialog, characters, scenes, effects, timing, voices)
+  - rm_suggest: Series content suggestions (character gaps, pacing, gag stagnation)
+  - rm_lint: Remotion code quality (6 rules: naming, staticFile, animation, imports, assets, structure)
+  - Hybrid data strategy: storygraph artifacts first, source parsing fallback
+  - Two-pass regex dialog parser for inline `dialogLines[]` arrays
+- `src/agents/tool-registry.ts` — Added rm_analyze, rm_suggest, rm_lint to TOOL_FACTORIES
+- `src/tools/index.ts` — Added createRemotionTools() spread
+- `.agent/agents/rm-content-analyst.md` — New agent (5 tools, zai/glm-5-turbo)
+- `.agent/agents/sg-story-advisor.md` — Added rm_analyze, rm_suggest
+- `.agent/agents/sg-quality-gate.md` — Added rm_lint
+- `.agent/agents/sg-benchmark-runner.md` — Added all 3 rm_* tools
+- `src/__tests__/remotion-tools.test.ts` — 20 tests (tools, analyze, suggest, lint)
+- Updated tests in tools.test.ts, agents.test.ts, agent.test.ts (count 17→20)
+
+### 2026-04-25 — Agent domain-prefix rename (v0.6.1)
+
+| Metric | Before (v0.6.0) | After (v0.6.1) |
+|--------|-----------------|----------------|
+| Agent files | story-advisor, quality-gate, benchmark-runner, developer | **sg-story-advisor, sg-quality-gate, sg-benchmark-runner, pi-developer** |
+| Tests | 254 pass | **263 pass** (+9 from recent additions) |
+| Frontmatter names | Unprefixed | **Domain-prefixed** (sg-*, pi-*) |
+
+**Changes applied:**
+- Renamed `.agent/agents/*.md` files with domain prefixes (sg-* for storygraph, pi-* for agent-level)
+- Updated `name:` frontmatter fields in all 4 agent files
+- Updated `src/tools/spawn-task.ts` description example
+- Updated `src/index.ts` help text example
+- Updated `src/__tests__/agents.test.ts` test fixture
+- Updated `bun_app/bun_pi_agent/PLAN.md` architecture diagram + agent table
+- Updated skill-level `PLAN.md` and `TODO.md` references
+
+### 2026-04-25 — Multi-agent definition system (v0.6.0)
+
+| Metric | Before (v0.5.0) | After (v0.6.0) |
+|--------|-----------------|----------------|
+| Tests | 227 pass | **254 pass** (+27) |
+| Test files | 17 | **18** (+agents.test.ts) |
+| expect() calls | 616 | **685** |
+| Source modules | 18 | **23** (+5 agent modules) |
+| Agent definitions | 0 | **4** (story-advisor, quality-gate, benchmark-runner, developer) |
+| CLI flags | --cli, --server, --stdio | **+ --agent, --list-agents** |
+| Tool scoping | All 16 always loaded | **Per-agent whitelist** |
+
+**Changes applied:**
+- `src/agents/types.ts` — AgentDefinition interface (name, description, tools, model, skills, prompt)
+- `src/agents/parser.ts` — parseAgentDef(), discoverAgents() — frontmatter + body parsing
+- `src/agents/tool-registry.ts` — 16 tool factories, createToolByName(), createToolsByNames(), createAllTools()
+- `src/agents/factory.ts` — createAgentFromDef(), createDefaultAgent() — scoped tools + prompt composition
+- `src/agents/index.ts` — Barrel exports
+- `src/agent.ts` — Refactored to delegate to factory, added setAgentDefinition()/getAgentDefinition()
+- `src/config.ts` — Added agentName field (PI_AGENT_NAME env var)
+- `src/index.ts` — Added --agent <name>, --list-agents flags, version bumped to 0.6.0
+- `.agent/agents/story-advisor.md` — 5 tools, zh_TW story advice
+- `.agent/agents/quality-gate.md` — 8 tools, strict quality enforcement
+- `.agent/agents/benchmark-runner.md` — 9 tools, autonomous benchmark workflow
+- `.agent/agents/developer.md` — all tools, default behavior
+- `src/__tests__/agents.test.ts` — 27 tests (parser, discovery, tool-registry, factory, integration)
+
+**Lessons learned:**
+- Tool name from pi-coding-agent is "read" not "read_file" — always verify against actual package exports
+- Bun test `describe` blocks can't use top-level `await` — use static imports instead
+- Using module-level variable (activeDef) in agent.ts is cleaner than globalThis for state injection
+- discoverAgents naturally deduplicates by name (first occurrence wins) — project-level agents shadow user-level
 
 ### 2026-04-16 — ACP stdio mode migration (v0.5.0)
 
@@ -221,6 +323,18 @@ bun run --cwd bun_app/bun_pi_agent demo
 
 ## Done
 
+- [x] **Phase 50:** Remotion content tools (rm_analyze, rm_suggest, rm_lint) + rm-content-analyst agent
+- [x] 20 new tests (remotion-tools.test.ts: tools, analyze, suggest, lint suites)
+- [x] src/tools/remotion-tools.ts — 3 tool factories + dialog parser + 6 lint rules
+- [x] rm-content-analyst agent definition (5 tools: rm_analyze, rm_suggest, rm_lint, Read, Grep)
+- [x] Updated 3 existing agents with rm_* tools (sg-story-advisor, sg-quality-gate, sg-benchmark-runner)
+- [x] Tool count updated: 17→20 across all test files
+- [x] **Phase 47:** Multi-agent definition system (types + parser + tool-registry + factory + CLI flags + 4 predefined agents)
+- [x] 27 new tests (parser: 6, discovery: 5, tool-registry: 8, factory: 5, integration: 3)
+- [x] src/agents/ module (types.ts, parser.ts, tool-registry.ts, factory.ts, index.ts)
+- [x] --agent <name> and --list-agents CLI flags
+- [x] agent.ts refactored to delegate to factory with setAgentDefinition()
+- [x] 4 predefined agent definitions: story-advisor, quality-gate, benchmark-runner, developer
 - [x] ACP demo script: src/demo.ts walks all 8 endpoints, compiled to dist/demo binary
 - [x] Run cleanup policy: age-based + count-based cleanup on startup (PI_AGENT_MAX_RUN_AGE, PI_AGENT_MAX_RUN_COUNT)
 - [x] 8 new cleanup tests (age, count, combined, no-op, initStore auto-cleanup, config)

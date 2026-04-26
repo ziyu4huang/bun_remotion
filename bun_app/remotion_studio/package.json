@@ -1,0 +1,32 @@
+{
+  "name": "remotion_studio",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "src/server/index.ts",
+  "scripts": {
+    "dev": "bun run src/server/index.ts",
+    "dev:client": "vite",
+    "dev:full": "bun run src/server/index.ts & vite",
+    "build": "vite build",
+    "test": "bun test src/",
+    "test:e2e": "npx playwright test --config playwright.config.ts",
+    "test:e2e:ui": "npx playwright test --config playwright.config.ts --ui"
+  },
+  "dependencies": {
+    "hono": "^4.7.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "remotion_types": "workspace:*",
+    "bun_tts": "workspace:*",
+    "bun_image": "workspace:*"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.59.1",
+    "@types/bun": "latest",
+    "@types/react": "18.3.18",
+    "@types/react-dom": "18.3.5",
+    "@vitejs/plugin-react": "^4.3.0",
+    "vite": "^6.2.0"
+  }
+}

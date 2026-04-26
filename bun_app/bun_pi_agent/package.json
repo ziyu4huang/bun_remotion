@@ -14,7 +14,8 @@
     "test:skills": "bun test src/skills/",
     "demo": "bun src/demo.ts",
     "acp-demo": "bun src/acp-demo.ts",
-    "test:acp": "bun test src/acp/__tests__/"
+    "test:acp": "bun test src/acp/__tests__/",
+    "ci": "bun src/ci.ts"
   },
   "dependencies": {
     "@agentclientprotocol/sdk": "^0.19.0",
@@ -22,6 +23,7 @@
     "@mariozechner/pi-ai": "latest",
     "@mariozechner/pi-coding-agent": "latest",
     "@sinclair/typebox": "^0.34.0",
-    "acp-sdk": "^1.0.3"
+    "acp-sdk": "^1.0.3",
+    "bun_image": "workspace:*"
   }
 }

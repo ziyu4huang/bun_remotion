@@ -120,6 +120,14 @@ These are implementation tasks in `bun_app/storygraph/src/`. For architecture an
   - Skip episode extraction if unchanged
   - File: `src/scripts/graphify-pipeline.ts`
 
+### Phase 3 — bun_pi_agent Integration (planned)
+
+> bun_pi_agent will import pipeline-api.ts and run storygraph benchmarks autonomously.
+> See bun_app/bun_pi_agent/TODO.md Phase 3 for tasks.
+
+- [ ] **3-A1: storygraph-tools.ts** — Agent tools wrapping runPipeline/runCheck/runScore/getPipelineStatus
+- [ ] **3-A2: storygraph-benchmark skill** — Autonomous benchmark workflow as agent skill
+
 ### Phase 30 — Genre-Aware KG Pipeline (DONE at skill level)
 
 > See `.claude/skills/remotion-best-practices/PLAN.md` Phase 30 for architecture.

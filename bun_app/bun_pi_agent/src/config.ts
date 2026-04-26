@@ -7,6 +7,7 @@ export interface AgentConfig {
   runsDir: string;
   maxRunAge: number;   // seconds; runs older than this are deleted on startup
   maxRunCount: number; // max persisted runs; oldest deleted when exceeded
+  agentName?: string;  // agent definition name (from --agent flag)
 }
 
 export function getConfig(): AgentConfig {
@@ -29,5 +30,6 @@ export function getConfig(): AgentConfig {
     runsDir: process.env.PI_AGENT_RUNS_DIR || `${workDir}/.pi-agent/runs`,
     maxRunAge: parseInt(process.env.PI_AGENT_MAX_RUN_AGE || "604800", 10), // 7 days
     maxRunCount: parseInt(process.env.PI_AGENT_MAX_RUN_COUNT || "100", 10),
+    agentName: process.env.PI_AGENT_NAME || undefined,
   };
 }

@@ -16,7 +16,7 @@ type: feedback
 5. For WebUI routes, pass `browserMode: "cdp"` (default) in request body
 6. Persistent profile mode (`launchPersistentContext`) is fallback only — it may trigger Google security warnings
 
-**Files affected:** `bun_app/bun_image/src/image-engine.ts`, `bun_app/bun_webui/src/server/routes/image.ts`, any future modules that automate external web resources.
+**Files affected:** `bun_app/bun_image/src/image-engine.ts`, `bun_app/remotion_studio/src/server/routes/image.ts`, any future modules that automate external web resources.
 
 **CDP launch command for user:**
 ```bash

@@ -1,7 +1,28 @@
 # Novel Video Generation — TODO Archive
 
-> Completed tasks from Phase 24–34. For reference only.
+> Completed tasks from Phase 24–43. For reference only.
 > Active tasks: `TODO.md`
+
+---
+
+## Phase 42: my-core-is-boss ch2-ep3 (COMPLETE)
+
+- [x] **42-A: Review my-core-is-boss PLAN.md** — Identified ch2-ep3 (技能點分配) as next episode.
+- [x] **42-B: Scaffold episode** — Already scaffolded by episodeforge. Fixed Root.tsx path bug.
+- [x] **42-C: Write story + narration** — Narration already written (35 segments across 5 scenes).
+- [x] **42-D: Generate character images** — All needed images already existed.
+- [x] **42-E: Generate TTS** — MLX Qwen3-TTS, 35 segments, 4 voices.
+- [x] **42-F: Implement scenes** — Rewrote 5 scene files from templates to production code.
+- [x] **42-G: Render + verify** — 247.3 MB MP4, 7:10 duration, 12906 frames.
+
+## Phase 43: Review Agent CLI (COMPLETE)
+
+- [x] **43-A: Design review-agent architecture** — 6 files in bun_app/bun_pi_agent/src/review-agent/.
+- [x] **43-B: Create review-agent CLI entry** — cli.ts + root bun run review-agent script.
+- [x] **43-C: Review prompt engineering** — 6 dimensions, narration extraction via regex.
+- [x] **43-D: Response parsing + output** — parseReviewResponse with graceful fallbacks.
+- [ ] **43-E: Integration** — Wire into storygraph CLI/WebUI. (DEFERRED)
+- [x] **43-F: Tests** — 198 tests pass (18 new).
 
 ---
 

@@ -83,7 +83,7 @@ describe("createAgent", () => {
     const agent = createAgent();
     const state = agent.state as any;
     expect(Array.isArray(state.tools)).toBe(true);
-    expect(state.tools.length).toBe(7);
+    expect(state.tools.length).toBe(29);
   });
 
   test("works with anthropic provider if key is set", () => {

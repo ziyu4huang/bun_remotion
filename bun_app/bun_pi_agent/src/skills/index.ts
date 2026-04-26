@@ -42,7 +42,7 @@ export function loadAgentSkills(options?: {
 
   return piLoadSkills({
     cwd,
-    skillPaths: allPaths.length > 0 ? allPaths : undefined,
+    skillPaths: allPaths,
     includeDefaults: true,
   });
 }

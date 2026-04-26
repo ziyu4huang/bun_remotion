@@ -1,48 +1,29 @@
-import { Agent } from "@mariozechner/pi-agent-core";
-import { getModel, getEnvApiKey } from "@mariozechner/pi-ai";
-import { createTools } from "./tools/index.js";
-import { getConfig } from "./config.js";
-import { loadAgentSkills, getSkillsPromptSection } from "./skills/index.js";
+import type { Agent } from "@mariozechner/pi-agent-core";
+import { createDefaultAgent, createAgentFromDef } from "./agents/index.js";
+import type { AgentDefinition } from "./agents/types.js";
 
-const BASE_SYSTEM_PROMPT = `You are a coding assistant. You can read, write, edit, and search files, list directories, and execute bash commands.
+/** Active agent definition override (set by --agent flag in index.ts) */
+let activeDef: AgentDefinition | undefined;
 
-Guidelines:
-- Explain what you're doing before using tools.
-- Read files before editing them to understand context.
-- Use grep/find to search for patterns across files.
-- Use bash for running builds, tests, and git commands.
-- Keep responses concise and focused on the task.`;
+/** Set the active agent definition. Called by index.ts when --agent is used. */
+export function setAgentDefinition(def: AgentDefinition | undefined): void {
+  activeDef = def;
+}
 
-export function createAgent() {
-  const config = getConfig();
+/** Get the current agent definition (if any). */
+export function getAgentDefinition(): AgentDefinition | undefined {
+  return activeDef;
+}
 
-  // Resolve API key from environment
-  const apiKey = getEnvApiKey(config.modelProvider as any);
-  if (!apiKey) {
-    throw new Error(
-      `No API key found for provider "${config.modelProvider}". ` +
-      `Set ${config.modelProvider.toUpperCase().replace("-", "_")}_API_KEY in your environment.`
-    );
+/**
+ * Create agent — uses agent definition if set, otherwise default.
+ * All modes (CLI, ACP, server) call this function.
+ */
+export function createAgent(): Agent {
+  if (activeDef) {
+    return createAgentFromDef(activeDef);
   }
-
-  const model = getModel(config.modelProvider as any, config.modelName as any);
-  const tools = createTools();
-
-  // Load skills and build system prompt
-  const { skills } = loadAgentSkills();
-  const skillsSection = getSkillsPromptSection(skills);
-  const systemPrompt = BASE_SYSTEM_PROMPT + skillsSection;
-
-  const agent = new Agent({
-    initialState: {
-      systemPrompt,
-      model,
-      tools,
-    },
-    getApiKey: () => apiKey,
-  });
-
-  return agent;
+  return createDefaultAgent();
 }
 
 export type { AgentEvent } from "@mariozechner/pi-agent-core";

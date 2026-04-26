@@ -7,7 +7,7 @@
     "bun_app/episodeforge",
     "bun_app/storygraph",
     "bun_app/bun_pi_agent",
-    "bun_app/bun_webui",
+    "bun_app/remotion_studio",
     "bun_app/bun_tts",
     "bun_app/bun_image",
     "bun_remotion_proj/shared",
@@ -117,7 +117,16 @@
     "generate-tts:wf-ch3-ep2": "bun run --cwd bun_remotion_proj/weapon-forger/weapon-forger-ch3-ep2 generate-tts",
     "start:mcb-ch2-ep3": "bash scripts/dev.sh studio my-core-is-boss-ch2-ep3",
     "build:mcb-ch2-ep3": "bash scripts/dev.sh render my-core-is-boss-ch2-ep3",
-    "generate-tts:mcb-ch2-ep3": "bun run --cwd bun_remotion_proj/my-core-is-boss/my-core-is-boss-ch2-ep3 generate-tts"
+    "generate-tts:mcb-ch2-ep3": "bun run --cwd bun_remotion_proj/my-core-is-boss/my-core-is-boss-ch2-ep3 generate-tts",
+    "start:mcb-ch3-ep1": "bash scripts/dev.sh studio my-core-is-boss-ch3-ep1",
+    "build:mcb-ch3-ep1": "bash scripts/dev.sh render my-core-is-boss-ch3-ep1",
+    "generate-tts:mcb-ch3-ep1": "bun run --cwd bun_remotion_proj/my-core-is-boss/my-core-is-boss-ch3-ep1 generate-tts",
+    "start:unknown": "bash scripts/dev.sh studio unknown-project",
+    "build:unknown": "bash scripts/dev.sh render unknown-project",
+    "generate-tts:unknown": "bun run --cwd bun_remotion_proj/unknown-project generate-tts",
+    "start:mcb-ch3-ep2": "bash scripts/dev.sh studio my-core-is-boss-ch3-ep2",
+    "build:mcb-ch3-ep2": "bash scripts/dev.sh render my-core-is-boss-ch3-ep2",
+    "generate-tts:mcb-ch3-ep2": "bun run --cwd bun_remotion_proj/my-core-is-boss/my-core-is-boss-ch3-ep2 generate-tts"
   },
   "dependencies": {
     "@remotion/cli": "4.0.290",

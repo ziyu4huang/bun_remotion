@@ -1,7 +1,48 @@
 # Novel Video Generation — PLAN Archive
 
-> Completed phase specs from Phase 24–30. For reference only.
+> Completed phase specs from Phase 24–43. For reference only.
 > Active phases: `PLAN.md`
+
+---
+
+## Phase 43: Review Agent CLI in bun_pi_agent — COMPLETE
+
+### Architecture
+
+```
+bun_app/bun_pi_agent/src/review-agent/
+├── cli.ts              # CLI entry: bun run review-agent <series-dir>
+├── review-prompt.ts    # Build structured review prompt from pipeline data
+├── review-parser.ts    # Parse GLM response into ReviewResult
+├── types.ts            # ReviewResult type (6 dimensions, fix suggestions)
+├── ai-call.ts          # GLM API wrapper (stripMarkdownFence, repairTruncatedJSON)
+└── __tests__/
+    └── review-agent.test.ts
+```
+
+### ReviewResult
+
+```typescript
+{
+  decision: "APPROVE" | "APPROVE_WITH_FIXES" | "REQUEST_RERUN" | "BLOCK",
+  dimensions: { semantic_correctness, creative_quality, genre_fit, pacing, character_consistency, regression_vs_previous },
+  overall: 0-10,
+  strengths: string[],
+  weaknesses: string[],
+  fix_suggestions: { target, suggestion, priority }[],
+  summary_zhTW: string
+}
+```
+
+## Phase 42: my-core-is-boss New Episode — Pipeline Diversity Test — COMPLETE
+
+### Goal
+
+Create one new my-core-is-boss episode using the full pipeline. Cross-series validation beyond weapon-forger.
+
+### Result
+
+ch2-ep3 (技能點分配) created and rendered. 247.3 MB MP4, 7:10 duration. All assets pre-existed (no new images). 4 bugs found in scaffold templates.
 
 ---
 

@@ -11,7 +11,7 @@
 
 > **Status:** v0.29.0 — All core phases complete. Pipeline mature. Remaining: per-episode HTML, incremental updates, dual pipeline merge.
 
-**Note:** `pipeline-api.ts` (runPipeline, runCheck, runScore, getPipelineStatus) is consumed by `bun_webui` workflow engine (Phase 39-A1). Breaking changes to these exports require webui route/tests update.
+**Note:** `pipeline-api.ts` (runPipeline, runCheck, runScore, getPipelineStatus) is consumed by `remotion_studio` workflow engine (Phase 39-A1). Breaking changes to these exports require webui route/tests update.
 
 ---
 
@@ -24,6 +24,11 @@
 **weapon-forger (7 episodes):**
 - **`soul` character has no cross-episode links** — Only appears in 1 episode. Expected for single-episode characters; not a bug.
 - **8 WARN from regex trait limitations** — Predefined trait patterns miss traits when dialog doesn't match regex. Core traits like `萬物皆可修`, `毒舌警告` are present per PLAN.md but regex misses them in some episodes.
+
+**my-core-is-boss (6 episodes):**
+- **Regression 100→80 after adding ch2-ep3** (2026-04-25) — Expected: new episode introduced more Trait Coverage WARNs + Plot Arc FAIL (no climax beat). Baseline needs update.
+- **24 WARN** — 10× Trait Coverage, 3× Interaction Density, 4× Community Cohesion, 2× Character Consistency (xiaoelder), 2× Isolated Nodes, 3× more
+- **1 FAIL** — Plot Arc: no climax beat detected in new ch2-ep3
 
 ---
 
@@ -75,6 +80,7 @@
 | 32 | KG Feedback Loop | Context injection, enrichment, calibration |
 | 33 | Dual-LLM Architecture | Three-tier quality, gate v2, CLI, CI mode |
 | 34 | Video Category System | 7 categories, scene templates, episodeforge |
+| 46 | Proactive Story Tools | sg_suggest (8 analyzers), sg_health (6 dimensions) |
 
 ---
 

@@ -8,14 +8,16 @@
 > `.claude/skills/develop_bun_app/TODO.md` — Skill tasks + history | `.claude/skills/develop_bun_app/operations/` — 6 operation docs
 > — | `bun_app/storygraph/PLAN.md` + `TODO.md` — Reference bun_app with mature lifecycle
 > — | `bun_app/bun_pi_agent/PLAN.md` + `TODO.md` — Second bun_app, first adopter of skill-created PLAN/TODO
-> — | `.claude/skills/remotion-best-practices/PLAN.md` + `TODO.md` — bun_webui strategic roadmap (Web UI phases 35-39)
+> — | `.claude/skills/remotion-best-practices/PLAN.md` + `TODO.md` — remotion_studio strategic roadmap (Web UI phases 35-39)
 
-## Current State (v1.2.0)
+## Current State (v1.3.0)
 
 **Working:**
 - 7 operation docs: scaffold, test, build, develop, status, plan, post-run
 - Pre-check lists in all 6 core operations (enforce reading PLAN/TODO before work)
 - Validation criteria in all 6 core operations (explicit "success = X")
+- **develop op is a structured workflow** (5 steps: identify → plan → implement → test → update docs)
+- 7 change types with per-type recipes (new-module, new-route, new-cli-flag, new-config, new-tool, bugfix, refactor)
 - PLAN/TODO lifecycle conventions defined in SKILL.md
 - Self-gating rules documented (honor-system, not enforced)
 - Template-driven scaffold: generates package.json, tsconfig, PLAN.md, TODO.md, src/index.ts, smoke test
@@ -29,7 +31,7 @@
 |-----|------------|------------|-------|-------|
 | storygraph | ✅ mature (v0.7+) | ✅ run history | — | Reference implementation, skill existed before develop_bun_app |
 | bun_pi_agent | ✅ skill-created | ✅ skill-created | 93 pass | First app to get PLAN/TODO from this skill |
-| bun_webui | ✅ (in remotion-best-practices) | ✅ (in remotion-best-practices) | 64 pass | Hono API + React SPA, 8 pages, workflow engine |
+| remotion_studio | ✅ (in remotion-best-practices) | ✅ (in remotion-best-practices) | 64 pass | Hono API + React SPA, 8 pages, workflow engine. (Renamed from bun_webui in Phase 51) |
 
 ## Architecture
 
@@ -56,7 +58,7 @@ Managed bun_apps (each has own PLAN/TODO):
     bun_app/bun_pi_agent/
         PLAN.md — Agent architecture, modules, HTTP API
         TODO.md — Tasks, known issues, dev history
-    bun_app/bun_webui/
+    bun_app/remotion_studio/
         PLAN/TODO in .claude/skills/remotion-best-practices/
         8 pages: Dashboard, Projects, Pipeline, Quality, Assets, TTS, Render, Workflows
         Workflow engine chains storygraph + episodeforge + bun_tts + remotion-renderer
