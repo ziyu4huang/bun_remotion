@@ -1,8 +1,8 @@
 import { Hono } from "hono";
 import { createJob, getJob } from "../middleware/job-queue";
-import { listTemplates, getTemplate, runWorkflow, retryWorkflow } from "../services/workflow-engine";
+import { listTemplates, getTemplate, runWorkflow, retryWorkflow, retryWorkflowDAG, getWorkflowTaskStore } from "../services/workflow-engine";
 import type { WorkflowTriggerOptions } from "../services/workflow-engine";
-import type { ApiResponse, Job, WorkflowResult } from "../../shared/types";
+import type { ApiResponse, Job, WorkflowResult, TaskTree, TaskNode } from "../../shared/types";
 
 const router = new Hono();
 
@@ -117,6 +117,61 @@ router.post("/:id/retry", async (c) => {
 
   const newJob = createJob("workflow", async (progress) => {
     return retryWorkflow(template, options, prevResult, fromStep!, progress);
+  });
+
+  return c.json<ApiResponse<Job<WorkflowResult>>>({ ok: true, data: newJob as Job<WorkflowResult> }, 201);
+});
+
+// ── Task Tree endpoints (Phase 62) ──
+
+// GET /:id/tree — Get the task tree for a workflow job
+router.get("/:id/tree", (c) => {
+  const job = getJob<WorkflowResult>(c.req.param("id"));
+  if (!job) return c.json<ApiResponse>({ ok: false, error: "Job not found" }, 404);
+  if (job.type !== "workflow") return c.json<ApiResponse>({ ok: false, error: "Not a workflow job" }, 400);
+
+  const treeId = job.result?.taskTreeId;
+  if (!treeId) return c.json<ApiResponse>({ ok: false, error: "No task tree for this job" }, 404);
+
+  const store = getWorkflowTaskStore();
+  const tree = store.getTree(treeId);
+  if (!tree) return c.json<ApiResponse>({ ok: false, error: "Task tree not found in store" }, 404);
+
+  return c.json<ApiResponse<TaskTree>>({ ok: true, data: tree });
+});
+
+// GET /:id/tree/:taskId — Get a single task node
+router.get("/:id/tree/:taskId", (c) => {
+  const job = getJob<WorkflowResult>(c.req.param("id"));
+  if (!job) return c.json<ApiResponse>({ ok: false, error: "Job not found" }, 404);
+
+  const treeId = job.result?.taskTreeId;
+  if (!treeId) return c.json<ApiResponse>({ ok: false, error: "No task tree for this job" }, 404);
+
+  const store = getWorkflowTaskStore();
+  const node = store.getNode(treeId, c.req.param("taskId"));
+  if (!node) return c.json<ApiResponse>({ ok: false, error: "Task node not found" }, 404);
+
+  return c.json<ApiResponse<TaskNode>>({ ok: true, data: node });
+});
+
+// POST /:id/tree/:taskId/retry — Retry a specific failed task node
+router.post("/:id/tree/:taskId/retry", async (c) => {
+  const jobId = c.req.param("id");
+  const taskId = c.req.param("taskId");
+  const job = getJob<WorkflowResult>(jobId);
+  if (!job) return c.json<ApiResponse>({ ok: false, error: "Job not found" }, 404);
+
+  const treeId = job.result?.taskTreeId;
+  if (!treeId) return c.json<ApiResponse>({ ok: false, error: "No task tree for this job" }, 404);
+
+  const template = getTemplate(job.result!.templateId);
+  if (!template) return c.json<ApiResponse>({ ok: false, error: "Unknown template" }, 400);
+
+  const options: WorkflowTriggerOptions = (job.result!.options ?? {}) as WorkflowTriggerOptions;
+
+  const newJob = createJob("workflow", async (progress) => {
+    return retryWorkflowDAG(treeId, template, options, progress);
   });
 
   return c.json<ApiResponse<Job<WorkflowResult>>>({ ok: true, data: newJob as Job<WorkflowResult> }, 201);

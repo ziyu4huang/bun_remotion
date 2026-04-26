@@ -7,11 +7,12 @@
   "scripts": {
     "dev": "bun run src/server/index.ts",
     "dev:client": "vite",
-    "dev:full": "bun run src/server/index.ts & vite",
+    "dev:full": "bun run src/server/index.ts & npx vite",
     "build": "vite build",
     "test": "bun test src/",
     "test:e2e": "npx playwright test --config playwright.config.ts",
-    "test:e2e:ui": "npx playwright test --config playwright.config.ts --ui"
+    "test:e2e:ui": "npx playwright test --config playwright.config.ts --ui",
+    "test:e2e:headed": "npx playwright test --config playwright.config.ts --headed"
   },
   "dependencies": {
     "hono": "^4.7.0",

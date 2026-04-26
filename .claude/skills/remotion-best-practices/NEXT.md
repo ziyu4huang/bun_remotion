@@ -3,8 +3,8 @@
 > **Entry point.** Read this first. Load TODO.md and PLAN.md sections only when actively working on a task.
 >
 > **Cross-linked docs:**
-> - `TODO.md` — Active tasks (Phase 45)
-> - `PLAN.md` — Active phase specs (Phase 44–45)
+> - `TODO.md` — Active tasks (Phase 60)
+> - `PLAN.md` — Active phase specs (Phase 44–63)
 > - `REFLECTIONS.md` — Historical session logs (on-demand)
 > - `TODO-archive.md` — Completed tasks (Phase 24–43)
 > - `PLAN-archive.md` — Completed phase specs (Phase 24–43)
@@ -15,17 +15,13 @@
 > - `../../bun_app/bun_pi_agent/TODO.md` — bun_pi_agent Phase 3 tasks
 > - `../../bun_app/bun_pi_agent/PLAN.md` — bun_pi_agent architecture
 
-> **Status:** v0.9.9 — Phase 58 complete (JSON persistence for TaskStore). Next: Phase 59 (buildTaskTree — template → DAG).
+> **Status:** v0.9.13 — Server stability fixes applied (9 fixes: process error handlers, job eviction, SSE cleanup, DAG guard, agent abort, timeout middleware). 227 unit tests pass, 2 pre-existing failures. Next: Run headed E2E to verify server survives, or continue WebUI development.
 
 ## Next Task
 
-**Phase 59: Template → TaskTree Translator.** Pure function converting WorkflowTemplate into TaskNode tree with parallel dependencies. Enables DAG execution.
+**Milestone: Server stability fixes applied.** 9 fixes across 6 files targeting crash vectors identified in code review. Core fixes: process-level error handlers (prevent crash on unhandled rejections), job TTL eviction (30-min cleanup), SSE stream cancel (subscriber cleanup on disconnect), DAG iteration guard, agent subscribe try/catch, agent route abort handling, request timeout middleware.
 
-**Session findings (2026-04-26):** Tested Build Episode autonomous flow via Playwright. Found 3 bugs (skillPaths crash, error serialization, scaffold prompt). Agent-backed mode works but is flaky — deterministic steps should use direct calls. The workflow engine needs a fundamental redesign: flat linear chain → task tree with dependencies.
-
-**Session findings (2026-04-26):** Tested Build Episode autonomous flow via Playwright. Found 3 bugs (skillPaths crash, error serialization, scaffold prompt). Agent-backed mode works but is flaky — deterministic steps should use direct calls. The workflow engine needs a fundamental redesign: flat linear chain → task tree with dependencies.
-
-**Phase 54-E done:** studio-coordinator agent — master orchestrator using spawn_task to delegate to 6 studio agents. Defines 4 production pipelines: Build Episode (full), Quick Render, Quality Audit, Asset Generation.
+**Next priority:** Run headed E2E tests to verify the server survives sustained load. If stable, continue with Ch3-Ep2 (隱藏關卡) or WebUI improvements.
 
 ## Implementation Order
 
@@ -118,16 +114,18 @@ Replace flat linear workflow with DAG task tree. Parallel execution + resume.
 58-A: JSON persistence (data/task-trees.json, load/save, eviction) ✓
 58-B: Eviction policy (cap 50, oldest completed first) ✓
 58-C: Corruption recovery (try/catch, start fresh) ✓
-59-A: buildTaskTree() — template → task tree with parallel deps
-59-B: Dependency graph tests (check+score parallel, image+tts parallel)
-60-A: dag-executor.ts (topological sort, Promise.allSettled, failure skipping)
-60-B: Parallel timing + resume tests
-61-A: Wire DAG into runWorkflow (replace for-loop)
-61-B: retryWorkflow = load tree + reset failed + resume
-62-A: Tree API routes (GET /tree, POST /tree/:taskId/retry)
-62-B: TaskTreeNode component (shared collapsible tree node)
-62-C: Dashboard tree view rewrite
-63-A: Workflows page tree upgrade (parallel branches visible)
+59-A: buildTaskTree() — template → task tree with parallel deps ✓
+59-B: Dependency graph tests (check+score parallel, image+tts parallel) ✓
+60-A: dag-executor.ts (topological sort, Promise.allSettled, failure skipping) ✓
+60-B: Parallel timing + resume tests ✓
+61-A: Wire DAG into runWorkflow (replace for-loop) ✓
+61-B: retryWorkflow = load tree + reset failed + resume ✓
+62-A: Tree API routes (GET /tree, POST /tree/:taskId/retry) ✓
+62-B: TaskTreeNode component (shared collapsible tree node) ✓
+62-C: Dashboard tree view rewrite ✓
+63-A: Workflows page tree upgrade (parallel branches visible) ✓
+63-B: Live tree polling (2s interval, cleanup on unmount) ✓
+63-C: E2E tests for workflows tree view (7 tests) ✓
 ```
 
 ## Completed Phases
@@ -186,6 +184,13 @@ Replace flat linear workflow with DAG task tree. Parallel execution + resume.
 | — | Bug fixes: skillPaths crash, error serialization, scaffold prompt | 2026-04-26 |
 | 57 | TaskNode types + TaskStore (10 tests, foundation for DAG engine) | 2026-04-26 |
 | 58 | JSON persistence for TaskStore (load/save, eviction, corruption recovery) | 2026-04-26 |
+| 59 | buildTaskTree — template → DAG (10 tests, 3 parallel templates + fallback) | 2026-04-26 |
+| 60 | DAG executor — parallel dispatch, failure skipping, resume (4 tests) | 2026-04-26 |
+| 61 | Wire DAG into runWorkflow + retryWorkflow (backward compat, 229 tests pass) | 2026-04-26 |
+| 62 | Task Tree API + Dashboard tree view (3 routes, TaskTreeNode component, tree-based dashboard) | 2026-04-26 |
+| 63 | Workflows page tree upgrade (TaskTreeView + live polling + E2E tests) | 2026-04-26 |
+| — | E2E pipeline: headless→headed feedback loop, 72 tests, SKILL enforced, server crash found | 2026-04-26 |
+| — | Server stability fixes: 9 fixes (process handlers, job eviction, SSE cleanup, DAG guard, agent abort, timeout middleware) | 2026-04-26 |
 
 ## Archive
 

@@ -64,54 +64,64 @@ export async function runAgentTask(
   const onEvent = options?.onEvent;
 
   agent.subscribe((event: AgentEvent) => {
-    switch (event.type) {
-      case "turn_end":
-        turnCount++;
-        onEvent?.({ type: "turn_end" });
-        break;
-      case "message_update": {
-        const delta = (event as any).assistantMessageEvent?.delta;
-        if (typeof delta === "string" && delta) {
-          response += delta;
-          onEvent?.({ type: "text", delta });
+    try {
+      switch (event.type) {
+        case "turn_end":
+          turnCount++;
+          onEvent?.({ type: "turn_end" });
+          break;
+        case "message_update": {
+          const delta = (event as any).assistantMessageEvent?.delta;
+          if (typeof delta === "string" && delta) {
+            response += delta;
+            onEvent?.({ type: "text", delta });
+          }
+          break;
         }
-        break;
-      }
-      case "message_end": {
-        const content = event.message?.content;
-        if (typeof content === "string" && content && !response) {
-          response = content;
+        case "message_end": {
+          const content = event.message?.content;
+          if (typeof content === "string" && content && !response) {
+            response = content;
+          }
+          break;
         }
-        break;
+        case "tool_execution_start":
+          toolCallCount++;
+          onEvent?.({
+            type: "tool_start",
+            toolName: event.toolName,
+            toolCallId: event.toolCallId,
+            args: event.args,
+          });
+          break;
+        case "tool_execution_end":
+          toolCalls.push({
+            name: event.toolName,
+            args: undefined,
+            result: event.result,
+            isError: event.isError,
+          });
+          onEvent?.({
+            type: "tool_end",
+            toolName: event.toolName,
+            toolCallId: event.toolCallId,
+            result: event.result,
+            isError: event.isError,
+          });
+          break;
       }
-      case "tool_execution_start":
-        toolCallCount++;
-        onEvent?.({
-          type: "tool_start",
-          toolName: event.toolName,
-          toolCallId: event.toolCallId,
-          args: event.args,
-        });
-        break;
-      case "tool_execution_end":
-        toolCalls.push({
-          name: event.toolName,
-          args: undefined,
-          result: event.result,
-          isError: event.isError,
-        });
-        onEvent?.({
-          type: "tool_end",
-          toolName: event.toolName,
-          toolCallId: event.toolCallId,
-          result: event.result,
-          isError: event.isError,
-        });
-        break;
+    } catch (err) {
+      console.error("[agent-bridge] Error in subscribe callback:", err);
     }
   });
 
-  await agent.prompt(prompt);
+  try {
+    await agent.prompt(prompt);
+  } catch (err) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    onEvent?.({ type: "error", message: errMsg });
+    throw err;
+  }
 
   const durationMs = Date.now() - startTime;
   onEvent?.({ type: "done", turnCount, toolCallCount });

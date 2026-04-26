@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { createJob, listJobs, getJob, sseStream } from "./middleware/job-queue";
+import { requestTimeout } from "./middleware/request-timeout";
 import { projectRoutes } from "./routes/projects";
 import { scaffoldRoutes } from "./routes/scaffold";
 import { pipelineRoutes } from "./routes/pipeline";
@@ -25,6 +26,13 @@ import { resolve } from "node:path";
 const app = new Hono();
 
 app.use("/*", cors());
+app.use("/api/*", requestTimeout());
+
+// Global error handler — prevents unhandled errors from crashing the process
+app.onError((err, c) => {
+  console.error(`[remotion_studio] Request error:`, err);
+  return c.json({ ok: false, error: err.message }, 500);
+});
 
 // ── Health ──
 
@@ -97,8 +105,24 @@ if (existsSync(clientDir)) {
 
 if (import.meta.main) {
   const port = Number(process.env.PORT) || 5173;
-  Bun.serve({ fetch: app.fetch, port });
+  const server = Bun.serve({ fetch: app.fetch, port });
   console.log(`[remotion_studio] API server running on http://localhost:${port}`);
+
+  process.on("unhandledRejection", (reason) => {
+    console.error("[remotion_studio] Unhandled rejection:", reason);
+  });
+
+  process.on("uncaughtException", (err) => {
+    console.error("[remotion_studio] Uncaught exception:", err);
+  });
+
+  const shutdown = (signal: string) => {
+    console.log(`[remotion_studio] Received ${signal}, shutting down...`);
+    server.stop(true);
+    process.exit(0);
+  };
+  process.on("SIGTERM", () => shutdown("SIGTERM"));
+  process.on("SIGINT", () => shutdown("SIGINT"));
 }
 
 export { app };

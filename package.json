@@ -126,7 +126,19 @@
     "generate-tts:unknown": "bun run --cwd bun_remotion_proj/unknown-project generate-tts",
     "start:mcb-ch3-ep2": "bash scripts/dev.sh studio my-core-is-boss-ch3-ep2",
     "build:mcb-ch3-ep2": "bash scripts/dev.sh render my-core-is-boss-ch3-ep2",
-    "generate-tts:mcb-ch3-ep2": "bun run --cwd bun_remotion_proj/my-core-is-boss/my-core-is-boss-ch3-ep2 generate-tts"
+    "generate-tts:mcb-ch3-ep2": "bun run --cwd bun_remotion_proj/my-core-is-boss/my-core-is-boss-ch3-ep2 generate-tts",
+    "start:mcb-ch3-ep3": "bash scripts/dev.sh studio my-core-is-boss-ch3-ep3",
+    "build:mcb-ch3-ep3": "bash scripts/dev.sh render my-core-is-boss-ch3-ep3",
+    "generate-tts:mcb-ch3-ep3": "bun run --cwd bun_remotion_proj/my-core-is-boss/my-core-is-boss-ch3-ep3 generate-tts",
+    "start:mcb-ch3-ep4": "bash scripts/dev.sh studio my-core-is-boss-ch3-ep4",
+    "build:mcb-ch3-ep4": "bash scripts/dev.sh render my-core-is-boss-ch3-ep4",
+    "generate-tts:mcb-ch3-ep4": "bun run --cwd bun_remotion_proj/my-core-is-boss/my-core-is-boss-ch3-ep4 generate-tts",
+    "start:mcb-ch3-ep5": "bash scripts/dev.sh studio my-core-is-boss-ch3-ep5",
+    "build:mcb-ch3-ep5": "bash scripts/dev.sh render my-core-is-boss-ch3-ep5",
+    "generate-tts:mcb-ch3-ep5": "bun run --cwd bun_remotion_proj/my-core-is-boss/my-core-is-boss-ch3-ep5 generate-tts",
+    "start:mcb-ch3-ep6": "bash scripts/dev.sh studio my-core-is-boss-ch3-ep6",
+    "build:mcb-ch3-ep6": "bash scripts/dev.sh render my-core-is-boss-ch3-ep6",
+    "generate-tts:mcb-ch3-ep6": "bun run --cwd bun_remotion_proj/my-core-is-boss/my-core-is-boss-ch3-ep6 generate-tts"
   },
   "dependencies": {
     "@remotion/cli": "4.0.290",

@@ -5,10 +5,22 @@ type JobFn<T = unknown> = (progress: (p: number, msg?: string) => void) => Promi
 const jobs = new Map<string, Job>();
 const subscribers = new Map<string, Set<(progress: JobProgress) => void>>();
 
+const JOB_TTL_MS = 30 * 60 * 1000; // 30 minutes
+
 let counter = 0;
 
 function nextId(): string {
   return `job_${Date.now()}_${++counter}`;
+}
+
+function evictExpiredJobs(): void {
+  const now = Date.now();
+  for (const [id, job] of jobs) {
+    if ((job.status === "completed" || job.status === "failed") && now - job.updatedAt > JOB_TTL_MS) {
+      jobs.delete(id);
+      subscribers.delete(id);
+    }
+  }
 }
 
 function updateJob(job: Job, status: JobStatus, progress?: number): void {
@@ -53,6 +65,7 @@ export function createJob<T = unknown>(type: string, fn: JobFn<T>): Job<T> {
         for (const cb of sub) cb(null as never);
         subscribers.delete(job.id);
       }
+      evictExpiredJobs();
     }
   });
 
@@ -64,6 +77,7 @@ export function getJob<T = unknown>(jobId: string): Job<T> | undefined {
 }
 
 export function listJobs(): Job[] {
+  evictExpiredJobs();
   return [...jobs.values()];
 }
 
@@ -83,24 +97,30 @@ export function sseStream(jobId: string): Response {
     return new Response(JSON.stringify({ ok: false, error: "Job not found" }), { status: 404 });
   }
 
+  let unsub: (() => void) | undefined;
+
   const stream = new ReadableStream({
     start(controller) {
       const send = (data: object | null) => {
         if (data === null) {
-          controller.close();
+          try { controller.close(); } catch { /* already closed */ }
           return;
         }
-        controller.enqueue(encoder.encode(`data: ${JSON.stringify(data)}\n\n`));
+        try {
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify(data)}\n\n`));
+        } catch {
+          // Controller may be closed already (client disconnected)
+        }
       };
 
       // send initial state
       send({ jobId, status: job.status, progress: job.progress });
 
-      const unsub = subscribe(jobId, (evt) => send(evt));
-
-      // cleanup on abort
-      // (Bun doesn't expose abort signal on ReadableStream easily;
-      //  the null sentinel from createJob closes the stream)
+      unsub = subscribe(jobId, (evt) => send(evt));
+    },
+    cancel() {
+      // Client disconnected — clean up subscriber
+      unsub?.();
     },
   });
 

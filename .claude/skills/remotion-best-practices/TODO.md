@@ -384,52 +384,89 @@
 - [x] **58-C: Corruption recovery** — try/catch on load, start fresh silently
 - Tests: task-store.test.ts (15 tests, 34 assertions), 213 total pass, 0 regressions
 
-## Phase 59: Template → TaskTree Translator (PLANNED)
+## Phase 59: Template → TaskTree Translator (DONE)
 
 > **Goal:** Pure function converting WorkflowTemplate into TaskNode tree with parallelism.
 > **Full spec:** `PLAN.md §Phase 59`
 
-- [ ] **59-A: buildTaskTree() function** — `workflow-engine.ts` (~80 lines)
-  - full-pipeline: scaffold → pipeline → [check, score] → tts → render
-  - quality-gate: pipeline → [check, score]
-  - image-tts-render: [image, tts] → render
-- [ ] **59-B: Unit tests** — verify dependency graph for each template (~50 lines)
+- [x] **59-A: buildTaskTree() function** — `workflow-engine.ts` (~80 lines)
+  - TEMPLATE_DEPS map: full-pipeline, quality-gate, image-tts-render
+  - Fallback: linear chain for unknown templates
+  - kind→id tracking for correct dep edges
+- [x] **59-B: Unit tests** — 10 tests, 57 assertions
+  - full-pipeline: 7 nodes, check/score parallel, tts depends on both, render depends on tts
+  - quality-gate: 4 nodes, check/score parallel
+  - image-tts-render: 4 nodes, image/tts parallel, render depends on both
+  - Unknown template fallback, parent link consistency across all templates
 
-## Phase 60: DAG Executor (PLANNED)
+## Phase 60: DAG Executor (DONE)
 
 > **Goal:** Topological-sort executor with parallel dispatch and resume capability.
 > **Full spec:** `PLAN.md §Phase 60`
 
-- [ ] **60-A: dag-executor.ts** — NEW (~120 lines)
-  - Promise.allSettled for parallel dispatch
-  - Failed task → mark transitive dependents as skipped
-  - Skip completed tasks on resume
-- [ ] **60-B: Unit tests** — parallel timing, failure skipping, resume (~60 lines)
+- [x] **60-A: dag-executor.ts** — NEW (~110 lines)
+  - `executeTaskTree(tree, store, executor, options?)` — loop: getReadyTasks → Promise.allSettled → update
+  - `skipDependents()` — recursively marks transitive dependents as "skipped"
+  - Resume: already-completed nodes are skipped by getReadyTasks
+  - Options: onNodeStart, onNodeDone, onProgress callbacks
+- [x] **60-B: Unit tests** — 4 tests, 17 assertions
+  - Parallel timing: image+tts run concurrently, total < 350ms
+  - Failure skipping: B fails → D skipped, C still completes
+  - Resume: completed A not re-run
+  - Full-pipeline: all 6 steps execute in correct order (scaffold→pipeline→check/score→tts→render)
 
-## Phase 61: Wire DAG into Workflow Engine (PLANNED)
+## Phase 61: Wire DAG into Workflow Engine (DONE)
 
 > **Goal:** Replace runWorkflow for-loop with DAG executor. Backward compatible.
 > **Full spec:** `PLAN.md §Phase 61`
 
-- [ ] **61-A: Refactor runWorkflow** — use buildTaskTree + executeTaskTree (~150 lines changed)
-- [ ] **61-B: retryWorkflow = resume** — load tree, reset failed, re-execute (~40 lines)
-- [ ] **61-C: All existing tests pass** — backward compatible (~20 lines)
+- [x] **61-A: runWorkflowDAG()** — ~120 lines added to workflow-engine.ts
+  - buildTaskTree → sync into TaskStore → executeTaskTree with StepExecutor bridging to runStep
+  - treeToResult() converts TaskTree back to WorkflowResult for backward compat
+  - getWorkflowTaskStore() exposes store for API routes
+- [x] **61-B: retryWorkflowDAG()** — ~40 lines
+  - Resets failed/skipped nodes to pending, re-executes via executeTaskTree
+  - Completed nodes naturally skipped by getReadyTasks
+- [x] **61-C: Backward compatibility verified** — 229 tests pass (15 workflow-api tests unchanged, 0 regressions)
 
-## Phase 62: Task Tree API + Dashboard View (PLANNED)
+## Phase 62: Task Tree API + Dashboard View (DONE)
 
 > **Goal:** Tree API endpoints + Dashboard collapsible tree view.
 > **Full spec:** `PLAN.md §Phase 62`
 
-- [ ] **62-A: Tree API routes** — GET /tree, GET /tree/:taskId, POST /tree/:taskId/retry (~80 lines)
-- [ ] **62-B: TaskTreeNode component** — shared collapsible tree node (~80 lines)
-- [ ] **62-C: Dashboard rewrite** — tree view replacing flat job table (~150 lines)
-- [ ] **62-D: api.ts client methods** — tree endpoint wrappers (~30 lines)
+- [x] **62-A: Tree API routes** — GET /tree, GET /tree/:taskId, POST /tree/:taskId/retry
+  - Files: workflows.ts (+55 lines), types.ts (taskTreeId field on WorkflowResult), workflow-engine.ts (taskTreeId in treeToResult)
+  - taskTreeId links workflow jobs to their DAG trees in TaskStore
+  - retryTreeNode delegates to retryWorkflowDAG
+- [x] **62-B: TaskTreeNode component** — shared collapsible tree node
+  - Files: components/TaskTreeNode.tsx (new, ~100 lines), components/index.ts (export)
+  - TaskTreeNodeView: recursive, depth-based indentation, status icons/colors, error preview, retry button
+  - TaskTreeView: convenience wrapper rendering from root
+- [x] **62-C: Dashboard rewrite** — tree view replacing flat job table
+  - Files: Dashboard.tsx (rewritten, ~180 lines)
+  - Workflow jobs show as cards with embedded TaskTreeView
+  - Non-workflow jobs still in flat table
+  - Refresh button for running trees, per-node retry
+- [x] **62-D: api.ts client methods** — tree endpoint wrappers
+  - getWorkflowTree, getWorkflowTreeNode, retryTreeNode added to api.ts
+  - 227 tests pass, 0 regressions
 
 ## Phase 63: Workflows Page Tree Upgrade (PLANNED)
 
 > **Goal:** Replace flat step list with tree visualization showing parallel branches.
 > **Full spec:** `PLAN.md §Phase 63`
 
-- [ ] **63-A: Workflows.tsx tree view** — use TaskTreeNode component (~150 lines changed)
-- [ ] **63-B: Live tree polling** — refresh tree during execution (~30 lines)
-- [ ] **63-C: Playwright E2E test** — verify tree loads and nodes interactive (~50 lines)
+- [x] **63-A: Workflows.tsx tree view** — use TaskTreeNode component (~150 lines changed)
+  - Files: Workflows.tsx (rewritten, ~340 lines), TaskTreeView integrated with live polling
+  - Replaces flat step progress bars with collapsible task tree showing parallel branches
+  - Fallback to flat steps when no tree available
+  - 2s interval polling during execution, cleanup on unmount/completion
+  - Per-node retry via retryTreeNode API
+- [x] **63-B: Live tree polling** — refresh tree during execution (~30 lines)
+  - startTreePolling / stopTreePolling with useRef for interval cleanup
+  - Polling starts on workflow trigger, stops on completion/failure
+  - useEffect cleanup prevents memory leaks
+- [x] **63-C: Playwright E2E test** — verify tree loads and nodes interactive (~50 lines)
+  - Files: e2e/workflows-tree.spec.ts (new, 7 tests)
+  - Tests: page renders, template selector, step summary, Run button, tree view section, flat fallback
+  - 745 total tests pass, 0 regressions

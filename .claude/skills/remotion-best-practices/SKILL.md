@@ -17,6 +17,7 @@ Best practices for Remotion — video creation in React.
 - Always add `name` prop to `<Sequence>` and `<TransitionSeries.Sequence>` for Studio readability.
 - **Storygraph extraction MUST use `--mode hybrid` (or `ai`)**. Regex mode produces flat star-topology graphs with no semantic depth — useful only for structural debugging. Never run `--mode regex` for production pipeline runs.
 - **Workspace PLAN.md + TODO.md MUST exist before any episode files.** The Agent needs workspace PLAN.md to write Remotion code; Storygraph reads it for Knowledge Graph construction. Creating episode PLAN.md when workspace PLAN.md doesn't exist is a hard block. Reference pattern: `bun_remotion_proj/my-core-is-boss/`.
+- **E2E testing MUST follow the headless→headed pipeline.** Write headless tests → run headless → run headed → if headed catches issues headless missed → update headless tests → repeat. Headed failure = test coverage gap, not just a UI bug. See `topics/e2e/_topic.md`.
 
 ## Topic Detection
 
@@ -34,6 +35,7 @@ Detect what the user is working on from conversation context, then read ONLY the
 | ffmpeg, transparent, decode, extract frame, duration, dimensions | Utilities | `topics/utilities/_topic.md` |
 | debug, black frame, verify, still, brightness, NaN, bug | Debugging | `topics/debugging/_topic.md` |
 | quality review, kg-review, gate.json, quality-score, tier 2, claude review, regression, CI, gate v2 | KG Quality Review | `topics/kg-review/_topic.md` |
+| e2e, playwright, headless, headed, test, webui, browser, interactive, smoke, spec | E2E Testing | `topics/e2e/_topic.md` |
 
 **Read ONLY the topic summary you need. Do NOT read all topic files.**
 If a topic summary references a specific rule file for details, read that single file.

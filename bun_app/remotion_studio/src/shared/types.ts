@@ -175,6 +175,8 @@ export interface WorkflowResult {
   steps: WorkflowStepStatus[];
   /** Original trigger options — stored for retry. JSON-serializable. */
   options?: Record<string, unknown>;
+  /** ID of the TaskTree in TaskStore (DAG-based workflows). */
+  taskTreeId?: string;
 }
 
 // ── Task Tree (Phase 57+) ──

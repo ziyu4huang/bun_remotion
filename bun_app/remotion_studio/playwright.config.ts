@@ -3,25 +3,27 @@ import { defineConfig } from "@playwright/test";
 export default defineConfig({
   testDir: "./e2e",
   testMatch: "*.spec.ts",
-  timeout: 30_000,
-  retries: 1,
+  timeout: 15_000,
+  retries: 0,
+  workers: 1,
   use: {
     baseURL: "http://localhost:3000",
     locale: "zh-TW",
     viewport: { width: 1280, height: 800 },
   },
-  webServer: [
+  // No webServer — start manually first:
+  //   bun run dev & npx vite &
+  projects: [
     {
-      command: "bun run src/server/index.ts",
-      port: 5173,
-      reuseExistingServer: true,
-      timeout: 10_000,
+      name: "e2e",
+      testDir: "./e2e",
+      testIgnore: /build-ch3-ep2/,
     },
     {
-      command: "npx vite",
-      port: 3000,
-      reuseExistingServer: true,
-      timeout: 10_000,
+      name: "integration",
+      testDir: "./e2e",
+      testMatch: /build-ch3-ep2/,
+      timeout: 60_000,
     },
   ],
 });

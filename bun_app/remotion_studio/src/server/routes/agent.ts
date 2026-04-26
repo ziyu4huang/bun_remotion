@@ -43,23 +43,30 @@ agentRoutes.post("/chat", async (c) => {
   }
 
   return streamSSE(c, async (stream) => {
+    let aborted = false;
+    stream.onAbort(() => { aborted = true; });
+
     try {
       const result = await runAgentTask(body.agentName!, body.prompt!, {
         onEvent(event) {
+          if (aborted) return;
           stream.writeSSE({ data: JSON.stringify(event) });
         },
       });
-      // Send final result as a special event
-      stream.writeSSE({
-        data: JSON.stringify({
-          type: "result",
-          result,
-        }),
-      });
+      if (!aborted) {
+        stream.writeSSE({
+          data: JSON.stringify({
+            type: "result",
+            result,
+          }),
+        });
+      }
     } catch (e: any) {
-      stream.writeSSE({
-        data: JSON.stringify({ type: "error", message: e.message }),
-      });
+      if (!aborted) {
+        stream.writeSSE({
+          data: JSON.stringify({ type: "error", message: e.message }),
+        });
+      }
     }
   });
 });

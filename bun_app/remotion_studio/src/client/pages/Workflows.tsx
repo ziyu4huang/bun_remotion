@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { api } from "../api";
-import type { Project, WorkflowTemplate, WorkflowStepStatus, Job, JobProgress, WorkflowResult } from "../../shared/types";
+import { TaskTreeView } from "../components/TaskTreeNode";
+import type { Project, WorkflowTemplate, WorkflowStepStatus, Job, JobProgress, WorkflowResult, TaskTree } from "../../shared/types";
 
 export function Workflows() {
   const [templates, setTemplates] = useState<WorkflowTemplate[]>([]);
@@ -16,7 +17,9 @@ export function Workflows() {
   const [imageItems, setImageItems] = useState<Array<{ filename: string; prompt: string; aspectRatio?: string }>>([]);
   const [job, setJob] = useState<Job<WorkflowResult> | null>(null);
   const [stepStatuses, setStepStatuses] = useState<WorkflowStepStatus[]>([]);
+  const [tree, setTree] = useState<TaskTree | null>(null);
   const [loading, setLoading] = useState(true);
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const loadData = useCallback(async () => {
     const [tplRes, projRes] = await Promise.all([api.listWorkflowTemplates(), api.listProjects()]);
@@ -27,7 +30,29 @@ export function Workflows() {
 
   useEffect(() => { loadData(); }, [loadData]);
 
+  // Cleanup polling on unmount
+  useEffect(() => {
+    return () => { if (pollRef.current) clearInterval(pollRef.current); };
+  }, []);
+
   const template = templates.find((t) => t.id === selectedTemplate);
+
+  const loadTree = useCallback(async (jobId: string) => {
+    const r = await api.getWorkflowTree(jobId);
+    if (r.ok && r.data) setTree(r.data);
+  }, []);
+
+  const startTreePolling = useCallback((jobId: string) => {
+    if (pollRef.current) clearInterval(pollRef.current);
+    pollRef.current = setInterval(() => loadTree(jobId), 2000);
+  }, [loadTree]);
+
+  const stopTreePolling = useCallback(() => {
+    if (pollRef.current) {
+      clearInterval(pollRef.current);
+      pollRef.current = null;
+    }
+  }, []);
 
   const handleTrigger = async () => {
     if (!selectedTemplate || !selectedSeries) return;
@@ -46,17 +71,27 @@ export function Workflows() {
       const j = res.data;
       setJob(j);
       setStepStatuses((j.result as WorkflowResult)?.steps ?? []);
+      setTree(null);
+
+      // Try to load tree immediately (may not exist yet)
+      const wfResult = j.result as WorkflowResult;
+      if (wfResult?.taskTreeId) loadTree(j.id);
+
       api.streamJob(j.id, (p: JobProgress) => {
         setJob((prev) => (prev ? { ...prev, progress: p.progress } : null));
-        // Poll for step-level detail
         pollSteps(j.id);
         if (p.progress >= 100) {
           setTimeout(() => {
             pollSteps(j.id);
+            loadTree(j.id);
+            stopTreePolling();
             setJob(null);
           }, 500);
         }
       });
+
+      // Start tree polling for live updates
+      startTreePolling(j.id);
     }
   };
 
@@ -64,7 +99,26 @@ export function Workflows() {
     const res = await api.getWorkflowJob(jobId);
     if (res.data?.result) {
       setStepStatuses(res.data.result.steps);
+      // Also refresh tree if available
+      if ((res.data.result as WorkflowResult)?.taskTreeId) {
+        loadTree(jobId);
+      }
+      // Stop polling if done
+      if (res.data.status === "completed" || res.data.status === "failed") {
+        stopTreePolling();
+      }
     }
+  };
+
+  const handleRetryNode = (taskId: string) => {
+    if (!job) return;
+    api.retryTreeNode(job.id, taskId).then((r) => {
+      if (r.ok && r.data) {
+        setJob(r.data);
+        setTree(null);
+        startTreePolling(r.data.id);
+      }
+    });
   };
 
   const needsSeries = template?.steps.some(
@@ -88,7 +142,7 @@ export function Workflows() {
         <label style={{ fontSize: 13, color: "#555", display: "block", marginBottom: 4 }}>Template</label>
         <select
           value={selectedTemplate}
-          onChange={(e) => { setSelectedTemplate(e.target.value); setStepStatuses([]); }}
+          onChange={(e) => { setSelectedTemplate(e.target.value); setStepStatuses([]); setTree(null); }}
           style={{ padding: "6px 12px", borderRadius: 6, fontSize: 14, minWidth: 300 }}
         >
           <option value="">Select template...</option>
@@ -276,8 +330,31 @@ export function Workflows() {
         </div>
       )}
 
-      {/* Per-step status */}
-      {stepStatuses.length > 0 && (
+      {/* Task tree view (primary) */}
+      {tree && (
+        <div style={{ marginTop: 16 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+            <h3 style={{ fontSize: 14, margin: 0 }}>Task Tree</h3>
+            {job?.status === "running" && (
+              <button
+                onClick={() => job && loadTree(job.id)}
+                style={{ fontSize: 11, padding: "2px 10px", borderRadius: 3, border: "1px solid #ccc", background: "transparent", cursor: "pointer" }}
+              >
+                Refresh
+              </button>
+            )}
+          </div>
+          <div style={{ border: "1px solid #e0e0e0", borderRadius: 8, padding: 8, background: "#fafafa" }}>
+            <TaskTreeView
+              tree={tree}
+              onRetry={job ? handleRetryNode : undefined}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Flat step list (fallback when no tree) */}
+      {!tree && stepStatuses.length > 0 && (
         <div style={{ marginTop: 16 }}>
           <h3 style={{ fontSize: 14, margin: "0 0 8px" }}>Steps</h3>
           {stepStatuses.map((step, i) => (

@@ -1,4 +1,4 @@
-import type { ApiResponse, Job, JobProgress, Project, AssetSummary, SeriesAssets, TTSStatus, RenderStatus, WorkflowTemplate, WorkflowResult, MonitoringOverview, SeriesHealth, SeriesQualitySnapshot, RegressionAlert, ScoreHistoryPoint, ImageStatus, ImageGenerateRequest, CharacterProfile, BenchmarkResult, BaselineInfo, AgentInfo, AgentStreamEvent, AgentTaskResult } from "../shared/types";
+import type { ApiResponse, Job, JobProgress, Project, AssetSummary, SeriesAssets, TTSStatus, RenderStatus, WorkflowTemplate, WorkflowResult, MonitoringOverview, SeriesHealth, SeriesQualitySnapshot, RegressionAlert, ScoreHistoryPoint, ImageStatus, ImageGenerateRequest, CharacterProfile, BenchmarkResult, BaselineInfo, AgentInfo, AgentStreamEvent, AgentTaskResult, TaskTree, TaskNode } from "../shared/types";
 
 const BASE = "/api";
 
@@ -110,6 +110,12 @@ export const api = {
       method: "POST",
       body: JSON.stringify(fromStep !== undefined ? { fromStep } : {}),
     }),
+
+  // Task tree
+  getWorkflowTree: (jobId: string) => request<TaskTree>(`/workflows/${jobId}/tree`),
+  getWorkflowTreeNode: (jobId: string, taskId: string) => request<TaskNode>(`/workflows/${jobId}/tree/${taskId}`),
+  retryTreeNode: (jobId: string, taskId: string) =>
+    request<Job<WorkflowResult>>(`/workflows/${jobId}/tree/${taskId}/retry`, { method: "POST" }),
   triggerEpisodeBuild: (seriesId: string, episodeId: string, agentEnabled = true) => {
     const parsed = parseEpisodeId(episodeId);
     return api.triggerWorkflow({

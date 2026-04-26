@@ -5,3 +5,4 @@ export { UserBubble, AssistantBubble } from "./ChatBubble";
 export { ThinkingIndicator, TurnSeparator } from "./ThinkingIndicator";
 export { MarkdownText } from "./MarkdownText";
 export { AdvisorPanelBase } from "./AdvisorPanelBase";
+export { TaskTreeNodeView, TaskTreeView } from "./TaskTreeNode";

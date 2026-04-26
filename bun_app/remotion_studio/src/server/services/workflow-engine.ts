@@ -6,6 +6,8 @@ import { generateTTS } from "../../../../bun_tts/src/tts-pipeline";
 import { generateImageBatch } from "../../../../bun_image/src/image-pipeline";
 import { renderVideo } from "./remotion-renderer";
 import { runAgentTask } from "../agent-bridge.js";
+import { executeTaskTree, type StepExecutor } from "./dag-executor";
+import { TaskStore } from "./task-store";
 import type { AgentTaskResult } from "../../shared/types";
 import type {
   WorkflowStepKind,
@@ -14,6 +16,8 @@ import type {
   WorkflowStepStatus,
   WorkflowResult,
   JobStatus,
+  TaskTree,
+  TaskNode,
 } from "../../shared/types";
 
 const REPO_ROOT = resolve(import.meta.dir, "../../../../..");
@@ -93,6 +97,124 @@ export function listTemplates(): WorkflowTemplate[] {
 
 export function getTemplate(id: string): WorkflowTemplate | undefined {
   return WORKFLOW_TEMPLATES.find((t) => t.id === id);
+}
+
+// ── Template → TaskTree translator (Phase 59) ──
+
+/** Dependency edges per template. Value = step kinds that must complete before the key. */
+const TEMPLATE_DEPS: Record<string, Record<WorkflowStepKind, WorkflowStepKind[]>> = {
+  "full-pipeline": {
+    scaffold: [],
+    pipeline: ["scaffold"],
+    check: ["pipeline"],
+    score: ["pipeline"],
+    tts: ["check", "score"],
+    render: ["tts"],
+  },
+  "quality-gate": {
+    pipeline: [],
+    check: ["pipeline"],
+    score: ["pipeline"],
+  },
+  "image-tts-render": {
+    image: [],
+    tts: [],
+    render: ["image", "tts"],
+  },
+};
+
+let nodeCounter = 0;
+function nodeId(): string {
+  return `tn_${Date.now()}_${++nodeCounter}`;
+}
+
+/** Convert a WorkflowTemplate into a TaskTree with dependency edges. */
+export function buildTaskTree(
+  template: WorkflowTemplate,
+  options?: Record<string, unknown>,
+): TaskTree {
+  const depMap = TEMPLATE_DEPS[template.id];
+  if (!depMap) {
+    // Fallback: linear chain for templates without explicit deps
+    return buildLinearTree(template, options);
+  }
+
+  const now = Date.now();
+  const rootId = nodeId();
+  const nodes: Record<string, TaskNode> = {
+    [rootId]: {
+      id: rootId,
+      parentId: null,
+      label: template.label,
+      kind: "workflow",
+      status: "pending",
+      progress: 0,
+      deps: [],
+      children: [],
+      metadata: { templateId: template.id, options },
+    },
+  };
+
+  // Create a node for each step, tracking kind→id for deps
+  const kindToId = new Map<WorkflowStepKind, string>();
+
+  for (const step of template.steps) {
+    const id = nodeId();
+    const depKinds = depMap[step.kind] ?? [];
+    const deps = depKinds.map((k) => kindToId.get(k)).filter(Boolean) as string[];
+
+    nodes[id] = {
+      id,
+      parentId: rootId,
+      label: step.label,
+      kind: step.kind,
+      status: "pending",
+      progress: 0,
+      deps,
+      children: [],
+    };
+    kindToId.set(step.kind, id);
+    nodes[rootId].children.push(id);
+  }
+
+  return { rootId, nodes, createdAt: now, updatedAt: now };
+}
+
+function buildLinearTree(template: WorkflowTemplate, options?: Record<string, unknown>): TaskTree {
+  const now = Date.now();
+  const rootId = nodeId();
+  const nodes: Record<string, TaskNode> = {
+    [rootId]: {
+      id: rootId,
+      parentId: null,
+      label: template.label,
+      kind: "workflow",
+      status: "pending",
+      progress: 0,
+      deps: [],
+      children: [],
+      metadata: { templateId: template.id, options },
+    },
+  };
+
+  let prevId: string | undefined;
+  for (const step of template.steps) {
+    const id = nodeId();
+    nodes[id] = {
+      id,
+      parentId: rootId,
+      label: step.label,
+      kind: step.kind,
+      status: "pending",
+      progress: 0,
+      deps: prevId ? [prevId] : [],
+      children: [],
+    };
+    nodes[rootId].children.push(id);
+    prevId = id;
+  }
+
+  return { rootId, nodes, createdAt: now, updatedAt: now };
 }
 
 // ── Options ──
@@ -249,6 +371,156 @@ export async function retryWorkflow(
   }
 
   result.finishedAt = Date.now();
+  return result;
+}
+
+// ── DAG-based workflow runner (Phase 61) ──
+
+/** Shared TaskStore instance for workflow DAGs. */
+const workflowTaskStore = new TaskStore();
+
+/** Run a workflow using the DAG executor. Returns WorkflowResult for backward compat. */
+export async function runWorkflowDAG(
+  template: WorkflowTemplate,
+  options: WorkflowTriggerOptions,
+  reportOverall: (p: number, msg?: string) => void,
+): Promise<WorkflowResult> {
+  const tree = buildTaskTree(template, options as Record<string, unknown>);
+  const totalSteps = template.steps.length;
+  const stepOutputs = new Map<string, unknown>();
+
+  // Sync tree into store
+  const storeTree = workflowTaskStore.createTree({
+    label: tree.nodes[tree.rootId].label,
+    kind: "workflow",
+  });
+  const idMap = new Map<string, string>();
+  idMap.set(tree.rootId, storeTree.rootId);
+
+  for (const node of Object.values(tree.nodes)) {
+    if (node.id === tree.rootId) continue;
+    const mappedDeps = node.deps.map((d) => idMap.get(d)!).filter(Boolean);
+    const added = workflowTaskStore.addNode(storeTree.rootId, {
+      label: node.label,
+      kind: node.kind,
+      deps: mappedDeps,
+    })!;
+    idMap.set(node.id, added.id);
+  }
+
+  // Build executor that bridges TaskNode → runStep
+  let completedCount = 0;
+  const executor: StepExecutor = async (node) => {
+    const stepIndex = template.steps.findIndex((s) => s.kind === node.kind);
+    const makeProgress = (p: number, msg?: string) => {
+      const overall = stepProgress(stepIndex, totalSteps, p);
+      reportOverall(overall, `${node.label}${msg ? ` — ${msg}` : ""}`);
+    };
+
+    const output = await runStep(node.kind as WorkflowStepKind, stepIndex, options, stepOutputs, makeProgress);
+    stepOutputs.set(node.id, output);
+    return output;
+  };
+
+  const loadedTree = workflowTaskStore.getTree(storeTree.rootId)!;
+  await executeTaskTree(loadedTree, workflowTaskStore, executor, {
+    onProgress(done, total) {
+      completedCount = done;
+    },
+  });
+
+  // Convert TaskTree → WorkflowResult
+  return treeToResult(template, workflowTaskStore.getTree(storeTree.rootId)!, options, stepOutputs);
+}
+
+/** Resume a failed workflow by resetting failed nodes and re-executing. */
+export async function retryWorkflowDAG(
+  treeId: string,
+  template: WorkflowTemplate,
+  options: WorkflowTriggerOptions,
+  reportOverall: (p: number, msg?: string) => void,
+): Promise<WorkflowResult> {
+  const tree = workflowTaskStore.getTree(treeId);
+  if (!tree) throw new Error(`Tree ${treeId} not found`);
+
+  const totalSteps = template.steps.length;
+  const stepOutputs = new Map<string, unknown>();
+
+  // Reset failed/skipped nodes to pending
+  for (const node of Object.values(tree.nodes)) {
+    if (node.id === tree.rootId) continue;
+    if (node.status === "failed" || node.status === "skipped") {
+      workflowTaskStore.updateNode(treeId, node.id, {
+        status: "pending",
+        progress: 0,
+        error: undefined,
+        result: undefined,
+        startedAt: undefined,
+        finishedAt: undefined,
+      });
+    }
+  }
+
+  const executor: StepExecutor = async (node) => {
+    const stepIndex = template.steps.findIndex((s) => s.kind === node.kind);
+    const makeProgress = (p: number, msg?: string) => {
+      const overall = stepProgress(stepIndex, totalSteps, p);
+      reportOverall(overall, `${node.label}${msg ? ` — ${msg}` : ""}`);
+    };
+
+    const output = await runStep(node.kind as WorkflowStepKind, stepIndex, options, stepOutputs, makeProgress);
+    stepOutputs.set(node.id, output);
+    return output;
+  };
+
+  await executeTaskTree(tree, workflowTaskStore, executor);
+
+  return treeToResult(template, workflowTaskStore.getTree(treeId)!, options, stepOutputs);
+}
+
+/** Get the task store (for API routes to query tree state). */
+export function getWorkflowTaskStore(): TaskStore {
+  return workflowTaskStore;
+}
+
+/** Convert a TaskTree back to WorkflowResult for backward compat. */
+function treeToResult(
+  template: WorkflowTemplate,
+  tree: TaskTree,
+  options: WorkflowTriggerOptions,
+  stepOutputs: Map<string, unknown>,
+): WorkflowResult {
+  const stepNodes = Object.values(tree.nodes).filter((n) => n.id !== tree.rootId);
+  const root = tree.nodes[tree.rootId];
+
+  const result: WorkflowResult = {
+    templateId: template.id,
+    startedAt: root.startedAt ?? tree.createdAt,
+    finishedAt: root.finishedAt,
+    currentStep: stepNodes.filter((n) => n.status === "completed").length - 1,
+    taskTreeId: tree.rootId,
+    steps: template.steps.map((s) => {
+      const node = stepNodes.find((n) => n.kind === s.kind);
+      const status: JobStatus = node
+        ? node.status === "skipped" ? "pending"
+          : node.status as JobStatus
+        : "pending";
+      const output = node ? stepOutputs.get(node.id) : undefined;
+      return {
+        kind: s.kind,
+        label: s.label,
+        status,
+        progress: node?.progress ?? 0,
+        error: node?.error,
+        result: output,
+        agentReport: output && typeof output === "object" && "_agentReport" in (output as any)
+          ? (output as any)._agentReport
+          : undefined,
+      };
+    }),
+    options: JSON.parse(JSON.stringify(options)),
+  };
+
   return result;
 }
 

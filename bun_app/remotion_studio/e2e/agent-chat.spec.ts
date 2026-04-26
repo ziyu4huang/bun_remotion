@@ -81,6 +81,7 @@ test.describe("Agent Chat", () => {
   });
 
   test("action buttons appear after conversation starts", async ({ page }) => {
+    test.setTimeout(20_000);
     const select = page.locator("select").first();
     if (!(await select.isVisible().catch(() => false))) {
       test.skip();
@@ -99,7 +100,7 @@ test.describe("Agent Chat", () => {
     await page.getByRole("button", { name: "Send" }).click();
 
     // Wait for response or timeout — either way the test verifies the send flow works
-    await page.waitForTimeout(15_000);
+    await page.waitForTimeout(5_000);
 
     // After sending, page should still be functional (no crash)
     const main = page.locator("main");
