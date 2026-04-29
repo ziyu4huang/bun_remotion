@@ -12,9 +12,9 @@ describe("createTools", () => {
     }
   });
 
-  test("returns an array of 32 tools (7 base + 9 storygraph + 1 spawn_task + 3 remotion + 3 scaffold + 3 tts + 3 render + 3 image)", () => {
+  test("returns an array of 33 tools (7 base + 10 storygraph + 1 spawn_task + 3 remotion + 3 scaffold + 3 tts + 3 render + 3 image)", () => {
     const tools = createTools();
-    expect(tools).toHaveLength(32);
+    expect(tools).toHaveLength(33);
   });
 
   test("each tool has name and description", () => {
@@ -87,7 +87,7 @@ describe("createTools", () => {
     process.env.PI_AGENT_WORKDIR = "/tmp/custom-workdir";
     const tools = createTools();
     // Tools are created — just verify they don't crash with custom cwd
-    expect(tools).toHaveLength(32);
+    expect(tools).toHaveLength(33);
   });
 
   test("contains storygraph tools (sg_*)", () => {

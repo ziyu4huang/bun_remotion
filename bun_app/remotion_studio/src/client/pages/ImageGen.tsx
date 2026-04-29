@@ -1,10 +1,53 @@
 import { useState, useEffect, useCallback } from "react";
 import { api } from "../api";
+import { PageHeader, LoadingSpinner, AdvisorPanelBase, type ChatMessage, loadHistory, saveHistory } from "../components";
+import { useTheme } from "../theme";
+import { useI18n } from "../i18n";
 import type { Project, ImageStatus, Job, JobProgress, CharacterProfile } from "../../shared/types";
 
 type AssetKind = "character" | "background";
 
+interface DesignBrief {
+  name: string;
+  artStyle: string;
+  gender: string;
+  hairColor: string;
+  hairStyle: string;
+  eyeColor: string;
+  outfit: string;
+  accessories: string;
+  expression: string;
+  extra: string;
+}
+
+const EMPTY_BRIEF: DesignBrief = {
+  name: "", artStyle: "anime", gender: "", hairColor: "", hairStyle: "",
+  eyeColor: "", outfit: "", accessories: "", expression: "neutral", extra: "",
+};
+
+const ART_STYLES = ["anime", "watercolor", "chibi", "realistic", "pixel art", "comic"];
+const EXPRESSIONS = ["neutral", "happy", "angry", "sad", "surprised", "smirking", "determined"];
+
+function briefToPrompt(b: DesignBrief): string {
+  const parts: string[] = [];
+  if (b.artStyle) parts.push(b.artStyle);
+  if (b.gender) parts.push(b.gender);
+  if (b.name) parts.push(`character named ${b.name}`);
+  if (b.hairColor || b.hairStyle) {
+    const hair = [b.hairStyle, b.hairColor].filter(Boolean).join(" ");
+    parts.push(`${hair} hair`);
+  }
+  if (b.eyeColor) parts.push(`${b.eyeColor} eyes`);
+  if (b.outfit) parts.push(`wearing ${b.outfit}`);
+  if (b.accessories) parts.push(b.accessories);
+  if (b.expression) parts.push(`${b.expression} expression`);
+  if (b.extra) parts.push(b.extra);
+  return parts.join(", ");
+}
+
 export function ImageGen() {
+  const theme = useTheme();
+  const { t } = useI18n();
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedSeries, setSelectedSeries] = useState("");
   const [status, setStatus] = useState<ImageStatus | null>(null);
@@ -15,11 +58,15 @@ export function ImageGen() {
   const [skipExisting, setSkipExisting] = useState(true);
   const [job, setJob] = useState<Job | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showBrief, setShowBrief] = useState(false);
+  const [brief, setBrief] = useState<DesignBrief>({ ...EMPTY_BRIEF });
 
   // Character profiles
   const [profiles, setProfiles] = useState<CharacterProfile[]>([]);
   const [selectedCharId, setSelectedCharId] = useState("");
   const [facing, setFacing] = useState<"LEFT" | "RIGHT">("LEFT");
+  const [showAdvisor, setShowAdvisor] = useState(false);
+  const [advisorMsgs, setAdvisorMsgs] = useState<ChatMessage[]>([]);
 
   const loadProjects = useCallback(async () => {
     const res = await api.listProjects();
@@ -81,6 +128,16 @@ export function ImageGen() {
     setPrompt(variantPrompt);
   };
 
+  const handleApplyBrief = () => {
+    const generated = briefToPrompt(brief);
+    if (generated) {
+      setPrompt(generated);
+      if (brief.name && !filename) {
+        setFilename(`${brief.name.toLowerCase().replace(/\s+/g, "-")}-new.png`);
+      }
+    }
+  };
+
   const handleGenerate = async () => {
     if (!selectedSeries || !prompt || !filename) return;
 
@@ -103,19 +160,47 @@ export function ImageGen() {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <LoadingSpinner />;
+
+  const inputStyle: React.CSSProperties = { padding: `6px ${theme.spacing.sm}px`, borderRadius: theme.radii.lg, border: `1px solid ${theme.colors.border.medium}`, fontFamily: "inherit" };
 
   return (
-    <div>
-      <h2 style={{ marginTop: 0 }}>Image Generation</h2>
+    <div style={{ display: "flex", gap: theme.spacing.xl }}>
+      <div style={{ flex: 1 }}>
+      <PageHeader title={t.imageGen.title} description={t.imageGen.description}>
+        <button
+          onClick={() => setShowAdvisor(!showAdvisor)}
+          style={{
+            padding: `${theme.spacing.xs}px ${theme.spacing.md}px`,
+            background: showAdvisor ? theme.colors.primaryDark : theme.colors.primaryLight,
+            color: showAdvisor ? theme.colors.bg.page : theme.colors.primaryDark,
+            border: `1px solid ${theme.colors.primaryDark}`,
+            borderRadius: theme.radii.md,
+            cursor: "pointer",
+            fontSize: theme.font.sizes.sm,
+          }}
+        >
+          {showAdvisor ? t.imageGen.hideAdvisor : t.imageGen.askAdvisor}
+        </button>
+      </PageHeader>
+
+      <div style={{
+        padding: "8px 14px", marginBottom: theme.spacing.lg,
+        border: `1px solid ${theme.colors.info}33`, borderRadius: theme.radii.md,
+        background: `${theme.colors.info}08`, fontSize: theme.font.sizes.sm,
+        color: theme.colors.text.secondary, lineHeight: 1.6,
+      }}>
+        <strong>{t.imageGen.promptTips}</strong> Be specific about art style (anime, watercolor, chibi), hair color, eye color, outfit details.
+        For characters, include facing direction and expression. Example: <em>"anime girl, long silver hair, red eyes, school uniform, smiling, facing left"</em>
+      </div>
 
       {/* Series selector */}
-      <div style={{ marginBottom: 16 }}>
-        <label style={{ display: "block", marginBottom: 4, fontWeight: 600 }}>Series</label>
+      <div style={{ marginBottom: theme.spacing.lg }}>
+        <label style={{ display: "block", marginBottom: theme.spacing.xs, fontWeight: theme.font.weights.semibold }}>Series</label>
         <select
           value={selectedSeries}
           onChange={(e) => setSelectedSeries(e.target.value)}
-          style={{ padding: "6px 10px", borderRadius: 6, width: 300 }}
+          style={{ ...inputStyle, width: 300 }}
         >
           <option value="">Select series...</option>
           {projects.map((p) => (
@@ -126,20 +211,20 @@ export function ImageGen() {
 
       {/* Status */}
       {status && (
-        <div style={{ marginBottom: 16, display: "flex", gap: 16 }}>
-          <span style={{ padding: "4px 10px", background: "#e3f2fd", borderRadius: 6, fontSize: 13 }}>
+        <div style={{ marginBottom: theme.spacing.lg, display: "flex", gap: theme.spacing.lg }}>
+          <span style={{ padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`, background: theme.colors.primaryLight, borderRadius: theme.radii.lg, fontSize: theme.font.sizes.base }}>
             Characters: {status.characters}
           </span>
-          <span style={{ padding: "4px 10px", background: "#e3f2fd", borderRadius: 6, fontSize: 13 }}>
+          <span style={{ padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`, background: theme.colors.primaryLight, borderRadius: theme.radii.lg, fontSize: theme.font.sizes.base }}>
             Backgrounds: {status.backgrounds}
           </span>
         </div>
       )}
 
       {/* Asset kind */}
-      <div style={{ marginBottom: 16 }}>
-        <label style={{ display: "block", marginBottom: 4, fontWeight: 600 }}>Asset Type</label>
-        <div style={{ display: "flex", gap: 8 }}>
+      <div style={{ marginBottom: theme.spacing.lg }}>
+        <label style={{ display: "block", marginBottom: theme.spacing.xs, fontWeight: theme.font.weights.semibold }}>{t.imageGen.assetType}</label>
+        <div style={{ display: "flex", gap: theme.spacing.sm }}>
           {(["character", "background"] as const).map((k) => (
             <button
               key={k}
@@ -149,28 +234,72 @@ export function ImageGen() {
               }}
               style={{
                 padding: "6px 14px",
-                borderRadius: 6,
-                border: kind === k ? "2px solid #1976d2" : "1px solid #ccc",
-                background: kind === k ? "#e3f2fd" : "white",
+                borderRadius: theme.radii.lg,
+                border: kind === k ? `2px solid ${theme.colors.primary}` : `1px solid ${theme.colors.border.medium}`,
+                background: kind === k ? theme.colors.primaryLight : theme.colors.bg.page,
                 cursor: "pointer",
               }}
             >
-              {k === "character" ? "Character (1:1)" : "Background (16:9)"}
+              {k === "character" ? t.imageGen.character : t.imageGen.background}
             </button>
           ))}
         </div>
       </div>
 
+      {/* Design Brief (collapsible, character only) */}
+      {kind === "character" && (
+        <div style={{ marginBottom: theme.spacing.lg, border: `1px solid ${theme.colors.border.default}`, borderRadius: theme.radii.lg }}>
+          <button onClick={() => setShowBrief(!showBrief)}
+            style={{
+              width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center",
+              padding: "10px 14px", border: "none", background: theme.colors.bg.muted,
+              borderRadius: theme.radii.lg, cursor: "pointer", fontSize: theme.font.sizes.sm,
+            }}>
+            <span style={{ fontWeight: theme.font.weights.medium }}>{t.imageGen.designBrief} — {t.imageGen.designBriefDesc}</span>
+            <span>{showBrief ? "▲" : "▼"}</span>
+          </button>
+          {showBrief && (
+            <div style={{ padding: 14, display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px 16px" }}>
+              <BriefField label="Name" value={brief.name} onChange={(v) => setBrief({ ...brief, name: v })} theme={theme} />
+              <BriefField label="Art Style" value={brief.artStyle} onChange={(v) => setBrief({ ...brief, artStyle: v })} theme={theme} options={ART_STYLES} />
+              <BriefField label="Gender" value={brief.gender} onChange={(v) => setBrief({ ...brief, gender: v })} theme={theme} placeholder="e.g. girl, boy, androgynous" />
+              <BriefField label="Expression" value={brief.expression} onChange={(v) => setBrief({ ...brief, expression: v })} theme={theme} options={EXPRESSIONS} />
+              <BriefField label="Hair Color" value={brief.hairColor} onChange={(v) => setBrief({ ...brief, hairColor: v })} theme={theme} placeholder="e.g. silver, blue, black" />
+              <BriefField label="Hair Style" value={brief.hairStyle} onChange={(v) => setBrief({ ...brief, hairStyle: v })} theme={theme} placeholder="e.g. long, short, twin-tails" />
+              <BriefField label="Eye Color" value={brief.eyeColor} onChange={(v) => setBrief({ ...brief, eyeColor: v })} theme={theme} placeholder="e.g. red, green, gold" />
+              <BriefField label="Outfit" value={brief.outfit} onChange={(v) => setBrief({ ...brief, outfit: v })} theme={theme} placeholder="e.g. school uniform, armor, casual" />
+              <BriefField label="Accessories" value={brief.accessories} onChange={(v) => setBrief({ ...brief, accessories: v })} theme={theme} placeholder="e.g. sword, glasses, hat" />
+              <div style={{ gridColumn: "1 / -1" }}>
+                <BriefField label="Extra details" value={brief.extra} onChange={(v) => setBrief({ ...brief, extra: v })} theme={theme} placeholder="Any additional details..." />
+              </div>
+              <div style={{ gridColumn: "1 / -1", display: "flex", gap: 8, alignItems: "center" }}>
+                <button onClick={handleApplyBrief}
+                  style={{
+                    padding: "6px 16px", borderRadius: theme.radii.md,
+                    border: `1px solid ${theme.colors.primary}`, background: theme.colors.primary,
+                    color: "#fff", cursor: "pointer", fontSize: theme.font.sizes.sm,
+                  }}>
+                  Apply to Prompt
+                </button>
+                <span style={{ fontSize: theme.font.sizes.xs, color: theme.colors.text.muted }}>
+                  Generated: {briefToPrompt(brief) || "(empty)"}
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Character selector (only when kind=character and profiles loaded) */}
       {kind === "character" && profiles.length > 0 && (
-        <div style={{ marginBottom: 16 }}>
-          <label style={{ display: "block", marginBottom: 4, fontWeight: 600 }}>Character</label>
+        <div style={{ marginBottom: theme.spacing.lg }}>
+          <label style={{ display: "block", marginBottom: theme.spacing.xs, fontWeight: theme.font.weights.semibold }}>{t.imageGen.characterLabel}</label>
           <select
             value={selectedCharId}
             onChange={(e) => handleSelectChar(e.target.value)}
-            style={{ padding: "6px 10px", borderRadius: 6, width: 300 }}
+            style={{ ...inputStyle, width: 300 }}
           >
-            <option value="">Custom — manual prompt</option>
+            <option value="">{t.imageGen.customManual}</option>
             {profiles.map((p) => (
               <option key={p.id} value={p.id}>
                 {p.name} ({p.id}) — {p.variants.length} variant{p.variants.length !== 1 ? "s" : ""}
@@ -182,23 +311,23 @@ export function ImageGen() {
 
       {/* Facing toggle (only when character selected) */}
       {selectedChar && (
-        <div style={{ marginBottom: 16 }}>
-          <label style={{ display: "block", marginBottom: 4, fontWeight: 600, fontSize: 13 }}>Facing</label>
-          <div style={{ display: "flex", gap: 8 }}>
+        <div style={{ marginBottom: theme.spacing.lg }}>
+          <label style={{ display: "block", marginBottom: theme.spacing.xs, fontWeight: theme.font.weights.semibold, fontSize: theme.font.sizes.base }}>{t.imageGen.facing}</label>
+          <div style={{ display: "flex", gap: theme.spacing.sm }}>
             {(["LEFT", "RIGHT"] as const).map((dir) => (
               <button
                 key={dir}
                 onClick={() => setFacing(dir)}
                 style={{
-                  padding: "4px 12px",
-                  borderRadius: 6,
-                  border: facing === dir ? "2px solid #1976d2" : "1px solid #ccc",
-                  background: facing === dir ? "#e3f2fd" : "white",
+                  padding: `${theme.spacing.xs}px ${theme.spacing.md}px`,
+                  borderRadius: theme.radii.lg,
+                  border: facing === dir ? `2px solid ${theme.colors.primary}` : `1px solid ${theme.colors.border.medium}`,
+                  background: facing === dir ? theme.colors.primaryLight : theme.colors.bg.page,
                   cursor: "pointer",
-                  fontSize: 13,
+                  fontSize: theme.font.sizes.base,
                 }}
               >
-                {dir === "LEFT" ? "← Left" : "Right →"}
+                {dir === "LEFT" ? t.imageGen.left : t.imageGen.right}
               </button>
             ))}
           </div>
@@ -207,11 +336,11 @@ export function ImageGen() {
 
       {/* Variant gallery (only when character selected) */}
       {selectedChar && selectedChar.variants.length > 0 && (
-        <div style={{ marginBottom: 16 }}>
-          <label style={{ display: "block", marginBottom: 4, fontWeight: 600, fontSize: 13 }}>
-            Existing Variants (click to copy prompt)
+        <div style={{ marginBottom: theme.spacing.lg }}>
+          <label style={{ display: "block", marginBottom: theme.spacing.xs, fontWeight: theme.font.weights.semibold, fontSize: theme.font.sizes.base }}>
+            {t.imageGen.variants} ({t.imageGen.variantsClick})
           </label>
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: theme.spacing.sm, flexWrap: "wrap" }}>
             {selectedChar.variants.map((v) => (
               <button
                 key={v.file}
@@ -220,13 +349,13 @@ export function ImageGen() {
                 style={{
                   width: 64,
                   height: 64,
-                  borderRadius: 6,
-                  border: "1px solid #ccc",
+                  borderRadius: theme.radii.lg,
+                  border: `1px solid ${theme.colors.border.medium}`,
                   overflow: "hidden",
                   cursor: "pointer",
                   position: "relative",
                   padding: 0,
-                  background: "#f5f5f5",
+                  background: theme.colors.bg.muted,
                 }}
               >
                 <img
@@ -239,8 +368,8 @@ export function ImageGen() {
                   bottom: 0,
                   left: 0,
                   right: 0,
-                  background: "rgba(0,0,0,0.6)",
-                  color: "white",
+                  background: theme.colors.bg.overlayLight,
+                  color: theme.colors.bg.page,
                   fontSize: 9,
                   textAlign: "center",
                   padding: "1px 0",
@@ -254,39 +383,39 @@ export function ImageGen() {
       )}
 
       {/* Prompt */}
-      <div style={{ marginBottom: 12 }}>
-        <label style={{ display: "block", marginBottom: 4, fontWeight: 600 }}>Prompt</label>
+      <div style={{ marginBottom: theme.spacing.md }}>
+        <label style={{ display: "block", marginBottom: theme.spacing.xs, fontWeight: theme.font.weights.semibold }}>{t.imageGen.promptLabel}</label>
         <textarea
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           rows={4}
-          placeholder={kind === "character" ? "A warrior with a sword, blue hair..." : "Mountain temple at sunset..."}
-          style={{ width: "100%", maxWidth: 600, padding: 8, borderRadius: 6, border: "1px solid #ccc", fontFamily: "inherit" }}
+          placeholder={kind === "character" ? t.imageGen.characterPlaceholder : t.imageGen.backgroundPlaceholder}
+          style={{ ...inputStyle, width: "100%", maxWidth: 600, padding: theme.spacing.sm }}
         />
         {selectedChar && (
-          <div style={{ fontSize: 11, color: "#888", marginTop: 2 }}>
+          <div style={{ fontSize: theme.font.sizes.sm, color: theme.colors.text.faint, marginTop: 2 }}>
             Prompt will be enhanced with facing direction + magenta background + anime style
           </div>
         )}
       </div>
 
       {/* Filename + options row */}
-      <div style={{ display: "flex", gap: 12, marginBottom: 16, flexWrap: "wrap" }}>
+      <div style={{ display: "flex", gap: theme.spacing.md, marginBottom: theme.spacing.lg, flexWrap: "wrap" }}>
         <div>
-          <label style={{ display: "block", marginBottom: 4, fontWeight: 600, fontSize: 13 }}>Filename</label>
+          <label style={{ display: "block", marginBottom: theme.spacing.xs, fontWeight: theme.font.weights.semibold, fontSize: theme.font.sizes.base }}>{t.imageGen.filename}</label>
           <input
             value={filename}
             onChange={(e) => setFilename(e.target.value)}
-            placeholder="hero-angry.png"
-            style={{ padding: "6px 10px", borderRadius: 6, border: "1px solid #ccc", width: 200 }}
+            placeholder={t.imageGen.filenamePlaceholder}
+            style={{ ...inputStyle, width: 200 }}
           />
         </div>
         <div>
-          <label style={{ display: "block", marginBottom: 4, fontWeight: 600, fontSize: 13 }}>Aspect Ratio</label>
+          <label style={{ display: "block", marginBottom: theme.spacing.xs, fontWeight: theme.font.weights.semibold, fontSize: theme.font.sizes.base }}>{t.imageGen.aspectRatio}</label>
           <select
             value={aspectRatio}
             onChange={(e) => setAspectRatio(e.target.value)}
-            style={{ padding: "6px 10px", borderRadius: 6, border: "1px solid #ccc" }}
+            style={inputStyle}
           >
             <option value="1:1">1:1</option>
             <option value="16:9">16:9</option>
@@ -295,9 +424,9 @@ export function ImageGen() {
           </select>
         </div>
         <div style={{ display: "flex", alignItems: "flex-end" }}>
-          <label style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 13 }}>
+          <label style={{ display: "flex", alignItems: "center", gap: theme.spacing.xs, fontSize: theme.font.sizes.base }}>
             <input type="checkbox" checked={skipExisting} onChange={(e) => setSkipExisting(e.target.checked)} />
-            Skip existing
+            {t.imageGen.skipExisting}
           </label>
         </div>
       </div>
@@ -308,26 +437,64 @@ export function ImageGen() {
         disabled={!selectedSeries || !prompt || !filename || !!job}
         style={{
           padding: "10px 24px",
-          borderRadius: 8,
+          borderRadius: theme.radii.xl,
           border: "none",
-          background: (!selectedSeries || !prompt || !filename || !!job) ? "#ccc" : "#1976d2",
-          color: "white",
-          fontWeight: 600,
+          background: (!selectedSeries || !prompt || !filename || !!job) ? theme.colors.border.medium : theme.colors.primary,
+          color: theme.colors.bg.page,
+          fontWeight: theme.font.weights.semibold,
           cursor: (!selectedSeries || !prompt || !filename || !!job) ? "not-allowed" : "pointer",
         }}
       >
-        Generate Image{selectedChar ? ` (${selectedChar.name})` : ""}
+        {t.imageGen.generate}{selectedChar ? ` (${selectedChar.name})` : ""}
       </button>
 
       {/* Progress */}
       {job && (
-        <div style={{ marginTop: 16 }}>
-          <div style={{ fontWeight: 600, marginBottom: 4 }}>Job {job.id}</div>
-          <div style={{ background: "#eee", borderRadius: 6, height: 24, overflow: "hidden" }}>
-            <div style={{ width: `${job.progress}%`, height: "100%", background: "#1976d2", transition: "width 0.3s" }} />
+        <div style={{ marginTop: theme.spacing.lg }}>
+          <div style={{ fontWeight: theme.font.weights.semibold, marginBottom: theme.spacing.xs }}>Job {job.id}</div>
+          <div style={{ background: theme.colors.border.light, borderRadius: theme.radii.lg, height: 24, overflow: "hidden" }}>
+            <div style={{ width: `${job.progress}%`, height: "100%", background: theme.colors.primary, transition: "width 0.3s" }} />
           </div>
-          <div style={{ fontSize: 12, color: "#666", marginTop: 4 }}>{job.progress}%</div>
+          <div style={{ fontSize: theme.font.sizes.sm, color: theme.colors.text.tertiary, marginTop: theme.spacing.xs }}>{job.progress}%</div>
         </div>
+      )}
+      </div>
+      {showAdvisor && (
+        <AdvisorPanelBase
+          agentName="studio-image"
+          title={t.imageGen.advisor}
+          titleColor={theme.colors.primaryDark}
+          contextLabel={selectedSeries || t.imageGen.title}
+          historyKey="image-gen-advisor"
+          systemPrefix={`Context: Image Generation. Asset type: ${kind}. Series: ${selectedSeries || "none"}. Prompt writing and visual design guidance.`}
+          placeholder={t.imageGen.advisorPlaceholder}
+          messages={advisorMsgs}
+          setMessages={setAdvisorMsgs}
+          preferredAgents={["studio-image", "studio-advisor"]}
+        />
+      )}
+    </div>
+  );
+}
+
+function BriefField({ label, value, onChange, theme, options, placeholder }: {
+  label: string; value: string; onChange: (v: string) => void;
+  theme: ReturnType<typeof useTheme>; options?: string[]; placeholder?: string;
+}) {
+  const style: React.CSSProperties = {
+    padding: "4px 8px", borderRadius: theme.radii.md,
+    border: `1px solid ${theme.colors.border.medium}`, width: "100%",
+    fontSize: theme.font.sizes.sm, fontFamily: "inherit",
+  };
+  return (
+    <div>
+      <label style={{ display: "block", fontSize: theme.font.sizes.xs, color: theme.colors.text.muted, marginBottom: 2 }}>{label}</label>
+      {options ? (
+        <select value={value} onChange={(e) => onChange(e.target.value)} style={style}>
+          {options.map((o) => <option key={o} value={o}>{o}</option>)}
+        </select>
+      ) : (
+        <input value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} style={style} />
       )}
     </div>
   );

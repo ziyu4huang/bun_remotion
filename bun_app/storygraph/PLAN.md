@@ -10,7 +10,7 @@
 >
 > **Rule:** Architecture decisions → skill PLAN.md. Code-level tasks → this TODO.md.
 
-## Current State (v0.20.0)
+## Current State (v0.34.0)
 
 See `.claude/skills/storygraph/PLAN.md` for full architecture.
 
@@ -119,4 +119,4 @@ See `.claude/skills/storygraph/PLAN.md` Phase 23 for architecture.
 ### Dependencies
 
 - `@mariozechner/pi-ai@0.67.68` — ✅ installed
-- `ZAI_API_KEY` env var — already configured
+- `Z_AI_API_KEY` env var — already configured (aliased to `ZAI_API_KEY` for pi-ai)

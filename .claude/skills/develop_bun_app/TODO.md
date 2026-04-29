@@ -5,7 +5,7 @@
 > - Skill TODO: `.claude/skills/develop_bun_app/TODO.md` — **(this file)** Tasks + history
 > - Skill SKILL: `.claude/skills/develop_bun_app/SKILL.md` — Operational playbook
 
-> **Status:** v1.3.0 — develop op rewritten as structured workflow (7 change types)
+> **Status:** v1.6.0 — storygraph v0.34.0 (feedback loop, config improvements, 401 tests). remotion_studio v0.12.0 (15 pages, 279 tests, focus: AI agent + E2E UX). bun_pi_agent v0.8.1 (32 tools, 12 agents, 321 tests).
 
 ## Known Issues
 
@@ -51,56 +51,101 @@
   - `POST /api/agent/tasks` — Start named task (returns job ID, tracked by job-queue)
   - 6 route tests in `agent-bridge.test.ts`, all pass
 
-- [ ] **52-C: Agent Chat page** — React page for direct agent interaction
-  - Agent selector dropdown (lists from `/api/agent/agents`)
-  - Chat input with streaming response display
-  - Tool call visualization
+- [x] **52-C: Agent Chat page** ✓ — AgentChat.tsx (307 lines), streaming SSE, tool call cards, abort
+- [x] **52-D: Agent-backed workflow steps** ✓ — Benchmark agent toggle + Quality gate button
+- [x] **52-E: Studio sub-agent definitions** ✓ — studio-scaffold, studio-reviewer, studio-advisor
 
-- [ ] **52-D: Agent-backed workflow steps** — Replace some direct `pipeline-api.ts` calls with agent delegation
-  - Benchmark page → uses sg-benchmark-runner agent
-  - Quality page → uses sg-quality-gate agent
-  - Backward compatible: direct calls still work, agent path is opt-in
+## P1 — Standalone mode (Phase 53) — DONE
 
-- [ ] **52-E: Studio sub-agent definitions** — `.agent/agents/studio-*.md`
-  - studio-scaffold: scaffold generation (Read, Write, Bash, Grep, Glob)
-  - studio-reviewer: full quality review (sg_pipeline, sg_check, sg_score, rm_analyze, rm_lint, Read, Grep)
-  - studio-advisor: content suggestions (sg_suggest, sg_health, rm_analyze, rm_suggest, Read, Grep, Glob)
+- [x] **53-A: Agent-backed workflow engine** ✓ — 7 step→agent mappings, backward compatible
+- [x] **53-B: ~~LLM config API~~** SKIPPED — env vars sufficient
+- [x] **53-C: "Build Episode" autonomous flow** ✓ — BuildPanel, retry-from-step, SSE progress
+- [x] **53-D: Agent Chat improvements** ✓ — History, retry, export
+- [x] **53-E: Story advisor on-demand panel** ✓ — Collapsible sidebar in ProjectDetail
 
-## P1 — Standalone mode (Phase 53)
+## Phase 54: Expanded Sub-Agent Library — DONE
 
-- [ ] **53-A: Agent-backed workflow engine** — Workflow steps delegate to sub-agents via spawn_task
-  - Each WorkflowStepKind maps to an agent: scaffold→studio-scaffold, pipeline→studio-pipeline, etc.
-  - Steps check previous step results before proceeding
-  - On failure: report + retry option
+- [x] **54-A: studio-scaffold agent** ✓ — sc_scaffold, sc_series_list, sc_episode_list tools
+- [x] **54-B: studio-tts agent** ✓ — tts_generate, tts_voices, tts_status tools
+- [x] **54-C: studio-render agent** ✓ — render_episode, render_status, render_list tools
+- [x] **54-D: studio-image agent** ✓ — image_generate, image_status, image_characters tools
+- [x] **54-E: studio-coordinator agent** ✓ — Master orchestrator, 4 production pipelines
 
-- [ ] **53-B: LLM config API + Settings page** — Configure LLM through the UI
-  - `remotion_studio/data/llm-config.json` — provider, apiKey, model, baseUrl
-  - `GET/POST /api/settings/llm` — API endpoints
-  - Settings page with provider selector, key input, model dropdown
-  - Config feeds into bun_pi_agent's `getConfig()`
+## Phase 55: Agent Chat UX — DONE
 
-- [ ] **53-C: "Build Episode" autonomous flow** — One-click episode creation
-  - UI button on episode detail page
-  - Triggers: scaffold → pipeline → quality → TTS → render
-  - Each step streams progress to UI
+- [x] **55-A: Shared chat components** ✓ — ChatMessage types + ToolCallCard
+- [x] **55-B: AgentChat visual differentiation** ✓ — Tool cards inline, response bubble
+- [x] **55-C: AdvisorPanel tool call tracking** ✓ — tool_start/tool_end handlers
+- [x] **55-D: AdvisorPanel state persistence** ✓ — Lift to parent + localStorage
+- [x] **55-E: Thinking indicator + turn separators** ✓
+- [x] **55-F: Markdown rendering in assistant messages** ✓
 
-## P2 — Expanded agent library (Phase 54)
+## Phase 56: Playwright E2E Tests + Pipeline→Storygraph Rename — DONE
 
-- [ ] **54-A: studio-scaffold agent** — Episode scaffolding + PLAN.md generation
-- [ ] **54-B: studio-tts agent** — Voice synthesis + voice map management
-- [ ] **54-C: studio-render agent** — Episode rendering + queue management
-- [ ] **54-D: studio-image agent** — Character/background image generation
-- [ ] **54-E: studio-coordinator agent** — Master orchestrator using spawn_task
+- [x] **56-A–F: 65 E2E tests, all 13 pages** ✓ — AdvisorPanelBase shared component, Storygraph rename
+
+## Phase 57–63: DAG Task Tree Workflow Engine — DONE
+
+- [x] **57: TaskNode types + TaskStore** ✓ — 10 tests
+- [x] **58: JSON persistence** ✓ — load/save, eviction cap 50, corruption recovery
+- [x] **59: buildTaskTree** ✓ — Template→DAG, 3 parallel templates + fallback
+- [x] **60: DAG executor** ✓ — Parallel dispatch, failure skipping, resume (4 tests)
+- [x] **61: Wire DAG into runWorkflow** ✓ — Backward compat, 229 tests pass
+- [x] **62: Tree API + Dashboard tree view** ✓ — 3 routes, TaskTreeNode component
+- [x] **63: Workflows page tree upgrade** ✓ — Live polling, 7 E2E tests
+
+## Post-63 — Server Stability + UI Polish — DONE
+
+- [x] **Server stability fixes** ✓ — 9 fixes (process handlers, job eviction, SSE cleanup, DAG guard, agent abort, timeout middleware)
+- [x] **UI polish** ✓ — 4 shared components (StatusBadge, LoadingSpinner, EmptyState, PageHeader), sidebar grouping, all 13 pages updated
+
+## Phases 64-66: WebUI Polish — Error Resilience + Loading UX + Deeper E2E — DONE
+
+- [x] **64-A: ErrorBoundary component** ✓ — React class component, fallback UI with reload button, wraps PageRouter in App.tsx
+- [x] **64-B: ToastContainer** ✓ — Module-level emitter pattern, success/error/info types, auto-dismiss, dismiss button, max 5 visible
+- [x] **64-C: Replace alert() calls** ✓ — All 4 alert() calls (Benchmark x3, Storygraph x1) replaced with toast()
+- [x] **64-D: Toast for silent failures** ✓ — Added toast("error", ...) to Dashboard, Projects, Workflows, TTS, Render
+- [x] **65-A: Skeleton component** ✓ — SkeletonRow (shimmer animation) + SkeletonCard (header + rows + optional image)
+- [x] **65-B: Skeletons in 6 pages** ✓ — Dashboard, Projects, Workflows, Storygraph, Assets, Monitoring use content-approximating skeletons
+- [x] **66-A: E2E test helpers** ✓ — forceApiError, delayApiRoute, waitForToast in helpers.ts
+- [x] **66-B: 4 new E2E test files** ✓ — toast-notifications (4 tests), loading-states (4 tests), error-scenarios (6 tests), form-interactions (5 tests)
+
+## Phases 67-70: Theme System + Responsive Layout + Dashboard Refinement — DONE
+
+- [x] **67-A: Theme tokens** ✓ — `tokens.ts` with lightTheme + darkTheme (colors, spacing, radii, shadows, breakpoints, font)
+- [x] **67-B: Theme context** ✓ — `ThemeProvider`, `useTheme()`, `useThemeMode()` in `theme/context.ts`
+- [x] **67-C: Wire ThemeProvider** ✓ — Wrapped `<App />` with `<ThemeProvider>` in `index.tsx`
+- [x] **67-D: Migrate 13 shared components** ✓ — All components in `components/` use theme tokens via `useTheme()`
+- [x] **67-E: Migrate App.tsx sidebar** ✓ — Nav styles + theme toggle button (◐/◑) at sidebar bottom
+- [x] **68-A: useMediaQuery hook** ✓ — `hooks/useMediaQuery.ts`
+- [x] **68-B: useSidebarState hook** ✓ — `hooks/useSidebarState.ts`
+- [x] **68-C: Responsive App.tsx** ✓ — Hamburger menu (44x44px) on <768px, overlay sidebar with slide transition, backdrop
+- [x] **69-A: Enhanced Dashboard job cards** ✓ — Timestamps (relative time), duration, error messages, progress bars, cancel/delete buttons
+- [x] **69-B: Job filter tabs** ✓ — All/Running/Completed/Failed with count badges
+- [x] **69-C: Server-side job cancel/delete** ✓ — `cancelJob()`, `deleteJob()` in job-queue.ts
+- [x] **69-D: Job API routes** ✓ — `POST /jobs/:id/cancel`, `DELETE /jobs/:id`, `?status=` filter on `GET /jobs`
+- [x] **69-E: Collapsible task trees** ✓ — Default collapsed with summary ("4/6 done"), expand button
+- [x] **70-A: All 13 pages migrated** ✓ — Projects, Quality, Workflows, StoryEditor, ImageGen, AgentChat, Benchmark, Storygraph, Assets, Monitoring, TTS, Render, Dashboard
+- [x] **70-B: E2E helper update** ✓ — `waitForToast` uses `data-toast-type` attribute instead of RGB matching
+
+## Phases 71: Streaming Response Verification — DONE
+
+- [x] **71-A: serializeEvent tests** ✓ — 8 unit tests covering all AgentEvent types (text_delta, thinking_delta, toolcall_start/end, tool_execution_start/end, agent lifecycle, unknown pass-through)
+  - Files: `bun_pi_agent/src/__tests__/server.test.ts`, `bun_pi_agent/src/server/routes/chat.ts` (export serializeEvent)
+- [x] **71-B: SSE parse tests** ✓ — 7 unit tests for SSE client parsing (single/multi/partial chunks, empty lines, flush, tool events, empty chunks)
+  - Files: `remotion_studio/src/__tests__/sse-parse.test.ts` (new)
+- [x] **71-C: message_end content fix** ✓ — agent-bridge.ts now handles array content blocks (TextContent[]) in addition to string content
+  - Files: `remotion_studio/src/server/agent-bridge.ts`
 
 ## P1 — Feature completeness
 
 - [ ] **Parameterized scaffold** — Ask user what the app needs (CLI? server? config? tools?) before generating. Generate only the needed structure instead of a bare minimum template.
 - [ ] **Add `scaffold.ts` script** — Move scaffold from pure-doc to executable script: `bun bun_app/<name>/scripts/scaffold.ts <name>` generates the full structure. More reliable than Claude following a markdown checklist.
-- [ ] **Cross-app consistency check** — `status` op should compare all bun_apps: do they all have PLAN.md, TODO.md, passing tests? Flag outliers.
+- [x] **Cross-app consistency check** — `scripts/cross-app-status.ts`: checks all 7 bun_apps (version, tests, PLAN.md, TODO.md, source counts). Output: table + issue flags. Also created PLAN.md/TODO.md for 3 utility apps (bun_image, bun_tts, remotion_types).
 
 ## P2 — Architecture improvements
 
-- [ ] **Enforce PLAN/TODO freshness** — When `status` op runs, check: when was PLAN.md last modified vs. how many source files changed since? Flag stale docs.
+- [x] **Enforce PLAN/TODO freshness** — `cross-app-status.ts` already flags stale PLAN.md (source files newer by >7d). Integrated into status check.
 - [ ] **Template versioning** — When app conventions change (e.g., new required scripts), detect apps using old conventions and suggest updates.
 - [ ] **Integration with storygraph skill** — When developing storygraph itself, both skills could cooperate: develop_bun_app for code structure, storygraph for codebase analysis of the app being developed.
 
@@ -125,6 +170,43 @@ Convert key operations from pure documentation to executable scripts.
 ---
 
 ## Development History
+
+### 2026-04-27 v1.6.0 — remotion_studio v0.3.0 (P0+P1)
+
+| Metric | Before (v0.1.0) | After (v0.3.0) |
+|--------|-----------------|----------------|
+| remotion_studio tests | 236 | **236** (5 new assertions) |
+| Job persistence | In-memory Map | **JSON file (24h TTL)** |
+| Workflow routing | Sequential only | **DAG auto-selected** |
+| Cancel workflow | Mark failed only | **AbortController + DAG signal** |
+| Pipeline API | Flat functions | **pipeline.* namespace** |
+| Full pipeline steps | 6 (no image) | **7 (image parallel)** |
+
+**Changes applied:**
+- Created `services/job-store.ts`: JSON persistence for jobs (TaskStore pattern)
+- Refactored `job-queue.ts`: delegate to JobStore, add AbortController per job
+- Added `signal` parameter to `runWorkflow`, `runWorkflowDAG`, `executeTaskTree`
+- Routes auto-select DAG vs linear based on `TEMPLATE_DEPS`
+- Added image step to full-pipeline (7 steps, parallel with pipeline)
+- API namespace: `pipeline.*`, consistent `TTS` casing
+- Renamed `CreateProject` → `ScaffoldEpisode`
+- E2E smoke test: API health checks
+
+### 2026-04-27 v1.5.1 — Streaming verification (Phase 71)
+
+| Metric | Before (v1.5.0) | After (v1.5.1) |
+|--------|-----------------|----------------|
+| remotion_studio tests | 229 | **236** (+7 SSE parse) |
+| bun_pi_agent tests | 313 | **321** (+8 serializeEvent) |
+| serializeEvent coverage | 0 | **8 tests, all event types** |
+| SSE parse coverage | 0 | **7 tests, edge cases** |
+| agent-bridge message_end | string only | **string + array content** |
+
+**Changes applied:**
+- Exported `serializeEvent()` from bun_pi_agent `chat.ts`, added 8 tests
+- Created `sse-parse.test.ts` in remotion_studio with 7 SSE client parsing tests
+- Fixed `message_end` handler in agent-bridge.ts to handle array content blocks
+- Updated bun_pi_agent TODO v0.8.0→v0.8.1, NEXT status, develop_bun_app status
 
 ### 2026-04-25 v1.3.0 — develop op rewritten as workflow
 

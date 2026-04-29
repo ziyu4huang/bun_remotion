@@ -21,6 +21,13 @@ import {
 } from "../../../storygraph/src/pipeline-api";
 
 import { getConfig } from "../config.js";
+import {
+  buildDualReviewPrompt,
+  parseDualReviewResponse,
+  type DualReviewInput,
+  type DualReviewResult,
+} from "../../../storygraph/src/scripts/subagent-prompt";
+import { callAI } from "../../../storygraph/src/ai-client";
 
 // ─── Helpers ───
 
@@ -484,6 +491,153 @@ export function createStorygraphHealthTool(): AgentTool<typeof seriesDirSchema> 
   };
 }
 
+// ─── Dual Review Tool (Phase R2) ───
+
+const DUAL_REVIEW_MODELS = [
+  { provider: "zai" as const, model: "glm-5", label: "GLM-5" },
+  { provider: "zai" as const, model: "glm-5.1", label: "GLM-5.1" },
+];
+
+const dualReviewSchema = Type.Object({
+  seriesDir: Type.String({ description: "Path to the Remotion series directory" }),
+});
+
+export function createDualReviewTool(): AgentTool<typeof dualReviewSchema> {
+  return {
+    name: "sg_dual_review",
+    label: "Dual Agent Quality Review",
+    description: "Independent quality review using two GLM models (glm-5-turbo + glm-5.1-flash) to cross-validate the pipeline's assessment. Catches false positives, false negatives, and structural blind spots.",
+    parameters: dualReviewSchema,
+    execute: async (_id, params) => {
+      try {
+        const dir = resolveSeriesDir(params.seriesDir);
+        if (!existsSync(dir)) return errorResult(`Series directory not found: ${dir}`);
+
+        const outDir = resolve(dir, "storygraph_out");
+        const gatePath = resolve(outDir, "gate.json");
+        const reportPath = resolve(outDir, "consistency-report.md");
+        const baselinePath = resolve(outDir, "baseline-gate.json");
+
+        if (!existsSync(gatePath)) return errorResult("No gate.json found — run sg_pipeline or sg_check first");
+
+        const gate = JSON.parse(readFileSync(gatePath, "utf-8"));
+        const report = existsSync(reportPath) ? readFileSync(reportPath, "utf-8") : "";
+
+        let regression: DualReviewInput["regression"] = null;
+        if (existsSync(baselinePath)) {
+          try {
+            const baseline = JSON.parse(readFileSync(baselinePath, "utf-8"));
+            regression = {
+              baseline_score: baseline.score,
+              current_score: gate.score,
+              score_delta: gate.score - baseline.score,
+              regressed: (gate.score - baseline.score) < -10,
+            };
+          } catch { /* skip */ }
+        }
+
+        const seriesName = gate.series ?? dir.split("/").pop() ?? "unknown";
+        const genre = gate.genre ?? "unknown";
+        const episodeCount = gate.checks?.length
+          ? new Set(gate.checks.map((c: any) => c.name?.split(":")?.[1]?.trim()).filter(Boolean)).size || 1
+          : 1;
+
+        const prompt = buildDualReviewPrompt({
+          series_name: seriesName,
+          genre,
+          episode_count: episodeCount,
+          gate: {
+            score: gate.score,
+            decision: gate.decision,
+            quality_breakdown: gate.quality_breakdown ?? {},
+            checks: (gate.checks ?? []).slice(0, 30),
+          },
+          consistency_report: report,
+          regression,
+        });
+
+        // Run both reviewers in parallel
+        const reviewResults = await Promise.all(
+          DUAL_REVIEW_MODELS.map(async ({ provider, model, label }) => {
+            try {
+              const response = await callAI(prompt, {
+                provider,
+                model,
+                jsonMode: true,
+                maxTokens: 2048,
+                timeout: 120_000,
+              });
+              if (!response) return { label, review: null, error: "no response" };
+              return { label, review: parseDualReviewResponse(response), error: null };
+            } catch (e: any) {
+              return { label, review: null, error: e.message ?? String(e) };
+            }
+          }),
+        );
+
+        const succeeded = reviewResults.filter(r => r.review !== null);
+        if (succeeded.length === 0) {
+          return errorResult(`Both reviewers failed: ${reviewResults.map(r => `${r.label}: ${r.error}`).join("; ")}`);
+        }
+
+        // Build merged output
+        const lines = [`Dual Review: ${seriesName}`, ""];
+
+        for (const { label, review, error } of reviewResults) {
+          if (review) {
+            lines.push(`## ${label} — ${review.overall_verdict}`);
+            lines.push(`Score: ${gate.score}/100 pipeline | ${review.reviewer_score}/100 reviewer`);
+            lines.push(`Dimensions: accuracy=${review.reviewer_dimensions.score_accuracy} fairness=${review.reviewer_dimensions.check_fairness} completeness=${review.reviewer_dimensions.completeness}`);
+            if (review.false_positives.length > 0) {
+              lines.push("False positives:");
+              for (const fp of review.false_positives) lines.push(`  - ${fp}`);
+            }
+            if (review.false_negatives.length > 0) {
+              lines.push("False negatives:");
+              for (const fn of review.false_negatives) lines.push(`  - ${fn}`);
+            }
+            if (review.recommendations.length > 0) {
+              lines.push("Recommendations:");
+              for (const r of review.recommendations) lines.push(`  - ${r}`);
+            }
+            lines.push("");
+          } else {
+            lines.push(`## ${label} — FAILED: ${error}`);
+            lines.push("");
+          }
+        }
+
+        // Merge: intersect verdicts, average scores, union findings
+        const primary = succeeded[0].review!;
+        const mergedVerdict = succeeded.length === 2 && succeeded[1].review!.overall_verdict !== primary.overall_verdict
+          ? "PARTIAL_AGREE"
+          : primary.overall_verdict;
+        const avgScore = Math.round(
+          succeeded.reduce((sum, r) => sum + r.review!.reviewer_score, 0) / succeeded.length,
+        );
+        const allFalsePositives = [...new Set(succeeded.flatMap(r => r.review!.false_positives))];
+        const allFalseNegatives = [...new Set(succeeded.flatMap(r => r.review!.false_negatives))];
+        const allRecommendations = [...new Set(succeeded.flatMap(r => r.review!.recommendations))];
+
+        lines.push(`## Merged Verdict: ${mergedVerdict} (avg score: ${avgScore}/100)`);
+
+        return textResult(lines.join("\n"), {
+          verdict: mergedVerdict,
+          pipeline_score: gate.score,
+          reviewer_score: avgScore,
+          dimensions: primary.reviewer_dimensions,
+          false_positives: allFalsePositives,
+          false_negatives: allFalseNegatives,
+          recommendations: allRecommendations,
+          reviewers: reviewResults.map(r => r.label),
+        });
+      } catch (e: any) {
+        return errorResult(e.message ?? String(e));
+      }
+    },
+  };
+}
+
 /** Create all storygraph agent tools. */
 export function createStorygraphTools(): AgentTool<any>[] {
   return [
@@ -496,5 +650,6 @@ export function createStorygraphTools(): AgentTool<any>[] {
     createStorygraphBaselineListTool(),
     createStorygraphSuggestTool(),
     createStorygraphHealthTool(),
+    createDualReviewTool(),
   ];
 }

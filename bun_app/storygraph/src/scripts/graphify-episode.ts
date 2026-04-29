@@ -27,7 +27,11 @@ import { getSeriesConfigOrThrow, extractEpId, getEffectPattern, getTitlePattern 
 import type { SeriesConfig } from "./series-config";
 import type { ExtractionResult, GraphNode, GraphEdge, Confidence } from "../types";
 import { callAI, parseArgsForAI } from "../ai-client";
-import { buildEpisodeExtractionPrompt } from "./subagent-prompt";
+import { buildEpisodeExtractionPrompt, buildEnrichmentFeedbackPrompt } from "./subagent-prompt";
+import {
+  normalizeForDedup, gagNodeId, plotNodeId, sceneNodeId,
+  charNodeId, techTermNodeId, plotEventNodeId, artifactNodeId, traitNodeId,
+} from "./dedup";
 
 // ─── Args ───
 
@@ -45,6 +49,7 @@ Options:
                         ai: use LLM for richer extraction (requires API key)
                         regex: fast pattern-based extraction only
                         hybrid: regex first, then AI supplements exclusive types (default)
+  --feedback            Enable enrichment feedback loop (uses previous gate.json)
   --provider <name>     AI provider (default: zai)
   --model <name>        AI model (default: glm-4.7-flash)
 `);
@@ -69,6 +74,7 @@ const outDir = resolve(episodeDir, "storygraph_out");
 
 // Parse --mode/--provider/--model
 const aiConfig = parseArgsForAI(args);
+const feedbackEnabled = args.includes("--feedback");
 
 // Load series config (auto-detected from directory name) — must be before EP_ID extraction
 const config: SeriesConfig = getSeriesConfigOrThrow(seriesDir);
@@ -218,7 +224,7 @@ if (!usedAI) {
 // ─── Step 2: Extract episode plot node (regex) ───
 
 addNode(
-  `${EP_ID}_plot`,
+  plotNodeId(EP_ID),
   title ? `${title} (${EP_ID})` : EP_ID,
   "episode_plot",
   { language: parsed.language }
@@ -227,8 +233,7 @@ addNode(
 // ─── Step 2.5: Extract scene nodes ───
 
 for (const scene of parsed.scenes) {
-  const sceneId = `${EP_ID}_scene_${scene.scene}`;
-  const uniqueChars = new Set(scene.lines.map(l => l.character));
+  const sceneId = sceneNodeId(EP_ID, scene.scene);  const uniqueChars = new Set(scene.lines.map(l => l.character));
   const effectPat = getEffectPattern(config);
   let effectCount = 0;
   if (effectPat) {
@@ -242,14 +247,14 @@ for (const scene of parsed.scenes) {
     character_count: String(uniqueChars.size),
     effect_count: String(effectCount),
   });
-  addEdge(sceneId, `${EP_ID}_plot`, "part_of");
+  addEdge(sceneId, plotNodeId(EP_ID), "part_of");
 }
 
 // ─── Step 3: Extract character instances ───
 
 for (const charId of parsed.characters) {
   const charName = config.charNames[charId] ?? charId;
-  const nodeId = `${EP_ID}_char_${charId}`;
+  const nodeId = charNodeId(EP_ID, charId);
 
   // Collect all dialog for this character
   const dialogLines: string[] = [];
@@ -272,22 +277,23 @@ for (const charId of parsed.characters) {
   addNode(nodeId, `${charName} (${EP_ID})`, "character_instance", charProps);
 
   // Character → plot
-  addEdge(nodeId, `${EP_ID}_plot`, "appears_in");
+  addEdge(nodeId, plotNodeId(EP_ID), "appears_in");
 }
 
 // ─── Step 4: Extract tech terms per character ───
 
-// Character → tech terms mapping
-const charTechTerms: Record<string, Set<string>> = {};
+// Character → tech terms → occurrence count (for confidence scoring)
+const charTechTerms: Record<string, Map<string, number>> = {};
 for (const charId of parsed.characters) {
-  charTechTerms[charId] = new Set();
+  charTechTerms[charId] = new Map();
   for (const scene of parsed.scenes) {
     for (const line of scene.lines) {
       if (line.character === charId) {
         for (const pattern of config.techPatterns) {
           const matches = line.text.matchAll(pattern);
           for (const m of matches) {
-            charTechTerms[charId].add(m[0]);
+            const term = m[0];
+            charTechTerms[charId].set(term, (charTechTerms[charId].get(term) ?? 0) + 1);
           }
         }
       }
@@ -301,18 +307,19 @@ const isNarratorOnly = parsed.characters.length === 1 && parsed.characters[0] ==
 
 for (const [charId, terms] of Object.entries(charTechTerms)) {
   if (charId === "narrator" && !isNarratorOnly) continue;
-  for (const term of terms) {
-    const termId = `${EP_ID}_tech_${term.replace(/\s+/g, "_")}`;
-    // Deduplicate term nodes
+  for (const [term, count] of terms) {
+    const termId = techTermNodeId(EP_ID, term);
     if (!nodes.find(n => n.id === termId)) {
       addNode(termId, term, "tech_term");
     }
-    addEdge(`${EP_ID}_char_${charId}`, termId, "uses_tech_term");
+    addEdge(charNodeId(EP_ID, charId), termId, "uses_tech_term", "EXTRACTED", Math.min(1, 0.5 + 0.1 * count));
   }
 }
 
 // ─── Step 5: Extract character interactions ───
 
+// Count co-occurrences per character pair across scenes (for confidence scoring)
+const interactionCounts = new Map<string, number>();
 for (const scene of parsed.scenes) {
   const sceneChars = scene.lines.map(l => l.character);
   const uniqueChars = [...new Set(sceneChars)];
@@ -321,24 +328,20 @@ for (const scene of parsed.scenes) {
     for (let j = i + 1; j < uniqueChars.length; j++) {
       const a = uniqueChars[i];
       const b = uniqueChars[j];
-      if (a === b) continue;
-
-      // Skip narrator interactions
-      if (a === "narrator" || b === "narrator") continue;
-
-      const aId = `${EP_ID}_char_${a}`;
-      const bId = `${EP_ID}_char_${b}`;
-
-      // Add bidirectional interaction edges (if not already present)
-      const existingEdge = edges.find(e =>
-        e.source === aId && e.target === bId && e.relation === "interacts_with"
-      );
-      if (!existingEdge) {
-        addEdge(aId, bId, "interacts_with");
-        addEdge(bId, aId, "interacts_with");
-      }
+      if (a === b || a === "narrator" || b === "narrator") continue;
+      const key = [a, b].sort().join("|");
+      interactionCounts.set(key, (interactionCounts.get(key) ?? 0) + 1);
     }
   }
+}
+
+for (const [key, count] of interactionCounts) {
+  const [a, b] = key.split("|");
+  const aId = charNodeId(EP_ID, a);
+  const bId = charNodeId(EP_ID, b);
+  const score = Math.min(1, 0.4 + 0.2 * count);
+  addEdge(aId, bId, "interacts_with", "EXTRACTED", score);
+  addEdge(bId, aId, "interacts_with", "EXTRACTED", score);
 }
 
 // ─── Step 6: Match running gags ───
@@ -381,12 +384,12 @@ if (config.gagSource === "plan_md") {
             const colEpId = headerEpIds[j - 1];
 
             if (colEpId === EP_ID && manifestation && manifestation !== "TBD" && manifestation !== "—") {
-              const gagId = `${EP_ID}_gag_${gagName.replace(/\s+/g, "_")}`;
+              const gagId = gagNodeId(EP_ID, gagName);
               addNode(gagId, `${gagName}：${manifestation}`, "gag_manifestation", {
                 gag_type: gagName,
                 episode: EP_ID,
               });
-              addEdge(gagId, `${EP_ID}_plot`, "appears_in");
+              addEdge(gagId, plotNodeId(EP_ID), "appears_in");
             }
           }
         }
@@ -438,13 +441,13 @@ if (config.gagSource === "plan_md") {
 
               const manifestation = cells[chapterColIdx];
               if (manifestation && manifestation !== "TBD" && manifestation !== "—") {
-                const gagId = `${EP_ID}_gag_${gagName.replace(/\s+/g, "_")}`;
+                const gagId = gagNodeId(EP_ID, gagName);
                 addNode(gagId, `${gagName}：${manifestation} (${EP_ID})`, "gag_manifestation", {
                   gag_type: gagName,
                   episode: EP_ID,
                   chapter: `Ch${chapterNum}`,
                 });
-                addEdge(gagId, `${EP_ID}_plot`, "appears_in");
+                addEdge(gagId, plotNodeId(EP_ID), "appears_in");
               }
             }
           }
@@ -481,12 +484,12 @@ if (config.gagSource === "plan_md") {
           // Fallback: use pattern description if evolution didn't parse
           if (!manifestation) manifestation = cells[1]; // Pattern column
 
-          const gagId = `${EP_ID}_gag_${gagName.replace(/\s+/g, "_")}`;
+          const gagId = gagNodeId(EP_ID, gagName);
           addNode(gagId, `${gagName}：${manifestation} (${EP_ID})`, "gag_manifestation", {
             gag_type: gagName,
             episode: EP_ID,
           });
-          addEdge(gagId, `${EP_ID}_plot`, "appears_in");
+          addEdge(gagId, plotNodeId(EP_ID), "appears_in");
         }
       }
     } catch (e) {
@@ -498,20 +501,84 @@ if (config.gagSource === "plan_md") {
 // ─── Step 7: Extract character speech traits (heuristic) ───
 
 for (const [charId, patterns] of Object.entries(config.traitPatterns)) {
-  const charNodeId = `${EP_ID}_char_${charId}`;
-  if (!nodes.find(n => n.id === charNodeId)) continue; // Character not in this episode
+  const cId = charNodeId(EP_ID, charId);
+  if (!nodes.find(n => n.id === cId)) continue; // Character not in this episode
 
-  const charDialog = nodes.find(n => n.id === charNodeId)?.properties?.dialog_text ?? "";
+  const charDialog = nodes.find(n => n.id === cId)?.properties?.dialog_text ?? "";
 
   for (const { pattern, trait } of patterns) {
-    if (pattern.test(charDialog)) {
-      const traitId = `${EP_ID}_trait_${charId}_${trait.replace(/\s+/g, "_")}`;
-      // Only add if not duplicate
-      if (!nodes.find(n => n.id === traitId)) {
-        addNode(traitId, `${config.charNames[charId] ?? charId}: ${trait}`, "character_trait", {
+    const matches = charDialog.match(pattern);
+    if (matches) {
+      const tId = traitNodeId(EP_ID, charId, trait);
+      if (!nodes.find(n => n.id === tId)) {
+        addNode(tId, `${config.charNames[charId] ?? charId}: ${trait}`, "character_trait", {
           character_id: charId,
         });
-        addEdge(traitId, charNodeId, "character_speaks_like");
+        // Confidence: 0.6 base + 0.2 per additional match, capped at 1.0
+        addEdge(tId, cId, "character_speaks_like", "EXTRACTED", Math.min(1, 0.6 + 0.2 * (matches.length - 1)));
+      }
+    }
+  }
+}
+
+// --- Step 7.6: Extract plot events from narrator summaries ---
+
+{
+  const narratorScenes = parsed.scenes.filter(s =>
+    /title|outro/i.test(s.scene)
+  );
+  for (const scene of narratorScenes) {
+    for (const line of scene.lines) {
+      if (line.character !== "narrator") continue;
+
+      const sentences = line.text
+        .split(/[。！？\n]/)
+        .map(s => s.trim())
+        .filter(s => s.length >= 4);
+
+      for (const sentence of sentences) {
+        const eventLabel = sentence.length > 60
+          ? sentence.slice(0, 57) + "..."
+          : sentence;
+        const eventId = plotEventNodeId(EP_ID, nodes.filter(n => n.type === "plot_event").length + 1);
+        addNode(eventId, eventLabel, "plot_event", {
+          source_scene: scene.scene,
+          character: "narrator",
+        });
+        addEdge(eventId, plotNodeId(EP_ID), "part_of");
+      }
+    }
+  }
+}
+
+// --- Step 7.7: Extract artifacts from dialog ---
+
+if (config.artifactPatterns) {
+  for (const { pattern, artifactType } of config.artifactPatterns) {
+    const seen = new Set<string>();
+    for (const scene of parsed.scenes) {
+      for (const line of scene.lines) {
+        if (line.character === "narrator") continue;
+        const matches = line.text.matchAll(new RegExp(pattern.source, pattern.flags.replace("g", "") + "g"));
+        for (const m of matches) {
+          const matchText = m[0];
+          if (seen.has(matchText)) continue;
+          seen.add(matchText);
+
+          const artifactId = artifactNodeId(EP_ID, matchText);
+          if (nodes.find(n => n.id === artifactId)) continue;
+
+          addNode(artifactId, `${matchText} (${artifactType})`, "artifact", {
+            artifact_type: artifactType,
+            episode: EP_ID,
+          });
+          addEdge(artifactId, plotNodeId(EP_ID), "appears_in");
+
+          const cId2 = charNodeId(EP_ID, line.character);
+          if (nodes.find(n => n.id === cId2)) {
+            addEdge(cId2, artifactId, "uses");
+          }
+        }
       }
     }
   }
@@ -525,7 +592,7 @@ if (aiConfig.mode === "hybrid") {
   console.log(`\n[Hybrid mode] Calling ${aiConfig.provider}/${aiConfig.model} for exclusive nodes...`);
   try {
     const narrationContent = readFileSync(narrationPath, "utf-8");
-    const prompt = buildEpisodeExtractionPrompt({
+    let prompt = buildEpisodeExtractionPrompt({
       episode_id: EP_ID,
       episode_title: title || EP_ID,
       series_name: config.displayName,
@@ -533,6 +600,22 @@ if (aiConfig.mode === "hybrid") {
       charNames: config.charNames,
       techPatterns: config.techPatterns.map(p => p.source),
     });
+
+    // Prepend feedback from previous gate.json if --feedback enabled
+    if (feedbackEnabled) {
+      const seriesOutDir = resolve(seriesDir, "storygraph_out");
+      const gatePath = resolve(seriesOutDir, "gate.json");
+      const reportPath = resolve(seriesOutDir, "consistency-report.md");
+      const feedback = buildEnrichmentFeedbackPrompt({
+        episode_id: EP_ID,
+        gateJsonPath: gatePath,
+        consistencyReportPath: reportPath,
+      });
+      if (feedback) {
+        prompt = feedback + "\n\n" + prompt;
+        console.log(`[Feedback] Prepended enrichment feedback for ${EP_ID}`);
+      }
+    }
 
     const result = await callAI(prompt, {
       provider: aiConfig.provider,
@@ -549,12 +632,51 @@ if (aiConfig.mode === "hybrid") {
       const existingIds = new Set(nodes.map(n => n.id));
       const existingEdgeKeys = new Set(edges.map(e => `${e.source}|${e.target}|${e.relation}`));
 
+      // Build fuzzy dedup index: type -> Set<normalized label>
+      const regexByType = new Map<string, Set<string>>();
+      for (const n of nodes) {
+        const t = n.type ?? "unknown";
+        if (!regexByType.has(t)) regexByType.set(t, new Set());
+        regexByType.get(t)!.add(normalizeForDedup(n.label ?? n.id));
+      }
+
       const exclusiveNodes: GraphNode[] = [];
       const exclusiveEdges: GraphEdge[] = [];
+      let fuzzyDeduped = 0;
 
       for (const n of aiNodes) {
         if (!n.id?.startsWith(`${EP_ID}_`)) continue;
+
+        // Normalize AI gag IDs to match regex convention
+        if (n.type === "gag_manifestation") {
+          const gagType = n.properties?.gag_type ?? n.id.split("_gag_")[1] ?? "unknown";
+          const canonicalId = gagNodeId(EP_ID, gagType);
+          if (existingIds.has(canonicalId)) continue;
+          n.id = canonicalId;
+          if (!n.properties) n.properties = {};
+          n.properties.gag_type = gagType;
+        }
+
         if (existingIds.has(n.id)) continue;
+
+        // Fuzzy dedup: check if a regex node of the same type has a similar label
+        const nodeType = n.type ?? "unknown";
+        const normalized = normalizeForDedup(n.label ?? n.id);
+        const regexLabels = regexByType.get(nodeType);
+        if (regexLabels) {
+          let isDuplicate = false;
+          for (const rl of regexLabels) {
+            if (rl === normalized || rl.includes(normalized) || normalized.includes(rl)) {
+              isDuplicate = true;
+              break;
+            }
+          }
+          if (isDuplicate) {
+            fuzzyDeduped++;
+            continue;
+          }
+        }
+
         n.file_type = n.file_type ?? "document";
         n.source_file = n.source_file ?? `${EP_ID}/narration.ts`;
         n.source_location = n.source_location ?? null;
@@ -583,7 +705,7 @@ if (aiConfig.mode === "hybrid") {
       const byType: Record<string, number> = {};
       for (const n of exclusiveNodes) byType[n.type ?? "unknown"] = (byType[n.type ?? "unknown"] ?? 0) + 1;
       const typeSummary = Object.entries(byType).map(([t, c]) => `${t}: ${c}`).join(", ");
-      console.log(`[Hybrid mode] Added ${exclusiveNodes.length} exclusive AI nodes (${typeSummary}), ${exclusiveEdges.length} exclusive edges`);
+      console.log(`[Hybrid mode] Added ${exclusiveNodes.length} exclusive AI nodes (${typeSummary}), ${exclusiveEdges.length} exclusive edges (${fuzzyDeduped} fuzzy-deduped)`);
     } else {
       console.warn(`[Hybrid mode] callAI returned null, using regex-only output`);
     }

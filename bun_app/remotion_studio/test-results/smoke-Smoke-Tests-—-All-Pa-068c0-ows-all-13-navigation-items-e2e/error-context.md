@@ -1,0 +1,2488 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: smoke.spec.ts >> Smoke Tests — All Pages Load >> sidebar shows all 13 navigation items
+- Location: e2e/smoke.spec.ts:43:3
+
+# Error details
+
+```
+Error: expect(locator).toHaveCount(expected) failed
+
+Locator:  locator('nav button')
+Expected: 13
+Received: 17
+Timeout:  5000ms
+
+Call log:
+  - Expect "toHaveCount" with timeout 5000ms
+  - waiting for locator('nav button')
+    9 × locator resolved to 17 elements
+      - unexpected value "17"
+
+```
+
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - navigation [ref=e4]:
+    - heading "Remotion Studio" [level=2] [ref=e5]
+    - generic [ref=e6]:
+      - generic [ref=e7]: Overview
+      - button "■ Dashboard" [ref=e8] [cursor=pointer]:
+        - generic [ref=e9]: ■
+        - text: Dashboard
+      - button "● Monitoring" [ref=e10] [cursor=pointer]:
+        - generic [ref=e11]: ●
+        - text: Monitoring
+      - button "▣ Progress" [ref=e12] [cursor=pointer]:
+        - generic [ref=e13]: ▣
+        - text: Progress
+      - button "▦ Kanban" [ref=e14] [cursor=pointer]:
+        - generic [ref=e15]: ▦
+        - text: Kanban
+    - generic [ref=e16]:
+      - generic [ref=e17]: Production
+      - button "📁 Projects" [ref=e18] [cursor=pointer]:
+        - generic [ref=e19]: 📁
+        - text: Projects
+      - button "✍ Story Editor" [ref=e20] [cursor=pointer]:
+        - generic [ref=e21]: ✍
+        - text: Story Editor
+      - button "⚙ Workflows" [ref=e22] [cursor=pointer]:
+        - generic [ref=e23]: ⚙
+        - text: Workflows
+    - generic [ref=e24]:
+      - generic [ref=e25]: Analysis
+      - button "🕸 Storygraph" [ref=e26] [cursor=pointer]:
+        - generic [ref=e27]: 🕸
+        - text: Storygraph
+      - button "✔ Quality" [ref=e28] [cursor=pointer]:
+        - generic [ref=e29]: ✔
+        - text: Quality
+      - button "📊 Benchmark" [ref=e30] [cursor=pointer]:
+        - generic [ref=e31]: 📊
+        - text: Benchmark
+    - generic [ref=e32]:
+      - generic [ref=e33]: AI
+      - button "🤖 Agent Chat" [ref=e34] [cursor=pointer]:
+        - generic [ref=e35]: 🤖
+        - text: Agent Chat
+    - generic [ref=e36]:
+      - generic [ref=e37]: Assets
+      - button "🖼 Assets" [ref=e38] [cursor=pointer]:
+        - generic [ref=e39]: 🖼
+        - text: Assets
+      - button "🔊 TTS" [ref=e40] [cursor=pointer]:
+        - generic [ref=e41]: 🔊
+        - text: TTS
+      - button "▶ Render" [ref=e42] [cursor=pointer]:
+        - generic [ref=e43]: ▶
+        - text: Render
+      - button "🎨 Image" [ref=e44] [cursor=pointer]:
+        - generic [ref=e45]: 🎨
+        - text: Image
+    - generic [ref=e46]:
+      - button "◐" [ref=e47] [cursor=pointer]
+      - button "中" [ref=e48] [cursor=pointer]
+  - main [ref=e49]:
+    - generic [ref=e50]:
+      - generic [ref=e51]:
+        - heading "Dashboard" [level=1] [ref=e53]
+        - paragraph [ref=e54]: Server status and job queue
+      - generic [ref=e55]:
+        - heading "Server Status" [level=3] [ref=e56]
+        - generic [ref=e57]: ok
+      - generic [ref=e59]:
+        - generic [ref=e60]: What's Next
+        - generic [ref=e61]:
+          - text: "30 episodes in progress. Most common next step:"
+          - strong [ref=e62]: Extract KG
+          - text: (27 episodes waiting). Go to
+          - strong [ref=e63]: storygraph
+          - text: to continue.
+        - generic [ref=e64]:
+          - generic [ref=e65]: "Extract KG: 27"
+          - generic [ref=e66]: "Scaffold Episode: 3"
+      - generic [ref=e67]:
+        - generic [ref=e68]: AI Story Advisor
+        - generic [ref=e69]:
+          - button "Story Health Check" [ref=e70] [cursor=pointer]
+          - button "Find Content Gaps" [ref=e71] [cursor=pointer]
+          - button "Quality Audit" [ref=e72] [cursor=pointer]
+      - generic [ref=e73]:
+        - generic [ref=e74]:
+          - heading "Job Queue" [level=3] [ref=e75]
+          - generic [ref=e76]:
+            - button "Clear completed" [ref=e77] [cursor=pointer]
+            - button "Run Demo Job" [ref=e78] [cursor=pointer]
+        - generic [ref=e79]:
+          - button "All251" [ref=e80] [cursor=pointer]
+          - button "Running" [ref=e81] [cursor=pointer]
+          - button "Completed146" [ref=e82] [cursor=pointer]
+          - button "Failed105" [ref=e83] [cursor=pointer]
+        - generic [ref=e84]:
+          - generic [ref=e85]:
+            - generic [ref=e86]:
+              - generic [ref=e87]: workflow
+              - generic [ref=e88]: 2288_1 · 2d ago
+              - generic [ref=e89]: 0s
+            - generic [ref=e90]:
+              - generic [ref=e91]: failed
+              - button "Delete" [ref=e92] [cursor=pointer]
+          - generic [ref=e93]: narration.ts not found at /some/fake/path/scripts/narration.ts
+        - generic [ref=e95]:
+          - generic [ref=e96]:
+            - generic [ref=e97]: image-tts-render
+            - generic [ref=e98]: 2290_2 · 2d ago
+            - generic [ref=e99]: 0s
+          - generic [ref=e100]:
+            - generic [ref=e101]: completed
+            - button "Delete" [ref=e102] [cursor=pointer]
+        - generic [ref=e103]:
+          - generic [ref=e104]:
+            - generic [ref=e105]:
+              - generic [ref=e106]: agent:pi-developer
+              - generic [ref=e107]: 2687_3 · 2d ago
+              - generic [ref=e108]: 95m 23s
+            - generic [ref=e109]:
+              - generic [ref=e110]: failed
+              - button "Delete" [ref=e111] [cursor=pointer]
+          - generic [ref=e112]: Server restarted — workflow interrupted
+        - generic [ref=e113]:
+          - generic [ref=e114]:
+            - generic [ref=e115]:
+              - generic [ref=e116]: image-generate
+              - generic [ref=e117]: 3005_4 · 2d ago
+              - generic [ref=e118]: 0s
+            - generic [ref=e119]:
+              - generic [ref=e120]: failed
+              - button "Delete" [ref=e121] [cursor=pointer]
+          - generic [ref=e122]: "CDP bridge error: CDP connect failed: browserType.connectOverCDP: connect ECONNREFUSED ::1:9222 Call log: \x1b[2m - <ws preparing> retrieving websocket url from http://localhost:9222\x1b[22m"
+        - generic [ref=e124]:
+          - generic [ref=e125]:
+            - generic [ref=e126]: scaffold
+            - generic [ref=e127]: 3570_5 · 2d ago
+            - generic [ref=e128]: 0s
+          - generic [ref=e129]:
+            - generic [ref=e130]: completed
+            - button "Delete" [ref=e131] [cursor=pointer]
+        - generic [ref=e132]:
+          - generic [ref=e133]:
+            - generic [ref=e134]:
+              - generic [ref=e135]: workflow
+              - generic [ref=e136]: 7526_1 · 2d ago
+              - generic [ref=e137]: 0s
+            - generic [ref=e138]:
+              - generic [ref=e139]: failed
+              - button "Delete" [ref=e140] [cursor=pointer]
+          - generic [ref=e141]: narration.ts not found at /some/fake/path/scripts/narration.ts
+        - generic [ref=e143]:
+          - generic [ref=e144]:
+            - generic [ref=e145]: image-tts-render
+            - generic [ref=e146]: 7528_6 · 2d ago
+            - generic [ref=e147]: 0s
+          - generic [ref=e148]:
+            - generic [ref=e149]: completed
+            - button "Delete" [ref=e150] [cursor=pointer]
+        - generic [ref=e151]:
+          - generic [ref=e152]:
+            - generic [ref=e153]:
+              - generic [ref=e154]: agent:pi-developer
+              - generic [ref=e155]: 7913_7 · 2d ago
+              - generic [ref=e156]: 81m 58s
+            - generic [ref=e157]:
+              - generic [ref=e158]: failed
+              - button "Delete" [ref=e159] [cursor=pointer]
+          - generic [ref=e160]: Server restarted — workflow interrupted
+        - generic [ref=e161]:
+          - generic [ref=e162]:
+            - generic [ref=e163]:
+              - generic [ref=e164]: image-generate
+              - generic [ref=e165]: 8234_8 · 2d ago
+              - generic [ref=e166]: 0s
+            - generic [ref=e167]:
+              - generic [ref=e168]: failed
+              - button "Delete" [ref=e169] [cursor=pointer]
+          - generic [ref=e170]: "CDP bridge error: CDP connect failed: browserType.connectOverCDP: connect ECONNREFUSED ::1:9222 Call log: \x1b[2m - <ws preparing> retrieving websocket url from http://localhost:9222\x1b[22m"
+        - generic [ref=e172]:
+          - generic [ref=e173]:
+            - generic [ref=e174]: scaffold
+            - generic [ref=e175]: 8796_9 · 2d ago
+            - generic [ref=e176]: 0s
+          - generic [ref=e177]:
+            - generic [ref=e178]: completed
+            - button "Delete" [ref=e179] [cursor=pointer]
+        - generic [ref=e180]:
+          - generic [ref=e181]:
+            - generic [ref=e182]:
+              - generic [ref=e183]: workflow
+              - generic [ref=e184]: 3718_1 · 2d ago
+              - generic [ref=e185]: 0s
+            - generic [ref=e186]:
+              - generic [ref=e187]: failed
+              - button "Delete" [ref=e188] [cursor=pointer]
+          - generic [ref=e189]: narration.ts not found at /some/fake/path/scripts/narration.ts
+        - generic [ref=e191]:
+          - generic [ref=e192]:
+            - generic [ref=e193]: image-tts-render
+            - generic [ref=e194]: 721_10 · 2d ago
+            - generic [ref=e195]: 0s
+          - generic [ref=e196]:
+            - generic [ref=e197]: completed
+            - button "Delete" [ref=e198] [cursor=pointer]
+        - generic [ref=e199]:
+          - generic [ref=e200]:
+            - generic [ref=e201]:
+              - generic [ref=e202]: agent:pi-developer
+              - generic [ref=e203]: 014_11 · 2d ago
+              - generic [ref=e204]: 81m 52s
+            - generic [ref=e205]:
+              - generic [ref=e206]: failed
+              - button "Delete" [ref=e207] [cursor=pointer]
+          - generic [ref=e208]: Server restarted — workflow interrupted
+        - generic [ref=e209]:
+          - generic [ref=e210]:
+            - generic [ref=e211]:
+              - generic [ref=e212]: image-generate
+              - generic [ref=e213]: 310_12 · 2d ago
+              - generic [ref=e214]: 0s
+            - generic [ref=e215]:
+              - generic [ref=e216]: failed
+              - button "Delete" [ref=e217] [cursor=pointer]
+          - generic [ref=e218]: "CDP bridge error: CDP connect failed: browserType.connectOverCDP: connect ECONNREFUSED ::1:9222 Call log: \x1b[2m - <ws preparing> retrieving websocket url from http://localhost:9222\x1b[22m"
+        - generic [ref=e220]:
+          - generic [ref=e221]:
+            - generic [ref=e222]: scaffold
+            - generic [ref=e223]: 862_13 · 2d ago
+            - generic [ref=e224]: 0s
+          - generic [ref=e225]:
+            - generic [ref=e226]: completed
+            - button "Delete" [ref=e227] [cursor=pointer]
+        - generic [ref=e228]:
+          - generic [ref=e229]:
+            - generic [ref=e230]:
+              - generic [ref=e231]: workflow
+              - generic [ref=e232]: 6928_1 · 2d ago
+              - generic [ref=e233]: 0s
+            - generic [ref=e234]:
+              - generic [ref=e235]: failed
+              - button "Delete" [ref=e236] [cursor=pointer]
+          - generic [ref=e237]: narration.ts not found at /some/fake/path/scripts/narration.ts
+        - generic [ref=e239]:
+          - generic [ref=e240]:
+            - generic [ref=e241]: image-tts-render
+            - generic [ref=e242]: 930_14 · 2d ago
+            - generic [ref=e243]: 0s
+          - generic [ref=e244]:
+            - generic [ref=e245]: completed
+            - button "Delete" [ref=e246] [cursor=pointer]
+        - generic [ref=e247]:
+          - generic [ref=e248]:
+            - generic [ref=e249]:
+              - generic [ref=e250]: agent:pi-developer
+              - generic [ref=e251]: 226_15 · 2d ago
+              - generic [ref=e252]: 81m 9s
+            - generic [ref=e253]:
+              - generic [ref=e254]: failed
+              - button "Delete" [ref=e255] [cursor=pointer]
+          - generic [ref=e256]: Server restarted — workflow interrupted
+        - generic [ref=e257]:
+          - generic [ref=e258]:
+            - generic [ref=e259]:
+              - generic [ref=e260]: image-generate
+              - generic [ref=e261]: 522_16 · 2d ago
+              - generic [ref=e262]: 0s
+            - generic [ref=e263]:
+              - generic [ref=e264]: failed
+              - button "Delete" [ref=e265] [cursor=pointer]
+          - generic [ref=e266]: "CDP bridge error: CDP connect failed: browserType.connectOverCDP: connect ECONNREFUSED ::1:9222 Call log: \x1b[2m - <ws preparing> retrieving websocket url from http://localhost:9222\x1b[22m"
+        - generic [ref=e268]:
+          - generic [ref=e269]:
+            - generic [ref=e270]: scaffold
+            - generic [ref=e271]: 076_17 · 2d ago
+            - generic [ref=e272]: 0s
+          - generic [ref=e273]:
+            - generic [ref=e274]: completed
+            - button "Delete" [ref=e275] [cursor=pointer]
+        - generic [ref=e276]:
+          - generic [ref=e277]:
+            - generic [ref=e278]:
+              - generic [ref=e279]: workflow
+              - generic [ref=e280]: 4024_1 · 2d ago
+              - generic [ref=e281]: 0s
+            - generic [ref=e282]:
+              - generic [ref=e283]: failed
+              - button "Delete" [ref=e284] [cursor=pointer]
+          - generic [ref=e285]: narration.ts not found at /some/fake/path/scripts/narration.ts
+        - generic [ref=e287]:
+          - generic [ref=e288]:
+            - generic [ref=e289]: image-tts-render
+            - generic [ref=e290]: 026_18 · 2d ago
+            - generic [ref=e291]: 0s
+          - generic [ref=e292]:
+            - generic [ref=e293]: completed
+            - button "Delete" [ref=e294] [cursor=pointer]
+        - generic [ref=e295]:
+          - generic [ref=e296]:
+            - generic [ref=e297]:
+              - generic [ref=e298]: agent:pi-developer
+              - generic [ref=e299]: 373_19 · 2d ago
+              - generic [ref=e300]: 73m 32s
+            - generic [ref=e301]:
+              - generic [ref=e302]: failed
+              - button "Delete" [ref=e303] [cursor=pointer]
+          - generic [ref=e304]: Server restarted — workflow interrupted
+        - generic [ref=e305]:
+          - generic [ref=e306]:
+            - generic [ref=e307]:
+              - generic [ref=e308]: image-generate
+              - generic [ref=e309]: 673_20 · 2d ago
+              - generic [ref=e310]: 0s
+            - generic [ref=e311]:
+              - generic [ref=e312]: failed
+              - button "Delete" [ref=e313] [cursor=pointer]
+          - generic [ref=e314]: "CDP bridge error: CDP connect failed: browserType.connectOverCDP: connect ECONNREFUSED ::1:9222 Call log: \x1b[2m - <ws preparing> retrieving websocket url from http://localhost:9222\x1b[22m"
+        - generic [ref=e316]:
+          - generic [ref=e317]:
+            - generic [ref=e318]: scaffold
+            - generic [ref=e319]: 234_21 · 2d ago
+            - generic [ref=e320]: 0s
+          - generic [ref=e321]:
+            - generic [ref=e322]: completed
+            - button "Delete" [ref=e323] [cursor=pointer]
+        - generic [ref=e324]:
+          - generic [ref=e325]:
+            - generic [ref=e326]:
+              - generic [ref=e327]: workflow
+              - generic [ref=e328]: 6752_1 · 2d ago
+              - generic [ref=e329]: 0s
+            - generic [ref=e330]:
+              - generic [ref=e331]: failed
+              - button "Delete" [ref=e332] [cursor=pointer]
+          - generic [ref=e333]: narration.ts not found at /some/fake/path/scripts/narration.ts
+        - generic [ref=e335]:
+          - generic [ref=e336]:
+            - generic [ref=e337]: image-tts-render
+            - generic [ref=e338]: 754_22 · 2d ago
+            - generic [ref=e339]: 0s
+          - generic [ref=e340]:
+            - generic [ref=e341]: completed
+            - button "Delete" [ref=e342] [cursor=pointer]
+        - generic [ref=e343]:
+          - generic [ref=e344]:
+            - generic [ref=e345]:
+              - generic [ref=e346]: agent:pi-developer
+              - generic [ref=e347]: 125_23 · 2d ago
+              - generic [ref=e348]: 64m 19s
+            - generic [ref=e349]:
+              - generic [ref=e350]: failed
+              - button "Delete" [ref=e351] [cursor=pointer]
+          - generic [ref=e352]: Server restarted — workflow interrupted
+        - generic [ref=e353]:
+          - generic [ref=e354]:
+            - generic [ref=e355]:
+              - generic [ref=e356]: image-generate
+              - generic [ref=e357]: 432_24 · 2d ago
+              - generic [ref=e358]: 0s
+            - generic [ref=e359]:
+              - generic [ref=e360]: failed
+              - button "Delete" [ref=e361] [cursor=pointer]
+          - generic [ref=e362]: "CDP bridge error: CDP connect failed: browserType.connectOverCDP: connect ECONNREFUSED ::1:9222 Call log: \x1b[2m - <ws preparing> retrieving websocket url from http://localhost:9222\x1b[22m"
+        - generic [ref=e364]:
+          - generic [ref=e365]:
+            - generic [ref=e366]: scaffold
+            - generic [ref=e367]: 995_25 · 2d ago
+            - generic [ref=e368]: 0s
+          - generic [ref=e369]:
+            - generic [ref=e370]: completed
+            - button "Delete" [ref=e371] [cursor=pointer]
+        - generic [ref=e372]:
+          - generic [ref=e373]:
+            - generic [ref=e374]:
+              - generic [ref=e375]: workflow
+              - generic [ref=e376]: 8260_1 · 2d ago
+              - generic [ref=e377]: 0s
+            - generic [ref=e378]:
+              - generic [ref=e379]: failed
+              - button "Delete" [ref=e380] [cursor=pointer]
+          - generic [ref=e381]: narration.ts not found at /some/fake/path/scripts/narration.ts
+        - generic [ref=e383]:
+          - generic [ref=e384]:
+            - generic [ref=e385]: image-tts-render
+            - generic [ref=e386]: 263_26 · 2d ago
+            - generic [ref=e387]: 0s
+          - generic [ref=e388]:
+            - generic [ref=e389]: completed
+            - button "Delete" [ref=e390] [cursor=pointer]
+        - generic [ref=e391]:
+          - generic [ref=e392]:
+            - generic [ref=e393]:
+              - generic [ref=e394]: agent:pi-developer
+              - generic [ref=e395]: 601_27 · 2d ago
+              - generic [ref=e396]: 63m 37s
+            - generic [ref=e397]:
+              - generic [ref=e398]: failed
+              - button "Delete" [ref=e399] [cursor=pointer]
+          - generic [ref=e400]: Server restarted — workflow interrupted
+        - generic [ref=e401]:
+          - generic [ref=e402]:
+            - generic [ref=e403]:
+              - generic [ref=e404]: image-generate
+              - generic [ref=e405]: 906_28 · 2d ago
+              - generic [ref=e406]: 0s
+            - generic [ref=e407]:
+              - generic [ref=e408]: failed
+              - button "Delete" [ref=e409] [cursor=pointer]
+          - generic [ref=e410]: "CDP bridge error: CDP connect failed: browserType.connectOverCDP: connect ECONNREFUSED ::1:9222 Call log: \x1b[2m - <ws preparing> retrieving websocket url from http://localhost:9222\x1b[22m"
+        - generic [ref=e412]:
+          - generic [ref=e413]:
+            - generic [ref=e414]: scaffold
+            - generic [ref=e415]: 460_29 · 2d ago
+            - generic [ref=e416]: 0s
+          - generic [ref=e417]:
+            - generic [ref=e418]: completed
+            - button "Delete" [ref=e419] [cursor=pointer]
+        - generic [ref=e420]:
+          - generic [ref=e421]:
+            - generic [ref=e422]:
+              - generic [ref=e423]: workflow
+              - generic [ref=e424]: 4406_1 · 2d ago
+              - generic [ref=e425]: 0s
+            - generic [ref=e426]:
+              - generic [ref=e427]: failed
+              - button "Delete" [ref=e428] [cursor=pointer]
+          - generic [ref=e429]: narration.ts not found at /some/fake/path/scripts/narration.ts
+        - generic [ref=e431]:
+          - generic [ref=e432]:
+            - generic [ref=e433]: image-tts-render
+            - generic [ref=e434]: 408_30 · 2d ago
+            - generic [ref=e435]: 0s
+          - generic [ref=e436]:
+            - generic [ref=e437]: completed
+            - button "Delete" [ref=e438] [cursor=pointer]
+        - generic [ref=e439]:
+          - generic [ref=e440]:
+            - generic [ref=e441]:
+              - generic [ref=e442]: agent:pi-developer
+              - generic [ref=e443]: 761_31 · 2d ago
+              - generic [ref=e444]: 57m 51s
+            - generic [ref=e445]:
+              - generic [ref=e446]: failed
+              - button "Delete" [ref=e447] [cursor=pointer]
+          - generic [ref=e448]: Server restarted — workflow interrupted
+        - generic [ref=e449]:
+          - generic [ref=e450]:
+            - generic [ref=e451]:
+              - generic [ref=e452]: image-generate
+              - generic [ref=e453]: 058_32 · 2d ago
+              - generic [ref=e454]: 0s
+            - generic [ref=e455]:
+              - generic [ref=e456]: failed
+              - button "Delete" [ref=e457] [cursor=pointer]
+          - generic [ref=e458]: "CDP bridge error: CDP connect failed: browserType.connectOverCDP: connect ECONNREFUSED ::1:9222 Call log: \x1b[2m - <ws preparing> retrieving websocket url from http://localhost:9222\x1b[22m"
+        - generic [ref=e460]:
+          - generic [ref=e461]:
+            - generic [ref=e462]: scaffold
+            - generic [ref=e463]: 616_33 · 2d ago
+            - generic [ref=e464]: 0s
+          - generic [ref=e465]:
+            - generic [ref=e466]: completed
+            - button "Delete" [ref=e467] [cursor=pointer]
+        - generic [ref=e468]:
+          - generic [ref=e469]:
+            - generic [ref=e470]:
+              - generic [ref=e471]: workflow
+              - generic [ref=e472]: 1776_1 · 2d ago
+              - generic [ref=e473]: 0s
+            - generic [ref=e474]:
+              - generic [ref=e475]: failed
+              - button "Delete" [ref=e476] [cursor=pointer]
+          - generic [ref=e477]: narration.ts not found at /some/fake/path/scripts/narration.ts
+        - generic [ref=e479]:
+          - generic [ref=e480]:
+            - generic [ref=e481]: image-tts-render
+            - generic [ref=e482]: 778_34 · 2d ago
+            - generic [ref=e483]: 0s
+          - generic [ref=e484]:
+            - generic [ref=e485]: completed
+            - button "Delete" [ref=e486] [cursor=pointer]
+        - generic [ref=e487]:
+          - generic [ref=e488]:
+            - generic [ref=e489]:
+              - generic [ref=e490]: agent:pi-developer
+              - generic [ref=e491]: 078_35 · 2d ago
+              - generic [ref=e492]: 57m 14s
+            - generic [ref=e493]:
+              - generic [ref=e494]: failed
+              - button "Delete" [ref=e495] [cursor=pointer]
+          - generic [ref=e496]: Server restarted — workflow interrupted
+        - generic [ref=e497]:
+          - generic [ref=e498]:
+            - generic [ref=e499]:
+              - generic [ref=e500]: image-generate
+              - generic [ref=e501]: 384_36 · 2d ago
+              - generic [ref=e502]: 0s
+            - generic [ref=e503]:
+              - generic [ref=e504]: failed
+              - button "Delete" [ref=e505] [cursor=pointer]
+          - generic [ref=e506]: "CDP bridge error: CDP connect failed: browserType.connectOverCDP: connect ECONNREFUSED ::1:9222 Call log: \x1b[2m - <ws preparing> retrieving websocket url from http://localhost:9222\x1b[22m"
+        - generic [ref=e508]:
+          - generic [ref=e509]:
+            - generic [ref=e510]: scaffold
+            - generic [ref=e511]: 946_37 · 2d ago
+            - generic [ref=e512]: 0s
+          - generic [ref=e513]:
+            - generic [ref=e514]: completed
+            - button "Delete" [ref=e515] [cursor=pointer]
+        - generic [ref=e516]:
+          - generic [ref=e517]:
+            - generic [ref=e518]:
+              - generic [ref=e519]: workflow
+              - generic [ref=e520]: 6629_1 · 2d ago
+              - generic [ref=e521]: 0s
+            - generic [ref=e522]:
+              - generic [ref=e523]: failed
+              - button "Delete" [ref=e524] [cursor=pointer]
+          - generic [ref=e525]: narration.ts not found at /some/fake/path/scripts/narration.ts
+        - generic [ref=e527]:
+          - generic [ref=e528]:
+            - generic [ref=e529]: image-tts-render
+            - generic [ref=e530]: 631_38 · 2d ago
+            - generic [ref=e531]: 0s
+          - generic [ref=e532]:
+            - generic [ref=e533]: completed
+            - button "Delete" [ref=e534] [cursor=pointer]
+        - generic [ref=e535]:
+          - generic [ref=e536]:
+            - generic [ref=e537]:
+              - generic [ref=e538]: agent:pi-developer
+              - generic [ref=e539]: 925_39 · 2d ago
+              - generic [ref=e540]: 57m 9s
+            - generic [ref=e541]:
+              - generic [ref=e542]: failed
+              - button "Delete" [ref=e543] [cursor=pointer]
+          - generic [ref=e544]: Server restarted — workflow interrupted
+        - generic [ref=e545]:
+          - generic [ref=e546]:
+            - generic [ref=e547]:
+              - generic [ref=e548]: image-generate
+              - generic [ref=e549]: 233_40 · 2d ago
+              - generic [ref=e550]: 0s
+            - generic [ref=e551]:
+              - generic [ref=e552]: failed
+              - button "Delete" [ref=e553] [cursor=pointer]
+          - generic [ref=e554]: "CDP bridge error: CDP connect failed: browserType.connectOverCDP: connect ECONNREFUSED ::1:9222 Call log: \x1b[2m - <ws preparing> retrieving websocket url from http://localhost:9222\x1b[22m"
+        - generic [ref=e556]:
+          - generic [ref=e557]:
+            - generic [ref=e558]: scaffold
+            - generic [ref=e559]: 781_41 · 2d ago
+            - generic [ref=e560]: 0s
+          - generic [ref=e561]:
+            - generic [ref=e562]: completed
+            - button "Delete" [ref=e563] [cursor=pointer]
+        - generic [ref=e564]:
+          - generic [ref=e565]:
+            - generic [ref=e566]:
+              - generic [ref=e567]: workflow
+              - generic [ref=e568]: 2569_1 · 2d ago
+              - generic [ref=e569]: 0s
+            - generic [ref=e570]:
+              - generic [ref=e571]: failed
+              - button "Delete" [ref=e572] [cursor=pointer]
+          - generic [ref=e573]: narration.ts not found at /some/fake/path/scripts/narration.ts
+        - generic [ref=e575]:
+          - generic [ref=e576]:
+            - generic [ref=e577]: image-tts-render
+            - generic [ref=e578]: 572_42 · 2d ago
+            - generic [ref=e579]: 0s
+          - generic [ref=e580]:
+            - generic [ref=e581]: completed
+            - button "Delete" [ref=e582] [cursor=pointer]
+        - generic [ref=e583]:
+          - generic [ref=e584]:
+            - generic [ref=e585]:
+              - generic [ref=e586]: agent:pi-developer
+              - generic [ref=e587]: 861_43 · 2d ago
+              - generic [ref=e588]: 57m 3s
+            - generic [ref=e589]:
+              - generic [ref=e590]: failed
+              - button "Delete" [ref=e591] [cursor=pointer]
+          - generic [ref=e592]: Server restarted — workflow interrupted
+        - generic [ref=e593]:
+          - generic [ref=e594]:
+            - generic [ref=e595]:
+              - generic [ref=e596]: image-generate
+              - generic [ref=e597]: 171_44 · 2d ago
+              - generic [ref=e598]: 0s
+            - generic [ref=e599]:
+              - generic [ref=e600]: failed
+              - button "Delete" [ref=e601] [cursor=pointer]
+          - generic [ref=e602]: "CDP bridge error: CDP connect failed: browserType.connectOverCDP: connect ECONNREFUSED ::1:9222 Call log: \x1b[2m - <ws preparing> retrieving websocket url from http://localhost:9222\x1b[22m"
+        - generic [ref=e604]:
+          - generic [ref=e605]:
+            - generic [ref=e606]: scaffold
+            - generic [ref=e607]: 718_45 · 2d ago
+            - generic [ref=e608]: 0s
+          - generic [ref=e609]:
+            - generic [ref=e610]: completed
+            - button "Delete" [ref=e611] [cursor=pointer]
+        - generic [ref=e612]:
+          - generic [ref=e613]:
+            - generic [ref=e614]:
+              - generic [ref=e615]: workflow
+              - generic [ref=e616]: 9293_1 · 2d ago
+              - generic [ref=e617]: 0s
+            - generic [ref=e618]:
+              - generic [ref=e619]: failed
+              - button "Delete" [ref=e620] [cursor=pointer]
+          - generic [ref=e621]: narration.ts not found at /some/fake/path/scripts/narration.ts
+        - generic [ref=e623]:
+          - generic [ref=e624]:
+            - generic [ref=e625]: image-tts-render
+            - generic [ref=e626]: 296_46 · 2d ago
+            - generic [ref=e627]: 0s
+          - generic [ref=e628]:
+            - generic [ref=e629]: completed
+            - button "Delete" [ref=e630] [cursor=pointer]
+        - generic [ref=e631]:
+          - generic [ref=e632]:
+            - generic [ref=e633]:
+              - generic [ref=e634]: agent:pi-developer
+              - generic [ref=e635]: 584_47 · 2d ago
+              - generic [ref=e636]: 56m 56s
+            - generic [ref=e637]:
+              - generic [ref=e638]: failed
+              - button "Delete" [ref=e639] [cursor=pointer]
+          - generic [ref=e640]: Server restarted — workflow interrupted
+        - generic [ref=e641]:
+          - generic [ref=e642]:
+            - generic [ref=e643]:
+              - generic [ref=e644]: image-generate
+              - generic [ref=e645]: 893_48 · 2d ago
+              - generic [ref=e646]: 0s
+            - generic [ref=e647]:
+              - generic [ref=e648]: failed
+              - button "Delete" [ref=e649] [cursor=pointer]
+          - generic [ref=e650]: "CDP bridge error: CDP connect failed: browserType.connectOverCDP: connect ECONNREFUSED ::1:9222 Call log: \x1b[2m - <ws preparing> retrieving websocket url from http://localhost:9222\x1b[22m"
+        - generic [ref=e652]:
+          - generic [ref=e653]:
+            - generic [ref=e654]: scaffold
+            - generic [ref=e655]: 442_49 · 2d ago
+            - generic [ref=e656]: 0s
+          - generic [ref=e657]:
+            - generic [ref=e658]: completed
+            - button "Delete" [ref=e659] [cursor=pointer]
+        - generic [ref=e660]:
+          - generic [ref=e661]:
+            - generic [ref=e662]:
+              - generic [ref=e663]: workflow
+              - generic [ref=e664]: 4754_1 · 2d ago
+              - generic [ref=e665]: 0s
+            - generic [ref=e666]:
+              - generic [ref=e667]: failed
+              - button "Delete" [ref=e668] [cursor=pointer]
+          - generic [ref=e669]: narration.ts not found at /some/fake/path/scripts/narration.ts
+        - generic [ref=e671]:
+          - generic [ref=e672]:
+            - generic [ref=e673]: image-tts-render
+            - generic [ref=e674]: 757_50 · 2d ago
+            - generic [ref=e675]: 0s
+          - generic [ref=e676]:
+            - generic [ref=e677]: completed
+            - button "Delete" [ref=e678] [cursor=pointer]
+        - generic [ref=e679]:
+          - generic [ref=e680]:
+            - generic [ref=e681]:
+              - generic [ref=e682]: agent:pi-developer
+              - generic [ref=e683]: 083_51 · 2d ago
+              - generic [ref=e684]: 56m 21s
+            - generic [ref=e685]:
+              - generic [ref=e686]: failed
+              - button "Delete" [ref=e687] [cursor=pointer]
+          - generic [ref=e688]: Server restarted — workflow interrupted
+        - generic [ref=e689]:
+          - generic [ref=e690]:
+            - generic [ref=e691]:
+              - generic [ref=e692]: image-generate
+              - generic [ref=e693]: 385_52 · 2d ago
+              - generic [ref=e694]: 0s
+            - generic [ref=e695]:
+              - generic [ref=e696]: failed
+              - button "Delete" [ref=e697] [cursor=pointer]
+          - generic [ref=e698]: "CDP bridge error: CDP connect failed: browserType.connectOverCDP: connect ECONNREFUSED ::1:9222 Call log: \x1b[2m - <ws preparing> retrieving websocket url from http://localhost:9222\x1b[22m"
+        - generic [ref=e700]:
+          - generic [ref=e701]:
+            - generic [ref=e702]: scaffold
+            - generic [ref=e703]: 947_53 · 2d ago
+            - generic [ref=e704]: 0s
+          - generic [ref=e705]:
+            - generic [ref=e706]: completed
+            - button "Delete" [ref=e707] [cursor=pointer]
+        - generic [ref=e708]:
+          - generic [ref=e709]:
+            - generic [ref=e710]:
+              - generic [ref=e711]: workflow
+              - generic [ref=e712]: 2539_1 · 2d ago
+              - generic [ref=e713]: 0s
+            - generic [ref=e714]:
+              - generic [ref=e715]: failed
+              - button "Delete" [ref=e716] [cursor=pointer]
+          - generic [ref=e717]: narration.ts not found at /some/fake/path/scripts/narration.ts
+        - generic [ref=e719]:
+          - generic [ref=e720]:
+            - generic [ref=e721]: image-tts-render
+            - generic [ref=e722]: 542_54 · 2d ago
+            - generic [ref=e723]: 0s
+          - generic [ref=e724]:
+            - generic [ref=e725]: completed
+            - button "Delete" [ref=e726] [cursor=pointer]
+        - generic [ref=e727]:
+          - generic [ref=e728]:
+            - generic [ref=e729]:
+              - generic [ref=e730]: agent:pi-developer
+              - generic [ref=e731]: 832_55 · 2d ago
+              - generic [ref=e732]: 56m 13s
+            - generic [ref=e733]:
+              - generic [ref=e734]: failed
+              - button "Delete" [ref=e735] [cursor=pointer]
+          - generic [ref=e736]: Server restarted — workflow interrupted
+        - generic [ref=e737]:
+          - generic [ref=e738]:
+            - generic [ref=e739]:
+              - generic [ref=e740]: image-generate
+              - generic [ref=e741]: 131_56 · 2d ago
+              - generic [ref=e742]: 0s
+            - generic [ref=e743]:
+              - generic [ref=e744]: failed
+              - button "Delete" [ref=e745] [cursor=pointer]
+          - generic [ref=e746]: "CDP bridge error: CDP connect failed: browserType.connectOverCDP: connect ECONNREFUSED ::1:9222 Call log: \x1b[2m - <ws preparing> retrieving websocket url from http://localhost:9222\x1b[22m"
+        - generic [ref=e748]:
+          - generic [ref=e749]:
+            - generic [ref=e750]: scaffold
+            - generic [ref=e751]: 686_57 · 2d ago
+            - generic [ref=e752]: 0s
+          - generic [ref=e753]:
+            - generic [ref=e754]: completed
+            - button "Delete" [ref=e755] [cursor=pointer]
+        - generic [ref=e756]:
+          - generic [ref=e757]:
+            - generic [ref=e758]:
+              - generic [ref=e759]: workflow
+              - generic [ref=e760]: 1711_1 · 2d ago
+              - generic [ref=e761]: 0s
+            - generic [ref=e762]:
+              - generic [ref=e763]: failed
+              - button "Delete" [ref=e764] [cursor=pointer]
+          - generic [ref=e765]: narration.ts not found at /some/fake/path/scripts/narration.ts
+        - generic [ref=e767]:
+          - generic [ref=e768]:
+            - generic [ref=e769]: image-tts-render
+            - generic [ref=e770]: 714_58 · 2d ago
+            - generic [ref=e771]: 0s
+          - generic [ref=e772]:
+            - generic [ref=e773]: completed
+            - button "Delete" [ref=e774] [cursor=pointer]
+        - generic [ref=e775]:
+          - generic [ref=e776]:
+            - generic [ref=e777]:
+              - generic [ref=e778]: agent:pi-developer
+              - generic [ref=e779]: 001_59 · 2d ago
+              - generic [ref=e780]: 55m 44s
+            - generic [ref=e781]:
+              - generic [ref=e782]: failed
+              - button "Delete" [ref=e783] [cursor=pointer]
+          - generic [ref=e784]: Server restarted — workflow interrupted
+        - generic [ref=e785]:
+          - generic [ref=e786]:
+            - generic [ref=e787]:
+              - generic [ref=e788]: image-generate
+              - generic [ref=e789]: 301_60 · 2d ago
+              - generic [ref=e790]: 0s
+            - generic [ref=e791]:
+              - generic [ref=e792]: failed
+              - button "Delete" [ref=e793] [cursor=pointer]
+          - generic [ref=e794]: "CDP bridge error: CDP connect failed: browserType.connectOverCDP: connect ECONNREFUSED ::1:9222 Call log: \x1b[2m - <ws preparing> retrieving websocket url from http://localhost:9222\x1b[22m"
+        - generic [ref=e796]:
+          - generic [ref=e797]:
+            - generic [ref=e798]: scaffold
+            - generic [ref=e799]: 859_61 · 2d ago
+            - generic [ref=e800]: 0s
+          - generic [ref=e801]:
+            - generic [ref=e802]: completed
+            - button "Delete" [ref=e803] [cursor=pointer]
+        - generic [ref=e804]:
+          - generic [ref=e805]:
+            - generic [ref=e806]:
+              - generic [ref=e807]: workflow
+              - generic [ref=e808]: 7519_1 · 2d ago
+              - generic [ref=e809]: 0s
+            - generic [ref=e810]:
+              - generic [ref=e811]: failed
+              - button "Delete" [ref=e812] [cursor=pointer]
+          - generic [ref=e813]: narration.ts not found at /some/fake/path/scripts/narration.ts
+        - generic [ref=e815]:
+          - generic [ref=e816]:
+            - generic [ref=e817]: image-tts-render
+            - generic [ref=e818]: 522_62 · 2d ago
+            - generic [ref=e819]: 0s
+          - generic [ref=e820]:
+            - generic [ref=e821]: completed
+            - button "Delete" [ref=e822] [cursor=pointer]
+        - generic [ref=e823]:
+          - generic [ref=e824]:
+            - generic [ref=e825]:
+              - generic [ref=e826]: agent:pi-developer
+              - generic [ref=e827]: 870_63 · 2d ago
+              - generic [ref=e828]: 46m 58s
+            - generic [ref=e829]:
+              - generic [ref=e830]: failed
+              - button "Delete" [ref=e831] [cursor=pointer]
+          - generic [ref=e832]: Server restarted — workflow interrupted
+        - generic [ref=e833]:
+          - generic [ref=e834]:
+            - generic [ref=e835]:
+              - generic [ref=e836]: image-generate
+              - generic [ref=e837]: 179_64 · 2d ago
+              - generic [ref=e838]: 0s
+            - generic [ref=e839]:
+              - generic [ref=e840]: failed
+              - button "Delete" [ref=e841] [cursor=pointer]
+          - generic [ref=e842]: "CDP bridge error: CDP connect failed: browserType.connectOverCDP: connect ECONNREFUSED ::1:9222 Call log: \x1b[2m - <ws preparing> retrieving websocket url from http://localhost:9222\x1b[22m"
+        - generic [ref=e844]:
+          - generic [ref=e845]:
+            - generic [ref=e846]: scaffold
+            - generic [ref=e847]: 742_65 · 2d ago
+            - generic [ref=e848]: 0s
+          - generic [ref=e849]:
+            - generic [ref=e850]: completed
+            - button "Delete" [ref=e851] [cursor=pointer]
+        - generic [ref=e852]:
+          - generic [ref=e853]:
+            - generic [ref=e854]:
+              - generic [ref=e855]: workflow
+              - generic [ref=e856]: 3610_1 · 2d ago
+              - generic [ref=e857]: 0s
+            - generic [ref=e858]:
+              - generic [ref=e859]: failed
+              - button "Delete" [ref=e860] [cursor=pointer]
+          - generic [ref=e861]: narration.ts not found at /some/fake/path/scripts/narration.ts
+        - generic [ref=e863]:
+          - generic [ref=e864]:
+            - generic [ref=e865]: image-tts-render
+            - generic [ref=e866]: 613_66 · 2d ago
+            - generic [ref=e867]: 0s
+          - generic [ref=e868]:
+            - generic [ref=e869]: completed
+            - button "Delete" [ref=e870] [cursor=pointer]
+        - generic [ref=e871]:
+          - generic [ref=e872]:
+            - generic [ref=e873]:
+              - generic [ref=e874]: agent:pi-developer
+              - generic [ref=e875]: 955_67 · 2d ago
+              - generic [ref=e876]: 42m 32s
+            - generic [ref=e877]:
+              - generic [ref=e878]: failed
+              - button "Delete" [ref=e879] [cursor=pointer]
+          - generic [ref=e880]: Server restarted — workflow interrupted
+        - generic [ref=e881]:
+          - generic [ref=e882]:
+            - generic [ref=e883]:
+              - generic [ref=e884]: image-generate
+              - generic [ref=e885]: 258_68 · 2d ago
+              - generic [ref=e886]: 0s
+            - generic [ref=e887]:
+              - generic [ref=e888]: failed
+              - button "Delete" [ref=e889] [cursor=pointer]
+          - generic [ref=e890]: "CDP bridge error: CDP connect failed: browserType.connectOverCDP: connect ECONNREFUSED ::1:9222 Call log: \x1b[2m - <ws preparing> retrieving websocket url from http://localhost:9222\x1b[22m"
+        - generic [ref=e892]:
+          - generic [ref=e893]:
+            - generic [ref=e894]: scaffold
+            - generic [ref=e895]: 820_69 · 2d ago
+            - generic [ref=e896]: 0s
+          - generic [ref=e897]:
+            - generic [ref=e898]: completed
+            - button "Delete" [ref=e899] [cursor=pointer]
+        - generic [ref=e901]:
+          - generic [ref=e902]:
+            - generic [ref=e903]: batch-tts
+            - generic [ref=e904]: 868_70 · 2d ago
+            - generic [ref=e905]: 0s
+          - generic [ref=e906]:
+            - generic [ref=e907]: completed
+            - button "Delete" [ref=e908] [cursor=pointer]
+        - generic [ref=e910]:
+          - generic [ref=e911]:
+            - generic [ref=e912]: batch-render
+            - generic [ref=e913]: 869_71 · 2d ago
+            - generic [ref=e914]: 0s
+          - generic [ref=e915]:
+            - generic [ref=e916]: completed
+            - button "Delete" [ref=e917] [cursor=pointer]
+        - generic [ref=e919]:
+          - generic [ref=e920]:
+            - generic [ref=e921]: batch-tts
+            - generic [ref=e922]: 870_72 · 2d ago
+            - generic [ref=e923]: 0s
+          - generic [ref=e924]:
+            - generic [ref=e925]: completed
+            - button "Delete" [ref=e926] [cursor=pointer]
+        - generic [ref=e927]:
+          - generic [ref=e928]:
+            - generic [ref=e929]:
+              - generic [ref=e930]: workflow
+              - generic [ref=e931]: 8013_1 · 2d ago
+              - generic [ref=e932]: 0s
+            - generic [ref=e933]:
+              - generic [ref=e934]: failed
+              - button "Delete" [ref=e935] [cursor=pointer]
+          - generic [ref=e936]: narration.ts not found at /some/fake/path/scripts/narration.ts
+        - generic [ref=e938]:
+          - generic [ref=e939]:
+            - generic [ref=e940]: image-tts-render
+            - generic [ref=e941]: 016_73 · 2d ago
+            - generic [ref=e942]: 0s
+          - generic [ref=e943]:
+            - generic [ref=e944]: completed
+            - button "Delete" [ref=e945] [cursor=pointer]
+        - generic [ref=e946]:
+          - generic [ref=e947]:
+            - generic [ref=e948]:
+              - generic [ref=e949]: agent:pi-developer
+              - generic [ref=e950]: 361_74 · 2d ago
+              - generic [ref=e951]: 37m 38s
+            - generic [ref=e952]:
+              - generic [ref=e953]: failed
+              - button "Delete" [ref=e954] [cursor=pointer]
+          - generic [ref=e955]: Server restarted — workflow interrupted
+        - generic [ref=e956]:
+          - generic [ref=e957]:
+            - generic [ref=e958]:
+              - generic [ref=e959]: image-generate
+              - generic [ref=e960]: 663_75 · 2d ago
+              - generic [ref=e961]: 0s
+            - generic [ref=e962]:
+              - generic [ref=e963]: failed
+              - button "Delete" [ref=e964] [cursor=pointer]
+          - generic [ref=e965]: "CDP bridge error: CDP connect failed: browserType.connectOverCDP: connect ECONNREFUSED ::1:9222 Call log: \x1b[2m - <ws preparing> retrieving websocket url from http://localhost:9222\x1b[22m"
+        - generic [ref=e967]:
+          - generic [ref=e968]:
+            - generic [ref=e969]: scaffold
+            - generic [ref=e970]: 221_76 · 2d ago
+            - generic [ref=e971]: 0s
+          - generic [ref=e972]:
+            - generic [ref=e973]: completed
+            - button "Delete" [ref=e974] [cursor=pointer]
+        - generic [ref=e976]:
+          - generic [ref=e977]:
+            - generic [ref=e978]: batch-tts
+            - generic [ref=e979]: 270_77 · 2d ago
+            - generic [ref=e980]: 0s
+          - generic [ref=e981]:
+            - generic [ref=e982]: completed
+            - button "Delete" [ref=e983] [cursor=pointer]
+        - generic [ref=e985]:
+          - generic [ref=e986]:
+            - generic [ref=e987]: batch-render
+            - generic [ref=e988]: 272_78 · 2d ago
+            - generic [ref=e989]: 0s
+          - generic [ref=e990]:
+            - generic [ref=e991]: completed
+            - button "Delete" [ref=e992] [cursor=pointer]
+        - generic [ref=e994]:
+          - generic [ref=e995]:
+            - generic [ref=e996]: batch-tts
+            - generic [ref=e997]: 273_79 · 2d ago
+            - generic [ref=e998]: 0s
+          - generic [ref=e999]:
+            - generic [ref=e1000]: completed
+            - button "Delete" [ref=e1001] [cursor=pointer]
+        - generic [ref=e1002]:
+          - generic [ref=e1003]:
+            - generic [ref=e1004]:
+              - generic [ref=e1005]: workflow
+              - generic [ref=e1006]: 6059_1 · 2d ago
+              - generic [ref=e1007]: 0s
+            - generic [ref=e1008]:
+              - generic [ref=e1009]: failed
+              - button "Delete" [ref=e1010] [cursor=pointer]
+          - generic [ref=e1011]: narration.ts not found at /some/fake/path/scripts/narration.ts
+        - generic [ref=e1013]:
+          - generic [ref=e1014]:
+            - generic [ref=e1015]: image-tts-render
+            - generic [ref=e1016]: 062_80 · 2d ago
+            - generic [ref=e1017]: 0s
+          - generic [ref=e1018]:
+            - generic [ref=e1019]: completed
+            - button "Delete" [ref=e1020] [cursor=pointer]
+        - generic [ref=e1021]:
+          - generic [ref=e1022]:
+            - generic [ref=e1023]:
+              - generic [ref=e1024]: agent:pi-developer
+              - generic [ref=e1025]: 411_81 · 2d ago
+              - generic [ref=e1026]: 35m 20s
+            - generic [ref=e1027]:
+              - generic [ref=e1028]: failed
+              - button "Delete" [ref=e1029] [cursor=pointer]
+          - generic [ref=e1030]: Server restarted — workflow interrupted
+        - generic [ref=e1031]:
+          - generic [ref=e1032]:
+            - generic [ref=e1033]:
+              - generic [ref=e1034]: image-generate
+              - generic [ref=e1035]: 717_82 · 2d ago
+              - generic [ref=e1036]: 0s
+            - generic [ref=e1037]:
+              - generic [ref=e1038]: failed
+              - button "Delete" [ref=e1039] [cursor=pointer]
+          - generic [ref=e1040]: "CDP bridge error: CDP connect failed: browserType.connectOverCDP: connect ECONNREFUSED ::1:9222 Call log: \x1b[2m - <ws preparing> retrieving websocket url from http://localhost:9222\x1b[22m"
+        - generic [ref=e1042]:
+          - generic [ref=e1043]:
+            - generic [ref=e1044]: scaffold
+            - generic [ref=e1045]: 277_83 · 2d ago
+            - generic [ref=e1046]: 0s
+          - generic [ref=e1047]:
+            - generic [ref=e1048]: completed
+            - button "Delete" [ref=e1049] [cursor=pointer]
+        - generic [ref=e1051]:
+          - generic [ref=e1052]:
+            - generic [ref=e1053]: batch-tts
+            - generic [ref=e1054]: 327_84 · 2d ago
+            - generic [ref=e1055]: 0s
+          - generic [ref=e1056]:
+            - generic [ref=e1057]: completed
+            - button "Delete" [ref=e1058] [cursor=pointer]
+        - generic [ref=e1060]:
+          - generic [ref=e1061]:
+            - generic [ref=e1062]: batch-render
+            - generic [ref=e1063]: 328_85 · 2d ago
+            - generic [ref=e1064]: 0s
+          - generic [ref=e1065]:
+            - generic [ref=e1066]: completed
+            - button "Delete" [ref=e1067] [cursor=pointer]
+        - generic [ref=e1069]:
+          - generic [ref=e1070]:
+            - generic [ref=e1071]: batch-tts
+            - generic [ref=e1072]: 329_86 · 2d ago
+            - generic [ref=e1073]: 0s
+          - generic [ref=e1074]:
+            - generic [ref=e1075]: completed
+            - button "Delete" [ref=e1076] [cursor=pointer]
+        - generic [ref=e1077]:
+          - generic [ref=e1078]:
+            - generic [ref=e1079]:
+              - generic [ref=e1080]: workflow
+              - generic [ref=e1081]: 1050_1 · 2d ago
+              - generic [ref=e1082]: 0s
+            - generic [ref=e1083]:
+              - generic [ref=e1084]: failed
+              - button "Delete" [ref=e1085] [cursor=pointer]
+          - generic [ref=e1086]: narration.ts not found at /some/fake/path/scripts/narration.ts
+        - generic [ref=e1088]:
+          - generic [ref=e1089]:
+            - generic [ref=e1090]: image-tts-render
+            - generic [ref=e1091]: 053_87 · 2d ago
+            - generic [ref=e1092]: 0s
+          - generic [ref=e1093]:
+            - generic [ref=e1094]: completed
+            - button "Delete" [ref=e1095] [cursor=pointer]
+        - generic [ref=e1096]:
+          - generic [ref=e1097]:
+            - generic [ref=e1098]:
+              - generic [ref=e1099]: agent:pi-developer
+              - generic [ref=e1100]: 345_88 · 2d ago
+              - generic [ref=e1101]: 34m 25s
+            - generic [ref=e1102]:
+              - generic [ref=e1103]: failed
+              - button "Delete" [ref=e1104] [cursor=pointer]
+          - generic [ref=e1105]: Server restarted — workflow interrupted
+        - generic [ref=e1106]:
+          - generic [ref=e1107]:
+            - generic [ref=e1108]:
+              - generic [ref=e1109]: image-generate
+              - generic [ref=e1110]: 647_89 · 2d ago
+              - generic [ref=e1111]: 0s
+            - generic [ref=e1112]:
+              - generic [ref=e1113]: failed
+              - button "Delete" [ref=e1114] [cursor=pointer]
+          - generic [ref=e1115]: "CDP bridge error: CDP connect failed: browserType.connectOverCDP: connect ECONNREFUSED ::1:9222 Call log: \x1b[2m - <ws preparing> retrieving websocket url from http://localhost:9222\x1b[22m"
+        - generic [ref=e1117]:
+          - generic [ref=e1118]:
+            - generic [ref=e1119]: scaffold
+            - generic [ref=e1120]: 208_90 · 2d ago
+            - generic [ref=e1121]: 0s
+          - generic [ref=e1122]:
+            - generic [ref=e1123]: completed
+            - button "Delete" [ref=e1124] [cursor=pointer]
+        - generic [ref=e1126]:
+          - generic [ref=e1127]:
+            - generic [ref=e1128]: batch-tts
+            - generic [ref=e1129]: 260_91 · 2d ago
+            - generic [ref=e1130]: 0s
+          - generic [ref=e1131]:
+            - generic [ref=e1132]: completed
+            - button "Delete" [ref=e1133] [cursor=pointer]
+        - generic [ref=e1135]:
+          - generic [ref=e1136]:
+            - generic [ref=e1137]: batch-render
+            - generic [ref=e1138]: 261_92 · 2d ago
+            - generic [ref=e1139]: 0s
+          - generic [ref=e1140]:
+            - generic [ref=e1141]: completed
+            - button "Delete" [ref=e1142] [cursor=pointer]
+        - generic [ref=e1144]:
+          - generic [ref=e1145]:
+            - generic [ref=e1146]: batch-tts
+            - generic [ref=e1147]: 262_93 · 2d ago
+            - generic [ref=e1148]: 0s
+          - generic [ref=e1149]:
+            - generic [ref=e1150]: completed
+            - button "Delete" [ref=e1151] [cursor=pointer]
+        - generic [ref=e1152]:
+          - generic [ref=e1153]:
+            - generic [ref=e1154]:
+              - generic [ref=e1155]: workflow
+              - generic [ref=e1156]: 2319_1 · 2d ago
+              - generic [ref=e1157]: 0s
+            - generic [ref=e1158]:
+              - generic [ref=e1159]: failed
+              - button "Delete" [ref=e1160] [cursor=pointer]
+          - generic [ref=e1161]: narration.ts not found at /some/fake/path/scripts/narration.ts
+        - generic [ref=e1163]:
+          - generic [ref=e1164]:
+            - generic [ref=e1165]: image-tts-render
+            - generic [ref=e1166]: 322_94 · 2d ago
+            - generic [ref=e1167]: 0s
+          - generic [ref=e1168]:
+            - generic [ref=e1169]: completed
+            - button "Delete" [ref=e1170] [cursor=pointer]
+        - generic [ref=e1171]:
+          - generic [ref=e1172]:
+            - generic [ref=e1173]:
+              - generic [ref=e1174]: agent:pi-developer
+              - generic [ref=e1175]: 620_95 · 2d ago
+              - generic [ref=e1176]: 33m 13s
+            - generic [ref=e1177]:
+              - generic [ref=e1178]: failed
+              - button "Delete" [ref=e1179] [cursor=pointer]
+          - generic [ref=e1180]: Server restarted — workflow interrupted
+        - generic [ref=e1181]:
+          - generic [ref=e1182]:
+            - generic [ref=e1183]:
+              - generic [ref=e1184]: image-generate
+              - generic [ref=e1185]: 924_96 · 2d ago
+              - generic [ref=e1186]: 0s
+            - generic [ref=e1187]:
+              - generic [ref=e1188]: failed
+              - button "Delete" [ref=e1189] [cursor=pointer]
+          - generic [ref=e1190]: "CDP bridge error: CDP connect failed: browserType.connectOverCDP: connect ECONNREFUSED ::1:9222 Call log: \x1b[2m - <ws preparing> retrieving websocket url from http://localhost:9222\x1b[22m"
+        - generic [ref=e1192]:
+          - generic [ref=e1193]:
+            - generic [ref=e1194]: scaffold
+            - generic [ref=e1195]: 492_97 · 2d ago
+            - generic [ref=e1196]: 0s
+          - generic [ref=e1197]:
+            - generic [ref=e1198]: completed
+            - button "Delete" [ref=e1199] [cursor=pointer]
+        - generic [ref=e1201]:
+          - generic [ref=e1202]:
+            - generic [ref=e1203]: batch-tts
+            - generic [ref=e1204]: 539_98 · 2d ago
+            - generic [ref=e1205]: 0s
+          - generic [ref=e1206]:
+            - generic [ref=e1207]: completed
+            - button "Delete" [ref=e1208] [cursor=pointer]
+        - generic [ref=e1210]:
+          - generic [ref=e1211]:
+            - generic [ref=e1212]: batch-render
+            - generic [ref=e1213]: 540_99 · 2d ago
+            - generic [ref=e1214]: 0s
+          - generic [ref=e1215]:
+            - generic [ref=e1216]: completed
+            - button "Delete" [ref=e1217] [cursor=pointer]
+        - generic [ref=e1219]:
+          - generic [ref=e1220]:
+            - generic [ref=e1221]: batch-tts
+            - generic [ref=e1222]: 42_100 · 2d ago
+            - generic [ref=e1223]: 0s
+          - generic [ref=e1224]:
+            - generic [ref=e1225]: completed
+            - button "Delete" [ref=e1226] [cursor=pointer]
+        - generic [ref=e1227]:
+          - generic [ref=e1228]:
+            - generic [ref=e1229]:
+              - generic [ref=e1230]: workflow
+              - generic [ref=e1231]: 1442_1 · 2d ago
+              - generic [ref=e1232]: 0s
+            - generic [ref=e1233]:
+              - generic [ref=e1234]: failed
+              - button "Delete" [ref=e1235] [cursor=pointer]
+          - generic [ref=e1236]: narration.ts not found at /some/fake/path/scripts/narration.ts
+        - generic [ref=e1237]:
+          - generic [ref=e1238]:
+            - generic [ref=e1239]:
+              - generic [ref=e1240]: image-tts-render
+              - generic [ref=e1241]: 45_101 · 2d ago
+              - generic [ref=e1242]: 0s
+            - generic [ref=e1243]:
+              - generic [ref=e1244]: completed
+              - button "Delete" [ref=e1245] [cursor=pointer]
+          - button "▶ Show task tree (0/4 done)" [ref=e1247] [cursor=pointer]:
+            - generic [ref=e1248]: ▶
+            - text: Show task tree (0/4 done)
+        - generic [ref=e1249]:
+          - generic [ref=e1250]:
+            - generic [ref=e1251]:
+              - generic [ref=e1252]: agent:pi-developer
+              - generic [ref=e1253]: 35_102 · 2d ago
+              - generic [ref=e1254]: 32m 14s
+            - generic [ref=e1255]:
+              - generic [ref=e1256]: failed
+              - button "Delete" [ref=e1257] [cursor=pointer]
+          - generic [ref=e1258]: Server restarted — workflow interrupted
+        - generic [ref=e1259]:
+          - generic [ref=e1260]:
+            - generic [ref=e1261]:
+              - generic [ref=e1262]: image-generate
+              - generic [ref=e1263]: 47_103 · 2d ago
+              - generic [ref=e1264]: 0s
+            - generic [ref=e1265]:
+              - generic [ref=e1266]: failed
+              - button "Delete" [ref=e1267] [cursor=pointer]
+          - generic [ref=e1268]: "CDP bridge error: CDP connect failed: browserType.connectOverCDP: connect ECONNREFUSED ::1:9222 Call log: \x1b[2m - <ws preparing> retrieving websocket url from http://localhost:9222\x1b[22m"
+        - generic [ref=e1270]:
+          - generic [ref=e1271]:
+            - generic [ref=e1272]: scaffold
+            - generic [ref=e1273]: 10_104 · 2d ago
+            - generic [ref=e1274]: 0s
+          - generic [ref=e1275]:
+            - generic [ref=e1276]: completed
+            - button "Delete" [ref=e1277] [cursor=pointer]
+        - generic [ref=e1279]:
+          - generic [ref=e1280]:
+            - generic [ref=e1281]: batch-tts
+            - generic [ref=e1282]: 50_105 · 2d ago
+            - generic [ref=e1283]: 0s
+          - generic [ref=e1284]:
+            - generic [ref=e1285]: completed
+            - button "Delete" [ref=e1286] [cursor=pointer]
+        - generic [ref=e1288]:
+          - generic [ref=e1289]:
+            - generic [ref=e1290]: batch-render
+            - generic [ref=e1291]: 52_106 · 2d ago
+            - generic [ref=e1292]: 0s
+          - generic [ref=e1293]:
+            - generic [ref=e1294]: completed
+            - button "Delete" [ref=e1295] [cursor=pointer]
+        - generic [ref=e1297]:
+          - generic [ref=e1298]:
+            - generic [ref=e1299]: batch-tts
+            - generic [ref=e1300]: 53_107 · 2d ago
+            - generic [ref=e1301]: 0s
+          - generic [ref=e1302]:
+            - generic [ref=e1303]: completed
+            - button "Delete" [ref=e1304] [cursor=pointer]
+        - generic [ref=e1305]:
+          - generic [ref=e1306]:
+            - generic [ref=e1307]:
+              - generic [ref=e1308]: workflow
+              - generic [ref=e1309]: 2568_1 · 2d ago
+              - generic [ref=e1310]: 0s
+            - generic [ref=e1311]:
+              - generic [ref=e1312]: failed
+              - button "Delete" [ref=e1313] [cursor=pointer]
+          - generic [ref=e1314]: narration.ts not found at /some/fake/path/scripts/narration.ts
+        - generic [ref=e1315]:
+          - generic [ref=e1316]:
+            - generic [ref=e1317]:
+              - generic [ref=e1318]: image-tts-render
+              - generic [ref=e1319]: 72_108 · 2d ago
+              - generic [ref=e1320]: 0s
+            - generic [ref=e1321]:
+              - generic [ref=e1322]: completed
+              - button "Delete" [ref=e1323] [cursor=pointer]
+          - button "▶ Show task tree (0/4 done)" [ref=e1325] [cursor=pointer]:
+            - generic [ref=e1326]: ▶
+            - text: Show task tree (0/4 done)
+        - generic [ref=e1327]:
+          - generic [ref=e1328]:
+            - generic [ref=e1329]:
+              - generic [ref=e1330]: agent:pi-developer
+              - generic [ref=e1331]: 67_109 · 2d ago
+              - generic [ref=e1332]: 32m 3s
+            - generic [ref=e1333]:
+              - generic [ref=e1334]: failed
+              - button "Delete" [ref=e1335] [cursor=pointer]
+          - generic [ref=e1336]: Server restarted — workflow interrupted
+        - generic [ref=e1337]:
+          - generic [ref=e1338]:
+            - generic [ref=e1339]:
+              - generic [ref=e1340]: image-generate
+              - generic [ref=e1341]: 69_110 · 2d ago
+              - generic [ref=e1342]: 0s
+            - generic [ref=e1343]:
+              - generic [ref=e1344]: failed
+              - button "Delete" [ref=e1345] [cursor=pointer]
+          - generic [ref=e1346]: "CDP bridge error: CDP connect failed: browserType.connectOverCDP: connect ECONNREFUSED ::1:9222 Call log: \x1b[2m - <ws preparing> retrieving websocket url from http://localhost:9222\x1b[22m"
+        - generic [ref=e1348]:
+          - generic [ref=e1349]:
+            - generic [ref=e1350]: scaffold
+            - generic [ref=e1351]: 25_111 · 2d ago
+            - generic [ref=e1352]: 0s
+          - generic [ref=e1353]:
+            - generic [ref=e1354]: completed
+            - button "Delete" [ref=e1355] [cursor=pointer]
+        - generic [ref=e1357]:
+          - generic [ref=e1358]:
+            - generic [ref=e1359]: batch-tts
+            - generic [ref=e1360]: 71_112 · 2d ago
+            - generic [ref=e1361]: 0s
+          - generic [ref=e1362]:
+            - generic [ref=e1363]: completed
+            - button "Delete" [ref=e1364] [cursor=pointer]
+        - generic [ref=e1366]:
+          - generic [ref=e1367]:
+            - generic [ref=e1368]: batch-render
+            - generic [ref=e1369]: 72_113 · 2d ago
+            - generic [ref=e1370]: 0s
+          - generic [ref=e1371]:
+            - generic [ref=e1372]: completed
+            - button "Delete" [ref=e1373] [cursor=pointer]
+        - generic [ref=e1375]:
+          - generic [ref=e1376]:
+            - generic [ref=e1377]: batch-tts
+            - generic [ref=e1378]: 74_114 · 2d ago
+            - generic [ref=e1379]: 0s
+          - generic [ref=e1380]:
+            - generic [ref=e1381]: completed
+            - button "Delete" [ref=e1382] [cursor=pointer]
+        - generic [ref=e1383]:
+          - generic [ref=e1384]:
+            - generic [ref=e1385]:
+              - generic [ref=e1386]: workflow
+              - generic [ref=e1387]: 3579_1 · 2d ago
+              - generic [ref=e1388]: 0s
+            - generic [ref=e1389]:
+              - generic [ref=e1390]: failed
+              - button "Delete" [ref=e1391] [cursor=pointer]
+          - generic [ref=e1392]: narration.ts not found at /some/fake/path/scripts/narration.ts
+        - generic [ref=e1393]:
+          - generic [ref=e1394]:
+            - generic [ref=e1395]:
+              - generic [ref=e1396]: image-tts-render
+              - generic [ref=e1397]: 83_115 · 2d ago
+              - generic [ref=e1398]: 0s
+            - generic [ref=e1399]:
+              - generic [ref=e1400]: completed
+              - button "Delete" [ref=e1401] [cursor=pointer]
+          - button "▶ Show task tree (0/4 done)" [ref=e1403] [cursor=pointer]:
+            - generic [ref=e1404]: ▶
+            - text: Show task tree (0/4 done)
+        - generic [ref=e1405]:
+          - generic [ref=e1406]:
+            - generic [ref=e1407]:
+              - generic [ref=e1408]: agent:pi-developer
+              - generic [ref=e1409]: 69_116 · 2d ago
+              - generic [ref=e1410]: 21m 2s
+            - generic [ref=e1411]:
+              - generic [ref=e1412]: failed
+              - button "Delete" [ref=e1413] [cursor=pointer]
+          - generic [ref=e1414]: Server restarted — workflow interrupted
+        - generic [ref=e1415]:
+          - generic [ref=e1416]:
+            - generic [ref=e1417]:
+              - generic [ref=e1418]: image-generate
+              - generic [ref=e1419]: 92_117 · 2d ago
+              - generic [ref=e1420]: 0s
+            - generic [ref=e1421]:
+              - generic [ref=e1422]: failed
+              - button "Delete" [ref=e1423] [cursor=pointer]
+          - generic [ref=e1424]: "CDP bridge error: CDP connect failed: browserType.connectOverCDP: connect ECONNREFUSED ::1:9222 Call log: \x1b[2m - <ws preparing> retrieving websocket url from http://localhost:9222\x1b[22m"
+        - generic [ref=e1426]:
+          - generic [ref=e1427]:
+            - generic [ref=e1428]: scaffold
+            - generic [ref=e1429]: 59_118 · 2d ago
+            - generic [ref=e1430]: 0s
+          - generic [ref=e1431]:
+            - generic [ref=e1432]: completed
+            - button "Delete" [ref=e1433] [cursor=pointer]
+        - generic [ref=e1435]:
+          - generic [ref=e1436]:
+            - generic [ref=e1437]: batch-tts
+            - generic [ref=e1438]: 95_119 · 2d ago
+            - generic [ref=e1439]: 0s
+          - generic [ref=e1440]:
+            - generic [ref=e1441]: completed
+            - button "Delete" [ref=e1442] [cursor=pointer]
+        - generic [ref=e1444]:
+          - generic [ref=e1445]:
+            - generic [ref=e1446]: batch-render
+            - generic [ref=e1447]: 96_120 · 2d ago
+            - generic [ref=e1448]: 0s
+          - generic [ref=e1449]:
+            - generic [ref=e1450]: completed
+            - button "Delete" [ref=e1451] [cursor=pointer]
+        - generic [ref=e1453]:
+          - generic [ref=e1454]:
+            - generic [ref=e1455]: batch-tts
+            - generic [ref=e1456]: 98_121 · 2d ago
+            - generic [ref=e1457]: 0s
+          - generic [ref=e1458]:
+            - generic [ref=e1459]: completed
+            - button "Delete" [ref=e1460] [cursor=pointer]
+        - generic [ref=e1461]:
+          - generic [ref=e1462]:
+            - generic [ref=e1463]:
+              - generic [ref=e1464]: workflow
+              - generic [ref=e1465]: 3667_1 · 2d ago
+              - generic [ref=e1466]: 0s
+            - generic [ref=e1467]:
+              - generic [ref=e1468]: failed
+              - button "Delete" [ref=e1469] [cursor=pointer]
+          - generic [ref=e1470]: narration.ts not found at /some/fake/path/scripts/narration.ts
+        - generic [ref=e1471]:
+          - generic [ref=e1472]:
+            - generic [ref=e1473]:
+              - generic [ref=e1474]: image-tts-render
+              - generic [ref=e1475]: 71_122 · 2d ago
+              - generic [ref=e1476]: 0s
+            - generic [ref=e1477]:
+              - generic [ref=e1478]: completed
+              - button "Delete" [ref=e1479] [cursor=pointer]
+          - button "▶ Show task tree (0/4 done)" [ref=e1481] [cursor=pointer]:
+            - generic [ref=e1482]: ▶
+            - text: Show task tree (0/4 done)
+        - generic [ref=e1483]:
+          - generic [ref=e1484]:
+            - generic [ref=e1485]:
+              - generic [ref=e1486]: agent:pi-developer
+              - generic [ref=e1487]: 16_123 · 2d ago
+              - generic [ref=e1488]: 19m 2s
+            - generic [ref=e1489]:
+              - generic [ref=e1490]: failed
+              - button "Delete" [ref=e1491] [cursor=pointer]
+          - generic [ref=e1492]: Server restarted — workflow interrupted
+        - generic [ref=e1493]:
+          - generic [ref=e1494]:
+            - generic [ref=e1495]:
+              - generic [ref=e1496]: image-generate
+              - generic [ref=e1497]: 25_124 · 2d ago
+              - generic [ref=e1498]: 0s
+            - generic [ref=e1499]:
+              - generic [ref=e1500]: failed
+              - button "Delete" [ref=e1501] [cursor=pointer]
+          - generic [ref=e1502]: "CDP bridge error: CDP connect failed: browserType.connectOverCDP: connect ECONNREFUSED ::1:9222 Call log: \x1b[2m - <ws preparing> retrieving websocket url from http://localhost:9222\x1b[22m"
+        - generic [ref=e1504]:
+          - generic [ref=e1505]:
+            - generic [ref=e1506]: scaffold
+            - generic [ref=e1507]: 78_125 · 2d ago
+            - generic [ref=e1508]: 0s
+          - generic [ref=e1509]:
+            - generic [ref=e1510]: completed
+            - button "Delete" [ref=e1511] [cursor=pointer]
+        - generic [ref=e1513]:
+          - generic [ref=e1514]:
+            - generic [ref=e1515]: batch-tts
+            - generic [ref=e1516]: 19_126 · 2d ago
+            - generic [ref=e1517]: 0s
+          - generic [ref=e1518]:
+            - generic [ref=e1519]: completed
+            - button "Delete" [ref=e1520] [cursor=pointer]
+        - generic [ref=e1522]:
+          - generic [ref=e1523]:
+            - generic [ref=e1524]: batch-render
+            - generic [ref=e1525]: 20_127 · 2d ago
+            - generic [ref=e1526]: 0s
+          - generic [ref=e1527]:
+            - generic [ref=e1528]: completed
+            - button "Delete" [ref=e1529] [cursor=pointer]
+        - generic [ref=e1531]:
+          - generic [ref=e1532]:
+            - generic [ref=e1533]: batch-tts
+            - generic [ref=e1534]: 22_128 · 2d ago
+            - generic [ref=e1535]: 0s
+          - generic [ref=e1536]:
+            - generic [ref=e1537]: completed
+            - button "Delete" [ref=e1538] [cursor=pointer]
+        - generic [ref=e1539]:
+          - generic [ref=e1540]:
+            - generic [ref=e1541]:
+              - generic [ref=e1542]: workflow
+              - generic [ref=e1543]: 0536_1 · 2d ago
+              - generic [ref=e1544]: 0s
+            - generic [ref=e1545]:
+              - generic [ref=e1546]: failed
+              - button "Delete" [ref=e1547] [cursor=pointer]
+          - generic [ref=e1548]: narration.ts not found at /some/fake/path/scripts/narration.ts
+        - generic [ref=e1549]:
+          - generic [ref=e1550]:
+            - generic [ref=e1551]:
+              - generic [ref=e1552]: image-tts-render
+              - generic [ref=e1553]: 39_129 · 2d ago
+              - generic [ref=e1554]: 0s
+            - generic [ref=e1555]:
+              - generic [ref=e1556]: completed
+              - button "Delete" [ref=e1557] [cursor=pointer]
+          - button "▶ Show task tree (0/4 done)" [ref=e1559] [cursor=pointer]:
+            - generic [ref=e1560]: ▶
+            - text: Show task tree (0/4 done)
+        - generic [ref=e1561]:
+          - generic [ref=e1562]:
+            - generic [ref=e1563]:
+              - generic [ref=e1564]: agent:pi-developer
+              - generic [ref=e1565]: 32_130 · 2d ago
+              - generic [ref=e1566]: 16m 35s
+            - generic [ref=e1567]:
+              - generic [ref=e1568]: failed
+              - button "Delete" [ref=e1569] [cursor=pointer]
+          - generic [ref=e1570]: Server restarted — workflow interrupted
+        - generic [ref=e1571]:
+          - generic [ref=e1572]:
+            - generic [ref=e1573]:
+              - generic [ref=e1574]: image-generate
+              - generic [ref=e1575]: 32_131 · 2d ago
+              - generic [ref=e1576]: 0s
+            - generic [ref=e1577]:
+              - generic [ref=e1578]: failed
+              - button "Delete" [ref=e1579] [cursor=pointer]
+          - generic [ref=e1580]: "CDP bridge error: CDP connect failed: browserType.connectOverCDP: connect ECONNREFUSED ::1:9222 Call log: \x1b[2m - <ws preparing> retrieving websocket url from http://localhost:9222\x1b[22m"
+        - generic [ref=e1582]:
+          - generic [ref=e1583]:
+            - generic [ref=e1584]: scaffold
+            - generic [ref=e1585]: 95_132 · 2d ago
+            - generic [ref=e1586]: 0s
+          - generic [ref=e1587]:
+            - generic [ref=e1588]: completed
+            - button "Delete" [ref=e1589] [cursor=pointer]
+        - generic [ref=e1591]:
+          - generic [ref=e1592]:
+            - generic [ref=e1593]: batch-tts
+            - generic [ref=e1594]: 34_133 · 2d ago
+            - generic [ref=e1595]: 0s
+          - generic [ref=e1596]:
+            - generic [ref=e1597]: completed
+            - button "Delete" [ref=e1598] [cursor=pointer]
+        - generic [ref=e1600]:
+          - generic [ref=e1601]:
+            - generic [ref=e1602]: batch-render
+            - generic [ref=e1603]: 36_134 · 2d ago
+            - generic [ref=e1604]: 0s
+          - generic [ref=e1605]:
+            - generic [ref=e1606]: completed
+            - button "Delete" [ref=e1607] [cursor=pointer]
+        - generic [ref=e1609]:
+          - generic [ref=e1610]:
+            - generic [ref=e1611]: batch-tts
+            - generic [ref=e1612]: 38_135 · 2d ago
+            - generic [ref=e1613]: 0s
+          - generic [ref=e1614]:
+            - generic [ref=e1615]: completed
+            - button "Delete" [ref=e1616] [cursor=pointer]
+        - generic [ref=e1617]:
+          - generic [ref=e1618]:
+            - generic [ref=e1619]:
+              - generic [ref=e1620]: workflow
+              - generic [ref=e1621]: 0315_1 · 2d ago
+              - generic [ref=e1622]: 0s
+            - generic [ref=e1623]:
+              - generic [ref=e1624]: failed
+              - button "Delete" [ref=e1625] [cursor=pointer]
+          - generic [ref=e1626]: narration.ts not found at /some/fake/path/scripts/narration.ts
+        - generic [ref=e1627]:
+          - generic [ref=e1628]:
+            - generic [ref=e1629]:
+              - generic [ref=e1630]: image-tts-render
+              - generic [ref=e1631]: 18_136 · 2d ago
+              - generic [ref=e1632]: 0s
+            - generic [ref=e1633]:
+              - generic [ref=e1634]: completed
+              - button "Delete" [ref=e1635] [cursor=pointer]
+          - button "▶ Show task tree (0/4 done)" [ref=e1637] [cursor=pointer]:
+            - generic [ref=e1638]: ▶
+            - text: Show task tree (0/4 done)
+        - generic [ref=e1639]:
+          - generic [ref=e1640]:
+            - generic [ref=e1641]:
+              - generic [ref=e1642]: agent:pi-developer
+              - generic [ref=e1643]: 68_137 · 2d ago
+              - generic [ref=e1644]: 14m 5s
+            - generic [ref=e1645]:
+              - generic [ref=e1646]: failed
+              - button "Delete" [ref=e1647] [cursor=pointer]
+          - generic [ref=e1648]: Server restarted — workflow interrupted
+        - generic [ref=e1649]:
+          - generic [ref=e1650]:
+            - generic [ref=e1651]:
+              - generic [ref=e1652]: image-generate
+              - generic [ref=e1653]: 69_138 · 2d ago
+              - generic [ref=e1654]: 0s
+            - generic [ref=e1655]:
+              - generic [ref=e1656]: failed
+              - button "Delete" [ref=e1657] [cursor=pointer]
+          - generic [ref=e1658]: "CDP bridge error: CDP connect failed: browserType.connectOverCDP: connect ECONNREFUSED ::1:9222 Call log: \x1b[2m - <ws preparing> retrieving websocket url from http://localhost:9222\x1b[22m"
+        - generic [ref=e1660]:
+          - generic [ref=e1661]:
+            - generic [ref=e1662]: scaffold
+            - generic [ref=e1663]: 32_139 · 2d ago
+            - generic [ref=e1664]: 0s
+          - generic [ref=e1665]:
+            - generic [ref=e1666]: completed
+            - button "Delete" [ref=e1667] [cursor=pointer]
+        - generic [ref=e1669]:
+          - generic [ref=e1670]:
+            - generic [ref=e1671]: batch-tts
+            - generic [ref=e1672]: 74_140 · 2d ago
+            - generic [ref=e1673]: 0s
+          - generic [ref=e1674]:
+            - generic [ref=e1675]: completed
+            - button "Delete" [ref=e1676] [cursor=pointer]
+        - generic [ref=e1678]:
+          - generic [ref=e1679]:
+            - generic [ref=e1680]: batch-render
+            - generic [ref=e1681]: 76_141 · 2d ago
+            - generic [ref=e1682]: 0s
+          - generic [ref=e1683]:
+            - generic [ref=e1684]: completed
+            - button "Delete" [ref=e1685] [cursor=pointer]
+        - generic [ref=e1687]:
+          - generic [ref=e1688]:
+            - generic [ref=e1689]: batch-tts
+            - generic [ref=e1690]: 78_142 · 2d ago
+            - generic [ref=e1691]: 0s
+          - generic [ref=e1692]:
+            - generic [ref=e1693]: completed
+            - button "Delete" [ref=e1694] [cursor=pointer]
+        - generic [ref=e1695]:
+          - generic [ref=e1696]:
+            - generic [ref=e1697]:
+              - generic [ref=e1698]: workflow
+              - generic [ref=e1699]: 8668_1 · 2d ago
+              - generic [ref=e1700]: 0s
+            - generic [ref=e1701]:
+              - generic [ref=e1702]: failed
+              - button "Delete" [ref=e1703] [cursor=pointer]
+          - generic [ref=e1704]: narration.ts not found at /some/fake/path/scripts/narration.ts
+        - generic [ref=e1705]:
+          - generic [ref=e1706]:
+            - generic [ref=e1707]:
+              - generic [ref=e1708]: image-tts-render
+              - generic [ref=e1709]: 72_143 · 2d ago
+              - generic [ref=e1710]: 0s
+            - generic [ref=e1711]:
+              - generic [ref=e1712]: completed
+              - button "Delete" [ref=e1713] [cursor=pointer]
+          - button "▶ Show task tree (0/4 done)" [ref=e1715] [cursor=pointer]:
+            - generic [ref=e1716]: ▶
+            - text: Show task tree (0/4 done)
+        - generic [ref=e1717]:
+          - generic [ref=e1718]:
+            - generic [ref=e1719]:
+              - generic [ref=e1720]: agent:pi-developer
+              - generic [ref=e1721]: 39_144 · 2d ago
+              - generic [ref=e1722]: 9m 27s
+            - generic [ref=e1723]:
+              - generic [ref=e1724]: failed
+              - button "Delete" [ref=e1725] [cursor=pointer]
+          - generic [ref=e1726]: Server restarted — workflow interrupted
+        - generic [ref=e1727]:
+          - generic [ref=e1728]:
+            - generic [ref=e1729]:
+              - generic [ref=e1730]: image-generate
+              - generic [ref=e1731]: 47_145 · 2d ago
+              - generic [ref=e1732]: 0s
+            - generic [ref=e1733]:
+              - generic [ref=e1734]: failed
+              - button "Delete" [ref=e1735] [cursor=pointer]
+          - generic [ref=e1736]: "CDP bridge error: CDP connect failed: browserType.connectOverCDP: connect ECONNREFUSED ::1:9222 Call log: \x1b[2m - <ws preparing> retrieving websocket url from http://localhost:9222\x1b[22m"
+        - generic [ref=e1738]:
+          - generic [ref=e1739]:
+            - generic [ref=e1740]: scaffold
+            - generic [ref=e1741]: 36_146 · 2d ago
+            - generic [ref=e1742]: 0s
+          - generic [ref=e1743]:
+            - generic [ref=e1744]: completed
+            - button "Delete" [ref=e1745] [cursor=pointer]
+        - generic [ref=e1747]:
+          - generic [ref=e1748]:
+            - generic [ref=e1749]: batch-tts
+            - generic [ref=e1750]: 75_147 · 2d ago
+            - generic [ref=e1751]: 0s
+          - generic [ref=e1752]:
+            - generic [ref=e1753]: completed
+            - button "Delete" [ref=e1754] [cursor=pointer]
+        - generic [ref=e1756]:
+          - generic [ref=e1757]:
+            - generic [ref=e1758]: batch-render
+            - generic [ref=e1759]: 78_148 · 2d ago
+            - generic [ref=e1760]: 0s
+          - generic [ref=e1761]:
+            - generic [ref=e1762]: completed
+            - button "Delete" [ref=e1763] [cursor=pointer]
+        - generic [ref=e1765]:
+          - generic [ref=e1766]:
+            - generic [ref=e1767]: batch-tts
+            - generic [ref=e1768]: 79_149 · 2d ago
+            - generic [ref=e1769]: 0s
+          - generic [ref=e1770]:
+            - generic [ref=e1771]: completed
+            - button "Delete" [ref=e1772] [cursor=pointer]
+        - generic [ref=e1773]:
+          - generic [ref=e1774]:
+            - generic [ref=e1775]:
+              - generic [ref=e1776]: workflow
+              - generic [ref=e1777]: 5557_1 · 2d ago
+              - generic [ref=e1778]: 0s
+            - generic [ref=e1779]:
+              - generic [ref=e1780]: failed
+              - button "Delete" [ref=e1781] [cursor=pointer]
+          - generic [ref=e1782]: narration.ts not found at /some/fake/path/scripts/narration.ts
+        - generic [ref=e1783]:
+          - generic [ref=e1784]:
+            - generic [ref=e1785]:
+              - generic [ref=e1786]: image-tts-render
+              - generic [ref=e1787]: 60_150 · 2d ago
+              - generic [ref=e1788]: 0s
+            - generic [ref=e1789]:
+              - generic [ref=e1790]: completed
+              - button "Delete" [ref=e1791] [cursor=pointer]
+          - button "▶ Show task tree (0/4 done)" [ref=e1793] [cursor=pointer]:
+            - generic [ref=e1794]: ▶
+            - text: Show task tree (0/4 done)
+        - generic [ref=e1795]:
+          - generic [ref=e1796]:
+            - generic [ref=e1797]:
+              - generic [ref=e1798]: agent:pi-developer
+              - generic [ref=e1799]: 55_151 · 2d ago
+              - generic [ref=e1800]: 9m 20s
+            - generic [ref=e1801]:
+              - generic [ref=e1802]: failed
+              - button "Delete" [ref=e1803] [cursor=pointer]
+          - generic [ref=e1804]: Server restarted — workflow interrupted
+        - generic [ref=e1805]:
+          - generic [ref=e1806]:
+            - generic [ref=e1807]:
+              - generic [ref=e1808]: image-generate
+              - generic [ref=e1809]: 53_152 · 2d ago
+              - generic [ref=e1810]: 0s
+            - generic [ref=e1811]:
+              - generic [ref=e1812]: failed
+              - button "Delete" [ref=e1813] [cursor=pointer]
+          - generic [ref=e1814]: "CDP bridge error: CDP connect failed: browserType.connectOverCDP: connect ECONNREFUSED ::1:9222 Call log: \x1b[2m - <ws preparing> retrieving websocket url from http://localhost:9222\x1b[22m"
+        - generic [ref=e1816]:
+          - generic [ref=e1817]:
+            - generic [ref=e1818]: scaffold
+            - generic [ref=e1819]: 39_153 · 2d ago
+            - generic [ref=e1820]: 0s
+          - generic [ref=e1821]:
+            - generic [ref=e1822]: completed
+            - button "Delete" [ref=e1823] [cursor=pointer]
+        - generic [ref=e1825]:
+          - generic [ref=e1826]:
+            - generic [ref=e1827]: batch-tts
+            - generic [ref=e1828]: 71_154 · 2d ago
+            - generic [ref=e1829]: 0s
+          - generic [ref=e1830]:
+            - generic [ref=e1831]: completed
+            - button "Delete" [ref=e1832] [cursor=pointer]
+        - generic [ref=e1834]:
+          - generic [ref=e1835]:
+            - generic [ref=e1836]: batch-render
+            - generic [ref=e1837]: 73_155 · 2d ago
+            - generic [ref=e1838]: 0s
+          - generic [ref=e1839]:
+            - generic [ref=e1840]: completed
+            - button "Delete" [ref=e1841] [cursor=pointer]
+        - generic [ref=e1843]:
+          - generic [ref=e1844]:
+            - generic [ref=e1845]: batch-tts
+            - generic [ref=e1846]: 75_156 · 2d ago
+            - generic [ref=e1847]: 0s
+          - generic [ref=e1848]:
+            - generic [ref=e1849]: completed
+            - button "Delete" [ref=e1850] [cursor=pointer]
+        - generic [ref=e1851]:
+          - generic [ref=e1852]:
+            - generic [ref=e1853]:
+              - generic [ref=e1854]: workflow
+              - generic [ref=e1855]: 6488_1 · 2d ago
+              - generic [ref=e1856]: 0s
+            - generic [ref=e1857]:
+              - generic [ref=e1858]: failed
+              - button "Delete" [ref=e1859] [cursor=pointer]
+          - generic [ref=e1860]: narration.ts not found at /some/fake/path/scripts/narration.ts
+        - generic [ref=e1861]:
+          - generic [ref=e1862]:
+            - generic [ref=e1863]:
+              - generic [ref=e1864]: image-tts-render
+              - generic [ref=e1865]: 92_157 · 2d ago
+              - generic [ref=e1866]: 0s
+            - generic [ref=e1867]:
+              - generic [ref=e1868]: completed
+              - button "Delete" [ref=e1869] [cursor=pointer]
+          - button "▶ Show task tree (0/4 done)" [ref=e1871] [cursor=pointer]:
+            - generic [ref=e1872]: ▶
+            - text: Show task tree (0/4 done)
+        - generic [ref=e1873]:
+          - generic [ref=e1874]:
+            - generic [ref=e1875]:
+              - generic [ref=e1876]: agent:pi-developer
+              - generic [ref=e1877]: 40_158 · 2d ago
+              - generic [ref=e1878]: 7m 39s
+            - generic [ref=e1879]:
+              - generic [ref=e1880]: failed
+              - button "Delete" [ref=e1881] [cursor=pointer]
+          - generic [ref=e1882]: Server restarted — workflow interrupted
+        - generic [ref=e1883]:
+          - generic [ref=e1884]:
+            - generic [ref=e1885]:
+              - generic [ref=e1886]: image-generate
+              - generic [ref=e1887]: 41_159 · 2d ago
+              - generic [ref=e1888]: 0s
+            - generic [ref=e1889]:
+              - generic [ref=e1890]: failed
+              - button "Delete" [ref=e1891] [cursor=pointer]
+          - generic [ref=e1892]: "CDP bridge error: CDP connect failed: browserType.connectOverCDP: connect ECONNREFUSED ::1:9222 Call log: \x1b[2m - <ws preparing> retrieving websocket url from http://localhost:9222\x1b[22m"
+        - generic [ref=e1894]:
+          - generic [ref=e1895]:
+            - generic [ref=e1896]: scaffold
+            - generic [ref=e1897]: 04_160 · 2d ago
+            - generic [ref=e1898]: 0s
+          - generic [ref=e1899]:
+            - generic [ref=e1900]: completed
+            - button "Delete" [ref=e1901] [cursor=pointer]
+        - generic [ref=e1903]:
+          - generic [ref=e1904]:
+            - generic [ref=e1905]: batch-tts
+            - generic [ref=e1906]: 42_161 · 2d ago
+            - generic [ref=e1907]: 0s
+          - generic [ref=e1908]:
+            - generic [ref=e1909]: completed
+            - button "Delete" [ref=e1910] [cursor=pointer]
+        - generic [ref=e1912]:
+          - generic [ref=e1913]:
+            - generic [ref=e1914]: batch-render
+            - generic [ref=e1915]: 44_162 · 2d ago
+            - generic [ref=e1916]: 0s
+          - generic [ref=e1917]:
+            - generic [ref=e1918]: completed
+            - button "Delete" [ref=e1919] [cursor=pointer]
+        - generic [ref=e1921]:
+          - generic [ref=e1922]:
+            - generic [ref=e1923]: batch-tts
+            - generic [ref=e1924]: 46_163 · 2d ago
+            - generic [ref=e1925]: 0s
+          - generic [ref=e1926]:
+            - generic [ref=e1927]: completed
+            - button "Delete" [ref=e1928] [cursor=pointer]
+        - generic [ref=e1930]:
+          - generic [ref=e1931]:
+            - generic [ref=e1932]: demo
+            - generic [ref=e1933]: 51_164 · 23h ago
+            - generic [ref=e1934]: 2s
+          - generic [ref=e1935]:
+            - generic [ref=e1936]: completed
+            - button "Delete" [ref=e1937] [cursor=pointer]
+        - generic [ref=e1939]:
+          - generic [ref=e1940]:
+            - generic [ref=e1941]: agent:studio-advisor
+            - generic [ref=e1942]: 60_165 · 1h ago
+            - generic [ref=e1943]: 51s
+          - generic [ref=e1944]:
+            - generic [ref=e1945]: completed
+            - button "Delete" [ref=e1946] [cursor=pointer]
+        - generic [ref=e1948]:
+          - generic [ref=e1949]:
+            - generic [ref=e1950]: agent:sg-quality-gate
+            - generic [ref=e1951]: 71_166 · 1h ago
+            - generic [ref=e1952]: 2m 10s
+          - generic [ref=e1953]:
+            - generic [ref=e1954]: completed
+            - button "Delete" [ref=e1955] [cursor=pointer]
+        - generic [ref=e1957]:
+          - generic [ref=e1958]:
+            - generic [ref=e1959]: agent:studio-advisor
+            - generic [ref=e1960]: 04_167 · 1h ago
+            - generic [ref=e1961]: 1m 10s
+          - generic [ref=e1962]:
+            - generic [ref=e1963]: completed
+            - button "Delete" [ref=e1964] [cursor=pointer]
+        - generic [ref=e1966]:
+          - generic [ref=e1967]:
+            - generic [ref=e1968]: agent:studio-advisor
+            - generic [ref=e1969]: 24_168 · 1h ago
+            - generic [ref=e1970]: 2m 47s
+          - generic [ref=e1971]:
+            - generic [ref=e1972]: completed
+            - button "Delete" [ref=e1973] [cursor=pointer]
+        - generic [ref=e1975]:
+          - generic [ref=e1976]:
+            - generic [ref=e1977]: agent:studio-advisor
+            - generic [ref=e1978]: 24_169 · 1h ago
+            - generic [ref=e1979]: 1m 1s
+          - generic [ref=e1980]:
+            - generic [ref=e1981]: completed
+            - button "Delete" [ref=e1982] [cursor=pointer]
+        - generic [ref=e1983]:
+          - generic [ref=e1984]:
+            - generic [ref=e1985]:
+              - generic [ref=e1986]: workflow
+              - generic [ref=e1987]: 1706_1 · 49m ago
+              - generic [ref=e1988]: 0s
+            - generic [ref=e1989]:
+              - generic [ref=e1990]: failed
+              - button "Delete" [ref=e1991] [cursor=pointer]
+          - generic [ref=e1992]: narration.ts not found at /some/fake/path/scripts/narration.ts
+        - generic [ref=e1993]:
+          - generic [ref=e1994]:
+            - generic [ref=e1995]:
+              - generic [ref=e1996]: image-tts-render
+              - generic [ref=e1997]: 22_170 · 49m ago
+              - generic [ref=e1998]: 0s
+            - generic [ref=e1999]:
+              - generic [ref=e2000]: completed
+              - button "Delete" [ref=e2001] [cursor=pointer]
+          - button "▶ Show task tree (0/4 done)" [ref=e2003] [cursor=pointer]:
+            - generic [ref=e2004]: ▶
+            - text: Show task tree (0/4 done)
+        - generic [ref=e2005]:
+          - generic [ref=e2006]:
+            - generic [ref=e2007]:
+              - generic [ref=e2008]: agent:pi-developer
+              - generic [ref=e2009]: 32_171 · 49m ago
+              - generic [ref=e2010]: 1m 26s
+            - generic [ref=e2011]:
+              - generic [ref=e2012]: failed
+              - button "Delete" [ref=e2013] [cursor=pointer]
+          - generic [ref=e2014]: Server restarted — workflow interrupted
+        - generic [ref=e2015]:
+          - generic [ref=e2016]:
+            - generic [ref=e2017]:
+              - generic [ref=e2018]: image-generate
+              - generic [ref=e2019]: 57_172 · 49m ago
+              - generic [ref=e2020]: 0s
+            - generic [ref=e2021]:
+              - generic [ref=e2022]: failed
+              - button "Delete" [ref=e2023] [cursor=pointer]
+          - generic [ref=e2024]: "CDP bridge error: CDP connect failed: browserType.connectOverCDP: connect ECONNREFUSED ::1:9222 Call log: \x1b[2m - <ws preparing> retrieving websocket url from http://localhost:9222\x1b[22m"
+        - generic [ref=e2026]:
+          - generic [ref=e2027]:
+            - generic [ref=e2028]: scaffold
+            - generic [ref=e2029]: 53_173 · 49m ago
+            - generic [ref=e2030]: 0s
+          - generic [ref=e2031]:
+            - generic [ref=e2032]: completed
+            - button "Delete" [ref=e2033] [cursor=pointer]
+        - generic [ref=e2035]:
+          - generic [ref=e2036]:
+            - generic [ref=e2037]: batch-tts
+            - generic [ref=e2038]: 06_174 · 49m ago
+            - generic [ref=e2039]: 0s
+          - generic [ref=e2040]:
+            - generic [ref=e2041]: completed
+            - button "Delete" [ref=e2042] [cursor=pointer]
+        - generic [ref=e2044]:
+          - generic [ref=e2045]:
+            - generic [ref=e2046]: batch-render
+            - generic [ref=e2047]: 17_175 · 49m ago
+            - generic [ref=e2048]: 0s
+          - generic [ref=e2049]:
+            - generic [ref=e2050]: completed
+            - button "Delete" [ref=e2051] [cursor=pointer]
+        - generic [ref=e2053]:
+          - generic [ref=e2054]:
+            - generic [ref=e2055]: batch-tts
+            - generic [ref=e2056]: 28_176 · 49m ago
+            - generic [ref=e2057]: 0s
+          - generic [ref=e2058]:
+            - generic [ref=e2059]: completed
+            - button "Delete" [ref=e2060] [cursor=pointer]
+        - generic [ref=e2062]:
+          - generic [ref=e2063]:
+            - generic [ref=e2064]: agent:studio-advisor
+            - generic [ref=e2065]: 41_177 · 46m ago
+            - generic [ref=e2066]: 2s
+          - generic [ref=e2067]:
+            - generic [ref=e2068]: completed
+            - button "Delete" [ref=e2069] [cursor=pointer]
+        - generic [ref=e2071]:
+          - generic [ref=e2072]:
+            - generic [ref=e2073]: demo
+            - generic [ref=e2074]: 04_178 · 44m ago
+            - generic [ref=e2075]: 2s
+          - generic [ref=e2076]:
+            - generic [ref=e2077]: completed
+            - button "Delete" [ref=e2078] [cursor=pointer]
+        - generic [ref=e2080]:
+          - generic [ref=e2081]:
+            - generic [ref=e2082]: demo
+            - generic [ref=e2083]: 06_179 · 44m ago
+            - generic [ref=e2084]: 2s
+          - generic [ref=e2085]:
+            - generic [ref=e2086]: completed
+            - button "Delete" [ref=e2087] [cursor=pointer]
+        - generic [ref=e2089]:
+          - generic [ref=e2090]:
+            - generic [ref=e2091]: demo
+            - generic [ref=e2092]: 66_180 · 44m ago
+            - generic [ref=e2093]: 2s
+          - generic [ref=e2094]:
+            - generic [ref=e2095]: completed
+            - button "Delete" [ref=e2096] [cursor=pointer]
+        - generic [ref=e2098]:
+          - generic [ref=e2099]:
+            - generic [ref=e2100]: demo
+            - generic [ref=e2101]: 32_181 · 44m ago
+            - generic [ref=e2102]: 2s
+          - generic [ref=e2103]:
+            - generic [ref=e2104]: completed
+            - button "Delete" [ref=e2105] [cursor=pointer]
+        - generic [ref=e2106]:
+          - generic [ref=e2107]:
+            - generic [ref=e2108]:
+              - generic [ref=e2109]: workflow
+              - generic [ref=e2110]: 3657_1 · 41m ago
+              - generic [ref=e2111]: 0s
+            - generic [ref=e2112]:
+              - generic [ref=e2113]: failed
+              - button "Delete" [ref=e2114] [cursor=pointer]
+          - generic [ref=e2115]: narration.ts not found at /some/fake/path/scripts/narration.ts
+        - generic [ref=e2116]:
+          - generic [ref=e2117]:
+            - generic [ref=e2118]:
+              - generic [ref=e2119]: image-tts-render
+              - generic [ref=e2120]: 74_182 · 41m ago
+              - generic [ref=e2121]: 0s
+            - generic [ref=e2122]:
+              - generic [ref=e2123]: completed
+              - button "Delete" [ref=e2124] [cursor=pointer]
+          - button "▶ Show task tree (0/4 done)" [ref=e2126] [cursor=pointer]:
+            - generic [ref=e2127]: ▶
+            - text: Show task tree (0/4 done)
+        - generic [ref=e2128]:
+          - generic [ref=e2129]:
+            - generic [ref=e2130]:
+              - generic [ref=e2131]: agent:pi-developer
+              - generic [ref=e2132]: 73_183 · 41m ago
+              - generic [ref=e2133]: 4m 12s
+            - generic [ref=e2134]:
+              - generic [ref=e2135]: failed
+              - button "Delete" [ref=e2136] [cursor=pointer]
+          - generic [ref=e2137]: Server restarted — workflow interrupted
+        - generic [ref=e2138]:
+          - generic [ref=e2139]:
+            - generic [ref=e2140]:
+              - generic [ref=e2141]: image-generate
+              - generic [ref=e2142]: 02_184 · 41m ago
+              - generic [ref=e2143]: 0s
+            - generic [ref=e2144]:
+              - generic [ref=e2145]: failed
+              - button "Delete" [ref=e2146] [cursor=pointer]
+          - generic [ref=e2147]: "CDP bridge error: CDP connect failed: browserType.connectOverCDP: connect ECONNREFUSED ::1:9222 Call log: \x1b[2m - <ws preparing> retrieving websocket url from http://localhost:9222\x1b[22m"
+        - generic [ref=e2149]:
+          - generic [ref=e2150]:
+            - generic [ref=e2151]: scaffold
+            - generic [ref=e2152]: 81_185 · 41m ago
+            - generic [ref=e2153]: 0s
+          - generic [ref=e2154]:
+            - generic [ref=e2155]: completed
+            - button "Delete" [ref=e2156] [cursor=pointer]
+        - generic [ref=e2158]:
+          - generic [ref=e2159]:
+            - generic [ref=e2160]: batch-tts
+            - generic [ref=e2161]: 38_186 · 41m ago
+            - generic [ref=e2162]: 0s
+          - generic [ref=e2163]:
+            - generic [ref=e2164]: completed
+            - button "Delete" [ref=e2165] [cursor=pointer]
+        - generic [ref=e2167]:
+          - generic [ref=e2168]:
+            - generic [ref=e2169]: batch-render
+            - generic [ref=e2170]: 49_187 · 41m ago
+            - generic [ref=e2171]: 0s
+          - generic [ref=e2172]:
+            - generic [ref=e2173]: completed
+            - button "Delete" [ref=e2174] [cursor=pointer]
+        - generic [ref=e2176]:
+          - generic [ref=e2177]:
+            - generic [ref=e2178]: batch-tts
+            - generic [ref=e2179]: 60_188 · 41m ago
+            - generic [ref=e2180]: 0s
+          - generic [ref=e2181]:
+            - generic [ref=e2182]: completed
+            - button "Delete" [ref=e2183] [cursor=pointer]
+        - generic [ref=e2185]:
+          - generic [ref=e2186]:
+            - generic [ref=e2187]: demo
+            - generic [ref=e2188]: 54_189 · 36m ago
+            - generic [ref=e2189]: 2s
+          - generic [ref=e2190]:
+            - generic [ref=e2191]: completed
+            - button "Delete" [ref=e2192] [cursor=pointer]
+        - generic [ref=e2194]:
+          - generic [ref=e2195]:
+            - generic [ref=e2196]: demo
+            - generic [ref=e2197]: 98_190 · 36m ago
+            - generic [ref=e2198]: 2s
+          - generic [ref=e2199]:
+            - generic [ref=e2200]: completed
+            - button "Delete" [ref=e2201] [cursor=pointer]
+        - generic [ref=e2203]:
+          - generic [ref=e2204]:
+            - generic [ref=e2205]: demo
+            - generic [ref=e2206]: 70_191 · 36m ago
+            - generic [ref=e2207]: 2s
+          - generic [ref=e2208]:
+            - generic [ref=e2209]: completed
+            - button "Delete" [ref=e2210] [cursor=pointer]
+        - generic [ref=e2212]:
+          - generic [ref=e2213]:
+            - generic [ref=e2214]: demo
+            - generic [ref=e2215]: 15_192 · 36m ago
+            - generic [ref=e2216]: 2s
+          - generic [ref=e2217]:
+            - generic [ref=e2218]: completed
+            - button "Delete" [ref=e2219] [cursor=pointer]
+        - generic [ref=e2220]:
+          - generic [ref=e2221]:
+            - generic [ref=e2222]:
+              - generic [ref=e2223]: workflow
+              - generic [ref=e2224]: 5754_1 · 33m ago
+              - generic [ref=e2225]: 0s
+            - generic [ref=e2226]:
+              - generic [ref=e2227]: failed
+              - button "Delete" [ref=e2228] [cursor=pointer]
+          - generic [ref=e2229]: narration.ts not found at /some/fake/path/scripts/narration.ts
+        - generic [ref=e2230]:
+          - generic [ref=e2231]:
+            - generic [ref=e2232]:
+              - generic [ref=e2233]: image-tts-render
+              - generic [ref=e2234]: 69_193 · 33m ago
+              - generic [ref=e2235]: 0s
+            - generic [ref=e2236]:
+              - generic [ref=e2237]: completed
+              - button "Delete" [ref=e2238] [cursor=pointer]
+          - button "▶ Show task tree (0/4 done)" [ref=e2240] [cursor=pointer]:
+            - generic [ref=e2241]: ▶
+            - text: Show task tree (0/4 done)
+        - generic [ref=e2242]:
+          - generic [ref=e2243]:
+            - generic [ref=e2244]:
+              - generic [ref=e2245]: agent:pi-developer
+              - generic [ref=e2246]: 24_194 · 33m ago
+              - generic [ref=e2247]: 16s
+            - generic [ref=e2248]:
+              - generic [ref=e2249]: failed
+              - button "Delete" [ref=e2250] [cursor=pointer]
+          - generic [ref=e2251]: Server restarted — workflow interrupted
+        - generic [ref=e2252]:
+          - generic [ref=e2253]:
+            - generic [ref=e2254]:
+              - generic [ref=e2255]: image-generate
+              - generic [ref=e2256]: 43_195 · 33m ago
+              - generic [ref=e2257]: 0s
+            - generic [ref=e2258]:
+              - generic [ref=e2259]: failed
+              - button "Delete" [ref=e2260] [cursor=pointer]
+          - generic [ref=e2261]: "CDP bridge error: CDP connect failed: browserType.connectOverCDP: connect ECONNREFUSED ::1:9222 Call log: \x1b[2m - <ws preparing> retrieving websocket url from http://localhost:9222\x1b[22m"
+        - generic [ref=e2263]:
+          - generic [ref=e2264]:
+            - generic [ref=e2265]: scaffold
+            - generic [ref=e2266]: 02_196 · 33m ago
+            - generic [ref=e2267]: 0s
+          - generic [ref=e2268]:
+            - generic [ref=e2269]: completed
+            - button "Delete" [ref=e2270] [cursor=pointer]
+        - generic [ref=e2272]:
+          - generic [ref=e2273]:
+            - generic [ref=e2274]: batch-tts
+            - generic [ref=e2275]: 54_197 · 33m ago
+            - generic [ref=e2276]: 0s
+          - generic [ref=e2277]:
+            - generic [ref=e2278]: completed
+            - button "Delete" [ref=e2279] [cursor=pointer]
+        - generic [ref=e2281]:
+          - generic [ref=e2282]:
+            - generic [ref=e2283]: batch-render
+            - generic [ref=e2284]: 65_198 · 33m ago
+            - generic [ref=e2285]: 0s
+          - generic [ref=e2286]:
+            - generic [ref=e2287]: completed
+            - button "Delete" [ref=e2288] [cursor=pointer]
+        - generic [ref=e2290]:
+          - generic [ref=e2291]:
+            - generic [ref=e2292]: batch-tts
+            - generic [ref=e2293]: 76_199 · 33m ago
+            - generic [ref=e2294]: 0s
+          - generic [ref=e2295]:
+            - generic [ref=e2296]: completed
+            - button "Delete" [ref=e2297] [cursor=pointer]
+        - generic [ref=e2298]:
+          - generic [ref=e2299]:
+            - generic [ref=e2300]:
+              - generic [ref=e2301]: workflow
+              - generic [ref=e2302]: 5395_1 · 23m ago
+              - generic [ref=e2303]: 0s
+            - generic [ref=e2304]:
+              - generic [ref=e2305]: failed
+              - button "Delete" [ref=e2306] [cursor=pointer]
+          - generic [ref=e2307]: narration.ts not found at /some/fake/path/scripts/narration.ts
+        - generic [ref=e2308]:
+          - generic [ref=e2309]:
+            - generic [ref=e2310]:
+              - generic [ref=e2311]: image-tts-render
+              - generic [ref=e2312]: 12_200 · 23m ago
+              - generic [ref=e2313]: 0s
+            - generic [ref=e2314]:
+              - generic [ref=e2315]: completed
+              - button "Delete" [ref=e2316] [cursor=pointer]
+          - button "▶ Show task tree (0/4 done)" [ref=e2318] [cursor=pointer]:
+            - generic [ref=e2319]: ▶
+            - text: Show task tree (0/4 done)
+        - generic [ref=e2320]:
+          - generic [ref=e2321]:
+            - generic [ref=e2322]:
+              - generic [ref=e2323]: agent:pi-developer
+              - generic [ref=e2324]: 69_201 · 23m ago
+              - generic [ref=e2325]: 15s
+            - generic [ref=e2326]:
+              - generic [ref=e2327]: failed
+              - button "Delete" [ref=e2328] [cursor=pointer]
+          - generic [ref=e2329]: Server restarted — workflow interrupted
+        - generic [ref=e2330]:
+          - generic [ref=e2331]:
+            - generic [ref=e2332]:
+              - generic [ref=e2333]: image-generate
+              - generic [ref=e2334]: 91_202 · 23m ago
+              - generic [ref=e2335]: 0s
+            - generic [ref=e2336]:
+              - generic [ref=e2337]: failed
+              - button "Delete" [ref=e2338] [cursor=pointer]
+          - generic [ref=e2339]: "CDP bridge error: CDP connect failed: browserType.connectOverCDP: connect ECONNREFUSED ::1:9222 Call log: \x1b[2m - <ws preparing> retrieving websocket url from http://localhost:9222\x1b[22m"
+        - generic [ref=e2341]:
+          - generic [ref=e2342]:
+            - generic [ref=e2343]: scaffold
+            - generic [ref=e2344]: 64_203 · 23m ago
+            - generic [ref=e2345]: 0s
+          - generic [ref=e2346]:
+            - generic [ref=e2347]: completed
+            - button "Delete" [ref=e2348] [cursor=pointer]
+        - generic [ref=e2350]:
+          - generic [ref=e2351]:
+            - generic [ref=e2352]: batch-tts
+            - generic [ref=e2353]: 17_204 · 23m ago
+            - generic [ref=e2354]: 0s
+          - generic [ref=e2355]:
+            - generic [ref=e2356]: completed
+            - button "Delete" [ref=e2357] [cursor=pointer]
+        - generic [ref=e2359]:
+          - generic [ref=e2360]:
+            - generic [ref=e2361]: batch-render
+            - generic [ref=e2362]: 28_205 · 23m ago
+            - generic [ref=e2363]: 0s
+          - generic [ref=e2364]:
+            - generic [ref=e2365]: completed
+            - button "Delete" [ref=e2366] [cursor=pointer]
+        - generic [ref=e2368]:
+          - generic [ref=e2369]:
+            - generic [ref=e2370]: batch-tts
+            - generic [ref=e2371]: 39_206 · 23m ago
+            - generic [ref=e2372]: 0s
+          - generic [ref=e2373]:
+            - generic [ref=e2374]: completed
+            - button "Delete" [ref=e2375] [cursor=pointer]
+        - generic [ref=e2376]:
+          - generic [ref=e2377]:
+            - generic [ref=e2378]:
+              - generic [ref=e2379]: workflow
+              - generic [ref=e2380]: 7365_1 · 12m ago
+              - generic [ref=e2381]: 0s
+            - generic [ref=e2382]:
+              - generic [ref=e2383]: failed
+              - button "Delete" [ref=e2384] [cursor=pointer]
+          - generic [ref=e2385]: narration.ts not found at /some/fake/path/scripts/narration.ts
+        - generic [ref=e2386]:
+          - generic [ref=e2387]:
+            - generic [ref=e2388]:
+              - generic [ref=e2389]: image-tts-render
+              - generic [ref=e2390]: 83_207 · 12m ago
+              - generic [ref=e2391]: 0s
+            - generic [ref=e2392]:
+              - generic [ref=e2393]: completed
+              - button "Delete" [ref=e2394] [cursor=pointer]
+          - button "▶ Show task tree (0/4 done)" [ref=e2396] [cursor=pointer]:
+            - generic [ref=e2397]: ▶
+            - text: Show task tree (0/4 done)
+        - generic [ref=e2398]:
+          - generic [ref=e2399]:
+            - generic [ref=e2400]:
+              - generic [ref=e2401]: agent:pi-developer
+              - generic [ref=e2402]: 40_208 · 12m ago
+              - generic [ref=e2403]: 44s
+            - generic [ref=e2404]:
+              - generic [ref=e2405]: failed
+              - button "Delete" [ref=e2406] [cursor=pointer]
+          - generic [ref=e2407]: Server restarted — workflow interrupted
+        - generic [ref=e2408]:
+          - generic [ref=e2409]:
+            - generic [ref=e2410]:
+              - generic [ref=e2411]: image-generate
+              - generic [ref=e2412]: 68_209 · 12m ago
+              - generic [ref=e2413]: 0s
+            - generic [ref=e2414]:
+              - generic [ref=e2415]: failed
+              - button "Delete" [ref=e2416] [cursor=pointer]
+          - generic [ref=e2417]: "CDP bridge error: CDP connect failed: browserType.connectOverCDP: connect ECONNREFUSED ::1:9222 Call log: \x1b[2m - <ws preparing> retrieving websocket url from http://localhost:9222\x1b[22m"
+        - generic [ref=e2419]:
+          - generic [ref=e2420]:
+            - generic [ref=e2421]: scaffold
+            - generic [ref=e2422]: 67_210 · 12m ago
+            - generic [ref=e2423]: 0s
+          - generic [ref=e2424]:
+            - generic [ref=e2425]: completed
+            - button "Delete" [ref=e2426] [cursor=pointer]
+        - generic [ref=e2428]:
+          - generic [ref=e2429]:
+            - generic [ref=e2430]: batch-tts
+            - generic [ref=e2431]: 22_211 · 12m ago
+            - generic [ref=e2432]: 0s
+          - generic [ref=e2433]:
+            - generic [ref=e2434]: completed
+            - button "Delete" [ref=e2435] [cursor=pointer]
+        - generic [ref=e2437]:
+          - generic [ref=e2438]:
+            - generic [ref=e2439]: batch-render
+            - generic [ref=e2440]: 34_212 · 12m ago
+            - generic [ref=e2441]: 0s
+          - generic [ref=e2442]:
+            - generic [ref=e2443]: completed
+            - button "Delete" [ref=e2444] [cursor=pointer]
+        - generic [ref=e2446]:
+          - generic [ref=e2447]:
+            - generic [ref=e2448]: batch-tts
+            - generic [ref=e2449]: 46_213 · 12m ago
+            - generic [ref=e2450]: 0s
+          - generic [ref=e2451]:
+            - generic [ref=e2452]: completed
+            - button "Delete" [ref=e2453] [cursor=pointer]
+        - generic [ref=e2455]:
+          - generic [ref=e2456]:
+            - generic [ref=e2457]: demo
+            - generic [ref=e2458]: 91_214 · 3m ago
+            - generic [ref=e2459]: 2s
+          - generic [ref=e2460]:
+            - generic [ref=e2461]: completed
+            - button "Delete" [ref=e2462] [cursor=pointer]
+        - generic [ref=e2464]:
+          - generic [ref=e2465]:
+            - generic [ref=e2466]: demo
+            - generic [ref=e2467]: 24_215 · 3m ago
+            - generic [ref=e2468]: 2s
+          - generic [ref=e2469]:
+            - generic [ref=e2470]: completed
+            - button "Delete" [ref=e2471] [cursor=pointer]
+        - generic [ref=e2473]:
+          - generic [ref=e2474]:
+            - generic [ref=e2475]: demo
+            - generic [ref=e2476]: 91_216 · 3m ago
+            - generic [ref=e2477]: 2s
+          - generic [ref=e2478]:
+            - generic [ref=e2479]: completed
+            - button "Delete" [ref=e2480] [cursor=pointer]
+        - generic [ref=e2482]:
+          - generic [ref=e2483]:
+            - generic [ref=e2484]: demo
+            - generic [ref=e2485]: 41_217 · 2m ago
+            - generic [ref=e2486]: 2s
+          - generic [ref=e2487]:
+            - generic [ref=e2488]: completed
+            - button "Delete" [ref=e2489] [cursor=pointer]
+      - button "▶ Job History 192 older jobs" [ref=e2491] [cursor=pointer]:
+        - generic [ref=e2492]: ▶
+        - text: Job History
+        - generic [ref=e2493]: 192 older jobs
+```
+
+# Test source
+
+```ts
+  1  | import { test, expect } from "@playwright/test";
+  2  | import { navigateTo, waitForPageLoad, collectConsoleErrors, assertNoConsoleErrors, NAV_LABELS } from "./helpers";
+  3  | 
+  4  | test.describe("API Health", () => {
+  5  |   test("GET /api/health responds with ok", async ({ request }) => {
+  6  |     const resp = await request.get("/api/health");
+  7  |     expect(resp.ok()).toBe(true);
+  8  |     const data = await resp.json();
+  9  |     expect(data.ok).toBe(true);
+  10 |     expect(data.data.status).toBe("ok");
+  11 |   });
+  12 | 
+  13 |   test("GET /api/jobs returns array", async ({ request }) => {
+  14 |     const resp = await request.get("/api/jobs");
+  15 |     expect(resp.ok()).toBe(true);
+  16 |     const data = await resp.json();
+  17 |     expect(data.ok).toBe(true);
+  18 |     expect(Array.isArray(data.data)).toBe(true);
+  19 |   });
+  20 | });
+  21 | 
+  22 | test.describe("Smoke Tests — All Pages Load", () => {
+  23 |   test("default page is Dashboard", async ({ page }) => {
+  24 |     const errors = collectConsoleErrors(page);
+  25 |     await page.goto("/");
+  26 |     // Wait for React to hydrate and sidebar to render
+  27 |     await page.locator("nav button").filter({ hasText: "Dashboard" }).waitFor({ state: "visible" });
+  28 | 
+  29 |     // Active nav button should be Dashboard with highlighted background
+  30 |     const activeBtn = page.locator("nav button").filter({ hasText: "Dashboard" });
+  31 |     const bg = await activeBtn.evaluate((el) => getComputedStyle(el).background);
+  32 |     expect(bg).toContain("227, 242, 253");
+  33 | 
+  34 |     // Main content should be non-empty
+  35 |     const main = page.locator("main");
+  36 |     await expect(main).toBeVisible();
+  37 |     const text = await main.textContent();
+  38 |     expect(text!.trim().length).toBeGreaterThan(0);
+  39 | 
+  40 |     assertNoConsoleErrors(errors);
+  41 |   });
+  42 | 
+  43 |   test("sidebar shows all 13 navigation items", async ({ page }) => {
+  44 |     await page.goto("/");
+  45 |     const buttons = page.locator("nav button");
+> 46 |     await expect(buttons).toHaveCount(13);
+     |                           ^ Error: expect(locator).toHaveCount(expected) failed
+  47 | 
+  48 |     for (const label of NAV_LABELS) {
+  49 |       await expect(buttons.filter({ hasText: label })).toBeVisible();
+  50 |     }
+  51 |   });
+  52 | 
+  53 |   for (const label of NAV_LABELS) {
+  54 |     test(`${label} page loads without console errors`, async ({ page }) => {
+  55 |       const errors = collectConsoleErrors(page);
+  56 |       await page.goto("/");
+  57 |       await navigateTo(page, label);
+  58 |       await waitForPageLoad(page);
+  59 | 
+  60 |       // Page should have non-empty main content
+  61 |       const main = page.locator("main");
+  62 |       await expect(main).toBeVisible();
+  63 |       const text = await main.textContent();
+  64 |       expect(text!.trim().length).toBeGreaterThan(0);
+  65 | 
+  66 |       // Should not show generic error text
+  67 |       const errorText = page.getByText("Something went wrong");
+  68 |       await expect(errorText).not.toBeVisible();
+  69 | 
+  70 |       assertNoConsoleErrors(errors);
+  71 |     });
+  72 |   }
+  73 | });
+  74 | 
+```

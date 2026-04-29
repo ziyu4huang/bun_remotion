@@ -14,6 +14,8 @@ import type {
   InitializeResponse,
   NewSessionRequest,
   NewSessionResponse,
+  LoadSessionRequest,
+  LoadSessionResponse,
   PromptRequest,
   PromptResponse,
   CancelNotification,
@@ -25,7 +27,13 @@ import {
   createSession,
   getSession,
   clearSessions,
+  saveSessionConversation,
+  accumulateSessionUsage,
 } from "./session-store.js";
+import { getAgentDefinition } from "../agent.js";
+import { connectMcpServer } from "../mcp/client.js";
+import { wrapMcpTools } from "../mcp/tool-wrapper.js";
+import { createPermissionHook } from "./permissions.js";
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -53,21 +61,21 @@ export function createAcpAgentHandler(
       return {
         protocolVersion: PROTOCOL_VERSION,
         agentCapabilities: {
-          loadSession: false,
+          loadSession: true,
           promptCapabilities: {
             image: false,
             audio: false,
             embeddedContext: false,
           },
           mcpCapabilities: {
-            http: false,
-            sse: false,
+            http: true,
+            sse: true,
           },
         },
         agentInfo: {
           name: "bun_pi_agent",
           title: "Bun Pi Agent",
-          version: "0.5.0",
+          version: "0.11.0",
         },
         authMethods: [],
       };
@@ -89,7 +97,36 @@ export function createAcpAgentHandler(
       params: NewSessionRequest,
     ): Promise<NewSessionResponse> {
       const cwd = params.cwd ?? process.cwd();
-      const state = createSession(cwd);
+      const state = createSession(cwd, {
+        agentName: getAgentDefinition()?.name,
+      });
+
+      // Store ACP connection reference for permission flow
+      state.acpConnection = conn;
+
+      // Attach permission hook — intercepts destructive tools (Write, Edit, Bash)
+      state.agent.beforeToolCall = createPermissionHook(state.sessionId, conn);
+
+      // Connect to MCP servers specified by the client
+      if (params.mcpServers && params.mcpServers.length > 0) {
+        const allMcpTools: any[] = [];
+        for (const serverConfig of params.mcpServers) {
+          try {
+            const conn = await connectMcpServer(serverConfig);
+            const tools = wrapMcpTools(conn);
+            allMcpTools.push(...tools);
+            state.mcpConnections.push(conn);
+            console.log(`[mcp] Connected to "${serverConfig.name}": ${conn.tools.length} tools`);
+          } catch (err) {
+            console.error(`[mcp] Failed to connect to "${serverConfig.name}": ${(err as Error).message}`);
+          }
+        }
+        // Add MCP tools to the agent's existing tools
+        if (allMcpTools.length > 0) {
+          const existingTools = state.agent.state.tools ?? [];
+          state.agent.state.tools = [...existingTools, ...allMcpTools];
+        }
+      }
 
       return {
         sessionId: state.sessionId,
@@ -114,6 +151,23 @@ export function createAcpAgentHandler(
     },
 
     // -----------------------------------------------------------------------
+    // loadSession — resume a previous conversation by sessionId
+    // -----------------------------------------------------------------------
+    async loadSession(
+      params: LoadSessionRequest,
+    ): Promise<LoadSessionResponse> {
+      const cwd = params.cwd ?? process.cwd();
+      const state = createSession(cwd, {
+        resumeFromId: params.sessionId,
+        agentName: getAgentDefinition()?.name,
+      });
+
+      return {
+        sessionId: state.sessionId,
+      };
+    },
+
+    // -----------------------------------------------------------------------
     // prompt — process a user message, stream updates, return stop reason
     // -----------------------------------------------------------------------
     async prompt(
@@ -124,6 +178,10 @@ export function createAcpAgentHandler(
         throw { code: -32602, message: `Session "${params.sessionId}" not found` };
       }
 
+      // Fresh turn state: reset cancelled flag and abort controller
+      state.cancelled = false;
+      state.abortController = new AbortController();
+
       // Extract text from prompt content blocks
       const prompt = params.prompt
         .filter((block): block is { type: "text"; text: string } => block.type === "text")
@@ -133,9 +191,6 @@ export function createAcpAgentHandler(
       if (!prompt.trim()) {
         return { stopReason: "end_turn" };
       }
-
-      // Track cancellation
-      let cancelled = false;
 
       // Subscribe to agent events and stream as session/update notifications
       const unsubscribe = state.agent.subscribe(
@@ -150,9 +205,18 @@ export function createAcpAgentHandler(
             });
           }
 
-          // Detect cancellation via agent_end after abort
-          if (event.type === "agent_end" && state.agent.state.isStreaming === false) {
-            // Agent has finished (possibly due to abort)
+          // Track token usage from turn_end events
+          if (event.type === "turn_end") {
+            accumulateSessionUsage(params.sessionId, event);
+          }
+
+          // Persist conversation history after each agent turn
+          if (event.type === "agent_end") {
+            try {
+              saveSessionConversation(params.sessionId);
+            } catch {
+              // Persistence failure is non-fatal
+            }
           }
         },
       );
@@ -160,17 +224,15 @@ export function createAcpAgentHandler(
       try {
         await state.agent.prompt(prompt);
       } catch (err) {
-        // Agent was aborted — check if it was a cancellation
-        if ((err as any)?.name === "AbortError" || cancelled) {
+        if (state.cancelled || (err as any)?.name === "AbortError") {
           return { stopReason: "cancelled" };
         }
-        // Other errors — treat as end_turn, error content was streamed
         return { stopReason: "end_turn" };
       } finally {
         unsubscribe();
       }
 
-      return { stopReason: cancelled ? "cancelled" : "end_turn" };
+      return { stopReason: state.cancelled ? "cancelled" : "end_turn" };
     },
 
     // -----------------------------------------------------------------------
@@ -181,6 +243,7 @@ export function createAcpAgentHandler(
     ): Promise<void> {
       const state = getSession(params.sessionId);
       if (state) {
+        state.cancelled = true;
         state.agent.abort();
         state.abortController.abort();
       }

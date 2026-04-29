@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { TaskNode, TaskTree } from "../../shared/types";
+import { useTheme } from "../theme";
 
 interface Props {
   node: TaskNode;
@@ -17,20 +18,14 @@ const STATUS_ICON: Record<string, string> = {
   skipped: "⊘",
 };
 
-const STATUS_COLOR: Record<string, string> = {
-  pending: "#9e9e9e",
-  queued: "#ff9800",
-  running: "#1976d2",
-  completed: "#2e7d32",
-  failed: "#c62828",
-  skipped: "#757575",
-};
-
 export function TaskTreeNodeView({ node, tree, depth = 0, onRetry }: Props) {
+  const theme = useTheme();
   const [collapsed, setCollapsed] = useState(depth > 1);
   const children = node.children.map((id) => tree.nodes[id]).filter(Boolean);
   const hasChildren = children.length > 0;
   const indent = depth * 20;
+
+  const statusColor = (s: string) => theme.colors.status[s as keyof typeof theme.colors.status] ?? theme.colors.text.tertiary;
 
   return (
     <div>
@@ -49,12 +44,12 @@ export function TaskTreeNodeView({ node, tree, depth = 0, onRetry }: Props) {
         onClick={() => hasChildren && setCollapsed(!collapsed)}
       >
         {hasChildren && (
-          <span style={{ fontSize: 10, color: "#999", width: 12, textAlign: "center", flexShrink: 0 }}>
+          <span style={{ fontSize: 10, color: theme.colors.text.muted, width: 12, textAlign: "center", flexShrink: 0 }}>
             {collapsed ? "▶" : "▼"}
           </span>
         )}
         {!hasChildren && <span style={{ width: 12, flexShrink: 0 }} />}
-        <span style={{ color: STATUS_COLOR[node.status] ?? "#666", flexShrink: 0 }}>
+        <span style={{ color: statusColor(node.status), flexShrink: 0 }}>
           {node.status === "running" ? (
             <span className="task-spinning" style={{ display: "inline-block" }}>
               {STATUS_ICON[node.status]}
@@ -65,13 +60,13 @@ export function TaskTreeNodeView({ node, tree, depth = 0, onRetry }: Props) {
         </span>
         <span style={{ fontWeight: depth === 0 ? 600 : 400 }}>{node.label}</span>
         {node.kind !== "workflow" && node.kind !== "group" && (
-          <span style={{ color: "#999", fontSize: 11 }}>({ node.kind })</span>
+          <span style={{ color: theme.colors.text.muted, fontSize: 11 }}>({ node.kind })</span>
         )}
         {node.progress > 0 && node.status === "running" && (
-          <span style={{ fontSize: 11, color: "#1976d2" }}>{node.progress}%</span>
+          <span style={{ fontSize: 11, color: theme.colors.primary }}>{node.progress}%</span>
         )}
         {node.status === "failed" && node.error && (
-          <span style={{ fontSize: 11, color: "#c62828", maxWidth: 300, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" as const }}>
+          <span style={{ fontSize: 11, color: theme.colors.errorDark, maxWidth: 300, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" as const }}>
             {node.error.split("\n")[0]}
           </span>
         )}
@@ -80,7 +75,7 @@ export function TaskTreeNodeView({ node, tree, depth = 0, onRetry }: Props) {
             onClick={(e) => { e.stopPropagation(); onRetry(node.id); }}
             style={{
               fontSize: 11, padding: "1px 8px", borderRadius: 3,
-              border: "1px solid #c62828", color: "#c62828", background: "transparent",
+              border: `1px solid ${theme.colors.errorDark}`, color: theme.colors.errorDark, background: "transparent",
               cursor: "pointer", flexShrink: 0,
             }}
           >

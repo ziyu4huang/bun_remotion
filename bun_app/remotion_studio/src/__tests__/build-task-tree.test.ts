@@ -16,12 +16,12 @@ function nodesByKind(nodes: Record<string, TaskNode>, rootId: string) {
 }
 
 describe("buildTaskTree", () => {
-  test("full-pipeline: 7 nodes (1 root + 6 steps)", () => {
+  test("full-pipeline: 8 nodes (1 root + 7 steps)", () => {
     const tpl = getTemplate("full-pipeline");
     const tree = buildTaskTree(tpl);
-    expect(Object.keys(tree.nodes).length).toBe(7);
+    expect(Object.keys(tree.nodes).length).toBe(8);
     expect(tree.nodes[tree.rootId].kind).toBe("workflow");
-    expect(tree.nodes[tree.rootId].children.length).toBe(6);
+    expect(tree.nodes[tree.rootId].children.length).toBe(7);
   });
 
   test("full-pipeline: check and score are parallel (both depend on pipeline, not each other)", () => {
@@ -49,7 +49,8 @@ describe("buildTaskTree", () => {
     const tts = byKind.get("tts")!;
     const render = byKind.get("render")!;
 
-    expect(tts.deps.sort()).toEqual([check.id, score.id].sort());
+    const image = byKind.get("image")!;
+    expect(tts.deps.sort()).toEqual([check.id, score.id, image.id].sort());
     expect(render.deps).toEqual([tts.id]);
   });
 

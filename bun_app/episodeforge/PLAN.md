@@ -2,10 +2,11 @@
 
 Generates new Remotion episode directories with all required files, correct naming conventions, and workspace integration.
 
-## Current State (v0.1.0)
+## Current State (v0.3.0)
 
-- **Working:** CLI scaffolding for 3 series (weapon-forger, my-core-is-boss, galgame-meme-theater)
-- **Test Coverage:** None yet (no `*.test.*` files)
+- **Working:** CLI scaffolding for 4 series (weapon-forger, my-core-is-boss, galgame-meme-theater, storygraph-explainer)
+- **Test Coverage:** 87 tests across 5 files
+- **New in v0.3:** PLAN.md episode guide row auto-generation, all P1 tasks complete
 
 ## Architecture
 
@@ -25,13 +26,14 @@ episodeforge/
 
 | File | Exports | Lines | Status |
 |------|---------|-------|--------|
-| index.ts | `main()` | ~92 | Working |
-| args.ts | `parseArgs`, `validateArgs`, `showHelp` | ~117 | Working |
-| series-config.ts | `SeriesConfig`, `SERIES_REGISTRY`, `getSeriesConfig` | ~111 | Working |
+| index.ts | `main()` | ~95 | Working |
+| args.ts | `parseArgs`, `validateArgs`, `showHelp` | ~140 | Working |
+| series-config.ts | `SeriesConfig`, `SERIES_REGISTRY`, `getSeriesConfig`, `requireSeriesConfig`, `listSeries` | ~170 | Working |
 | naming.ts | `NamingContext`, `computeNaming` | ~89 | Working |
 | templates.ts | `genPackageJson`, `genTsconfig`, `genIndexTs`, `genRootTsx`, `genMainComponent`, `genTitleScene`, `genContentScene`, `genOutroScene`, `genNarration`, `genTodoMd` | ~787 | Working |
 | writer.ts | `collectFiles`, `writeFiles`, `verify` | ~149 | Working |
-| updaters.ts | `updateDevSh`, `updateRootPackageJson` | ~99 | Working |
+| updaters.ts | `updateDevSh`, `updateRootPackageJson`, `updateSeriesPlanMd` | ~220 | Working |
+| scaffold.ts | `scaffold`, `ScaffoldOptions`, `ScaffoldResult` | ~185 | Working |
 
 ## Dependencies
 

@@ -92,6 +92,10 @@ These are implementation tasks in `bun_app/storygraph/src/`. For architecture an
   - All 9 scripts now validate: graphify-episode.ts, graphify-merge.ts, graphify-pipeline.ts, gen-story-html.ts, graphify-check.ts, ai-crosslink-generator.ts, graphify-gen-prompt.ts, extract-plan.ts, extract-corpus.ts
   - Pattern: `if (!dir.startsWith("/")) { console.error(...); process.exit(1); }`
 
+- [x] **Hybrid mode fuzzy dedup** — Normalize labels (lowercase, strip underscores/spaces/hyphens/parens) and check containment before adding AI nodes. Prevents ~10% node inflation from regex/AI label mismatches.
+  - File: `src/scripts/dedup.ts` (new), `src/scripts/graphify-episode.ts` step 7.5
+  - Tests: `src/__tests__/dedup.test.ts` (9 tests, 15 expect())
+
 ### P1 — Code quality (done)
 
 - [x] **gen-story-html.ts: escape HTML in node labels**
@@ -100,33 +104,27 @@ These are implementation tasks in `bun_app/storygraph/src/`. For architecture an
 - [x] **gen-story-html.ts: AI cross-link visualization**
 - [x] **graphify-pipeline.ts: step 3.5 AI cross-link discovery**
 
-### P1 — Code quality (remaining)
+### P1 — Code quality (done)
 
-- [ ] **graphify-pipeline.ts: per-episode HTML generation**
-  - Add step 1.5: run gen-story-html.ts on each episode dir after extraction
-  - Currently only generates merged HTML
+- [x] **graphify-pipeline.ts: per-episode HTML generation**
+  - Step 1.5: run gen-story-html.ts on each episode dir after extraction
   - File: `src/scripts/graphify-pipeline.ts`
 
 ### P2 — Architecture
 
-- [ ] **Unified node ID convention**
-  - Regex: `${EP_ID}_gag_${gagName.replace(/\s+/g, "_")}`
-  - Subagent: `${EP_ID}_gag_${type}` (different naming)
-  - Define a canonical ID function shared by both pipelines
-  - Files: `graphify-episode.ts`, subagent prompt template
+- [x] **Unified node ID convention**
+  - 8 canonical ID builders in `dedup.ts`: `plotNodeId`, `sceneNodeId`, `charNodeId`, `techTermNodeId`, `plotEventNodeId`, `artifactNodeId`, `traitNodeId`, `gagNodeId`
+  - `graphify-episode.ts`: all regex-path ID construction uses shared functions
+  - `graphify-merge.ts`: plot node references use `plotNodeId()`
+  - Tests: 8 new tests in dedup.test.ts (372 total)
 
-- [ ] **Incremental pipeline**
-  - Check `narration.ts` mtime vs `graph.json` mtime
-  - Skip episode extraction if unchanged
-  - File: `src/scripts/graphify-pipeline.ts`
+### Phase 3 — bun_pi_agent Integration (done)
 
-### Phase 3 — bun_pi_agent Integration (planned)
+> Completed as Phases 44-46: 9 storygraph tools (sg_pipeline, sg_check, sg_score, sg_status, sg_regression, sg_baseline_update, sg_baseline_list, sg_suggest, sg_health) + benchmark skill + CI integration.
+> See bun_app/bun_pi_agent/TODO.md for full history.
 
-> bun_pi_agent will import pipeline-api.ts and run storygraph benchmarks autonomously.
-> See bun_app/bun_pi_agent/TODO.md Phase 3 for tasks.
-
-- [ ] **3-A1: storygraph-tools.ts** — Agent tools wrapping runPipeline/runCheck/runScore/getPipelineStatus
-- [ ] **3-A2: storygraph-benchmark skill** — Autonomous benchmark workflow as agent skill
+- [x] **3-A1: storygraph-tools.ts** — 9 agent tools wrapping pipeline-api.ts (superseded plan of 4 tools)
+- [x] **3-A2: storygraph-benchmark skill** — sg-benchmark-runner agent + autonomous workflow
 
 ### Phase 30 — Genre-Aware KG Pipeline (DONE at skill level)
 
@@ -180,7 +178,7 @@ These are implementation tasks in `bun_app/storygraph/src/`. For architecture an
 | `src/scripts/graphify-episode.ts` | ~550 | Stable — Hybrid extraction, config-driven |
 | `src/scripts/graphify-merge.ts` | ~470 | Stable — Config-driven, plot-lines.md gag chains |
 | `src/scripts/graphify-check.ts` | ~450 | Stable — gate.json v2, genre-aware SKIP, quality_breakdown |
-| `src/scripts/graphify-pipeline.ts` | ~150 | Stable — Hybrid mode passthrough |
+| `src/scripts/graphify-pipeline.ts` | ~150 | Stable — Parallel extraction (spawnAsync + Promise.all) |
 | `src/scripts/gen-story-html.ts` | ~340 | Stable — Overflow fix, expand-neighbors |
 | `src/scripts/story-algorithms.ts` | ~170 | Stable — PageRank, Jaccard, arc/evolution scores |
 | `src/scripts/subagent-prompt.ts` | ~500+ | Stable — 8 prompt builders (crosslink, extraction, scoring, dialog, etc.) |
@@ -197,10 +195,263 @@ These are implementation tasks in `bun_app/storygraph/src/`. For architecture an
 | `src/scripts/graphify-model-bench.ts` | ~490 | **New (Phase 28)** — Multi-model benchmarking |
 | `src/scripts/gen-narration.ts` | ~295 | **New (Phase 33)** — Template-based narration.ts generator |
 | `src/scripts/gen-episode-todo.ts` | ~260 | **New (Phase 33)** — Episode TODO.md generator |
+| `src/scripts/gate-scoring.ts` | ~60 | **New (v0.32)** — Group-based gate scoring (episode-normalized) |
+| `src/scripts/dedup.ts` | ~50 | **Updated (v0.32)** — 8 canonical node ID builders + fuzzy dedup |
+| `src/scripts/graphify-check.ts` | ~1900 | **Updated (v0.33)** — Content-aware scoring, Episode Continuity check, enrichment-based variant suppression |
+
+### Phase 0-B — Content-Aware Enrichment Loop ✅
+
+- [x] **0-B1: buildEnrichmentFeedbackPrompt()** — `subagent-prompt.ts`
+  - Reads gate.json + consistency-report.md from previous run
+  - Generates zh_TW feedback: episode-specific WARNs + series-wide check types
+  - Filters report lines for current episode ID
+
+- [x] **0-B2: Wire into graphify-episode.ts hybrid step** — Step 7.5
+  - `--feedback` flag enables feedback prepending to AI prompt
+  - Only active in hybrid mode when previous gate.json exists
+
+- [x] **0-B3: Add --feedback to graphify-pipeline.ts** — Passthrough to episode subprocesses
+
+- [x] **0-B4: A/B comparison** — my-core-is-boss 66→59 WARN (-10.6%)
+  - Interaction Density: 18→11 (-7, biggest win)
+  - Trait Coverage: 25→24 (-1)
+  - Duplicate Content: 0→2 (+2, minor tradeoff)
+
+### Bugfix — Broken symlink crash
+
+- [x] **series-config.ts discoverEpisodes()** — Wrapped statSync in try/catch to handle dangling symlinks. Previously crashed on xianxia-system-meme.
+
+### Quality Audit (5 series, v0.33.0)
+
+All series score 100/100. Top systemic WARNs:
+- Trait Coverage: 29 WARNs across 3/5 series (regex limitation)
+- Community Cohesion: 14 WARNs across 3/5 series (structural)
+- Isolated Nodes: 15 WARNs across 2/5 series (structural)
+
+Regression baselines recorded: test-corpus/baselines/*/gate-20260429.json
 
 ---
 
 ## Development History
+
+### 2026-04-29 — Reviewer feedback fixes: tooling gap suppression, gag fatigue, dimension evidence (v0.40.0)
+
+**Goal:** Address three remaining reviewer feedback items.
+
+**Tooling gap suppression from gate.json:**
+- `_tooling_gap` Trait Coverage WARNs now excluded from `checks` array in gate.json
+- Moved to separate `tooling_notes` array in gate.json (still visible but clearly separated)
+- Report has new "Tooling Notes" section with 🔧 icon
+- Summary counts now exclude tooling gaps from WARN count
+- weapon-forger: 11 tooling notes removed from checks list
+
+**Gag fatigue detection:**
+- New `checkGagFatigue()` function detects cross-episode pattern repetition
+- Groups gag manifestations by type, computes pairwise similarity across ALL episodes
+- WARN when >60% of pairs are near-identical (similarity > 0.7) across 3+ episodes
+- Covers audience fatigue risk that gag_evolves chain stagnation misses
+- Wired into `allChecks` after `checkGagEvolution()`, included in `gag_evolution` dimension
+
+**Dimension check evidence:**
+- `character_growth`: per-character check entries for ALL characters (not just flat-arc WARNs)
+  - PASS entries show classification, score, top trait changes
+  - WARN entries unchanged (flat arc across 3+ episodes)
+- `thematic_coherence`: per-theme check entries showing shared vs isolated themes
+  - PASS for themes shared across 2+ episodes, WARN for single-episode themes
+- Both dimensions now have traceable evidence in the checks list
+
+**Tests:** 483 pass (11 new: gate-scoring tooling gap 2, reviewer-feedback 9)
+
+### 2026-04-29 — Phase R2+B: Dual-agent review + dimension-aware scoring (v0.37.0)
+
+**Goal:** Switch dual review from anthropic to GLM models, fix scoring formula, add genre-aware checks.
+
+**Dual review changes:**
+- `subagent-prompt.ts`: Renamed `claude_score` → `reviewer_score`, `claude_dimensions` → `reviewer_dimensions`. Provider-agnostic.
+- `bun_pi_agent/src/tools/storygraph-tools.ts`: `sg_dual_review` runs **two GLM reviewers in parallel** (glm-5 + glm-5.1 via zai). Results merged: intersected verdicts, averaged scores, union of findings.
+- Removed all anthropic/claude dependencies from dual review.
+
+**Dimension-aware scoring (gate-scoring.ts v2):**
+- Layer 1: Group-based check scoring (FAIL → -25, was -20). Tooling-gap WARNs excluded from group totals.
+- Layer 2: Quality dimension ceilings:
+  - Any dim < 20% → cap at 50
+  - Any dim < 30% → cap at 60
+  - 2+ dims < 50% → cap at 75
+  - Any dim < 50% → cap at 85
+- Hard cap: any FAIL check → max score 80.
+- `graphify-check.ts`: Moved `computeGateScore()` after `qualityBreakdown` is computed (was informational only).
+- `ceiling_applied` field in gate.json explains which ceiling triggered.
+
+**Genre-aware check improvements (v0.38.0):**
+- **Plot Arc → Comedy Arc for xianxia_comedy**: gag-driven arc (setup/escalation/punchline/callback) instead of Freytag pyramid. Eliminates false FAIL for comedy series.
+- **Thematic Coherence boost for comedy**: recurring gag types count as thematic throughline. Each gag type adds 0.15 coherence (max 0.4). thematic_coherence: 0% → 40% for weapon-forger.
+- **Trait Coverage tooling gap flag**: regex-missed traits tagged `_tooling_gap: true`, excluded from gate scoring impact. Writers see the WARN but it doesn't penalize the score.
+- **Gag Diversity for xianxia_comedy**: previously only ran for galgame_meme. Now runs for both comedy genres.
+
+**Validation across iterations (weapon-forger, glm-5.1 ground truth):**
+
+| Iteration | Pipeline Score | Reviewer Scores | Score Gap | Verdict |
+|-----------|---------------|-----------------|-----------|---------|
+| v0.36 (old scoring) | 95/100 | 62-72 | 23-33 | DISAGREE |
+| v0.37 (dim ceilings) | 50/100 | 55-58 | 7-8 | PARTIAL_AGREE |
+| v0.38 (genre-aware) | 85/100 | 72-78 | 7-13 | PARTIAL_AGREE |
+
+The v0.37 score was too punitive (ceiling at 50 for thematic_coherence 11%). v0.38 with comedy-aware coherence (40%) produces a more calibrated 85, close to reviewers' 72-78.
+
+**Tests:** 472 pass (9 gate-scoring tests for dimension ceilings + coverage check).
+
+### 2026-04-29 — Phase R2+C: Calibrated scoring + structural separation (v0.39.0)
+
+**Goal:** Address remaining dual-review feedback — 3 dims below 60% masked by 85 score, structural noise inflates WARN count.
+
+**Dimension ceiling calibration:**
+- Added `< 60%` tier: single dim < 60% → cap at 80, 2+ dims < 60% → cap at 70.
+- weapon-forger: consistency=50%, character_growth=40%, thematic_coherence=40% → 3 dims below 60% → score capped at 70 (was 85).
+
+**Structural check separation:**
+- Community Cohesion, Isolated Nodes, Cross-Community Coherence, Surprising Connection tagged `_structural: true`.
+- Excluded from gate scoring (don't penalize or inflate score).
+- Report: new "Structural Notes" section with 🏗️ icon, separate from quality WARNs.
+- WARN count: 34 → 25 actionable (9 structural moved to notes section).
+
+**Episode coverage check:**
+- New `checkEpisodeCoverage()` compares processed vs expected episodes.
+- WARN when < 80% coverage.
+
+**Tooling-gap WARN handling:**
+- Trait Coverage regex-miss WARNs tagged `_tooling_gap: true`.
+- Excluded from group scoring totals.
+
+**Validation across all iterations (weapon-forger, glm-5.1 ground truth):**
+
+| Iteration | Score | Reviewer | Gap | Key Change |
+|-----------|-------|----------|-----|-----------|
+| v0.36 (original) | 95 | 62-72 | 23-33 | Baseline — broken formula |
+| v0.37 (dim ceilings) | 50 | 55-58 | 7-8 | Too punitive |
+| v0.38 (genre-aware) | 85 | 72-78 | 7-13 | Ceiling not aggressive enough |
+| **v0.39 (calibrated)** | **70** | **65** | **5** | Converged |
+
+Both GLM reviewers converge at 65, pipeline at 70. 5-point gap is within acceptable tolerance for subjective quality assessment.
+- `.agent/agents/sg-dual-reviewer.md`: New agent definition for independent quality reviewer.
+- Tests: `dual-review.test.ts` (17 tests), bun_pi_agent tool count tests updated.
+- Version bump: 0.35.0 → 0.36.0
+
+### 2026-04-29 — Phase R1: Regression test suite (v0.35.0)
+
+**Goal:** Fill biggest test gap — `graphify-regression.ts` had 10 exports, 0 tests.
+
+**Changes:**
+- `src/__tests__/regression.test.ts` — 31 tests covering computeDelta (7), compareGate (5), compareQuality (4), generateReport (4), discoverBaselineSeries (3), loadLatestBaseline (5), saveBaseline (3)
+- `src/__tests__/baseline-trend.test.ts` — 12 tests covering computeTrend: empty/missing dirs, single snapshot, improving/stable/declining trends, blended_score loading, node_count reading, corrupt JSON skip, non-matching file skip, date sorting
+- Version bump: 0.34.0 → 0.35.0
+- Total: 444 tests across 26 files
+
+### 2026-04-29 — Enrichment feedback loop + quality audit (v0.34.0)
+
+**Goal:** P0-0B content-aware enrichment loop + P0-0A quality audit.
+
+**Changes:**
+- `subagent-prompt.ts`: Added `buildEnrichmentFeedbackPrompt()` — reads gate.json + consistency-report.md, generates zh_TW feedback
+- `graphify-episode.ts`: `--feedback` flag prepends feedback context to hybrid AI prompt in step 7.5
+- `graphify-pipeline.ts`: `--feedback` flag passthrough to episode subprocesses
+- `series-config.ts`: Fixed `discoverEpisodes()` crash on broken symlinks (try/catch around statSync)
+- Regression baselines: gate-20260429.json for all 5 series
+- New tests: `feedback-prompt.test.ts` (5 tests)
+- Version bump: 0.33.0 → 0.34.0
+
+**A/B Results (my-core-is-boss):** 66→59 WARN (-10.6%), Interaction Density 18→11, Trait Coverage 25→24
+
+**Series Config Improvements:**
+- Broadened my-core-is-boss trait patterns: linyi (+game terms), zhaoxiaoqi (+misinterpretation verbs), xiaoelder (+elder references), chenmo (+code terms)
+- Trait Coverage: 25→20 WARN (-20%) on my-core-is-boss
+- weapon-forger patterns kept narrow: too-broad patterns (老夫, 不過) caused 11→44 WARN regression
+- AI accuracy spot-check: 30 nodes across 3 series, all valid, no hallucinations
+
+### 2026-04-29 — Content-aware scoring (v0.33.0)
+
+**Goal:** Wire `kg-loaders.ts` data into `graphify-check.ts` for content-aware scoring.
+
+**Changes:**
+- `graphify-check.ts`: Added imports from `kg-loaders.ts` for `loadCharacterConstraints`, `loadGagEvolution`, `loadInteractionPatterns`, `loadThematicCoherence`, `loadPreviousEpisodeSummary`
+- Content-aware data loading at script start: char constraints, gag chains, interaction patterns, theme clusters, per-episode previous summaries
+- Character Consistency: enrichment-based core traits (stable_traits override statistical 75% threshold), expected variant suppression (WARN skipped for documented variant traits)
+- Episode Continuity (new Check 14): character carryover analysis, WARN when <30% carryover from previous episode
+- Gag Evolution: depth info from kg-loaders (unique manifestations tracked)
+- Interaction Density: first-interaction pair detection in PASS details
+- Thematic Coherence: theme cluster enrichment data in WARN/PASS details
+- Episode Continuity table in consistency-report.md
+- 13 new tests in `content-aware-check.test.ts`
+- Version bump: 0.32.0 → 0.33.0
+
+**Results (weapon-forger):** 29 PASS, 50 WARN, 0 FAIL — Score: 100/100. No regression.
+**Results (my-core-is-boss):** 33 PASS, 66 WARN, 0 FAIL — Score: 100/100. No regression.
+
+### 2026-04-28 — gag_evolves ID normalization + trait coverage baseline
+
+**gag_evolves ID normalization:**
+- Added `gagNodeId()` to `dedup.ts` — shared canonical gag node ID builder
+- Updated graphify-episode.ts: all 3 regex gag paths use `gagNodeId()`
+- Updated graphify-merge.ts: gag_evolves edges use `gagNodeId()`
+- Added AI gag chain discovery in merge step 4d: scans graph nodes for gag_manifestation instances not in regex chains, builds additional gag_evolves edges
+- Hybrid step 7.5: normalizes AI gag node IDs to canonical format via `gagNodeId()`
+- Tests: 4 new tests in dedup.test.ts
+
+**Trait coverage baseline:**
+- `getBaselineTraits()` in graphify-check.ts extracts expected trait labels from `SeriesConfig.traitPatterns`
+- Trait Coverage WARN now distinguishes "regex missed (baseline has N: ...)" from "no baseline defined"
+- Helps writers distinguish tooling limitations from actual character consistency issues
+
+### 2026-04-28 — P2 architecture improvements
+
+**Pipeline renumbering:** graphify-pipeline.ts steps 0/1/1.5/2/2.5/3/3.5 → clean 1-7
+
+**Confidence scoring:**
+- Trait edges: 0.6 base + 0.2/match (was 1.0 flat)
+- Tech term edges: 0.5 + 0.1/occurrence
+- Interaction edges: 0.4 + 0.2/shared scene
+- AI edges: 0.8 (unchanged)
+
+**PageRank normalization:**
+- `normalizePageRankByType()` min-max scales per node type
+- Crosslink generator uses normalized scores for character_theme_affinity
+
+**Input size management:**
+- crosslink-input.json truncates nodes (>200) and edges (>400) for large series
+
+### 2026-04-28 — Algorithm-only cross-links (all 4 types)
+
+**Problem:** Only `story_anti_pattern` was generated algorithmically (Jaccard > 0.5). The other 3 cross-link types (`character_theme_affinity`, `gag_character_synergy`, `narrative_cluster`) required AI, making the cross-link system dependent on API calls.
+
+**Fix:** Added `generateAlgorithmCrossLinks()` to `story-algorithms.ts` — a pure-function that generates all 4 types from graph metrics:
+- `story_anti_pattern`: Jaccard > 0.5 between episode pairs (existing)
+- `character_theme_affinity`: high-PageRank characters (70th percentile) appearing across episodes
+- `gag_character_synergy`: gag types co-occurring with specific characters in 2+ episodes
+- `narrative_cluster`: cross-episode scenes sharing >50% character overlap
+
+Wired into `ai-crosslink-generator.ts` step 3b, replacing inline Jaccard-only code.
+
+**New/modified files:**
+- `src/scripts/story-algorithms.ts` — `generateAlgorithmCrossLinks()` (~150 lines)
+- `src/scripts/ai-crosslink-generator.ts` — step 3b refactored to call new function
+- `src/__tests__/algorithm-crosslinks.test.ts` — 10 tests (21 expect())
+
+### 2026-04-28 — Hybrid mode fuzzy dedup
+
+**Problem:** Regex and AI pipelines produce different labels for the same concept (e.g., "TitleScene" vs "title"), causing ~10% node count inflation in hybrid mode.
+
+**Fix:** Added `normalizeForDedup()` — normalizes labels by lowercasing, stripping underscores/spaces/hyphens/parens. Hybrid step 7.5 now builds a fuzzy index of regex node labels by type, and skips AI nodes whose normalized label is contained in (or contains) an existing regex label.
+
+**New files:**
+- `src/scripts/dedup.ts` — exported `normalizeForDedup()`
+- `src/__tests__/dedup.test.ts` — 9 tests (15 expect())
+
+### 2026-04-27 — Incremental Pipeline
+
+**Changes:**
+- New `src/scripts/incremental.ts`: exported `isUpToDate(episodeDir)` — mtime check narration.ts vs graph.json
+- `graphify-pipeline.ts`: `--incremental` flag, skips extraction + per-episode HTML for up-to-date episodes
+- `src/__tests__/pipeline-incremental.test.ts`: 5 tests covering all isUpToDate edge cases
+- Merge/check/crosslink always run (downstream of all episodes)
 
 ### Phase 26-A/B1/B2 — AI Pipeline Foundation (2026-04-18)
 
@@ -222,6 +473,10 @@ These are implementation tasks in `bun_app/storygraph/src/`. For architecture an
 
 ## Done
 
+- [x] **Artifact extraction** -- Parse dialog for creation patterns via artifactPatterns in SeriesConfig. Step 7.7 in graphify-episode.ts. weapon-forger: 4 artifacts, my-core-is-boss: 3 artifact types.
+- [x] **Plot event extraction** -- Narrator TitleScene/OutroScene sentences as plot_event nodes. Step 7.6. weapon-forger ch1-ep1: 10 plot events.
+- [x] **Hybrid mode fuzzy dedup in graphify-episode.ts** -- normalizeForDedup + regex label index in step 7.5
+- [x] **Incremental pipeline** — `--incremental` flag in graphify-pipeline.ts, mtime-based skip, 5 tests
 - [x] **Phase 26-A complete** — ai-client.ts + @mariozechner/pi-ai dependency
 - [x] **Phase 26-B1 complete** — buildEpisodeExtractionPrompt() in subagent-prompt.ts
 - [x] **Phase 26-B2 complete** — graphify-episode.ts --mode ai with regex fallback

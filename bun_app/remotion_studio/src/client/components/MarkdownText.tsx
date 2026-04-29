@@ -1,7 +1,8 @@
-import { createElement } from "react";
+import { useTheme } from "../theme";
 
 // Lightweight inline markdown: **bold**, *italic*, `code`, - lists, numbered lists
 export function MarkdownText({ content }: { content: string }) {
+  const theme = useTheme();
   const lines = content.split("\n");
   const elements: React.ReactNode[] = [];
 
@@ -24,14 +25,14 @@ export function MarkdownText({ content }: { content: string }) {
         <pre key={key++} style={{
           margin: "8px 0",
           padding: "10px 12px",
-          background: "#1e1e1e",
-          color: "#d4d4d4",
-          borderRadius: 6,
+          background: theme.colors.code.bg,
+          color: theme.colors.code.text,
+          borderRadius: theme.radii.lg,
           fontSize: 13,
           overflow: "auto",
           whiteSpace: "pre-wrap",
         }}>
-          {lang && <div style={{ color: "#569cd6", marginBottom: 4, fontSize: 11 }}>{lang}</div>}
+          {lang && <div style={{ color: theme.colors.code.lang, marginBottom: 4, fontSize: 11 }}>{lang}</div>}
           {codeLines.join("\n")}
         </pre>
       );
@@ -48,7 +49,7 @@ export function MarkdownText({ content }: { content: string }) {
       elements.push(
         <ul key={key++} style={{ margin: "4px 0", paddingLeft: 20 }}>
           {items.map((item, j) => (
-            <li key={j} style={{ fontSize: 14, lineHeight: 1.5 }}>{renderInline(item)}</li>
+            <li key={j} style={{ fontSize: 14, lineHeight: 1.5 }}>{renderInline(item, theme)}</li>
           ))}
         </ul>
       );
@@ -65,7 +66,7 @@ export function MarkdownText({ content }: { content: string }) {
       elements.push(
         <ol key={key++} style={{ margin: "4px 0", paddingLeft: 20 }}>
           {items.map((item, j) => (
-            <li key={j} style={{ fontSize: 14, lineHeight: 1.5 }}>{renderInline(item)}</li>
+            <li key={j} style={{ fontSize: 14, lineHeight: 1.5 }}>{renderInline(item, theme)}</li>
           ))}
         </ol>
       );
@@ -74,7 +75,7 @@ export function MarkdownText({ content }: { content: string }) {
 
     // Horizontal rule
     if (/^---+$/.test(line.trim())) {
-      elements.push(<hr key={key++} style={{ border: "none", borderTop: "1px solid #e0e0e0", margin: "12px 0" }} />);
+      elements.push(<hr key={key++} style={{ border: "none", borderTop: `1px solid ${theme.colors.border.default}`, margin: "12px 0" }} />);
       i++;
       continue;
     }
@@ -87,16 +88,15 @@ export function MarkdownText({ content }: { content: string }) {
     }
 
     // Regular paragraph
-    elements.push(<p key={key++} style={{ margin: "4px 0", lineHeight: 1.5 }}>{renderInline(line)}</p>);
+    elements.push(<p key={key++} style={{ margin: "4px 0", lineHeight: 1.5 }}>{renderInline(line, theme)}</p>);
     i++;
   }
 
   return <>{elements}</>;
 }
 
-function renderInline(text: string): React.ReactNode[] {
+function renderInline(text: string, theme: ReturnType<typeof import("../theme").useTheme>): React.ReactNode[] {
   const parts: React.ReactNode[] = [];
-  // Process **bold**, *italic*, `code` in order of appearance
   const regex = /(\*\*(.+?)\*\*|\*(.+?)\*|`([^`]+)`)/g;
   let lastIdx = 0;
   let match: RegExpExecArray | null;
@@ -113,11 +113,11 @@ function renderInline(text: string): React.ReactNode[] {
     } else if (match[4]) {
       parts.push(
         <code key={key++} style={{
-          background: "#e8e8e8",
+          background: theme.colors.bg.muted,
           padding: "1px 5px",
-          borderRadius: 3,
+          borderRadius: theme.radii.sm,
           fontSize: 13,
-          fontFamily: "monospace",
+          fontFamily: theme.font.mono,
         }}>
           {match[4]}
         </code>

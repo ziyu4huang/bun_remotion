@@ -105,7 +105,7 @@ describe.skipIf(!binaryExists)("dist/agent-cli (packaged binary)", () => {
       expect(result.stdout).toContain("PI_AGENT_PORT");
       expect(result.stdout).toContain("PI_AGENT_WORKDIR");
       expect(result.stdout).toContain("PI_AGENT_RUNS_DIR");
-      expect(result.stdout).toContain("ZAI_API_KEY");
+      expect(result.stdout).toContain("Z_AI_API_KEY");
     });
 
     test("shows examples", () => {

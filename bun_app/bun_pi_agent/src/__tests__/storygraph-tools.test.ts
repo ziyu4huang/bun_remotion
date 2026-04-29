@@ -16,12 +16,12 @@ import {
 const REPO_ROOT = resolve(import.meta.dir, "../../../../");
 const MCI_BOSS = resolve(REPO_ROOT, "bun_remotion_proj/my-core-is-boss");
 
-const SG_TOOL_NAMES = ["sg_pipeline", "sg_check", "sg_score", "sg_status", "sg_regression", "sg_baseline_update", "sg_baseline_list", "sg_suggest", "sg_health"];
+const SG_TOOL_NAMES = ["sg_pipeline", "sg_check", "sg_score", "sg_status", "sg_regression", "sg_baseline_update", "sg_baseline_list", "sg_suggest", "sg_health", "sg_dual_review"];
 
 describe("createStorygraphTools", () => {
-  test("returns 9 tools", () => {
+  test("returns 10 tools", () => {
     const tools = createStorygraphTools();
-    expect(tools).toHaveLength(9);
+    expect(tools).toHaveLength(10);
   });
 
   test("all tool names match expected", () => {

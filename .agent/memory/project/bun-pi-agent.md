@@ -1,91 +1,83 @@
 ---
 name: bun-pi-agent
-description: Coding assistant agent built on pi-agent ecosystem (pi-agent-core, pi-ai, pi-coding-agent) with CLI + HTTP SSE server
+description: Coding assistant agent on pi-agent ecosystem — multi-agent, ACP stdio, 32 tools, 13 agent defs, GLM5 benchmark
 type: project
 ---
 
-# bun_pi_agent
+# bun_pi_agent (v0.10.2)
 
 ## Overview
-A coding assistant backend at `bun_app/bun_pi_agent/` that uses the `@mariozechner/pi-agent-*` ecosystem. Sits between simple LLM tool calls and full frameworks like OpenClaw.
+Coding assistant backend at `bun_app/bun_pi_agent/` built on `@mariozechner/pi-agent-*` ecosystem. Three modes: ACP stdio (default), interactive CLI, HTTP SSE server. Multi-agent definition system with 13 scoped agents and 32 tools.
 
 ## Architecture
-- **pi-agent-core**: Agent runtime with event system, tool execution, state management
-- **pi-ai**: Unified multi-provider LLM API (z.ai, anthropic, openai, google, etc.)
+- **pi-agent-core**: Agent runtime, event system, state management
+- **pi-ai**: Multi-provider LLM API (z.ai, anthropic, openai, google)
 - **pi-coding-agent**: Built-in coding tools (read, write, edit, bash, grep, find, ls)
+- **@agentclientprotocol/sdk**: ACP JSON-RPC 2.0 over stdin/stdout
 
-## Key APIs
+## Modes
+1. **ACP stdio** (default): JSON-RPC 2.0 over stdin/stdout, session lifecycle, conversation persistence
+2. **CLI**: Interactive readline with `/quit`, `/clear`, `/model` commands
+3. **HTTP server**: SSE streaming, legacy `/chat` + IBM/BeeAI ACP endpoints (`/agents`, `/runs` CRUD)
 
-### Agent Creation
-```typescript
-import { Agent } from "@mariozechner/pi-agent-core";
-import { getModel, getEnvApiKey } from "@mariozechner/pi-ai";
+## Tools (32 total, 8 categories)
+- 7 coding: Read, Write, Bash, Grep, Find, Ls, Edit
+- 9 storygraph: sg_pipeline, sg_check, sg_score, sg_status, sg_regression, sg_baseline_update, sg_baseline_list, sg_suggest, sg_health
+- 1 subagent: spawn_task
+- 3 remotion content: rm_analyze, rm_suggest, rm_lint
+- 3 scaffold: sc_scaffold, sc_series_list, sc_episode_list
+- 3 TTS: tts_generate, tts_voices, tts_status
+- 3 render: render_episode, render_status, render_list
+- 3 image: image_generate, image_status, image_characters
 
-const model = getModel("zai", "glm-4.6");  // typed: provider + modelId from MODELS const
-const agent = new Agent({
-  initialState: { systemPrompt, model, tools },
-  getApiKey: () => getEnvApiKey("zai"),
-});
-agent.subscribe((event, signal) => { /* handle events */ });
-await agent.prompt("hello");
-```
+## Agent Definitions (13 in `.agent/agents/`)
+- Core: pi-developer (all 32 tools)
+- Storygraph: sg-story-advisor (7), sg-quality-gate (9), sg-benchmark-runner (12)
+- Remotion: rm-content-analyst (5)
+- Studio: studio-scaffold (3), studio-tts (3), studio-render (3), studio-image (3), studio-reviewer (8), studio-advisor (7), studio-coordinator (1)
+- Testing: test-reviewer (6)
 
-### Tool Creation (from pi-coding-agent)
-```typescript
-import { createReadTool, createBashTool, createWriteTool, createGrepTool, createFindTool, createLsTool, createEditTool } from "@mariozechner/pi-coding-agent";
-// All take (cwd: string, options?) and return AgentTool
-const tools = [createReadTool(cwd), createWriteTool(cwd), createBashTool(cwd), ...];
-```
+## Key Features
+- Multi-agent definition system: `.agent/agents/*.md` with scoped tools, model overrides, custom prompts
+- Agent factory: `createAgentFromDef()` with filtered tools + composed prompt
+- Conversation history persistence: auto-save on `agent_end`, resume via `loadSession`
+- Token usage tracking: both HTTP (run store) and stdio (session store) modes
+- Rate limiting: sliding-window per-IP, configurable
+- GLM5 benchmark suite: KG quality + agent coding benchmarks
+- Self-contained standalone binary via `bun build --compile`
 
-### AgentEvent Types
-`agent_start`, `agent_end`, `turn_start`, `turn_end`, `message_start`, `message_update` (with `assistantMessageEvent` sub-types: `text_delta`, `thinking_delta`, `toolcall_start/end`), `message_end`, `tool_execution_start/end/update`
+## Tests
+- **430 unit tests** across 27 files (1428 expect() calls)
+- **38 e2e tests** across 5 files (93 expect() calls)
 
-### getModel Signature
-```typescript
-getModel<TProvider extends KnownProvider, TModelId>(provider: TProvider, modelId: TModelId): Model<...>
-// Both params are typed — must match MODELS const in models.generated.d.ts
-```
-
-### getEnvApiKey
-```typescript
-getEnvApiKey(provider: KnownProvider): string | undefined
-// Maps: "zai" -> ZAI_API_KEY, "anthropic" -> ANTHROPIC_API_KEY, etc.
-```
-
-## Available z.ai Models
-Provider: `"zai"`, models: `glm-4.5`, `glm-4.5-air`, `glm-4.5-flash`, `glm-4.5v`, `glm-4.6`, `glm-4.6v`, `glm-4.6v-plus`, etc. All use `openai-completions` API with `thinkingFormat: "zai"`.
+## Default Model
+`zai/glm-5-turbo` — benchmarked as same quality as glm-5, 4-5x faster
 
 ## Commands
-- `bun run --cwd bun_app/bun_pi_agent start` — CLI mode
-- `bun run --cwd bun_app/bun_pi_agent server` — HTTP server on 127.0.0.1:3456
-- `bun run --cwd bun_app/bun_pi_agent test` — Run all tests
+- `bun run --cwd bun_app/bun_pi_agent start` — ACP stdio mode (default)
+- `bun run --cwd bun_app/bun_pi_agent start --cli` — Interactive CLI mode
+- `bun run --cwd bun_app/bun_pi_agent start --server` — HTTP server
+- `bun run --cwd bun_app/bun_pi_agent start --agent <name>` — Use specific agent def
+- `bun run --cwd bun_app/bun_pi_agent start --list-agents` — List available agents
+- `bun run --cwd bun_app/bun_pi_agent test` — Run unit tests
+- `bun run --cwd bun_app/bun_pi_agent test:e2e` — Run e2e tests
 
 ## HTTP Endpoints
 - `GET /health` — `{"status":"ok"}`
-- `POST /chat` — SSE streaming, body: `{"message":"...", "model":"zai/glm-4.6"}`
-- ACP endpoints: `/ping`, `/agents`, `/agents/:name`, `/runs` (CRUD), `/runs/:id/events`, `/runs/:id/cancel`
-
-## Tests (93 total)
-- `src/__tests__/config.test.ts` — Config parsing, env var defaults, validation
-- `src/__tests__/tools.test.ts` — All 7 tools creation, uniqueness
-- `src/__tests__/agent.test.ts` — Agent creation, API key resolution, state (system prompt, model, tools)
-- `src/__tests__/renderer.test.ts` — CLI renderer for all AgentEvent types
-- `src/__tests__/server.test.ts` — HTTP routes: health, chat SSE, ACP endpoints (agents, runs lifecycle)
-- `src/skills/__tests__/skills.test.ts` — Skill loading, formatting, discovery from .claude/skills & .agent/skills
-
-## API Key Mapping (pi-ai)
-- `zai` → `ZAI_API_KEY`
-- `anthropic` → `ANTHROPIC_OAUTH_TOKEN` | `ANTHROPIC_API_KEY`
-- `openai` → `OPENAI_API_KEY`
-- `google` → `GEMINI_API_KEY` (not GOOGLE_API_KEY)
-- `google-vertex` → `GOOGLE_CLOUD_API_KEY` or ADC
+- `POST /chat` — SSE streaming, body: `{"message":"..."}`
+- ACP: `/ping`, `/agents`, `/agents/:name`, `/runs` (CRUD), `/runs/:id/events`, `/runs/:id/cancel`
+- Rate limited (100 req/min default), exempt /health and /ping
 
 ## Env Vars
-- `ZAI_API_KEY` (aliased from `Z_AI_API_KEY` in ~/.zshrc)
-- `PI_AGENT_MODEL` (default: `zai/glm-4.6`)
+- `Z_AI_API_KEY` — z.ai API key (aliased to `ZAI_API_KEY` in ~/.zshrc)
+- `PI_AGENT_MODEL` (default: `zai/glm-5-turbo`)
 - `PI_AGENT_HOST` (default: `127.0.0.1`)
 - `PI_AGENT_PORT` (default: `3456`)
 - `PI_AGENT_WORKDIR` (default: cwd)
+- `PI_AGENT_RUNS_DIR`, `PI_AGENT_CONV_DIR` — persistence directories
+- `PI_AGENT_RATE_LIMIT_MAX` (100), `PI_AGENT_RATE_LIMIT_WINDOW_MS` (60000)
+- `PI_AGENT_BENCH_MAX_TOOL_CALLS` (15), `PI_AGENT_BENCH_MAX_TURNS` (10), `PI_AGENT_BENCH_MODE` ("ai")
 
-## Workspace
-Default test workspace: `output/pi-workspace/`
+## Cross-links
+- PLAN: `bun_app/bun_pi_agent/PLAN.md` — Architecture, modules, HTTP API
+- TODO: `bun_app/bun_pi_agent/TODO.md` — Tasks, known issues, dev history

@@ -12,7 +12,7 @@ describe("workflow API — validation", () => {
     expect(data.data.length).toBeGreaterThanOrEqual(5);
     const full = data.data.find((t: any) => t.id === "full-pipeline");
     expect(full).toBeDefined();
-    expect(full.steps.length).toBe(6);
+    expect(full.steps.length).toBe(7);
   });
 
   test("POST /api/workflows/trigger requires templateId", async () => {

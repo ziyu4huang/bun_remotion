@@ -1,21 +1,41 @@
 /**
- * Full pipeline: episode → merge → html → check
+ * Full pipeline: episode → per-ep HTML → merge → merged HTML → check → crosslink → final HTML
  *
  * Runs the complete federated graph pipeline for a series:
- * 1. graphify-episode on each episode directory
- * 2. graphify-merge to combine with link edges
- * 3. gen-story-html for merged graph visualization
- * 4. graphify-check for consistency checking
+ * 1. Clean stale artifacts
+ * 2. graphify-episode on each episode directory
+ * 3. gen-story-html for per-episode visualization
+ * 4. graphify-merge to combine with link edges
+ * 5. gen-story-html for merged graph visualization
+ * 6. graphify-check for consistency checking
+ * 7. ai-crosslink-generator for cross-link discovery + final HTML
  *
  * Usage:
  *   bun run src/scripts/graphify-pipeline.ts <series-dir>
  */
 
 import { resolve } from "node:path";
-import { readdirSync, existsSync, rmSync, unlinkSync, readFileSync } from "node:fs";
+import { existsSync, unlinkSync, readFileSync } from "node:fs";
 import { spawn } from "child_process";
 import { discoverEpisodes } from "./series-config";
 import { parseArgsForAI } from "../ai-client";
+import { isUpToDate } from "./incremental";
+
+function spawnAsync(cmd: string, args: string[]): Promise<{ exitCode: number | null; stdout: string; stderr: string }> {
+  return new Promise((res) => {
+    const proc = spawn(cmd, args, { stdio: ["inherit", "pipe", "pipe"] });
+    const out: Buffer[] = [];
+    const err: Buffer[] = [];
+    proc.stdout?.on("data", (d: Buffer) => out.push(d));
+    proc.stderr?.on("data", (d: Buffer) => err.push(d));
+    proc.on("close", (code) => res({ exitCode: code, stdout: Buffer.concat(out).toString(), stderr: Buffer.concat(err).toString() }));
+    proc.on("error", (e) => res({ exitCode: 1, stdout: "", stderr: e.message }));
+  });
+}
+
+function filterOutput(text: string, keywords: string[]): string {
+  return text.split("\n").filter(l => keywords.some(k => l.includes(k))).map(l => `  ${l}`).join("\n");
+}
 
 const args = process.argv.slice(2);
 if (args.length === 0 || args.includes("--help")) {
@@ -29,20 +49,26 @@ Options:
                       ai: use LLM for extraction + enrichment (requires API key)
                       regex: fast pattern-based extraction only
                       hybrid: regex first, then AI supplements exclusive types (default)
+  --incremental       Skip episodes where narration.ts hasn't changed since last extraction
+  --feedback          Enable enrichment feedback loop (uses previous gate.json to improve AI extraction)
   --provider <name>   AI provider (default: zai)
   --model <name>      AI model (default: glm-4.7-flash)
 
 Steps:
-  1. graphify-episode on each episode
-  2. graphify-merge to combine sub-graphs
-  3. gen-story-html for merged visualization
-  3.5. ai-crosslink-generator for AI cross-link discovery
-  4. graphify-check for consistency
+  1. Clean stale artifacts
+  2. graphify-episode on each episode
+  3. gen-story-html per-episode visualization
+  4. graphify-merge sub-graphs + link edges
+  5. gen-story-html merged visualization
+  6. graphify-check consistency report
+  7. Cross-link discovery + final HTML
 `);
   process.exit(0);
 }
 
 const aiConfig = parseArgsForAI(args);
+const incremental = args.includes("--incremental");
+const feedback = args.includes("--feedback");
 const seriesDir = resolve(args[0]);
 if (!seriesDir.startsWith("/")) {
   console.error(`Error: "${seriesDir}" is not an absolute path. Use absolute paths.`);
@@ -55,6 +81,7 @@ const aiFlags: string[] = [];
 if (aiConfig.mode === "ai" || aiConfig.mode === "hybrid") {
   aiFlags.push("--mode", aiConfig.mode, "--provider", aiConfig.provider, "--model", aiConfig.model);
 }
+if (feedback) aiFlags.push("--feedback");
 
 console.log(`=== Federated Graph Pipeline ===`);
 console.log(`Series: ${seriesDir}`);
@@ -67,10 +94,10 @@ console.log();
 const discovered = discoverEpisodes(seriesDir);
 const episodes = discovered.map(e => e.dirname);
 
-// Step 0: Clean stale codebase-mode artifacts from prior runs
-console.log(`Step 0: Cleaning stale artifacts...`);
+// ── Step 1: Clean stale codebase-mode artifacts ──
 
-// Remove GRAPH_REPORT.md from episode dirs (codebase-mode artifact)
+console.log(`Step 1: Cleaning stale artifacts...`);
+
 for (const ep of episodes) {
   const reportPath = resolve(seriesDir, ep, "storygraph_out", "GRAPH_REPORT.md");
   if (existsSync(reportPath)) {
@@ -79,7 +106,6 @@ for (const ep of episodes) {
   }
 }
 
-// Remove series-level graph.json if it's codebase-mode (has "contains"/"calls" edges, not story edges)
 const seriesGraphPath = resolve(seriesDir, "storygraph_out", "graph.json");
 if (existsSync(seriesGraphPath)) {
   try {
@@ -93,72 +119,59 @@ if (existsSync(seriesGraphPath)) {
 
 console.log(``);
 
-// Step 1: Process episodes
+// ── Step 2: Process episodes (parallel) ──
 
-console.log(`Step 1: Processing ${episodes.length} episodes...`);
+const skipped = incremental ? episodes.filter(ep => isUpToDate(resolve(seriesDir, ep))) : [];
+const toProcess = episodes.filter(ep => !skipped.includes(ep));
 
-let step1Ok = true;
-for (const ep of episodes) {
-  const epDir = resolve(seriesDir, ep);
-  console.log(`\n--- ${ep} ---`);
+console.log(`Step 2: Processing ${toProcess.length} episodes${incremental ? ` (${skipped.length} skipped)` : ""}...`);
 
-  try {
-    const result = Bun.spawnSync([
-      "bun", "run",
-      resolve(scriptDir, "graphify-episode.ts"),
-      epDir,
-      "--series-dir", seriesDir,
-      ...aiFlags,
-    ], { stdio: ["inherit", "pipe", "pipe"] });
+const step2Start = Date.now();
+const step2Results = await Promise.all(
+  toProcess.map(async (ep) => {
+    const epDir = resolve(seriesDir, ep);
+    const result = await spawnAsync("bun", [
+      "run", resolve(scriptDir, "graphify-episode.ts"),
+      epDir, "--series-dir", seriesDir, ...aiFlags,
+    ]);
+    return { ep, ...result };
+  })
+);
 
-    if (result.stdout) {
-      const output = new TextDecoder().decode(result.stdout);
-      for (const line of output.split("\n")) {
-        if (line.includes("Done!") || line.includes("Narrative extraction") || line.includes("Error")) {
-          console.log(`  ${line}`);
-        }
-      }
-    }
+for (const r of step2Results) {
+  console.log(`\n--- ${r.ep} ---`);
+  if (r.stdout) console.log(filterOutput(r.stdout, ["Done!", "Narrative extraction", "Error"]));
+  if (r.exitCode !== 0) {
+    console.log(`  ⚠ Episode ${r.ep} had issues (exit code ${r.exitCode})`);
+    if (r.stderr) console.log(`  ${r.stderr.split("\n")[0]}`);
+  }
+}
+console.log(`  Step 2 done in ${((Date.now() - step2Start) / 1000).toFixed(1)}s (${toProcess.length} episodes parallel)`);
 
-    if (result.exitCode !== 0) {
-      console.log(`  ⚠ Episode ${ep} had issues (exit code ${result.exitCode})`);
-      const stderr = result.stderr ? new TextDecoder().decode(result.stderr) : "";
-      if (stderr) console.log(`  ${stderr.split("\n")[0]}`);
-    }
-  } catch (e) {
-    console.log(`  ✗ Failed: ${e}`);
-    step1Ok = false;
+// ── Step 3: Per-episode HTML (parallel) ──
+
+console.log(`\nStep 3: Generating per-episode HTML for ${toProcess.length} episodes...`);
+
+const step3Results = await Promise.all(
+  toProcess.map(async (ep) => {
+    const epDir = resolve(seriesDir, ep);
+    const result = await spawnAsync("bun", [
+      "run", resolve(scriptDir, "gen-story-html.ts"), epDir,
+    ]);
+    return { ep, ...result };
+  })
+);
+
+for (const r of step3Results) {
+  if (r.stdout) {
+    const filtered = filterOutput(r.stdout, ["Wrote", "Error"]);
+    if (filtered) console.log(`  ${r.ep}: ${filtered.trim()}`);
   }
 }
 
-// Step 1.5: Generate per-episode HTML
+// ── Step 4: Merge ──
 
-console.log(`\nStep 1.5: Generating per-episode HTML...`);
-
-for (const ep of episodes) {
-  const epDir = resolve(seriesDir, ep);
-  try {
-    const result = Bun.spawnSync([
-      "bun", "run",
-      resolve(scriptDir, "gen-story-html.ts"),
-      epDir,
-    ], { stdio: ["inherit", "pipe", "pipe"] });
-
-    if (result.stdout) {
-      const output = new TextDecoder().decode(result.stdout);
-      for (const line of output.split("\n")) {
-        if (line.includes("Wrote") || line.includes("Error")) {
-          console.log(`  ${line}`);
-        }
-      }
-    }
-  } catch (e) {
-    console.log(`  Per-episode HTML skipped for ${ep}: ${e}`);
-  }
-}
-
-// Step 2: Merge
-console.log(`\n\nStep 2: Merging sub-graphs...`);
+console.log(`\n\nStep 4: Merging sub-graphs...`);
 
 try {
   const result = Bun.spawnSync([
@@ -180,8 +193,9 @@ try {
   process.exit(1);
 }
 
-// Step 2.5: Generate merged graph HTML
-console.log(`\n\nStep 2.5: Generating merged graph HTML...`);
+// ── Step 5: Merged graph HTML ──
+
+console.log(`\n\nStep 5: Generating merged graph HTML...`);
 
 try {
   const result = Bun.spawnSync([
@@ -202,8 +216,9 @@ try {
   console.log(`  ✗ HTML generation failed: ${e}`);
 }
 
-// Step 3: Check
-console.log(`\n\nStep 3: Consistency checking...`);
+// ── Step 6: Consistency check ──
+
+console.log(`\n\nStep 6: Consistency checking...`);
 
 try {
   const result = Bun.spawnSync([
@@ -225,8 +240,9 @@ try {
   console.log(`  ✗ Check failed: ${e}`);
 }
 
-// Step 3.5: AI Cross-Link Discovery
-console.log(`\n\nStep 3.5: AI Cross-Link Discovery...`);
+// ── Step 7: Cross-link discovery + final HTML ──
+
+console.log(`\n\nStep 7: Cross-link discovery...`);
 
 try {
   const crosslinkResult = Bun.spawnSync([
@@ -250,7 +266,7 @@ try {
   if (existsSync(mergedPath)) {
     const mergedData = JSON.parse(readFileSync(mergedPath, "utf-8"));
     if (mergedData.cross_links && mergedData.cross_links.length > 0) {
-      console.log(`  Re-generating HTML with ${mergedData.cross_links.length} AI cross-links...`);
+      console.log(`  Re-generating HTML with ${mergedData.cross_links.length} cross-links...`);
       const htmlResult = Bun.spawnSync([
         "bun", "run",
         resolve(scriptDir, "gen-story-html.ts"),
@@ -272,4 +288,7 @@ try {
 }
 
 console.log(`\n=== Pipeline complete ===`);
+if (incremental && skipped.length > 0) {
+  console.log(`${episodes.length - skipped.length} processed, ${skipped.length} skipped (incremental)`);
+}
 console.log(`Output: ${resolve(seriesDir, "storygraph_out")}/`);

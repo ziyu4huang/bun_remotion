@@ -6,12 +6,12 @@
  *   const result = await scaffold({ series: "weapon-forger", chapter: 1, episode: 4 });
  */
 
-import { existsSync } from "node:fs";
+import { existsSync, renameSync, mkdirSync } from "node:fs";
 import { resolve } from "node:path";
 import { getSeriesConfig } from "./series-config";
 import { computeNaming } from "./naming";
 import { collectFiles, writeFiles, verify } from "./writer";
-import { updateDevSh, updateRootPackageJson } from "./updaters";
+import { updateDevSh, updateRootPackageJson, updateSeriesPlanMd } from "./updaters";
 import type { ScaffoldContext } from "./templates";
 import type { VideoCategoryId } from "remotion_types";
 
@@ -28,6 +28,8 @@ export interface ScaffoldOptions {
   scenes?: number;
   /** Don't write files, just return what would be created */
   dryRun?: boolean;
+  /** Overwrite existing directory (backs up to .bak.{timestamp}) */
+  force?: boolean;
   /** Skip bun install */
   skipInstall?: boolean;
   /** Repository root (defaults to auto-detected) */
@@ -53,6 +55,28 @@ export interface ScaffoldResult {
 }
 
 const DEFAULT_REPO_ROOT = resolve(import.meta.dir, "../../..");
+
+function validateAssets(config: NonNullable<typeof config>, seriesDir: string): string[] {
+  const warnings: string[] = [];
+  if (!existsSync(seriesDir)) {
+    warnings.push(`Series directory not found: ${seriesDir}`);
+    return warnings;
+  }
+  const assetsDir = resolve(seriesDir, "assets");
+  if (!existsSync(assetsDir)) {
+    warnings.push(`No assets/ directory in ${seriesDir}`);
+    return warnings;
+  }
+  const charactersDir = resolve(assetsDir, "characters");
+  if (!existsSync(charactersDir)) {
+    warnings.push(`No assets/characters/ in ${seriesDir} — scene imports may fail`);
+  }
+  const componentsDir = resolve(assetsDir, "components");
+  if (!existsSync(componentsDir)) {
+    warnings.push(`No assets/components/ in ${seriesDir} — scene imports may fail`);
+  }
+  return warnings;
+}
 
 export async function scaffold(options: ScaffoldOptions): Promise<ScaffoldResult> {
   const errors: string[] = [];
@@ -90,15 +114,29 @@ export async function scaffold(options: ScaffoldOptions): Promise<ScaffoldResult
     repoRoot,
   );
 
+  // Asset validation (warn, don't block)
+  if (config) {
+    const warnings = validateAssets(config, naming.seriesDir);
+    for (const w of warnings) {
+      console.warn(`WARNING: ${w}`);
+    }
+  }
+
   // Idempotency check
   if (existsSync(naming.episodeDir) && !options.dryRun) {
-    return {
-      success: false,
-      naming: namingToResult(naming),
-      filesWritten: 0,
-      skipped: [],
-      errors: [`Directory already exists: ${naming.episodeDir}`],
-    };
+    if (options.force) {
+      const backupDir = `${naming.episodeDir}.bak.${Date.now()}`;
+      renameSync(naming.episodeDir, backupDir);
+      console.log(`Backed up existing directory to ${backupDir}`);
+    } else {
+      return {
+        success: false,
+        naming: namingToResult(naming),
+        filesWritten: 0,
+        skipped: [],
+        errors: [`Directory already exists: ${naming.episodeDir}. Use --force to overwrite.`],
+      };
+    }
   }
 
   // Build context
@@ -132,6 +170,7 @@ export async function scaffold(options: ScaffoldOptions): Promise<ScaffoldResult
   if (!options.dryRun) {
     updateDevSh(ctx);
     updateRootPackageJson(ctx);
+    updateSeriesPlanMd(ctx);
 
     if (!options.skipInstall) {
       const result = Bun.spawnSync(["bun", "install"], {

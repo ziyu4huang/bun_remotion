@@ -680,7 +680,7 @@ export function genNarration(ctx: ScaffoldContext): string {
     let audioName: string;
     if (i === 0) audioName = "title";
     else if (i === sceneNames.length - 1) audioName = "outro";
-    else audioName = sceneNames[i].replace(/Scene$/, "").toLowerCase();
+    else audioName = `${config.contentScenePrefix.toLowerCase()}${i}`;
 
     sceneEntries.push(`  // ─── ${sceneNames[i]} ${"─".repeat(Math.max(1, 60 - sceneNames[i].length))}
   {

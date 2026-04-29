@@ -14,6 +14,8 @@ export interface ScaffoldArgs {
   scenes: number | null; // null = use series/category default
   dryRun: boolean;
   skipInstall: boolean;
+  force: boolean;
+  listSeries: boolean;
   help: boolean;
 }
 
@@ -26,6 +28,8 @@ export function parseArgs(argv: string[]): ScaffoldArgs {
     scenes: null,
     dryRun: false,
     skipInstall: false,
+    force: false,
+    listSeries: false,
     help: false,
   };
 
@@ -56,6 +60,12 @@ export function parseArgs(argv: string[]): ScaffoldArgs {
         break;
       case "--skip-install":
         args.skipInstall = true;
+        break;
+      case "--force":
+        args.force = true;
+        break;
+      case "--list-series":
+        args.listSeries = true;
         break;
       default:
         if (!arg.startsWith("-")) {
@@ -121,13 +131,16 @@ Options:
   --ep <M>                Episode number (required for episode-based series)
   --scenes <N>            Override content scene count (default from series)
   --dry-run               Print files without writing
+  --force                 Overwrite existing episode directory (backs up first)
   --skip-install          Skip bun install step
+  --list-series           Show available series and their configs
   --help, -h              Show this help
 
 Available series:
   weapon-forger           (chapter-based, 2 content scenes)
   my-core-is-boss         (chapter-based, 3 content scenes)
   galgame-meme-theater    (flat, 4 content scenes)
+  storygraph-explainer    (standalone, 7 content scenes)
 
 Category-based (no --ep needed):
   bun run episodeforge --series storygraph-explainer --ch 1 --ep 1

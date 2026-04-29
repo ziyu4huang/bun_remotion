@@ -405,7 +405,7 @@ Make the remotion_studio self-sufficient:
 
 1. **Agent-driven workflow engine** — Current workflow engine runs shell commands. Replace with agent delegation: each workflow step becomes an agent task.
 2. **Autonomous episode builder** — A "Build Episode" button that runs scaffold → pipeline → quality → TTS → render, all via sub-agents, no human intervention.
-3. **LLM endpoint configuration** — UI for setting ZAI_API_KEY or other provider keys. No env var required — stored in remotion_studio config.
+3. **LLM endpoint configuration** — UI for setting `Z_AI_API_KEY` or other provider keys. No env var required — stored in remotion_studio config.
 4. **Story advisor on demand** — Ask the studio-advisor agent questions about any series, get suggestions, apply them.
 
 ### Architecture

@@ -17,6 +17,8 @@ export interface DagExecutorOptions {
   onNodeDone?: (node: TaskNode, error?: string) => void;
   /** Progress callback. */
   onProgress?: (done: number, total: number) => void;
+  /** Abort signal — when triggered, stop executing new nodes. */
+  signal?: AbortSignal;
 }
 
 export async function executeTaskTree(
@@ -39,6 +41,17 @@ export async function executeTaskTree(
   while (true) {
     if (++iterations > maxIterations) {
       console.error(`[dag-executor] Exceeded max iterations (${maxIterations}), breaking`);
+      break;
+    }
+
+    if (options?.signal?.aborted) {
+      // Mark all pending nodes as failed
+      for (const node of stepNodes) {
+        if (node.status === "pending" || node.status === "running") {
+          store.updateNode(treeId, node.id, { status: "failed", error: "Cancelled", finishedAt: Date.now() });
+        }
+      }
+      store.updateNode(treeId, tree.rootId, { status: "failed", error: "Cancelled", finishedAt: Date.now() });
       break;
     }
 

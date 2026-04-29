@@ -41,9 +41,10 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplate[] = [
   {
     id: "full-pipeline",
     label: "Full Pipeline",
-    description: "Scaffold → Pipeline → Check → Score → TTS → Render",
+    description: "Scaffold → [Image ‖ Pipeline → Check → Score] → TTS → Render",
     steps: [
       { kind: "scaffold", label: "Scaffold Episode" },
+      { kind: "image", label: "Generate Images" },
       { kind: "pipeline", label: "Run Pipeline" },
       { kind: "check", label: "Quality Check" },
       { kind: "score", label: "AI Quality Score" },
@@ -102,13 +103,14 @@ export function getTemplate(id: string): WorkflowTemplate | undefined {
 // ── Template → TaskTree translator (Phase 59) ──
 
 /** Dependency edges per template. Value = step kinds that must complete before the key. */
-const TEMPLATE_DEPS: Record<string, Record<WorkflowStepKind, WorkflowStepKind[]>> = {
+export const TEMPLATE_DEPS: Record<string, Record<WorkflowStepKind, WorkflowStepKind[]>> = {
   "full-pipeline": {
     scaffold: [],
+    image: ["scaffold"],
     pipeline: ["scaffold"],
     check: ["pipeline"],
     score: ["pipeline"],
-    tts: ["check", "score"],
+    tts: ["check", "score", "image"],
     render: ["tts"],
   },
   "quality-gate": {
@@ -253,6 +255,7 @@ export async function runWorkflow(
   template: WorkflowTemplate,
   options: WorkflowTriggerOptions,
   reportOverall: (p: number, msg?: string) => void,
+  signal?: AbortSignal,
 ): Promise<WorkflowResult> {
   const { steps } = template;
   const totalSteps = steps.length;
@@ -272,6 +275,11 @@ export async function runWorkflow(
   };
 
   for (let i = 0; i < totalSteps; i++) {
+    if (signal?.aborted) {
+      for (let j = i; j < totalSteps; j++) result.steps[j].status = "pending";
+      result.finishedAt = Date.now();
+      throw new Error("Cancelled");
+    }
     const step = steps[i];
     result.currentStep = i;
     result.steps[i].status = "running";
@@ -384,6 +392,7 @@ export async function runWorkflowDAG(
   template: WorkflowTemplate,
   options: WorkflowTriggerOptions,
   reportOverall: (p: number, msg?: string) => void,
+  signal?: AbortSignal,
 ): Promise<WorkflowResult> {
   const tree = buildTaskTree(template, options as Record<string, unknown>);
   const totalSteps = template.steps.length;
@@ -424,6 +433,7 @@ export async function runWorkflowDAG(
 
   const loadedTree = workflowTaskStore.getTree(storeTree.rootId)!;
   await executeTaskTree(loadedTree, workflowTaskStore, executor, {
+    signal,
     onProgress(done, total) {
       completedCount = done;
     },

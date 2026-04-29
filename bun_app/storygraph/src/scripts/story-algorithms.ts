@@ -11,6 +11,7 @@
 
 import Graph from "graphology";
 import pagerank from "graphology-pagerank";
+import type { StoryCrossLink } from "../types";
 
 // ─── PageRank ───
 
@@ -59,6 +60,49 @@ export function getTopKByPageRank(
       score,
       label: graph?.getNodeAttribute(id, "label"),
     }));
+}
+
+/**
+ * Normalize PageRank scores per node type (min-max scaling to 0–1).
+ *
+ * Raw PageRank favors high-degree nodes (plot, scenes). After normalization,
+ * the top-scoring character_instance has score 1.0 within its type,
+ * making cross-type comparisons meaningful.
+ *
+ * Returns a map: node ID → { raw, normalized, type }.
+ */
+export function normalizePageRankByType(
+  rawScores: Record<string, number>,
+  graph: Graph,
+): Record<string, { raw: number; normalized: number; type: string }> {
+  // Group scores by type
+  const byType = new Map<string, number[]>();
+  for (const [id, score] of Object.entries(rawScores)) {
+    let type = "unknown";
+    try { type = graph.getNodeAttribute(id, "type") ?? "unknown"; } catch { /* */ }
+    if (!byType.has(type)) byType.set(type, []);
+    byType.get(type)!.push(score);
+  }
+
+  // Compute min/max per type
+  const typeMinMax = new Map<string, { min: number; max: number }>();
+  for (const [type, scores] of byType) {
+    const sorted = scores.sort((a, b) => a - b);
+    typeMinMax.set(type, { min: sorted[0], max: sorted[sorted.length - 1] });
+  }
+
+  // Normalize
+  const result: Record<string, { raw: number; normalized: number; type: string }> = {};
+  for (const [id, raw] of Object.entries(rawScores)) {
+    let type = "unknown";
+    try { type = graph.getNodeAttribute(id, "type") ?? "unknown"; } catch { /* */ }
+    const { min, max } = typeMinMax.get(type) ?? { min: 0, max: 1 };
+    const range = max - min;
+    const normalized = range > 0 ? (raw - min) / range : (raw > 0 ? 1 : 0);
+    result[id] = { raw, normalized, type };
+  }
+
+  return result;
 }
 
 // ─── Jaccard Similarity ───
@@ -321,7 +365,8 @@ export type PlotArcDiagnosis =
   | "no_climax"
   | "flat_middle"
   | "inverted"
-  | "no_inciting_incident";
+  | "no_inciting_incident"
+  | "no_structural_data";
 
 export interface PlotArcResult {
   score: number;
@@ -351,6 +396,21 @@ export function computePlotArcScore(
       tensionCurve: [],
       expectedTensions: [],
       actualTensions: [],
+    };
+  }
+
+  // Detect beats without structural data: all tensions are the default 0.5
+  // and no standard beat types present
+  const standardTypes = new Set(["inciting_incident", "rising_action", "climax", "falling_action", "resolution"]);
+  const hasStandardTypes = beats.some(b => standardTypes.has(b.beat_type));
+  const allDefaultTension = beats.every(b => b.tension === 0.5);
+  if (!hasStandardTypes && allDefaultTension) {
+    return {
+      score: 50,
+      diagnosis: "no_structural_data",
+      tensionCurve: beats.map(b => ({ scene: b.scene, beat_type: b.beat_type, tension: b.tension })),
+      expectedTensions: beats.map(() => 0.5),
+      actualTensions: beats.map(b => b.tension),
     };
   }
 
@@ -709,4 +769,228 @@ export function computeComedyArcScore(
   const score = Math.round(Math.max(0, Math.min(100, (1 - meanDev) * 100)));
 
   return { score, diagnosis, beats: typedBeats };
+}
+
+// ─── Algorithm-Only Cross-Link Generation (Phase 27+) ───
+
+export interface AlgorithmCrossLinkParams {
+  nodes: Array<{
+    id: string;
+    type?: string;
+    label?: string;
+    episode?: string;
+    properties?: Record<string, string>;
+  }>;
+  links: Array<{ source: string; target: string; relation?: string }>;
+  linkEdges: Array<{ source: string; target: string; relation?: string }>;
+  pageRankScores: Record<string, number>;
+  /** Per-type normalized PageRank (from normalizePageRankByType). Falls back to raw if absent. */
+  normalizedPageRank?: Record<string, { raw: number; normalized: number; type: string }>;
+  similarityMatrix: Record<string, Record<string, number>>;
+  episodes: string[];
+}
+
+/**
+ * Generate all 4 types of algorithm cross-links from graph metrics.
+ * No AI calls — pure graph algorithm output.
+ *
+ * Types generated:
+ * 1. story_anti_pattern — high Jaccard similarity (>0.5) between episode pairs
+ * 2. character_theme_affinity — high-PageRank characters appearing across episodes
+ * 3. gag_character_synergy — gag types consistently co-occurring with specific characters
+ * 4. narrative_cluster — cross-episode scenes sharing character composition (>0.5 Jaccard)
+ */
+export function generateAlgorithmCrossLinks(
+  params: AlgorithmCrossLinkParams,
+): StoryCrossLink[] {
+  const { nodes, links, pageRankScores, similarityMatrix, episodes } = params;
+  const crossLinks: StoryCrossLink[] = [];
+
+  // ── 1. story_anti_pattern: Jaccard > 0.5 between episodes ──
+
+  for (let i = 0; i < episodes.length; i++) {
+    for (let j = i + 1; j < episodes.length; j++) {
+      const sim = similarityMatrix[episodes[i]]?.[episodes[j]] ?? 0;
+      if (sim > 0.5) {
+        const epAPlot = nodes.find(
+          (n) => n.type === "episode_plot" && n.episode === episodes[i],
+        );
+        const epBPlot = nodes.find(
+          (n) => n.type === "episode_plot" && n.episode === episodes[j],
+        );
+        if (epAPlot && epBPlot) {
+          crossLinks.push({
+            from: epAPlot.id,
+            to: epBPlot.id,
+            link_type: "story_anti_pattern",
+            confidence: sim,
+            evidence: [`Jaccard similarity: ${sim.toFixed(3)}`],
+            generated_by: "algorithm",
+            rationale: `${episodes[i]} and ${episodes[j]} have significant structural overlap (Jaccard: ${sim.toFixed(3)})`,
+          });
+        }
+      }
+    }
+  }
+
+  // ── 2. character_theme_affinity: high-PageRank characters across episodes ──
+
+  const charNodes = nodes.filter((n) => n.type === "character_instance");
+  if (charNodes.length >= 2) {
+    // Use normalized PageRank if available, else raw scores
+    const prForNode = (id: string) =>
+      params.normalizedPageRank?.[id]?.normalized ?? (pageRankScores[id] ?? 0);
+
+    // 70th percentile of non-zero PageRank as threshold
+    const prValues = charNodes
+      .map((n) => prForNode(n.id))
+      .filter((v) => v > 0)
+      .sort((a, b) => a - b);
+    const prThreshold =
+      prValues.length > 0 ? prValues[Math.floor(prValues.length * 0.7)] : 0;
+
+    // Group by label (same character name across episodes)
+    const byChar = new Map<
+      string,
+      typeof charNodes
+    >();
+    for (const n of charNodes) {
+      const name = n.label ?? n.id;
+      if (!byChar.has(name)) byChar.set(name, []);
+      byChar.get(name)!.push(n);
+    }
+
+    for (const [, instances] of byChar) {
+      if (instances.length < 2) continue;
+      const highPR = instances.filter(
+        (n) => prForNode(n.id) >= prThreshold,
+      );
+      if (highPR.length < 2) continue;
+
+      for (let i = 0; i < highPR.length; i++) {
+        for (let j = i + 1; j < highPR.length; j++) {
+          const prI = prForNode(highPR[i].id);
+          const prJ = prForNode(highPR[j].id);
+          crossLinks.push({
+            from: highPR[i].id,
+            to: highPR[j].id,
+            link_type: "character_theme_affinity",
+            confidence: Math.min(
+              1,
+              (prI + prJ) / 2 / Math.max(prThreshold, 0.001),
+            ),
+            evidence: [
+              `PageRank (normalized): ${highPR[i].id}=${prI.toFixed(3)}, ${highPR[j].id}=${prJ.toFixed(3)}`,
+              `Character: ${highPR[i].label ?? "unknown"}`,
+            ],
+            generated_by: "algorithm",
+            rationale: `High-PageRank character "${highPR[i].label ?? "unknown"}" is structurally central across ${highPR[i].episode} and ${highPR[j].episode}`,
+          });
+        }
+      }
+    }
+  }
+
+  // ── 3. gag_character_synergy: gags co-occurring with characters across episodes ──
+
+  const gagNodes = nodes.filter((n) => n.type === "gag_manifestation");
+  if (gagNodes.length > 0 && charNodes.length > 0) {
+    const gagByType = new Map<
+      string,
+      Array<{ id: string; episode?: string }>
+    >();
+    for (const g of gagNodes) {
+      const gagType =
+        g.properties?.gag_type ?? g.id.split("_gag_")[1] ?? "unknown";
+      if (!gagByType.has(gagType)) gagByType.set(gagType, []);
+      gagByType.get(gagType)!.push({ id: g.id, episode: g.episode });
+    }
+
+    const charNames = [
+      ...new Set(charNodes.map((n) => n.label).filter(Boolean)),
+    ];
+    for (const name of charNames) {
+      const charInstances = charNodes.filter((n) => n.label === name);
+      const charEpisodes = new Set(charInstances.map((n) => n.episode));
+
+      for (const [gagType, gags] of gagByType) {
+        const gagEpisodes = new Set(
+          gags.map((g) => g.episode).filter(Boolean),
+        );
+        const common = [...charEpisodes].filter((ep) => gagEpisodes.has(ep));
+        if (common.length >= 2) {
+          const gagI = gags.find((g) => g.episode === common[0]);
+          const charI = charInstances.find(
+            (c) => c.episode === common[0],
+          );
+          if (gagI && charI) {
+            crossLinks.push({
+              from: gagI.id,
+              to: charI.id,
+              link_type: "gag_character_synergy",
+              confidence:
+                0.6 + 0.1 * Math.min(common.length - 2, 4),
+              evidence: [
+                `"${name}" co-occurs with gag "${gagType}" in ${common.length} episodes: ${common.join(", ")}`,
+              ],
+              generated_by: "algorithm",
+              rationale: `Gag "${gagType}" consistently appears alongside "${name}" (${common.length} shared episodes)`,
+            });
+          }
+        }
+      }
+    }
+  }
+
+  // ── 4. narrative_cluster: cross-episode scenes with similar character composition ──
+
+  const sceneNodes = nodes.filter((n) => n.type === "scene");
+  if (sceneNodes.length >= 2) {
+    // Build scene → character names from appears_in links
+    const sceneChars = new Map<string, Set<string>>();
+    for (const s of sceneNodes) {
+      const chars = new Set<string>();
+      for (const l of links) {
+        if (l.target === s.id && l.relation === "appears_in") {
+          const charNode = nodes.find(
+            (n) => n.id === l.source && n.type === "character_instance",
+          );
+          if (charNode) chars.add(charNode.label ?? charNode.id);
+        }
+      }
+      sceneChars.set(s.id, chars);
+    }
+
+    // Cross-episode scene pairs with character Jaccard > 0.5
+    for (let i = 0; i < sceneNodes.length; i++) {
+      for (let j = i + 1; j < sceneNodes.length; j++) {
+        if (sceneNodes[i].episode === sceneNodes[j].episode) continue;
+
+        const charsA = sceneChars.get(sceneNodes[i].id) ?? new Set();
+        const charsB = sceneChars.get(sceneNodes[j].id) ?? new Set();
+        if (charsA.size === 0 || charsB.size === 0) continue;
+
+        const intersection = [...charsA].filter((c) => charsB.has(c));
+        const union = new Set([...charsA, ...charsB]);
+        const sim = union.size > 0 ? intersection.length / union.size : 0;
+
+        if (sim >= 0.5) {
+          crossLinks.push({
+            from: sceneNodes[i].id,
+            to: sceneNodes[j].id,
+            link_type: "narrative_cluster",
+            confidence: sim,
+            evidence: [
+              `Shared characters: ${intersection.join(", ") || "none"}`,
+              `Character overlap: ${intersection.length}/${union.size} (${(sim * 100).toFixed(0)}%)`,
+            ],
+            generated_by: "algorithm",
+            rationale: `Scenes in ${sceneNodes[i].episode} and ${sceneNodes[j].episode} share ${intersection.length} characters, suggesting thematic parallel`,
+          });
+        }
+      }
+    }
+  }
+
+  return crossLinks;
 }

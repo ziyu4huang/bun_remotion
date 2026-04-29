@@ -1,0 +1,866 @@
+[
+  {
+    "source": "ch1ep1_char_zhoumo",
+    "target": "ch1ep2_char_zhoumo",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch1ep1_char_zhoumo",
+    "target": "ch1ep3_char_zhoumo",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch1ep1_char_zhoumo",
+    "target": "ch2ep1_char_zhoumo",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch1ep1_char_zhoumo",
+    "target": "ch2ep2_char_zhoumo",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch1ep1_char_zhoumo",
+    "target": "ch2ep3_char_zhoumo",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch1ep1_char_zhoumo",
+    "target": "ch3ep1_char_zhoumo",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch1ep1_char_zhoumo",
+    "target": "ch3ep2_char_zhoumo",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch1ep2_char_zhoumo",
+    "target": "ch1ep3_char_zhoumo",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch1ep2_char_zhoumo",
+    "target": "ch2ep1_char_zhoumo",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch1ep2_char_zhoumo",
+    "target": "ch2ep2_char_zhoumo",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch1ep2_char_zhoumo",
+    "target": "ch2ep3_char_zhoumo",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch1ep2_char_zhoumo",
+    "target": "ch3ep1_char_zhoumo",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch1ep2_char_zhoumo",
+    "target": "ch3ep2_char_zhoumo",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch1ep3_char_zhoumo",
+    "target": "ch2ep1_char_zhoumo",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch1ep3_char_zhoumo",
+    "target": "ch2ep2_char_zhoumo",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch1ep3_char_zhoumo",
+    "target": "ch2ep3_char_zhoumo",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch1ep3_char_zhoumo",
+    "target": "ch3ep1_char_zhoumo",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch1ep3_char_zhoumo",
+    "target": "ch3ep2_char_zhoumo",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch2ep1_char_zhoumo",
+    "target": "ch2ep2_char_zhoumo",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch2ep1_char_zhoumo",
+    "target": "ch2ep3_char_zhoumo",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch2ep1_char_zhoumo",
+    "target": "ch3ep1_char_zhoumo",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch2ep1_char_zhoumo",
+    "target": "ch3ep2_char_zhoumo",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch2ep2_char_zhoumo",
+    "target": "ch2ep3_char_zhoumo",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch2ep2_char_zhoumo",
+    "target": "ch3ep1_char_zhoumo",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch2ep2_char_zhoumo",
+    "target": "ch3ep2_char_zhoumo",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch2ep3_char_zhoumo",
+    "target": "ch3ep1_char_zhoumo",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch2ep3_char_zhoumo",
+    "target": "ch3ep2_char_zhoumo",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch3ep1_char_zhoumo",
+    "target": "ch3ep2_char_zhoumo",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch1ep1_char_examiner",
+    "target": "ch1ep2_char_examiner",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch1ep1_char_narrator",
+    "target": "ch1ep2_char_narrator",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch1ep1_char_narrator",
+    "target": "ch1ep3_char_narrator",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch1ep1_char_narrator",
+    "target": "ch2ep1_char_narrator",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch1ep1_char_narrator",
+    "target": "ch2ep2_char_narrator",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch1ep1_char_narrator",
+    "target": "ch2ep3_char_narrator",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch1ep1_char_narrator",
+    "target": "ch3ep1_char_narrator",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch1ep1_char_narrator",
+    "target": "ch3ep2_char_narrator",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch1ep2_char_narrator",
+    "target": "ch1ep3_char_narrator",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch1ep2_char_narrator",
+    "target": "ch2ep1_char_narrator",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch1ep2_char_narrator",
+    "target": "ch2ep2_char_narrator",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch1ep2_char_narrator",
+    "target": "ch2ep3_char_narrator",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch1ep2_char_narrator",
+    "target": "ch3ep1_char_narrator",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch1ep2_char_narrator",
+    "target": "ch3ep2_char_narrator",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch1ep3_char_narrator",
+    "target": "ch2ep1_char_narrator",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch1ep3_char_narrator",
+    "target": "ch2ep2_char_narrator",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch1ep3_char_narrator",
+    "target": "ch2ep3_char_narrator",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch1ep3_char_narrator",
+    "target": "ch3ep1_char_narrator",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch1ep3_char_narrator",
+    "target": "ch3ep2_char_narrator",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch2ep1_char_narrator",
+    "target": "ch2ep2_char_narrator",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch2ep1_char_narrator",
+    "target": "ch2ep3_char_narrator",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch2ep1_char_narrator",
+    "target": "ch3ep1_char_narrator",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch2ep1_char_narrator",
+    "target": "ch3ep2_char_narrator",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch2ep2_char_narrator",
+    "target": "ch2ep3_char_narrator",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch2ep2_char_narrator",
+    "target": "ch3ep1_char_narrator",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch2ep2_char_narrator",
+    "target": "ch3ep2_char_narrator",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch2ep3_char_narrator",
+    "target": "ch3ep1_char_narrator",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch2ep3_char_narrator",
+    "target": "ch3ep2_char_narrator",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch3ep1_char_narrator",
+    "target": "ch3ep2_char_narrator",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch1ep2_char_elder",
+    "target": "ch1ep3_char_elder",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch1ep2_char_elder",
+    "target": "ch2ep3_char_elder",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch1ep2_char_elder",
+    "target": "ch3ep1_char_elder",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch1ep3_char_elder",
+    "target": "ch2ep3_char_elder",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch1ep3_char_elder",
+    "target": "ch3ep1_char_elder",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch2ep3_char_elder",
+    "target": "ch3ep1_char_elder",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch2ep1_char_luyang",
+    "target": "ch2ep2_char_luyang",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch2ep1_char_luyang",
+    "target": "ch2ep3_char_luyang",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch2ep1_char_luyang",
+    "target": "ch3ep1_char_luyang",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch2ep1_char_luyang",
+    "target": "ch3ep2_char_luyang",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch2ep2_char_luyang",
+    "target": "ch2ep3_char_luyang",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch2ep2_char_luyang",
+    "target": "ch3ep1_char_luyang",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch2ep2_char_luyang",
+    "target": "ch3ep2_char_luyang",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch2ep3_char_luyang",
+    "target": "ch3ep1_char_luyang",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch2ep3_char_luyang",
+    "target": "ch3ep2_char_luyang",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch3ep1_char_luyang",
+    "target": "ch3ep2_char_luyang",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch2ep1_char_mengjingzhou",
+    "target": "ch2ep2_char_mengjingzhou",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch2ep1_char_mengjingzhou",
+    "target": "ch2ep3_char_mengjingzhou",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch2ep1_char_mengjingzhou",
+    "target": "ch3ep1_char_mengjingzhou",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch2ep1_char_mengjingzhou",
+    "target": "ch3ep2_char_mengjingzhou",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch2ep2_char_mengjingzhou",
+    "target": "ch2ep3_char_mengjingzhou",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch2ep2_char_mengjingzhou",
+    "target": "ch3ep1_char_mengjingzhou",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch2ep2_char_mengjingzhou",
+    "target": "ch3ep2_char_mengjingzhou",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch2ep3_char_mengjingzhou",
+    "target": "ch3ep1_char_mengjingzhou",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch2ep3_char_mengjingzhou",
+    "target": "ch3ep2_char_mengjingzhou",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch3ep1_char_mengjingzhou",
+    "target": "ch3ep2_char_mengjingzhou",
+    "relation": "same_character",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "graph_data"
+  },
+  {
+    "source": "ch1ep1_plot",
+    "target": "ch1ep2_plot",
+    "relation": "story_continues",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "PLAN.md"
+  },
+  {
+    "source": "ch1ep2_plot",
+    "target": "ch1ep3_plot",
+    "relation": "story_continues",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "PLAN.md"
+  },
+  {
+    "source": "ch1ep3_plot",
+    "target": "ch2ep1_plot",
+    "relation": "story_continues",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "PLAN.md"
+  },
+  {
+    "source": "ch2ep1_plot",
+    "target": "ch2ep2_plot",
+    "relation": "story_continues",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "PLAN.md"
+  },
+  {
+    "source": "ch2ep2_plot",
+    "target": "ch2ep3_plot",
+    "relation": "story_continues",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "PLAN.md"
+  },
+  {
+    "source": "ch2ep3_plot",
+    "target": "ch3ep1_plot",
+    "relation": "story_continues",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "PLAN.md"
+  },
+  {
+    "source": "ch3ep1_plot",
+    "target": "ch3ep2_plot",
+    "relation": "story_continues",
+    "confidence": "LINK",
+    "confidence_score": 1,
+    "source_file": "PLAN.md"
+  },
+  {
+    "source": "ch1ep1_gag_忘加按鈕",
+    "target": "ch1ep2_gag_忘加按鈕",
+    "relation": "gag_evolves",
+    "confidence": "INFERRED",
+    "confidence_score": 0.8,
+    "source_file": "PLAN.md"
+  },
+  {
+    "source": "ch1ep2_gag_忘加按鈕",
+    "target": "ch1ep3_gag_忘加按鈕",
+    "relation": "gag_evolves",
+    "confidence": "INFERRED",
+    "confidence_score": 0.8,
+    "source_file": "PLAN.md"
+  },
+  {
+    "source": "ch1ep3_gag_忘加按鈕",
+    "target": "ch2ep1_gag_忘加按鈕",
+    "relation": "gag_evolves",
+    "confidence": "INFERRED",
+    "confidence_score": 0.8,
+    "source_file": "PLAN.md"
+  },
+  {
+    "source": "ch2ep1_gag_忘加按鈕",
+    "target": "ch2ep2_gag_忘加按鈕",
+    "relation": "gag_evolves",
+    "confidence": "INFERRED",
+    "confidence_score": 0.8,
+    "source_file": "PLAN.md"
+  },
+  {
+    "source": "ch2ep2_gag_忘加按鈕",
+    "target": "ch2ep3_gag_忘加按鈕",
+    "relation": "gag_evolves",
+    "confidence": "INFERRED",
+    "confidence_score": 0.8,
+    "source_file": "PLAN.md"
+  },
+  {
+    "source": "ch2ep3_gag_忘加按鈕",
+    "target": "ch3ep1_gag_忘加按鈕",
+    "relation": "gag_evolves",
+    "confidence": "INFERRED",
+    "confidence_score": 0.8,
+    "source_file": "PLAN.md"
+  },
+  {
+    "source": "ch1ep1_gag_現代科技用語",
+    "target": "ch1ep2_gag_現代科技用語",
+    "relation": "gag_evolves",
+    "confidence": "INFERRED",
+    "confidence_score": 0.8,
+    "source_file": "PLAN.md"
+  },
+  {
+    "source": "ch1ep2_gag_現代科技用語",
+    "target": "ch1ep3_gag_現代科技用語",
+    "relation": "gag_evolves",
+    "confidence": "INFERRED",
+    "confidence_score": 0.8,
+    "source_file": "PLAN.md"
+  },
+  {
+    "source": "ch1ep3_gag_現代科技用語",
+    "target": "ch2ep1_gag_現代科技用語",
+    "relation": "gag_evolves",
+    "confidence": "INFERRED",
+    "confidence_score": 0.8,
+    "source_file": "PLAN.md"
+  },
+  {
+    "source": "ch2ep1_gag_現代科技用語",
+    "target": "ch2ep2_gag_現代科技用語",
+    "relation": "gag_evolves",
+    "confidence": "INFERRED",
+    "confidence_score": 0.8,
+    "source_file": "PLAN.md"
+  },
+  {
+    "source": "ch2ep2_gag_現代科技用語",
+    "target": "ch2ep3_gag_現代科技用語",
+    "relation": "gag_evolves",
+    "confidence": "INFERRED",
+    "confidence_score": 0.8,
+    "source_file": "PLAN.md"
+  },
+  {
+    "source": "ch2ep3_gag_現代科技用語",
+    "target": "ch3ep1_gag_現代科技用語",
+    "relation": "gag_evolves",
+    "confidence": "INFERRED",
+    "confidence_score": 0.8,
+    "source_file": "PLAN.md"
+  },
+  {
+    "source": "ch1ep1_gag_法寶反噬",
+    "target": "ch1ep2_gag_法寶反噬",
+    "relation": "gag_evolves",
+    "confidence": "INFERRED",
+    "confidence_score": 0.8,
+    "source_file": "PLAN.md"
+  },
+  {
+    "source": "ch1ep2_gag_法寶反噬",
+    "target": "ch1ep3_gag_法寶反噬",
+    "relation": "gag_evolves",
+    "confidence": "INFERRED",
+    "confidence_score": 0.8,
+    "source_file": "PLAN.md"
+  },
+  {
+    "source": "ch1ep3_gag_法寶反噬",
+    "target": "ch2ep1_gag_法寶反噬",
+    "relation": "gag_evolves",
+    "confidence": "INFERRED",
+    "confidence_score": 0.8,
+    "source_file": "PLAN.md"
+  },
+  {
+    "source": "ch2ep1_gag_法寶反噬",
+    "target": "ch2ep2_gag_法寶反噬",
+    "relation": "gag_evolves",
+    "confidence": "INFERRED",
+    "confidence_score": 0.8,
+    "source_file": "PLAN.md"
+  },
+  {
+    "source": "ch2ep2_gag_法寶反噬",
+    "target": "ch2ep3_gag_法寶反噬",
+    "relation": "gag_evolves",
+    "confidence": "INFERRED",
+    "confidence_score": 0.8,
+    "source_file": "PLAN.md"
+  },
+  {
+    "source": "ch2ep3_gag_法寶反噬",
+    "target": "ch3ep1_gag_法寶反噬",
+    "relation": "gag_evolves",
+    "confidence": "INFERRED",
+    "confidence_score": 0.8,
+    "source_file": "PLAN.md"
+  }
+]

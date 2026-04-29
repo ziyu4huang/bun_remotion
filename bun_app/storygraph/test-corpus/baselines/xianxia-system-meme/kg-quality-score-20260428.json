@@ -1,0 +1,38 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-04-18T21:51:49.905Z",
+  "series": "xianxia-system-meme",
+  "genre": "xianxia_comedy",
+  "generator": {
+    "mode": "regex",
+    "model": "glm-5"
+  },
+  "programmatic": {
+    "score": 100,
+    "decision": "PASS",
+    "quality_breakdown": {
+      "consistency": 1,
+      "arc_structure": null,
+      "pacing": 1,
+      "character_growth": 0.75,
+      "thematic_coherence": 1,
+      "gag_evolution": null
+    }
+  },
+  "ai": {
+    "dimensions": {
+      "entity_accuracy": 7,
+      "relationship_correctness": 7,
+      "completeness": 5,
+      "cross_episode_coherence": 6,
+      "actionability": 7
+    },
+    "overall": 6.4,
+    "justification": "The graph passes programmatic quality checks (Tier 0 = 100), indicating solid structural consistency. Entity labels for characters (xiuxiu, shijie, system) and voice assignments appear accurate based on narration headers. However, the narration excerpts are truncated—showing only comment headers and voice configuration blocks rather than actual story content—making it difficult to verify full entity accuracy and completeness. With 12 scenes across 2 episodes, coverage seems reasonable but character_growth at 75% suggests some narrative arcs may be underserved. Cross-episode links (5 total) exist but with limited visibility into actual plot content, their semantic validity is hard to assess fully. The graph includes tech terms and character traits which aid actionability for scene generation, but missing full narration text limits confidence in scoring completeness higher. Scores reflect both structural soundness and uncertainty from truncated source material."
+  },
+  "blended": {
+    "overall": 0.784,
+    "formula": "0.4 × programmatic + 0.6 × ai",
+    "decision": "ACCEPT"
+  }
+}

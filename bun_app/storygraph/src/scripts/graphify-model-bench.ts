@@ -8,7 +8,7 @@
  *   bun run src/scripts/graphify-model-bench.ts <series-dir> [options]
  *
  * Options:
- *   --models <list>     Comma-separated model IDs (default: glm-4.5-flash,glm-4.6,glm-5)
+ *   --models <list>     Comma-separated model IDs (default: glm-5,glm-5-turbo,glm-5.1)
  *   --provider <name>   AI provider (default: zai)
  *   --runs <N>          Run each model N times for reliability (default: 1)
  *   --accuracy          Run accuracy sampling on merged graph nodes
@@ -101,7 +101,7 @@ export function summarizeModel(model: string, runs: RunResult[]): ModelSummary {
   };
 }
 
-export function generateBenchReport(summaries: ModelSummary[], accuracyResults: AccuracySample[], seriesName: string, models: string[]): string {
+export function generateBenchReport(summaries: ModelSummary[], accuracyResults: AccuracySample[], seriesName: string, models: string[], mode = "hybrid"): string {
   const lines: string[] = [];
   const ts = new Date().toISOString();
 
@@ -109,7 +109,7 @@ export function generateBenchReport(summaries: ModelSummary[], accuracyResults: 
   lines.push(`\nSeries: **${seriesName}**`);
   lines.push(`Generated: ${ts}`);
   lines.push(`Models: ${models.join(", ")}`);
-  lines.push(`Mode: hybrid\n`);
+  lines.push(`Mode: ${mode}\n`);
 
   // Summary table
   lines.push("## Summary\n");
@@ -244,8 +244,9 @@ Usage:
   bun run src/scripts/graphify-model-bench.ts <series-dir> [options]
 
 Options:
-  --models <list>     Comma-separated model IDs (default: glm-4.5-flash,glm-4.6,glm-5)
+  --models <list>     Comma-separated model IDs (default: glm-5,glm-5-turbo,glm-5.1)
   --provider <name>   AI provider (default: zai)
+  --mode <mode>       Pipeline mode: regex|ai|hybrid (default: hybrid)
   --runs <N>          Run each model N times (default: 1)
   --accuracy          Run accuracy sampling on extracted nodes
   --keep              Keep per-model output dirs
@@ -255,9 +256,10 @@ Options:
 
   const seriesDir = resolve(args[0]);
   const provider = (() => { const i = args.indexOf("--provider"); return i !== -1 && args[i + 1] ? args[i + 1] : "zai"; })();
+  const mode = (() => { const i = args.indexOf("--mode"); return i !== -1 && args[i + 1] ? args[i + 1] : "hybrid"; })();
   const models = (() => {
     const i = args.indexOf("--models");
-    return i !== -1 && args[i + 1] ? args[i + 1].split(",").map(m => m.trim()) : ["glm-4.5-flash", "glm-4.6", "glm-5"];
+    return i !== -1 && args[i + 1] ? args[i + 1].split(",").map(m => m.trim()) : ["glm-5", "glm-5-turbo", "glm-5.1"];
   })();
   const numRuns = (() => { const i = args.indexOf("--runs"); return i !== -1 && args[i + 1] ? parseInt(args[i + 1]) : 1; })();
   const runAccuracy = args.includes("--accuracy");
@@ -271,6 +273,7 @@ Options:
   console.log(`Series: ${seriesDir}`);
   console.log(`Models: ${models.join(", ")}`);
   console.log(`Provider: ${provider}`);
+  console.log(`Mode: ${mode}`);
   console.log(`Runs per model: ${numRuns}`);
   console.log(`Accuracy sampling: ${runAccuracy}`);
   console.log();
@@ -302,7 +305,7 @@ Options:
           "bun", "run",
           resolve(scriptDir, "graphify-pipeline.ts"),
           seriesDir,
-          "--mode", "hybrid",
+          "--mode", mode,
           "--provider", provider,
           "--model", model,
         ], { stdio: ["inherit", "pipe", "pipe"] });
@@ -401,7 +404,7 @@ Options:
 
   // Generate report
   mkdirSync(benchDir, { recursive: true });
-  const report = generateBenchReport(summaries, accuracyResults, basename(seriesDir), models);
+  const report = generateBenchReport(summaries, accuracyResults, basename(seriesDir), models, mode);
   const reportPath = resolve(benchDir, "benchmark-report.md");
   writeFileSync(reportPath, report, "utf-8");
 

@@ -352,6 +352,19 @@ export interface BaselineInfo {
   delta: number | null;
 }
 
+// ── Regression ──
+
+export interface RegressionSeriesStatus {
+  seriesId: string;
+  hasBaseline: boolean;
+  baselineScore: number | null;
+  baselineDate: string | null;
+  currentScore: number | null;
+  scoreDelta: number | null;
+  regressionStatus: "OK" | "REGRESSION" | "NO_BASELINE" | "NO_GATE";
+  checkDeltas?: string[];
+}
+
 // ── Export / Import ──
 
 export interface ProjectExport {
@@ -393,6 +406,39 @@ export interface AutomationRuleExport {
   cooldownMs: number;
 }
 
+// ── Episode Progress ──
+
+export interface EpisodeStepProgress {
+  scaffold: boolean;
+  pipeline: boolean;
+  check: boolean;
+  score: boolean;
+  image: boolean;
+  tts: boolean;
+  render: boolean;
+}
+
+export interface EpisodeProgress {
+  seriesId: string;
+  seriesName: string;
+  category: string;
+  episodeId: string;
+  chapter?: number;
+  episode?: number;
+  steps: EpisodeStepProgress;
+  completedSteps: number;
+  totalSteps: number;
+  gateScore?: number;
+  blendedScore?: number;
+}
+
+export interface EpisodeProgressSummary {
+  totalEpisodes: number;
+  completedEpisodes: number;
+  avgCompletion: number;
+  byStep: Record<keyof EpisodeStepProgress, { done: number; total: number }>;
+}
+
 // ── Agent Bridge ──
 
 export interface AgentInfo {
@@ -422,5 +468,35 @@ export interface AgentTaskResult {
   turnCount: number;
   toolCallCount: number;
   toolCalls: Array<{ name: string; args: unknown; result: unknown; isError: boolean }>;
+  durationMs: number;
+}
+
+// ── Batch Operations ──
+
+export interface BatchRequest {
+  operation: "tts" | "render";
+  /** Target specific episodes by ID (e.g. "weapon-forger/weapon-forger-ch1-ep1") */
+  episodeIds?: string[];
+  /** Or filter by series (optionally restricted to a chapter) */
+  seriesId?: string;
+  chapter?: number;
+  /** TTS options */
+  skipExisting?: boolean;
+  engine?: "mlx" | "gemini";
+}
+
+export interface BatchEpisodeResult {
+  episodeId: string;
+  status: "completed" | "failed" | "skipped";
+  error?: string;
+}
+
+export interface BatchResult {
+  operation: string;
+  total: number;
+  completed: number;
+  failed: number;
+  skipped: number;
+  episodes: BatchEpisodeResult[];
   durationMs: number;
 }

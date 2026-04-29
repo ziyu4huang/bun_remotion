@@ -1,0 +1,916 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: pipeline-progress.spec.ts >> Pipeline Progress >> filter tabs are clickable
+- Location: e2e/pipeline-progress.spec.ts:26:3
+
+# Error details
+
+```
+Error: expect(locator).toBeVisible() failed
+
+Locator: getByRole('button', { name: /All|全部/i })
+Expected: visible
+Error: strict mode violation: getByRole('button', { name: /All|全部/i }) resolved to 2 elements:
+    1) <button>All (30)</button> aka getByRole('button', { name: 'All (30)' })
+    2) <button>Select All</button> aka getByRole('button', { name: 'Select All' })
+
+Call log:
+  - Expect "toBeVisible" with timeout 5000ms
+  - waiting for getByRole('button', { name: /All|全部/i })
+
+```
+
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - navigation [ref=e4]:
+    - heading "Remotion Studio" [level=2] [ref=e5]
+    - generic [ref=e6]:
+      - generic [ref=e7]: Overview
+      - button "■ Dashboard" [ref=e8] [cursor=pointer]:
+        - generic [ref=e9]: ■
+        - text: Dashboard
+      - button "● Monitoring" [ref=e10] [cursor=pointer]:
+        - generic [ref=e11]: ●
+        - text: Monitoring
+      - button "▣ Progress" [active] [ref=e12] [cursor=pointer]:
+        - generic [ref=e13]: ▣
+        - text: Progress
+      - button "▦ Kanban" [ref=e14] [cursor=pointer]:
+        - generic [ref=e15]: ▦
+        - text: Kanban
+    - generic [ref=e16]:
+      - generic [ref=e17]: Production
+      - button "📁 Projects" [ref=e18] [cursor=pointer]:
+        - generic [ref=e19]: 📁
+        - text: Projects
+      - button "✍ Story Editor" [ref=e20] [cursor=pointer]:
+        - generic [ref=e21]: ✍
+        - text: Story Editor
+      - button "⚙ Workflows" [ref=e22] [cursor=pointer]:
+        - generic [ref=e23]: ⚙
+        - text: Workflows
+    - generic [ref=e24]:
+      - generic [ref=e25]: Analysis
+      - button "🕸 Storygraph" [ref=e26] [cursor=pointer]:
+        - generic [ref=e27]: 🕸
+        - text: Storygraph
+      - button "✔ Quality" [ref=e28] [cursor=pointer]:
+        - generic [ref=e29]: ✔
+        - text: Quality
+      - button "📊 Benchmark" [ref=e30] [cursor=pointer]:
+        - generic [ref=e31]: 📊
+        - text: Benchmark
+    - generic [ref=e32]:
+      - generic [ref=e33]: AI
+      - button "🤖 Agent Chat" [ref=e34] [cursor=pointer]:
+        - generic [ref=e35]: 🤖
+        - text: Agent Chat
+    - generic [ref=e36]:
+      - generic [ref=e37]: Assets
+      - button "🖼 Assets" [ref=e38] [cursor=pointer]:
+        - generic [ref=e39]: 🖼
+        - text: Assets
+      - button "🔊 TTS" [ref=e40] [cursor=pointer]:
+        - generic [ref=e41]: 🔊
+        - text: TTS
+      - button "▶ Render" [ref=e42] [cursor=pointer]:
+        - generic [ref=e43]: ▶
+        - text: Render
+      - button "🎨 Image" [ref=e44] [cursor=pointer]:
+        - generic [ref=e45]: 🎨
+        - text: Image
+    - generic [ref=e46]:
+      - button "◐" [ref=e47] [cursor=pointer]
+      - button "中" [ref=e48] [cursor=pointer]
+  - main [ref=e49]:
+    - generic [ref=e50]:
+      - generic [ref=e51]:
+        - heading "Pipeline Progress" [level=1] [ref=e53]
+        - paragraph [ref=e54]: Track episode progress through the production pipeline
+      - generic [ref=e55]:
+        - generic [ref=e56]:
+          - generic [ref=e57]: Total Episodes
+          - generic [ref=e58]: "30"
+        - generic [ref=e59]:
+          - generic [ref=e60]: Completed
+          - generic [ref=e61]: "0"
+        - generic [ref=e62]:
+          - generic [ref=e63]: Avg Completion
+          - generic [ref=e64]: 41%
+      - generic [ref=e65]:
+        - button "All (30)" [ref=e66] [cursor=pointer]
+        - button "Incomplete (30)" [ref=e67] [cursor=pointer]
+        - button "Complete (0)" [ref=e68] [cursor=pointer]
+        - button "Select All" [ref=e69] [cursor=pointer]
+        - button "Refresh" [ref=e70] [cursor=pointer]
+      - generic [ref=e71]:
+        - generic [ref=e72] [cursor=pointer]:
+          - generic [ref=e73]: ▼
+          - checkbox [ref=e74]
+          - generic [ref=e75]: Galgame Meme Theater
+          - generic [ref=e76]: 7 episodes
+          - generic [ref=e79]: 43%
+        - table [ref=e80]:
+          - rowgroup [ref=e81]:
+            - row "Episode Scaffold KG Check Score Image TTS Render Progress Score" [ref=e82]:
+              - columnheader [ref=e83]
+              - columnheader "Episode" [ref=e84]
+              - columnheader "Scaffold" [ref=e85]
+              - columnheader "KG" [ref=e86]
+              - columnheader "Check" [ref=e87]
+              - columnheader "Score" [ref=e88]
+              - columnheader "Image" [ref=e89]
+              - columnheader "TTS" [ref=e90]
+              - columnheader "Render" [ref=e91]
+              - columnheader "Progress" [ref=e92]
+              - columnheader "Score" [ref=e93]
+          - rowgroup [ref=e94]:
+            - row "Ep1 ✓ — — — ✓ — ✓ 3/7 —" [ref=e95]:
+              - cell [ref=e96]:
+                - checkbox [ref=e97] [cursor=pointer]
+              - cell "Ep1" [ref=e98]
+              - cell "✓" [ref=e99]:
+                - generic [ref=e100]: ✓
+              - cell "—" [ref=e101]:
+                - generic [ref=e102]: —
+              - cell "—" [ref=e103]:
+                - generic [ref=e104]: —
+              - cell "—" [ref=e105]:
+                - generic [ref=e106]: —
+              - cell "✓" [ref=e107]:
+                - generic [ref=e108]: ✓
+              - cell "—" [ref=e109]:
+                - generic [ref=e110]: —
+              - cell "✓" [ref=e111]:
+                - generic [ref=e112]: ✓
+              - cell "3/7" [ref=e113]:
+                - generic [ref=e114]: 3/7
+              - cell "—" [ref=e115]
+            - row "Ep2 ✓ — — — ✓ — ✓ 3/7 —" [ref=e116]:
+              - cell [ref=e117]:
+                - checkbox [ref=e118] [cursor=pointer]
+              - cell "Ep2" [ref=e119]
+              - cell "✓" [ref=e120]:
+                - generic [ref=e121]: ✓
+              - cell "—" [ref=e122]:
+                - generic [ref=e123]: —
+              - cell "—" [ref=e124]:
+                - generic [ref=e125]: —
+              - cell "—" [ref=e126]:
+                - generic [ref=e127]: —
+              - cell "✓" [ref=e128]:
+                - generic [ref=e129]: ✓
+              - cell "—" [ref=e130]:
+                - generic [ref=e131]: —
+              - cell "✓" [ref=e132]:
+                - generic [ref=e133]: ✓
+              - cell "3/7" [ref=e134]:
+                - generic [ref=e135]: 3/7
+              - cell "—" [ref=e136]
+            - row "Ep3 ✓ — — — ✓ — ✓ 3/7 —" [ref=e137]:
+              - cell [ref=e138]:
+                - checkbox [ref=e139] [cursor=pointer]
+              - cell "Ep3" [ref=e140]
+              - cell "✓" [ref=e141]:
+                - generic [ref=e142]: ✓
+              - cell "—" [ref=e143]:
+                - generic [ref=e144]: —
+              - cell "—" [ref=e145]:
+                - generic [ref=e146]: —
+              - cell "—" [ref=e147]:
+                - generic [ref=e148]: —
+              - cell "✓" [ref=e149]:
+                - generic [ref=e150]: ✓
+              - cell "—" [ref=e151]:
+                - generic [ref=e152]: —
+              - cell "✓" [ref=e153]:
+                - generic [ref=e154]: ✓
+              - cell "3/7" [ref=e155]:
+                - generic [ref=e156]: 3/7
+              - cell "—" [ref=e157]
+            - row "Ep4 ✓ — — — ✓ — ✓ 3/7 —" [ref=e158]:
+              - cell [ref=e159]:
+                - checkbox [ref=e160] [cursor=pointer]
+              - cell "Ep4" [ref=e161]
+              - cell "✓" [ref=e162]:
+                - generic [ref=e163]: ✓
+              - cell "—" [ref=e164]:
+                - generic [ref=e165]: —
+              - cell "—" [ref=e166]:
+                - generic [ref=e167]: —
+              - cell "—" [ref=e168]:
+                - generic [ref=e169]: —
+              - cell "✓" [ref=e170]:
+                - generic [ref=e171]: ✓
+              - cell "—" [ref=e172]:
+                - generic [ref=e173]: —
+              - cell "✓" [ref=e174]:
+                - generic [ref=e175]: ✓
+              - cell "3/7" [ref=e176]:
+                - generic [ref=e177]: 3/7
+              - cell "—" [ref=e178]
+            - row "Ep5 ✓ — — — ✓ — ✓ 3/7 —" [ref=e179]:
+              - cell [ref=e180]:
+                - checkbox [ref=e181] [cursor=pointer]
+              - cell "Ep5" [ref=e182]
+              - cell "✓" [ref=e183]:
+                - generic [ref=e184]: ✓
+              - cell "—" [ref=e185]:
+                - generic [ref=e186]: —
+              - cell "—" [ref=e187]:
+                - generic [ref=e188]: —
+              - cell "—" [ref=e189]:
+                - generic [ref=e190]: —
+              - cell "✓" [ref=e191]:
+                - generic [ref=e192]: ✓
+              - cell "—" [ref=e193]:
+                - generic [ref=e194]: —
+              - cell "✓" [ref=e195]:
+                - generic [ref=e196]: ✓
+              - cell "3/7" [ref=e197]:
+                - generic [ref=e198]: 3/7
+              - cell "—" [ref=e199]
+            - row "Ep6 ✓ — — — ✓ — ✓ 3/7 —" [ref=e200]:
+              - cell [ref=e201]:
+                - checkbox [ref=e202] [cursor=pointer]
+              - cell "Ep6" [ref=e203]
+              - cell "✓" [ref=e204]:
+                - generic [ref=e205]: ✓
+              - cell "—" [ref=e206]:
+                - generic [ref=e207]: —
+              - cell "—" [ref=e208]:
+                - generic [ref=e209]: —
+              - cell "—" [ref=e210]:
+                - generic [ref=e211]: —
+              - cell "✓" [ref=e212]:
+                - generic [ref=e213]: ✓
+              - cell "—" [ref=e214]:
+                - generic [ref=e215]: —
+              - cell "✓" [ref=e216]:
+                - generic [ref=e217]: ✓
+              - cell "3/7" [ref=e218]:
+                - generic [ref=e219]: 3/7
+              - cell "—" [ref=e220]
+            - row "Ep7 ✓ — — — ✓ — ✓ 3/7 —" [ref=e221]:
+              - cell [ref=e222]:
+                - checkbox [ref=e223] [cursor=pointer]
+              - cell "Ep7" [ref=e224]
+              - cell "✓" [ref=e225]:
+                - generic [ref=e226]: ✓
+              - cell "—" [ref=e227]:
+                - generic [ref=e228]: —
+              - cell "—" [ref=e229]:
+                - generic [ref=e230]: —
+              - cell "—" [ref=e231]:
+                - generic [ref=e232]: —
+              - cell "✓" [ref=e233]:
+                - generic [ref=e234]: ✓
+              - cell "—" [ref=e235]:
+                - generic [ref=e236]: —
+              - cell "✓" [ref=e237]:
+                - generic [ref=e238]: ✓
+              - cell "3/7" [ref=e239]:
+                - generic [ref=e240]: 3/7
+              - cell "—" [ref=e241]
+      - generic [ref=e242]:
+        - generic [ref=e243] [cursor=pointer]:
+          - generic [ref=e244]: ▼
+          - checkbox [ref=e245]
+          - generic [ref=e246]: My Core Is Boss
+          - generic [ref=e247]: 12 episodes
+          - generic [ref=e250]: 48%
+        - table [ref=e251]:
+          - rowgroup [ref=e252]:
+            - row "Episode Scaffold KG Check Score Image TTS Render Progress Score" [ref=e253]:
+              - columnheader [ref=e254]
+              - columnheader "Episode" [ref=e255]
+              - columnheader "Scaffold" [ref=e256]
+              - columnheader "KG" [ref=e257]
+              - columnheader "Check" [ref=e258]
+              - columnheader "Score" [ref=e259]
+              - columnheader "Image" [ref=e260]
+              - columnheader "TTS" [ref=e261]
+              - columnheader "Render" [ref=e262]
+              - columnheader "Progress" [ref=e263]
+              - columnheader "Score" [ref=e264]
+          - rowgroup [ref=e265]:
+            - row "Ch1-Ep1 ✓ — — — ✓ ✓ ✓ 4/7 —" [ref=e266]:
+              - cell [ref=e267]:
+                - checkbox [ref=e268] [cursor=pointer]
+              - cell "Ch1-Ep1" [ref=e269]
+              - cell "✓" [ref=e270]:
+                - generic [ref=e271]: ✓
+              - cell "—" [ref=e272]:
+                - generic [ref=e273]: —
+              - cell "—" [ref=e274]:
+                - generic [ref=e275]: —
+              - cell "—" [ref=e276]:
+                - generic [ref=e277]: —
+              - cell "✓" [ref=e278]:
+                - generic [ref=e279]: ✓
+              - cell "✓" [ref=e280]:
+                - generic [ref=e281]: ✓
+              - cell "✓" [ref=e282]:
+                - generic [ref=e283]: ✓
+              - cell "4/7" [ref=e284]:
+                - generic [ref=e285]: 4/7
+              - cell "—" [ref=e286]
+            - row "Ch1-Ep2 ✓ — — — ✓ ✓ ✓ 4/7 —" [ref=e287]:
+              - cell [ref=e288]:
+                - checkbox [ref=e289] [cursor=pointer]
+              - cell "Ch1-Ep2" [ref=e290]
+              - cell "✓" [ref=e291]:
+                - generic [ref=e292]: ✓
+              - cell "—" [ref=e293]:
+                - generic [ref=e294]: —
+              - cell "—" [ref=e295]:
+                - generic [ref=e296]: —
+              - cell "—" [ref=e297]:
+                - generic [ref=e298]: —
+              - cell "✓" [ref=e299]:
+                - generic [ref=e300]: ✓
+              - cell "✓" [ref=e301]:
+                - generic [ref=e302]: ✓
+              - cell "✓" [ref=e303]:
+                - generic [ref=e304]: ✓
+              - cell "4/7" [ref=e305]:
+                - generic [ref=e306]: 4/7
+              - cell "—" [ref=e307]
+            - row "Ch1-Ep3 ✓ — — — ✓ ✓ ✓ 4/7 —" [ref=e308]:
+              - cell [ref=e309]:
+                - checkbox [ref=e310] [cursor=pointer]
+              - cell "Ch1-Ep3" [ref=e311]
+              - cell "✓" [ref=e312]:
+                - generic [ref=e313]: ✓
+              - cell "—" [ref=e314]:
+                - generic [ref=e315]: —
+              - cell "—" [ref=e316]:
+                - generic [ref=e317]: —
+              - cell "—" [ref=e318]:
+                - generic [ref=e319]: —
+              - cell "✓" [ref=e320]:
+                - generic [ref=e321]: ✓
+              - cell "✓" [ref=e322]:
+                - generic [ref=e323]: ✓
+              - cell "✓" [ref=e324]:
+                - generic [ref=e325]: ✓
+              - cell "4/7" [ref=e326]:
+                - generic [ref=e327]: 4/7
+              - cell "—" [ref=e328]
+            - row "Ch2-Ep1 ✓ — — — ✓ ✓ ✓ 4/7 —" [ref=e329]:
+              - cell [ref=e330]:
+                - checkbox [ref=e331] [cursor=pointer]
+              - cell "Ch2-Ep1" [ref=e332]
+              - cell "✓" [ref=e333]:
+                - generic [ref=e334]: ✓
+              - cell "—" [ref=e335]:
+                - generic [ref=e336]: —
+              - cell "—" [ref=e337]:
+                - generic [ref=e338]: —
+              - cell "—" [ref=e339]:
+                - generic [ref=e340]: —
+              - cell "✓" [ref=e341]:
+                - generic [ref=e342]: ✓
+              - cell "✓" [ref=e343]:
+                - generic [ref=e344]: ✓
+              - cell "✓" [ref=e345]:
+                - generic [ref=e346]: ✓
+              - cell "4/7" [ref=e347]:
+                - generic [ref=e348]: 4/7
+              - cell "—" [ref=e349]
+            - row "Ch2-Ep2 ✓ — — — ✓ ✓ ✓ 4/7 —" [ref=e350]:
+              - cell [ref=e351]:
+                - checkbox [ref=e352] [cursor=pointer]
+              - cell "Ch2-Ep2" [ref=e353]
+              - cell "✓" [ref=e354]:
+                - generic [ref=e355]: ✓
+              - cell "—" [ref=e356]:
+                - generic [ref=e357]: —
+              - cell "—" [ref=e358]:
+                - generic [ref=e359]: —
+              - cell "—" [ref=e360]:
+                - generic [ref=e361]: —
+              - cell "✓" [ref=e362]:
+                - generic [ref=e363]: ✓
+              - cell "✓" [ref=e364]:
+                - generic [ref=e365]: ✓
+              - cell "✓" [ref=e366]:
+                - generic [ref=e367]: ✓
+              - cell "4/7" [ref=e368]:
+                - generic [ref=e369]: 4/7
+              - cell "—" [ref=e370]
+            - row "Ch2-Ep3 ✓ — — — ✓ ✓ ✓ 4/7 —" [ref=e371]:
+              - cell [ref=e372]:
+                - checkbox [ref=e373] [cursor=pointer]
+              - cell "Ch2-Ep3" [ref=e374]
+              - cell "✓" [ref=e375]:
+                - generic [ref=e376]: ✓
+              - cell "—" [ref=e377]:
+                - generic [ref=e378]: —
+              - cell "—" [ref=e379]:
+                - generic [ref=e380]: —
+              - cell "—" [ref=e381]:
+                - generic [ref=e382]: —
+              - cell "✓" [ref=e383]:
+                - generic [ref=e384]: ✓
+              - cell "✓" [ref=e385]:
+                - generic [ref=e386]: ✓
+              - cell "✓" [ref=e387]:
+                - generic [ref=e388]: ✓
+              - cell "4/7" [ref=e389]:
+                - generic [ref=e390]: 4/7
+              - cell "—" [ref=e391]
+            - row "Ch3-Ep1 ✓ — — — ✓ ✓ ✓ 4/7 —" [ref=e392]:
+              - cell [ref=e393]:
+                - checkbox [ref=e394] [cursor=pointer]
+              - cell "Ch3-Ep1" [ref=e395]
+              - cell "✓" [ref=e396]:
+                - generic [ref=e397]: ✓
+              - cell "—" [ref=e398]:
+                - generic [ref=e399]: —
+              - cell "—" [ref=e400]:
+                - generic [ref=e401]: —
+              - cell "—" [ref=e402]:
+                - generic [ref=e403]: —
+              - cell "✓" [ref=e404]:
+                - generic [ref=e405]: ✓
+              - cell "✓" [ref=e406]:
+                - generic [ref=e407]: ✓
+              - cell "✓" [ref=e408]:
+                - generic [ref=e409]: ✓
+              - cell "4/7" [ref=e410]:
+                - generic [ref=e411]: 4/7
+              - cell "—" [ref=e412]
+            - row "Ch3-Ep2 ✓ — — — ✓ ✓ ✓ 4/7 —" [ref=e413]:
+              - cell [ref=e414]:
+                - checkbox [ref=e415] [cursor=pointer]
+              - cell "Ch3-Ep2" [ref=e416]
+              - cell "✓" [ref=e417]:
+                - generic [ref=e418]: ✓
+              - cell "—" [ref=e419]:
+                - generic [ref=e420]: —
+              - cell "—" [ref=e421]:
+                - generic [ref=e422]: —
+              - cell "—" [ref=e423]:
+                - generic [ref=e424]: —
+              - cell "✓" [ref=e425]:
+                - generic [ref=e426]: ✓
+              - cell "✓" [ref=e427]:
+                - generic [ref=e428]: ✓
+              - cell "✓" [ref=e429]:
+                - generic [ref=e430]: ✓
+              - cell "4/7" [ref=e431]:
+                - generic [ref=e432]: 4/7
+              - cell "—" [ref=e433]
+            - row "Ch3-Ep3 ✓ — — — ✓ — — 2/7 —" [ref=e434]:
+              - cell [ref=e435]:
+                - checkbox [ref=e436] [cursor=pointer]
+              - cell "Ch3-Ep3" [ref=e437]
+              - cell "✓" [ref=e438]:
+                - generic [ref=e439]: ✓
+              - cell "—" [ref=e440]:
+                - generic [ref=e441]: —
+              - cell "—" [ref=e442]:
+                - generic [ref=e443]: —
+              - cell "—" [ref=e444]:
+                - generic [ref=e445]: —
+              - cell "✓" [ref=e446]:
+                - generic [ref=e447]: ✓
+              - cell "—" [ref=e448]:
+                - generic [ref=e449]: —
+              - cell "—" [ref=e450]:
+                - generic [ref=e451]: —
+              - cell "2/7" [ref=e452]:
+                - generic [ref=e453]: 2/7
+              - cell "—" [ref=e454]
+            - row "Ch3-Ep4 ✓ — — — ✓ — — 2/7 —" [ref=e455]:
+              - cell [ref=e456]:
+                - checkbox [ref=e457] [cursor=pointer]
+              - cell "Ch3-Ep4" [ref=e458]
+              - cell "✓" [ref=e459]:
+                - generic [ref=e460]: ✓
+              - cell "—" [ref=e461]:
+                - generic [ref=e462]: —
+              - cell "—" [ref=e463]:
+                - generic [ref=e464]: —
+              - cell "—" [ref=e465]:
+                - generic [ref=e466]: —
+              - cell "✓" [ref=e467]:
+                - generic [ref=e468]: ✓
+              - cell "—" [ref=e469]:
+                - generic [ref=e470]: —
+              - cell "—" [ref=e471]:
+                - generic [ref=e472]: —
+              - cell "2/7" [ref=e473]:
+                - generic [ref=e474]: 2/7
+              - cell "—" [ref=e475]
+            - row "Ch3-Ep5 ✓ — — — ✓ — — 2/7 —" [ref=e476]:
+              - cell [ref=e477]:
+                - checkbox [ref=e478] [cursor=pointer]
+              - cell "Ch3-Ep5" [ref=e479]
+              - cell "✓" [ref=e480]:
+                - generic [ref=e481]: ✓
+              - cell "—" [ref=e482]:
+                - generic [ref=e483]: —
+              - cell "—" [ref=e484]:
+                - generic [ref=e485]: —
+              - cell "—" [ref=e486]:
+                - generic [ref=e487]: —
+              - cell "✓" [ref=e488]:
+                - generic [ref=e489]: ✓
+              - cell "—" [ref=e490]:
+                - generic [ref=e491]: —
+              - cell "—" [ref=e492]:
+                - generic [ref=e493]: —
+              - cell "2/7" [ref=e494]:
+                - generic [ref=e495]: 2/7
+              - cell "—" [ref=e496]
+            - row "Ch3-Ep6 ✓ — — — ✓ — — 2/7 —" [ref=e497]:
+              - cell [ref=e498]:
+                - checkbox [ref=e499] [cursor=pointer]
+              - cell "Ch3-Ep6" [ref=e500]
+              - cell "✓" [ref=e501]:
+                - generic [ref=e502]: ✓
+              - cell "—" [ref=e503]:
+                - generic [ref=e504]: —
+              - cell "—" [ref=e505]:
+                - generic [ref=e506]: —
+              - cell "—" [ref=e507]:
+                - generic [ref=e508]: —
+              - cell "✓" [ref=e509]:
+                - generic [ref=e510]: ✓
+              - cell "—" [ref=e511]:
+                - generic [ref=e512]: —
+              - cell "—" [ref=e513]:
+                - generic [ref=e514]: —
+              - cell "2/7" [ref=e515]:
+                - generic [ref=e516]: 2/7
+              - cell "—" [ref=e517]
+      - generic [ref=e518]:
+        - generic [ref=e519] [cursor=pointer]:
+          - generic [ref=e520]: ▼
+          - checkbox [ref=e521]
+          - generic [ref=e522]: Storygraph Explainer
+          - generic [ref=e523]: 3 episodes
+          - generic [ref=e525]: 0%
+        - table [ref=e526]:
+          - rowgroup [ref=e527]:
+            - row "Episode Scaffold KG Check Score Image TTS Render Progress Score" [ref=e528]:
+              - columnheader [ref=e529]
+              - columnheader "Episode" [ref=e530]
+              - columnheader "Scaffold" [ref=e531]
+              - columnheader "KG" [ref=e532]
+              - columnheader "Check" [ref=e533]
+              - columnheader "Score" [ref=e534]
+              - columnheader "Image" [ref=e535]
+              - columnheader "TTS" [ref=e536]
+              - columnheader "Render" [ref=e537]
+              - columnheader "Progress" [ref=e538]
+              - columnheader "Score" [ref=e539]
+          - rowgroup [ref=e540]:
+            - row "Ch1-Ep1 — — — — — — — 0/7 —" [ref=e541]:
+              - cell [ref=e542]:
+                - checkbox [ref=e543] [cursor=pointer]
+              - cell "Ch1-Ep1" [ref=e544]
+              - cell "—" [ref=e545]:
+                - generic [ref=e546]: —
+              - cell "—" [ref=e547]:
+                - generic [ref=e548]: —
+              - cell "—" [ref=e549]:
+                - generic [ref=e550]: —
+              - cell "—" [ref=e551]:
+                - generic [ref=e552]: —
+              - cell "—" [ref=e553]:
+                - generic [ref=e554]: —
+              - cell "—" [ref=e555]:
+                - generic [ref=e556]: —
+              - cell "—" [ref=e557]:
+                - generic [ref=e558]: —
+              - cell "0/7" [ref=e559]:
+                - generic [ref=e560]: 0/7
+              - cell "—" [ref=e561]
+            - row "Ch1-Ep2 — — — — — — — 0/7 —" [ref=e562]:
+              - cell [ref=e563]:
+                - checkbox [ref=e564] [cursor=pointer]
+              - cell "Ch1-Ep2" [ref=e565]
+              - cell "—" [ref=e566]:
+                - generic [ref=e567]: —
+              - cell "—" [ref=e568]:
+                - generic [ref=e569]: —
+              - cell "—" [ref=e570]:
+                - generic [ref=e571]: —
+              - cell "—" [ref=e572]:
+                - generic [ref=e573]: —
+              - cell "—" [ref=e574]:
+                - generic [ref=e575]: —
+              - cell "—" [ref=e576]:
+                - generic [ref=e577]: —
+              - cell "—" [ref=e578]:
+                - generic [ref=e579]: —
+              - cell "0/7" [ref=e580]:
+                - generic [ref=e581]: 0/7
+              - cell "—" [ref=e582]
+            - row "Ch1-Ep3 — — — — — — — 0/7 —" [ref=e583]:
+              - cell [ref=e584]:
+                - checkbox [ref=e585] [cursor=pointer]
+              - cell "Ch1-Ep3" [ref=e586]
+              - cell "—" [ref=e587]:
+                - generic [ref=e588]: —
+              - cell "—" [ref=e589]:
+                - generic [ref=e590]: —
+              - cell "—" [ref=e591]:
+                - generic [ref=e592]: —
+              - cell "—" [ref=e593]:
+                - generic [ref=e594]: —
+              - cell "—" [ref=e595]:
+                - generic [ref=e596]: —
+              - cell "—" [ref=e597]:
+                - generic [ref=e598]: —
+              - cell "—" [ref=e599]:
+                - generic [ref=e600]: —
+              - cell "0/7" [ref=e601]:
+                - generic [ref=e602]: 0/7
+              - cell "—" [ref=e603]
+      - generic [ref=e604]:
+        - generic [ref=e605] [cursor=pointer]:
+          - generic [ref=e606]: ▼
+          - checkbox [ref=e607]
+          - generic [ref=e608]: Weapon Forger
+          - generic [ref=e609]: 8 episodes
+          - generic [ref=e612]: 46%
+        - table [ref=e613]:
+          - rowgroup [ref=e614]:
+            - row "Episode Scaffold KG Check Score Image TTS Render Progress Score" [ref=e615]:
+              - columnheader [ref=e616]
+              - columnheader "Episode" [ref=e617]
+              - columnheader "Scaffold" [ref=e618]
+              - columnheader "KG" [ref=e619]
+              - columnheader "Check" [ref=e620]
+              - columnheader "Score" [ref=e621]
+              - columnheader "Image" [ref=e622]
+              - columnheader "TTS" [ref=e623]
+              - columnheader "Render" [ref=e624]
+              - columnheader "Progress" [ref=e625]
+              - columnheader "Score" [ref=e626]
+          - rowgroup [ref=e627]:
+            - row "Ch1-Ep1 ✓ — — — ✓ ✓ ✓ 4/7 —" [ref=e628]:
+              - cell [ref=e629]:
+                - checkbox [ref=e630] [cursor=pointer]
+              - cell "Ch1-Ep1" [ref=e631]
+              - cell "✓" [ref=e632]:
+                - generic [ref=e633]: ✓
+              - cell "—" [ref=e634]:
+                - generic [ref=e635]: —
+              - cell "—" [ref=e636]:
+                - generic [ref=e637]: —
+              - cell "—" [ref=e638]:
+                - generic [ref=e639]: —
+              - cell "✓" [ref=e640]:
+                - generic [ref=e641]: ✓
+              - cell "✓" [ref=e642]:
+                - generic [ref=e643]: ✓
+              - cell "✓" [ref=e644]:
+                - generic [ref=e645]: ✓
+              - cell "4/7" [ref=e646]:
+                - generic [ref=e647]: 4/7
+              - cell "—" [ref=e648]
+            - row "Ch1-Ep2 ✓ — — — ✓ ✓ ✓ 4/7 —" [ref=e649]:
+              - cell [ref=e650]:
+                - checkbox [ref=e651] [cursor=pointer]
+              - cell "Ch1-Ep2" [ref=e652]
+              - cell "✓" [ref=e653]:
+                - generic [ref=e654]: ✓
+              - cell "—" [ref=e655]:
+                - generic [ref=e656]: —
+              - cell "—" [ref=e657]:
+                - generic [ref=e658]: —
+              - cell "—" [ref=e659]:
+                - generic [ref=e660]: —
+              - cell "✓" [ref=e661]:
+                - generic [ref=e662]: ✓
+              - cell "✓" [ref=e663]:
+                - generic [ref=e664]: ✓
+              - cell "✓" [ref=e665]:
+                - generic [ref=e666]: ✓
+              - cell "4/7" [ref=e667]:
+                - generic [ref=e668]: 4/7
+              - cell "—" [ref=e669]
+            - row "Ch1-Ep3 ✓ — — — ✓ — — 2/7 —" [ref=e670]:
+              - cell [ref=e671]:
+                - checkbox [ref=e672] [cursor=pointer]
+              - cell "Ch1-Ep3" [ref=e673]
+              - cell "✓" [ref=e674]:
+                - generic [ref=e675]: ✓
+              - cell "—" [ref=e676]:
+                - generic [ref=e677]: —
+              - cell "—" [ref=e678]:
+                - generic [ref=e679]: —
+              - cell "—" [ref=e680]:
+                - generic [ref=e681]: —
+              - cell "✓" [ref=e682]:
+                - generic [ref=e683]: ✓
+              - cell "—" [ref=e684]:
+                - generic [ref=e685]: —
+              - cell "—" [ref=e686]:
+                - generic [ref=e687]: —
+              - cell "2/7" [ref=e688]:
+                - generic [ref=e689]: 2/7
+              - cell "—" [ref=e690]
+            - row "Ch2-Ep1 ✓ — — — ✓ ✓ ✓ 4/7 —" [ref=e691]:
+              - cell [ref=e692]:
+                - checkbox [ref=e693] [cursor=pointer]
+              - cell "Ch2-Ep1" [ref=e694]
+              - cell "✓" [ref=e695]:
+                - generic [ref=e696]: ✓
+              - cell "—" [ref=e697]:
+                - generic [ref=e698]: —
+              - cell "—" [ref=e699]:
+                - generic [ref=e700]: —
+              - cell "—" [ref=e701]:
+                - generic [ref=e702]: —
+              - cell "✓" [ref=e703]:
+                - generic [ref=e704]: ✓
+              - cell "✓" [ref=e705]:
+                - generic [ref=e706]: ✓
+              - cell "✓" [ref=e707]:
+                - generic [ref=e708]: ✓
+              - cell "4/7" [ref=e709]:
+                - generic [ref=e710]: 4/7
+              - cell "—" [ref=e711]
+            - row "Ch2-Ep2 ✓ — — — ✓ ✓ ✓ 4/7 —" [ref=e712]:
+              - cell [ref=e713]:
+                - checkbox [ref=e714] [cursor=pointer]
+              - cell "Ch2-Ep2" [ref=e715]
+              - cell "✓" [ref=e716]:
+                - generic [ref=e717]: ✓
+              - cell "—" [ref=e718]:
+                - generic [ref=e719]: —
+              - cell "—" [ref=e720]:
+                - generic [ref=e721]: —
+              - cell "—" [ref=e722]:
+                - generic [ref=e723]: —
+              - cell "✓" [ref=e724]:
+                - generic [ref=e725]: ✓
+              - cell "✓" [ref=e726]:
+                - generic [ref=e727]: ✓
+              - cell "✓" [ref=e728]:
+                - generic [ref=e729]: ✓
+              - cell "4/7" [ref=e730]:
+                - generic [ref=e731]: 4/7
+              - cell "—" [ref=e732]
+            - row "Ch2-Ep3 ✓ — — — ✓ — — 2/7 —" [ref=e733]:
+              - cell [ref=e734]:
+                - checkbox [ref=e735] [cursor=pointer]
+              - cell "Ch2-Ep3" [ref=e736]
+              - cell "✓" [ref=e737]:
+                - generic [ref=e738]: ✓
+              - cell "—" [ref=e739]:
+                - generic [ref=e740]: —
+              - cell "—" [ref=e741]:
+                - generic [ref=e742]: —
+              - cell "—" [ref=e743]:
+                - generic [ref=e744]: —
+              - cell "✓" [ref=e745]:
+                - generic [ref=e746]: ✓
+              - cell "—" [ref=e747]:
+                - generic [ref=e748]: —
+              - cell "—" [ref=e749]:
+                - generic [ref=e750]: —
+              - cell "2/7" [ref=e751]:
+                - generic [ref=e752]: 2/7
+              - cell "—" [ref=e753]
+            - row "Ch3-Ep1 ✓ — — — ✓ — — 2/7 —" [ref=e754]:
+              - cell [ref=e755]:
+                - checkbox [ref=e756] [cursor=pointer]
+              - cell "Ch3-Ep1" [ref=e757]
+              - cell "✓" [ref=e758]:
+                - generic [ref=e759]: ✓
+              - cell "—" [ref=e760]:
+                - generic [ref=e761]: —
+              - cell "—" [ref=e762]:
+                - generic [ref=e763]: —
+              - cell "—" [ref=e764]:
+                - generic [ref=e765]: —
+              - cell "✓" [ref=e766]:
+                - generic [ref=e767]: ✓
+              - cell "—" [ref=e768]:
+                - generic [ref=e769]: —
+              - cell "—" [ref=e770]:
+                - generic [ref=e771]: —
+              - cell "2/7" [ref=e772]:
+                - generic [ref=e773]: 2/7
+              - cell "—" [ref=e774]
+            - row "Ch3-Ep2 ✓ — — — ✓ ✓ ✓ 4/7 —" [ref=e775]:
+              - cell [ref=e776]:
+                - checkbox [ref=e777] [cursor=pointer]
+              - cell "Ch3-Ep2" [ref=e778]
+              - cell "✓" [ref=e779]:
+                - generic [ref=e780]: ✓
+              - cell "—" [ref=e781]:
+                - generic [ref=e782]: —
+              - cell "—" [ref=e783]:
+                - generic [ref=e784]: —
+              - cell "—" [ref=e785]:
+                - generic [ref=e786]: —
+              - cell "✓" [ref=e787]:
+                - generic [ref=e788]: ✓
+              - cell "✓" [ref=e789]:
+                - generic [ref=e790]: ✓
+              - cell "✓" [ref=e791]:
+                - generic [ref=e792]: ✓
+              - cell "4/7" [ref=e793]:
+                - generic [ref=e794]: 4/7
+              - cell "—" [ref=e795]
+      - generic [ref=e796]:
+        - heading "Step Completion Overview" [level=3] [ref=e797]
+        - generic [ref=e798]:
+          - generic [ref=e799]:
+            - generic [ref=e800]: Scaffold
+            - generic [ref=e801]: 27/30
+          - generic [ref=e804]:
+            - generic [ref=e805]: KG
+            - generic [ref=e806]: 0/30
+          - generic [ref=e808]:
+            - generic [ref=e809]: Check
+            - generic [ref=e810]: 0/30
+          - generic [ref=e812]:
+            - generic [ref=e813]: Score
+            - generic [ref=e814]: 0/30
+          - generic [ref=e816]:
+            - generic [ref=e817]: Image
+            - generic [ref=e818]: 27/30
+          - generic [ref=e821]:
+            - generic [ref=e822]: TTS
+            - generic [ref=e823]: 13/30
+          - generic [ref=e826]:
+            - generic [ref=e827]: Render
+            - generic [ref=e828]: 20/30
+```
+
+# Test source
+
+```ts
+  1  | import { test, expect } from "@playwright/test";
+  2  | import { navigateTo, waitForPageLoad, collectConsoleErrors, assertNoConsoleErrors } from "./helpers";
+  3  | 
+  4  | test.describe("Pipeline Progress", () => {
+  5  |   let errors: string[];
+  6  | 
+  7  |   test.beforeEach(async ({ page }) => {
+  8  |     errors = collectConsoleErrors(page);
+  9  |     await page.goto("/");
+  10 |     await navigateTo(page, "Progress");
+  11 |     await waitForPageLoad(page);
+  12 |   });
+  13 | 
+  14 |   test.afterEach(() => assertNoConsoleErrors(errors));
+  15 | 
+  16 |   test("page loads with heading", async ({ page }) => {
+  17 |     await expect(page.getByRole("heading", { name: /Progress|進度/i })).toBeVisible();
+  18 |   });
+  19 | 
+  20 |   test("shows summary cards", async ({ page }) => {
+  21 |     await expect(page.getByText(/Total Episodes|總集數/i)).toBeVisible({ timeout: 5_000 });
+  22 |     await expect(page.getByText(/Completed|已完成/i)).toBeVisible();
+  23 |     await expect(page.getByText(/Avg Completion|平均完成度/i)).toBeVisible();
+  24 |   });
+  25 | 
+  26 |   test("filter tabs are clickable", async ({ page }) => {
+  27 |     const allTab = page.getByRole("button", { name: /All|全部/i });
+> 28 |     await expect(allTab).toBeVisible();
+     |                          ^ Error: expect(locator).toBeVisible() failed
+  29 |     await allTab.click();
+  30 | 
+  31 |     const incompleteTab = page.getByRole("button", { name: /Incomplete|未完成/i });
+  32 |     if (await incompleteTab.isVisible().catch(() => false)) {
+  33 |       await incompleteTab.click();
+  34 |     }
+  35 |   });
+  36 | 
+  37 |   test("select all / deselect all buttons exist", async ({ page }) => {
+  38 |     const selectAll = page.getByRole("button", { name: /Select All|全選/i });
+  39 |     const deselectAll = page.getByRole("button", { name: /Deselect All|取消全選/i });
+  40 |     // These may appear only when episodes exist
+  41 |     const hasSelectAll = await selectAll.isVisible().catch(() => false);
+  42 |     const hasDeselectAll = await deselectAll.isVisible().catch(() => false);
+  43 |     expect(hasSelectAll || hasDeselectAll || true).toBe(true); // Page rendered without crash
+  44 |   });
+  45 | 
+  46 |   test("batch buttons exist", async ({ page }) => {
+  47 |     const ttsBtn = page.getByRole("button", { name: /^TTS$/i });
+  48 |     const renderBtn = page.getByRole("button", { name: /^Render$/i });
+  49 |     const hasTts = await ttsBtn.isVisible().catch(() => false);
+  50 |     const hasRender = await renderBtn.isVisible().catch(() => false);
+  51 |     expect(hasTts || hasRender || true).toBe(true);
+  52 |   });
+  53 | });
+  54 | 
+```

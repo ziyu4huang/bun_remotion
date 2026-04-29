@@ -29,9 +29,9 @@
 
 | App | Has PLAN.md | Has TODO.md | Tests | Notes |
 |-----|------------|------------|-------|-------|
-| storygraph | ✅ mature (v0.7+) | ✅ run history | — | Reference implementation, skill existed before develop_bun_app |
-| bun_pi_agent | ✅ skill-created | ✅ skill-created | 93 pass | First app to get PLAN/TODO from this skill |
-| remotion_studio | ✅ (in remotion-best-practices) | ✅ (in remotion-best-practices) | 64 pass | Hono API + React SPA, 8 pages, workflow engine. (Renamed from bun_webui in Phase 51) |
+| storygraph | ✅ mature (v0.7+) | ✅ run history | — | Reference implementation |
+| bun_pi_agent | ✅ accurate (v0.10.2) | ✅ accurate (v0.10.2) | 430 unit + 38 e2e | 32 tools, 13 agents, ACP stdio/CLI/HTTP, benchmark suite |
+| remotion_studio | ✅ v0.3.0 | ✅ v0.3.0 | 236 unit + 72 E2E | Hono + React SPA, 13 pages, DAG workflow, JobStore persistence, AbortController cancel |
 
 ## Architecture
 
@@ -60,8 +60,10 @@ Managed bun_apps (each has own PLAN/TODO):
         TODO.md — Tasks, known issues, dev history
     bun_app/remotion_studio/
         PLAN/TODO in .claude/skills/remotion-best-practices/
-        8 pages: Dashboard, Projects, Pipeline, Quality, Assets, TTS, Render, Workflows
-        Workflow engine chains storygraph + episodeforge + bun_tts + remotion-renderer
+        13 pages: Dashboard, Projects, Storygraph, Quality, Monitoring, Story Editor, Benchmark,
+                  Assets, TTS, Render, Workflows, AgentChat, ImageGen
+        DAG workflow engine with parallel execution + resume
+        9 sub-agents via same-process bun_pi_agent bridge
 ```
 
 ## Operations Reference

@@ -20,6 +20,7 @@ import { leidenCluster, analyzeCommunities, cohesionScore } from "../cluster";
 import type { CommunityReport } from "../types";
 import { getSeriesConfigOrThrow, discoverEpisodes, epSortKey } from "./series-config";
 import type { SeriesConfig } from "./series-config";
+import { gagNodeId, plotNodeId, charNodeId } from "./dedup";
 
 // ─── Types ───
 
@@ -354,7 +355,7 @@ const charInstances = new Map<string, string[]>();
 for (const eg of episodeGraphs) {
   for (const node of eg.nodes) {
     if (node.type !== "character_instance") continue;
-    const charId = node.properties?.character_id ?? node.id.split("_char_")[1];
+    const charId = node.properties?.character_id ?? node.id.split("_char_")[1] ?? "";
     if (!charId) continue;
     if (!charInstances.has(charId)) charInstances.set(charId, []);
     charInstances.get(charId)!.push(node.id);
@@ -400,8 +401,8 @@ const storyOrder = episodeMetas.length > 0
   : episodeEntries.map(e => e.epId);
 
 for (let i = 0; i < storyOrder.length - 1; i++) {
-  const plotA = `${storyOrder[i]}_plot`;
-  const plotB = `${storyOrder[i + 1]}_plot`;
+  const plotA = plotNodeId(storyOrder[i]);
+  const plotB = plotNodeId(storyOrder[i + 1]);
 
   if (G.hasNode(plotA) && G.hasNode(plotB)) {
     try {
@@ -422,10 +423,49 @@ for (let i = 0; i < storyOrder.length - 1; i++) {
 }
 
 // 4d. Link: gag_evolves (gag manifestation → next manifestation)
+// Also discover AI-generated gag chains from graph nodes (hybrid mode may add gags
+// not present in PLAN.md/plot-lines.md tables)
+{
+  // Build additional chains from actual gag_manifestation nodes in the graph
+  const gagNodeChains = new Map<string, Array<{ epId: string; nodeId: string }>>();
+  G.forEachNode((node, attrs) => {
+    if (attrs.type === "gag_manifestation") {
+      const gagType = attrs.gag_type ?? node.split("_gag_")[1] ?? "unknown";
+      if (!gagNodeChains.has(gagType)) gagNodeChains.set(gagType, []);
+      const epId = node.match(/^(ch\d+ep\d+)/)?.[1] ?? "";
+      gagNodeChains.get(gagType)!.push({ epId, nodeId: node });
+    }
+  });
+
+  // Sort each chain by episode order and add gag_evolves edges
+  for (const [gagType, entries] of gagNodeChains) {
+    entries.sort((a, b) => epSortKey(a.epId) - epSortKey(b.epId));
+    for (let i = 0; i < entries.length - 1; i++) {
+      const gagA = entries[i].nodeId;
+      const gagB = entries[i + 1].nodeId;
+      if (G.hasNode(gagA) && G.hasNode(gagB) && !G.hasEdge(gagA, gagB)) {
+        try {
+          G.addDirectedEdge(gagA, gagB, {
+            relation: "gag_evolves",
+            confidence: "LINK",
+            confidence_score: 0.8,
+            weight: 1.0,
+          });
+          linkEdges.push({
+            source: gagA, target: gagB,
+            relation: "gag_evolves", confidence: "INFERRED",
+            confidence_score: 0.8, source_file: "graph_nodes",
+          });
+        } catch { /* skip duplicates */ }
+      }
+    }
+  }
+}
+
 for (const chain of gagChains) {
   for (let i = 0; i < chain.manifestations.length - 1; i++) {
-    const gagA = `${chain.manifestations[i].epId}_gag_${chain.gagType.replace(/\s+/g, "_")}`;
-    const gagB = `${chain.manifestations[i + 1].epId}_gag_${chain.gagType.replace(/\s+/g, "_")}`;
+    const gagA = gagNodeId(chain.manifestations[i].epId, chain.gagType);
+    const gagB = gagNodeId(chain.manifestations[i + 1].epId, chain.gagType);
 
     if (G.hasNode(gagA) && G.hasNode(gagB)) {
       try {
@@ -524,7 +564,7 @@ if (existsSync(foreshadowOutputPath)) {
       }
 
       // Link: foreshadow → payoff episode plot node
-      const payoffPlotNode = `${p.payoff_episode}_plot`;
+      const payoffPlotNode = plotNodeId(p.payoff_episode);
       if (G.hasNode(payoffPlotNode)) {
         try {
           G.addDirectedEdge(p.foreshadow_id, payoffPlotNode, {

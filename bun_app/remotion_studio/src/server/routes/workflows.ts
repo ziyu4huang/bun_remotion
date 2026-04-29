@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { createJob, getJob } from "../middleware/job-queue";
-import { listTemplates, getTemplate, runWorkflow, retryWorkflow, retryWorkflowDAG, getWorkflowTaskStore } from "../services/workflow-engine";
+import { listTemplates, getTemplate, runWorkflow, runWorkflowDAG, retryWorkflow, retryWorkflowDAG, getWorkflowTaskStore, TEMPLATE_DEPS } from "../services/workflow-engine";
 import type { WorkflowTriggerOptions } from "../services/workflow-engine";
 import type { ApiResponse, Job, WorkflowResult, TaskTree, TaskNode } from "../../shared/types";
 
@@ -64,8 +64,10 @@ router.post("/trigger", async (c) => {
     agent: body.agent,
   };
 
-  const job = createJob("workflow", async (progress) => {
-    const result = await runWorkflow(template, options, progress);
+  const job = createJob("workflow", async (progress, signal) => {
+    const useDAG = template.id in TEMPLATE_DEPS;
+    const runner = useDAG ? runWorkflowDAG : runWorkflow;
+    const result = await runner(template, options, progress, signal);
     return result;
   });
 
@@ -131,11 +133,10 @@ router.get("/:id/tree", (c) => {
   if (job.type !== "workflow") return c.json<ApiResponse>({ ok: false, error: "Not a workflow job" }, 400);
 
   const treeId = job.result?.taskTreeId;
-  if (!treeId) return c.json<ApiResponse>({ ok: false, error: "No task tree for this job" }, 404);
-
+  if (!treeId) return c.json<ApiResponse<null>>({ ok: true, data: null });
   const store = getWorkflowTaskStore();
   const tree = store.getTree(treeId);
-  if (!tree) return c.json<ApiResponse>({ ok: false, error: "Task tree not found in store" }, 404);
+  if (!tree) return c.json<ApiResponse<null>>({ ok: true, data: null });
 
   return c.json<ApiResponse<TaskTree>>({ ok: true, data: tree });
 });

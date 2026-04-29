@@ -1,0 +1,3105 @@
+{
+  "trees": [
+    {
+      "rootId": "task_1777243342572_170",
+      "nodes": {
+        "task_1777243342572_170": {
+          "id": "task_1777243342572_170",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777243342573_171",
+            "task_1777243342573_172",
+            "task_1777243342573_173"
+          ],
+          "finishedAt": 1777243342575
+        },
+        "task_1777243342573_171": {
+          "id": "task_1777243342573_171",
+          "parentId": "task_1777243342572_170",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777243342574,
+          "error": "No images provided for image step",
+          "finishedAt": 1777243342574
+        },
+        "task_1777243342573_172": {
+          "id": "task_1777243342573_172",
+          "parentId": "task_1777243342572_170",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777243342574,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777243342574
+        },
+        "task_1777243342573_173": {
+          "id": "task_1777243342573_173",
+          "parentId": "task_1777243342572_170",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777243342573_171",
+            "task_1777243342573_172"
+          ],
+          "children": [],
+          "finishedAt": 1777243342574
+        }
+      },
+      "createdAt": 1777243342572,
+      "updatedAt": 1777243342575
+    },
+    {
+      "rootId": "task_1777244003584_174",
+      "nodes": {
+        "task_1777244003584_174": {
+          "id": "task_1777244003584_174",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777244003584_175",
+            "task_1777244003584_176",
+            "task_1777244003584_177"
+          ],
+          "finishedAt": 1777244003586
+        },
+        "task_1777244003584_175": {
+          "id": "task_1777244003584_175",
+          "parentId": "task_1777244003584_174",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777244003585,
+          "error": "No images provided for image step",
+          "finishedAt": 1777244003585
+        },
+        "task_1777244003584_176": {
+          "id": "task_1777244003584_176",
+          "parentId": "task_1777244003584_174",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777244003585,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777244003586
+        },
+        "task_1777244003584_177": {
+          "id": "task_1777244003584_177",
+          "parentId": "task_1777244003584_174",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777244003584_175",
+            "task_1777244003584_176"
+          ],
+          "children": [],
+          "finishedAt": 1777244003586
+        }
+      },
+      "createdAt": 1777244003584,
+      "updatedAt": 1777244003586
+    },
+    {
+      "rootId": "task_1777244123672_178",
+      "nodes": {
+        "task_1777244123672_178": {
+          "id": "task_1777244123672_178",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777244123673_179",
+            "task_1777244123673_180",
+            "task_1777244123673_181"
+          ],
+          "finishedAt": 1777244123674
+        },
+        "task_1777244123673_179": {
+          "id": "task_1777244123673_179",
+          "parentId": "task_1777244123672_178",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777244123674,
+          "error": "No images provided for image step",
+          "finishedAt": 1777244123674
+        },
+        "task_1777244123673_180": {
+          "id": "task_1777244123673_180",
+          "parentId": "task_1777244123672_178",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777244123674,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777244123674
+        },
+        "task_1777244123673_181": {
+          "id": "task_1777244123673_181",
+          "parentId": "task_1777244123672_178",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777244123673_179",
+            "task_1777244123673_180"
+          ],
+          "children": [],
+          "finishedAt": 1777244123674
+        }
+      },
+      "createdAt": 1777244123672,
+      "updatedAt": 1777244123674
+    },
+    {
+      "rootId": "task_1777244270540_182",
+      "nodes": {
+        "task_1777244270540_182": {
+          "id": "task_1777244270540_182",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777244270540_183",
+            "task_1777244270540_184",
+            "task_1777244270541_185"
+          ],
+          "finishedAt": 1777244270542
+        },
+        "task_1777244270540_183": {
+          "id": "task_1777244270540_183",
+          "parentId": "task_1777244270540_182",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777244270541,
+          "error": "No images provided for image step",
+          "finishedAt": 1777244270542
+        },
+        "task_1777244270540_184": {
+          "id": "task_1777244270540_184",
+          "parentId": "task_1777244270540_182",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777244270541,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777244270542
+        },
+        "task_1777244270541_185": {
+          "id": "task_1777244270541_185",
+          "parentId": "task_1777244270540_182",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777244270540_183",
+            "task_1777244270540_184"
+          ],
+          "children": [],
+          "finishedAt": 1777244270542
+        }
+      },
+      "createdAt": 1777244270540,
+      "updatedAt": 1777244270542
+    },
+    {
+      "rootId": "task_1777244420319_186",
+      "nodes": {
+        "task_1777244420319_186": {
+          "id": "task_1777244420319_186",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777244420319_187",
+            "task_1777244420319_188",
+            "task_1777244420320_189"
+          ],
+          "finishedAt": 1777244420321
+        },
+        "task_1777244420319_187": {
+          "id": "task_1777244420319_187",
+          "parentId": "task_1777244420319_186",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777244420320,
+          "error": "No images provided for image step",
+          "finishedAt": 1777244420321
+        },
+        "task_1777244420319_188": {
+          "id": "task_1777244420319_188",
+          "parentId": "task_1777244420319_186",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777244420321,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777244420321
+        },
+        "task_1777244420320_189": {
+          "id": "task_1777244420320_189",
+          "parentId": "task_1777244420319_186",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777244420319_187",
+            "task_1777244420319_188"
+          ],
+          "children": [],
+          "finishedAt": 1777244420321
+        }
+      },
+      "createdAt": 1777244420319,
+      "updatedAt": 1777244420321
+    },
+    {
+      "rootId": "task_1777244698673_190",
+      "nodes": {
+        "task_1777244698673_190": {
+          "id": "task_1777244698673_190",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777244698673_191",
+            "task_1777244698674_192",
+            "task_1777244698674_193"
+          ],
+          "finishedAt": 1777244698676
+        },
+        "task_1777244698673_191": {
+          "id": "task_1777244698673_191",
+          "parentId": "task_1777244698673_190",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777244698675,
+          "error": "No images provided for image step",
+          "finishedAt": 1777244698675
+        },
+        "task_1777244698674_192": {
+          "id": "task_1777244698674_192",
+          "parentId": "task_1777244698673_190",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777244698675,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777244698675
+        },
+        "task_1777244698674_193": {
+          "id": "task_1777244698674_193",
+          "parentId": "task_1777244698673_190",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777244698673_191",
+            "task_1777244698674_192"
+          ],
+          "children": [],
+          "finishedAt": 1777244698676
+        }
+      },
+      "createdAt": 1777244698673,
+      "updatedAt": 1777244698676
+    },
+    {
+      "rootId": "task_1777244705561_194",
+      "nodes": {
+        "task_1777244705561_194": {
+          "id": "task_1777244705561_194",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777244705561_195",
+            "task_1777244705562_196",
+            "task_1777244705562_197"
+          ],
+          "finishedAt": 1777244705564
+        },
+        "task_1777244705561_195": {
+          "id": "task_1777244705561_195",
+          "parentId": "task_1777244705561_194",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777244705562,
+          "error": "No images provided for image step",
+          "finishedAt": 1777244705563
+        },
+        "task_1777244705562_196": {
+          "id": "task_1777244705562_196",
+          "parentId": "task_1777244705561_194",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777244705563,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777244705563
+        },
+        "task_1777244705562_197": {
+          "id": "task_1777244705562_197",
+          "parentId": "task_1777244705561_194",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777244705561_195",
+            "task_1777244705562_196"
+          ],
+          "children": [],
+          "finishedAt": 1777244705563
+        }
+      },
+      "createdAt": 1777244705561,
+      "updatedAt": 1777244705564
+    },
+    {
+      "rootId": "task_1777244806493_198",
+      "nodes": {
+        "task_1777244806493_198": {
+          "id": "task_1777244806493_198",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777244806493_199",
+            "task_1777244806494_200",
+            "task_1777244806494_201"
+          ],
+          "finishedAt": 1777244806496
+        },
+        "task_1777244806493_199": {
+          "id": "task_1777244806493_199",
+          "parentId": "task_1777244806493_198",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777244806494,
+          "error": "No images provided for image step",
+          "finishedAt": 1777244806495
+        },
+        "task_1777244806494_200": {
+          "id": "task_1777244806494_200",
+          "parentId": "task_1777244806493_198",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777244806495,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777244806495
+        },
+        "task_1777244806494_201": {
+          "id": "task_1777244806494_201",
+          "parentId": "task_1777244806493_198",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777244806493_199",
+            "task_1777244806494_200"
+          ],
+          "children": [],
+          "finishedAt": 1777244806495
+        }
+      },
+      "createdAt": 1777244806493,
+      "updatedAt": 1777244806496
+    },
+    {
+      "rootId": "task_1777245376464_202",
+      "nodes": {
+        "task_1777245376464_202": {
+          "id": "task_1777245376464_202",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777245376464_203",
+            "task_1777245376465_204",
+            "task_1777245376465_205"
+          ],
+          "finishedAt": 1777245376467
+        },
+        "task_1777245376464_203": {
+          "id": "task_1777245376464_203",
+          "parentId": "task_1777245376464_202",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777245376466,
+          "error": "No images provided for image step",
+          "finishedAt": 1777245376466
+        },
+        "task_1777245376465_204": {
+          "id": "task_1777245376465_204",
+          "parentId": "task_1777245376464_202",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777245376466,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777245376466
+        },
+        "task_1777245376465_205": {
+          "id": "task_1777245376465_205",
+          "parentId": "task_1777245376464_202",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777245376464_203",
+            "task_1777245376465_204"
+          ],
+          "children": [],
+          "finishedAt": 1777245376467
+        }
+      },
+      "createdAt": 1777245376464,
+      "updatedAt": 1777245376467
+    },
+    {
+      "rootId": "task_1777245631965_206",
+      "nodes": {
+        "task_1777245631965_206": {
+          "id": "task_1777245631965_206",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777245631965_207",
+            "task_1777245631965_208",
+            "task_1777245631965_209"
+          ],
+          "finishedAt": 1777245631967
+        },
+        "task_1777245631965_207": {
+          "id": "task_1777245631965_207",
+          "parentId": "task_1777245631965_206",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777245631966,
+          "error": "No images provided for image step",
+          "finishedAt": 1777245631967
+        },
+        "task_1777245631965_208": {
+          "id": "task_1777245631965_208",
+          "parentId": "task_1777245631965_206",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777245631966,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777245631967
+        },
+        "task_1777245631965_209": {
+          "id": "task_1777245631965_209",
+          "parentId": "task_1777245631965_206",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777245631965_207",
+            "task_1777245631965_208"
+          ],
+          "children": [],
+          "finishedAt": 1777245631967
+        }
+      },
+      "createdAt": 1777245631965,
+      "updatedAt": 1777245631967
+    },
+    {
+      "rootId": "task_1777246194701_210",
+      "nodes": {
+        "task_1777246194701_210": {
+          "id": "task_1777246194701_210",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777246194701_211",
+            "task_1777246194701_212",
+            "task_1777246194701_213"
+          ],
+          "finishedAt": 1777246194703
+        },
+        "task_1777246194701_211": {
+          "id": "task_1777246194701_211",
+          "parentId": "task_1777246194701_210",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777246194702,
+          "error": "No images provided for image step",
+          "finishedAt": 1777246194703
+        },
+        "task_1777246194701_212": {
+          "id": "task_1777246194701_212",
+          "parentId": "task_1777246194701_210",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777246194702,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777246194703
+        },
+        "task_1777246194701_213": {
+          "id": "task_1777246194701_213",
+          "parentId": "task_1777246194701_210",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777246194701_211",
+            "task_1777246194701_212"
+          ],
+          "children": [],
+          "finishedAt": 1777246194703
+        }
+      },
+      "createdAt": 1777246194701,
+      "updatedAt": 1777246194703
+    },
+    {
+      "rootId": "task_1777246215856_214",
+      "nodes": {
+        "task_1777246215856_214": {
+          "id": "task_1777246215856_214",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777246215856_215",
+            "task_1777246215856_216",
+            "task_1777246215857_217"
+          ],
+          "finishedAt": 1777246215859
+        },
+        "task_1777246215856_215": {
+          "id": "task_1777246215856_215",
+          "parentId": "task_1777246215856_214",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777246215857,
+          "error": "No images provided for image step",
+          "finishedAt": 1777246215858
+        },
+        "task_1777246215856_216": {
+          "id": "task_1777246215856_216",
+          "parentId": "task_1777246215856_214",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777246215858,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777246215858
+        },
+        "task_1777246215857_217": {
+          "id": "task_1777246215857_217",
+          "parentId": "task_1777246215856_214",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777246215856_215",
+            "task_1777246215856_216"
+          ],
+          "children": [],
+          "finishedAt": 1777246215858
+        }
+      },
+      "createdAt": 1777246215856,
+      "updatedAt": 1777246215859
+    },
+    {
+      "rootId": "task_1777246542345_218",
+      "nodes": {
+        "task_1777246542345_218": {
+          "id": "task_1777246542345_218",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777246542345_219",
+            "task_1777246542346_220",
+            "task_1777246542346_221"
+          ],
+          "finishedAt": 1777246542348
+        },
+        "task_1777246542345_219": {
+          "id": "task_1777246542345_219",
+          "parentId": "task_1777246542345_218",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777246542347,
+          "error": "No images provided for image step",
+          "finishedAt": 1777246542347
+        },
+        "task_1777246542346_220": {
+          "id": "task_1777246542346_220",
+          "parentId": "task_1777246542345_218",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777246542347,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777246542347
+        },
+        "task_1777246542346_221": {
+          "id": "task_1777246542346_221",
+          "parentId": "task_1777246542345_218",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777246542345_219",
+            "task_1777246542346_220"
+          ],
+          "children": [],
+          "finishedAt": 1777246542347
+        }
+      },
+      "createdAt": 1777246542345,
+      "updatedAt": 1777246542348
+    },
+    {
+      "rootId": "task_1777292761738_222",
+      "nodes": {
+        "task_1777292761738_222": {
+          "id": "task_1777292761738_222",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777292761738_223",
+            "task_1777292761738_224",
+            "task_1777292761738_225"
+          ],
+          "finishedAt": 1777292761740
+        },
+        "task_1777292761738_223": {
+          "id": "task_1777292761738_223",
+          "parentId": "task_1777292761738_222",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777292761739,
+          "error": "No images provided for image step",
+          "finishedAt": 1777292761740
+        },
+        "task_1777292761738_224": {
+          "id": "task_1777292761738_224",
+          "parentId": "task_1777292761738_222",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777292761739,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777292761740
+        },
+        "task_1777292761738_225": {
+          "id": "task_1777292761738_225",
+          "parentId": "task_1777292761738_222",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777292761738_223",
+            "task_1777292761738_224"
+          ],
+          "children": [],
+          "finishedAt": 1777292761740
+        }
+      },
+      "createdAt": 1777292761738,
+      "updatedAt": 1777292761740
+    },
+    {
+      "rootId": "task_1777295402969_226",
+      "nodes": {
+        "task_1777295402969_226": {
+          "id": "task_1777295402969_226",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777295402969_227",
+            "task_1777295402970_228",
+            "task_1777295402970_229"
+          ],
+          "finishedAt": 1777295402972
+        },
+        "task_1777295402969_227": {
+          "id": "task_1777295402969_227",
+          "parentId": "task_1777295402969_226",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777295402971,
+          "error": "No images provided for image step",
+          "finishedAt": 1777295402971
+        },
+        "task_1777295402970_228": {
+          "id": "task_1777295402970_228",
+          "parentId": "task_1777295402969_226",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777295402971,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777295402971
+        },
+        "task_1777295402970_229": {
+          "id": "task_1777295402970_229",
+          "parentId": "task_1777295402969_226",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777295402969_227",
+            "task_1777295402970_228"
+          ],
+          "children": [],
+          "finishedAt": 1777295402972
+        }
+      },
+      "createdAt": 1777295402969,
+      "updatedAt": 1777295402972
+    },
+    {
+      "rootId": "task_1777295687159_230",
+      "nodes": {
+        "task_1777295687159_230": {
+          "id": "task_1777295687159_230",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777295687159_231",
+            "task_1777295687159_232",
+            "task_1777295687159_233"
+          ],
+          "finishedAt": 1777295687162
+        },
+        "task_1777295687159_231": {
+          "id": "task_1777295687159_231",
+          "parentId": "task_1777295687159_230",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777295687160,
+          "error": "No images provided for image step",
+          "finishedAt": 1777295687161
+        },
+        "task_1777295687159_232": {
+          "id": "task_1777295687159_232",
+          "parentId": "task_1777295687159_230",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777295687161,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777295687161
+        },
+        "task_1777295687159_233": {
+          "id": "task_1777295687159_233",
+          "parentId": "task_1777295687159_230",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777295687159_231",
+            "task_1777295687159_232"
+          ],
+          "children": [],
+          "finishedAt": 1777295687161
+        }
+      },
+      "createdAt": 1777295687159,
+      "updatedAt": 1777295687162
+    },
+    {
+      "rootId": "task_1777295910342_234",
+      "nodes": {
+        "task_1777295910342_234": {
+          "id": "task_1777295910342_234",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777295910343_235",
+            "task_1777295910343_236",
+            "task_1777295910343_237"
+          ],
+          "finishedAt": 1777295910345
+        },
+        "task_1777295910343_235": {
+          "id": "task_1777295910343_235",
+          "parentId": "task_1777295910342_234",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777295910344,
+          "error": "No images provided for image step",
+          "finishedAt": 1777295910345
+        },
+        "task_1777295910343_236": {
+          "id": "task_1777295910343_236",
+          "parentId": "task_1777295910342_234",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777295910344,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777295910345
+        },
+        "task_1777295910343_237": {
+          "id": "task_1777295910343_237",
+          "parentId": "task_1777295910342_234",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777295910343_235",
+            "task_1777295910343_236"
+          ],
+          "children": [],
+          "finishedAt": 1777295910345
+        }
+      },
+      "createdAt": 1777295910342,
+      "updatedAt": 1777295910345
+    },
+    {
+      "rootId": "task_1777295948368_238",
+      "nodes": {
+        "task_1777295948368_238": {
+          "id": "task_1777295948368_238",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777295948369_239",
+            "task_1777295948369_240",
+            "task_1777295948369_241"
+          ],
+          "finishedAt": 1777295948371
+        },
+        "task_1777295948369_239": {
+          "id": "task_1777295948369_239",
+          "parentId": "task_1777295948368_238",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777295948370,
+          "error": "No images provided for image step",
+          "finishedAt": 1777295948370
+        },
+        "task_1777295948369_240": {
+          "id": "task_1777295948369_240",
+          "parentId": "task_1777295948368_238",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777295948370,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777295948371
+        },
+        "task_1777295948369_241": {
+          "id": "task_1777295948369_241",
+          "parentId": "task_1777295948368_238",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777295948369_239",
+            "task_1777295948369_240"
+          ],
+          "children": [],
+          "finishedAt": 1777295948371
+        }
+      },
+      "createdAt": 1777295948368,
+      "updatedAt": 1777295948371
+    },
+    {
+      "rootId": "task_1777296195529_242",
+      "nodes": {
+        "task_1777296195529_242": {
+          "id": "task_1777296195529_242",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777296195529_243",
+            "task_1777296195530_244",
+            "task_1777296195530_245"
+          ],
+          "finishedAt": 1777296195532
+        },
+        "task_1777296195529_243": {
+          "id": "task_1777296195529_243",
+          "parentId": "task_1777296195529_242",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777296195531,
+          "error": "No images provided for image step",
+          "finishedAt": 1777296195531
+        },
+        "task_1777296195530_244": {
+          "id": "task_1777296195530_244",
+          "parentId": "task_1777296195529_242",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777296195531,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777296195531
+        },
+        "task_1777296195530_245": {
+          "id": "task_1777296195530_245",
+          "parentId": "task_1777296195529_242",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777296195529_243",
+            "task_1777296195530_244"
+          ],
+          "children": [],
+          "finishedAt": 1777296195532
+        }
+      },
+      "createdAt": 1777296195529,
+      "updatedAt": 1777296195532
+    },
+    {
+      "rootId": "task_1777417252356_246",
+      "nodes": {
+        "task_1777417252356_246": {
+          "id": "task_1777417252356_246",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777417252356_247",
+            "task_1777417252356_248",
+            "task_1777417252356_249"
+          ],
+          "finishedAt": 1777417252358
+        },
+        "task_1777417252356_247": {
+          "id": "task_1777417252356_247",
+          "parentId": "task_1777417252356_246",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777417252357,
+          "error": "No images provided for image step",
+          "finishedAt": 1777417252358
+        },
+        "task_1777417252356_248": {
+          "id": "task_1777417252356_248",
+          "parentId": "task_1777417252356_246",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777417252357,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777417252358
+        },
+        "task_1777417252356_249": {
+          "id": "task_1777417252356_249",
+          "parentId": "task_1777417252356_246",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777417252356_247",
+            "task_1777417252356_248"
+          ],
+          "children": [],
+          "finishedAt": 1777417252358
+        }
+      },
+      "createdAt": 1777417252356,
+      "updatedAt": 1777417252358
+    },
+    {
+      "rootId": "task_1777417412653_250",
+      "nodes": {
+        "task_1777417412653_250": {
+          "id": "task_1777417412653_250",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777417412654_251",
+            "task_1777417412654_252",
+            "task_1777417412654_253"
+          ],
+          "finishedAt": 1777417412656
+        },
+        "task_1777417412654_251": {
+          "id": "task_1777417412654_251",
+          "parentId": "task_1777417412653_250",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777417412655,
+          "error": "No images provided for image step",
+          "finishedAt": 1777417412655
+        },
+        "task_1777417412654_252": {
+          "id": "task_1777417412654_252",
+          "parentId": "task_1777417412653_250",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777417412655,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777417412655
+        },
+        "task_1777417412654_253": {
+          "id": "task_1777417412654_253",
+          "parentId": "task_1777417412653_250",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777417412654_251",
+            "task_1777417412654_252"
+          ],
+          "children": [],
+          "finishedAt": 1777417412656
+        }
+      },
+      "createdAt": 1777417412653,
+      "updatedAt": 1777417412656
+    },
+    {
+      "rootId": "task_1777417647209_254",
+      "nodes": {
+        "task_1777417647209_254": {
+          "id": "task_1777417647209_254",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777417647209_255",
+            "task_1777417647209_256",
+            "task_1777417647210_257"
+          ],
+          "finishedAt": 1777417647212
+        },
+        "task_1777417647209_255": {
+          "id": "task_1777417647209_255",
+          "parentId": "task_1777417647209_254",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777417647210,
+          "error": "No images provided for image step",
+          "finishedAt": 1777417647211
+        },
+        "task_1777417647209_256": {
+          "id": "task_1777417647209_256",
+          "parentId": "task_1777417647209_254",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777417647211,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777417647211
+        },
+        "task_1777417647210_257": {
+          "id": "task_1777417647210_257",
+          "parentId": "task_1777417647209_254",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777417647209_255",
+            "task_1777417647209_256"
+          ],
+          "children": [],
+          "finishedAt": 1777417647212
+        }
+      },
+      "createdAt": 1777417647209,
+      "updatedAt": 1777417647212
+    },
+    {
+      "rootId": "task_1777418514833_258",
+      "nodes": {
+        "task_1777418514833_258": {
+          "id": "task_1777418514833_258",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777418514833_259",
+            "task_1777418514833_260",
+            "task_1777418514833_261"
+          ],
+          "finishedAt": 1777418514835
+        },
+        "task_1777418514833_259": {
+          "id": "task_1777418514833_259",
+          "parentId": "task_1777418514833_258",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777418514834,
+          "error": "No images provided for image step",
+          "finishedAt": 1777418514835
+        },
+        "task_1777418514833_260": {
+          "id": "task_1777418514833_260",
+          "parentId": "task_1777418514833_258",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777418514834,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777418514835
+        },
+        "task_1777418514833_261": {
+          "id": "task_1777418514833_261",
+          "parentId": "task_1777418514833_258",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777418514833_259",
+            "task_1777418514833_260"
+          ],
+          "children": [],
+          "finishedAt": 1777418514835
+        }
+      },
+      "createdAt": 1777418514833,
+      "updatedAt": 1777418514835
+    },
+    {
+      "rootId": "task_1777418743360_262",
+      "nodes": {
+        "task_1777418743360_262": {
+          "id": "task_1777418743360_262",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777418743361_263",
+            "task_1777418743361_264",
+            "task_1777418743361_265"
+          ],
+          "finishedAt": 1777418743364
+        },
+        "task_1777418743361_263": {
+          "id": "task_1777418743361_263",
+          "parentId": "task_1777418743360_262",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777418743362,
+          "error": "No images provided for image step",
+          "finishedAt": 1777418743363
+        },
+        "task_1777418743361_264": {
+          "id": "task_1777418743361_264",
+          "parentId": "task_1777418743360_262",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777418743362,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777418743363
+        },
+        "task_1777418743361_265": {
+          "id": "task_1777418743361_265",
+          "parentId": "task_1777418743360_262",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777418743361_263",
+            "task_1777418743361_264"
+          ],
+          "children": [],
+          "finishedAt": 1777418743363
+        }
+      },
+      "createdAt": 1777418743360,
+      "updatedAt": 1777418743364
+    },
+    {
+      "rootId": "task_1777419201072_266",
+      "nodes": {
+        "task_1777419201072_266": {
+          "id": "task_1777419201072_266",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777419201072_267",
+            "task_1777419201072_268",
+            "task_1777419201072_269"
+          ],
+          "finishedAt": 1777419201075
+        },
+        "task_1777419201072_267": {
+          "id": "task_1777419201072_267",
+          "parentId": "task_1777419201072_266",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777419201073,
+          "error": "No images provided for image step",
+          "finishedAt": 1777419201074
+        },
+        "task_1777419201072_268": {
+          "id": "task_1777419201072_268",
+          "parentId": "task_1777419201072_266",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777419201074,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777419201074
+        },
+        "task_1777419201072_269": {
+          "id": "task_1777419201072_269",
+          "parentId": "task_1777419201072_266",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777419201072_267",
+            "task_1777419201072_268"
+          ],
+          "children": [],
+          "finishedAt": 1777419201074
+        }
+      },
+      "createdAt": 1777419201072,
+      "updatedAt": 1777419201075
+    },
+    {
+      "rootId": "task_1777421887473_270",
+      "nodes": {
+        "task_1777421887473_270": {
+          "id": "task_1777421887473_270",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777421887474_271",
+            "task_1777421887474_272",
+            "task_1777421887474_273"
+          ],
+          "finishedAt": 1777421887476
+        },
+        "task_1777421887474_271": {
+          "id": "task_1777421887474_271",
+          "parentId": "task_1777421887473_270",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777421887475,
+          "error": "No images provided for image step",
+          "finishedAt": 1777421887475
+        },
+        "task_1777421887474_272": {
+          "id": "task_1777421887474_272",
+          "parentId": "task_1777421887473_270",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777421887475,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777421887476
+        },
+        "task_1777421887474_273": {
+          "id": "task_1777421887474_273",
+          "parentId": "task_1777421887473_270",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777421887474_271",
+            "task_1777421887474_272"
+          ],
+          "children": [],
+          "finishedAt": 1777421887476
+        }
+      },
+      "createdAt": 1777421887473,
+      "updatedAt": 1777421887476
+    },
+    {
+      "rootId": "task_1777425866712_274",
+      "nodes": {
+        "task_1777425866712_274": {
+          "id": "task_1777425866712_274",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777425866712_275",
+            "task_1777425866713_276",
+            "task_1777425866713_277"
+          ],
+          "finishedAt": 1777425866716
+        },
+        "task_1777425866712_275": {
+          "id": "task_1777425866712_275",
+          "parentId": "task_1777425866712_274",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777425866714,
+          "error": "No images provided for image step",
+          "finishedAt": 1777425866715
+        },
+        "task_1777425866713_276": {
+          "id": "task_1777425866713_276",
+          "parentId": "task_1777425866712_274",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777425866714,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777425866715
+        },
+        "task_1777425866713_277": {
+          "id": "task_1777425866713_277",
+          "parentId": "task_1777425866712_274",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777425866712_275",
+            "task_1777425866713_276"
+          ],
+          "children": [],
+          "finishedAt": 1777425866715
+        }
+      },
+      "createdAt": 1777425866712,
+      "updatedAt": 1777425866716
+    },
+    {
+      "rootId": "task_1777426082888_278",
+      "nodes": {
+        "task_1777426082888_278": {
+          "id": "task_1777426082888_278",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777426082889_279",
+            "task_1777426082889_280",
+            "task_1777426082889_281"
+          ],
+          "finishedAt": 1777426082891
+        },
+        "task_1777426082889_279": {
+          "id": "task_1777426082889_279",
+          "parentId": "task_1777426082888_278",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777426082890,
+          "error": "No images provided for image step",
+          "finishedAt": 1777426082891
+        },
+        "task_1777426082889_280": {
+          "id": "task_1777426082889_280",
+          "parentId": "task_1777426082888_278",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777426082890,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777426082891
+        },
+        "task_1777426082889_281": {
+          "id": "task_1777426082889_281",
+          "parentId": "task_1777426082888_278",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777426082889_279",
+            "task_1777426082889_280"
+          ],
+          "children": [],
+          "finishedAt": 1777426082891
+        }
+      },
+      "createdAt": 1777426082888,
+      "updatedAt": 1777426082891
+    },
+    {
+      "rootId": "task_1777426187833_282",
+      "nodes": {
+        "task_1777426187833_282": {
+          "id": "task_1777426187833_282",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777426187833_283",
+            "task_1777426187833_284",
+            "task_1777426187834_285"
+          ],
+          "finishedAt": 1777426187836
+        },
+        "task_1777426187833_283": {
+          "id": "task_1777426187833_283",
+          "parentId": "task_1777426187833_282",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777426187835,
+          "error": "No images provided for image step",
+          "finishedAt": 1777426187835
+        },
+        "task_1777426187833_284": {
+          "id": "task_1777426187833_284",
+          "parentId": "task_1777426187833_282",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777426187835,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777426187835
+        },
+        "task_1777426187834_285": {
+          "id": "task_1777426187834_285",
+          "parentId": "task_1777426187833_282",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777426187833_283",
+            "task_1777426187833_284"
+          ],
+          "children": [],
+          "finishedAt": 1777426187836
+        }
+      },
+      "createdAt": 1777426187833,
+      "updatedAt": 1777426187836
+    },
+    {
+      "rootId": "task_1777426563709_286",
+      "nodes": {
+        "task_1777426563709_286": {
+          "id": "task_1777426563709_286",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777426563710_287",
+            "task_1777426563710_288",
+            "task_1777426563710_289"
+          ],
+          "finishedAt": 1777426563713
+        },
+        "task_1777426563710_287": {
+          "id": "task_1777426563710_287",
+          "parentId": "task_1777426563709_286",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777426563711,
+          "error": "No images provided for image step",
+          "finishedAt": 1777426563712
+        },
+        "task_1777426563710_288": {
+          "id": "task_1777426563710_288",
+          "parentId": "task_1777426563709_286",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777426563712,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777426563712
+        },
+        "task_1777426563710_289": {
+          "id": "task_1777426563710_289",
+          "parentId": "task_1777426563709_286",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777426563710_287",
+            "task_1777426563710_288"
+          ],
+          "children": [],
+          "finishedAt": 1777426563712
+        }
+      },
+      "createdAt": 1777426563709,
+      "updatedAt": 1777426563713
+    },
+    {
+      "rootId": "task_1777426945297_290",
+      "nodes": {
+        "task_1777426945297_290": {
+          "id": "task_1777426945297_290",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777426945297_291",
+            "task_1777426945298_292",
+            "task_1777426945298_293"
+          ],
+          "finishedAt": 1777426945300
+        },
+        "task_1777426945297_291": {
+          "id": "task_1777426945297_291",
+          "parentId": "task_1777426945297_290",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777426945299,
+          "error": "No images provided for image step",
+          "finishedAt": 1777426945299
+        },
+        "task_1777426945298_292": {
+          "id": "task_1777426945298_292",
+          "parentId": "task_1777426945297_290",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777426945299,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777426945300
+        },
+        "task_1777426945298_293": {
+          "id": "task_1777426945298_293",
+          "parentId": "task_1777426945297_290",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777426945297_291",
+            "task_1777426945298_292"
+          ],
+          "children": [],
+          "finishedAt": 1777426945300
+        }
+      },
+      "createdAt": 1777426945297,
+      "updatedAt": 1777426945300
+    },
+    {
+      "rootId": "task_1777430207524_294",
+      "nodes": {
+        "task_1777430207524_294": {
+          "id": "task_1777430207524_294",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777430207525_295",
+            "task_1777430207525_296",
+            "task_1777430207525_297"
+          ],
+          "finishedAt": 1777430207527
+        },
+        "task_1777430207525_295": {
+          "id": "task_1777430207525_295",
+          "parentId": "task_1777430207524_294",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777430207526,
+          "error": "No images provided for image step",
+          "finishedAt": 1777430207527
+        },
+        "task_1777430207525_296": {
+          "id": "task_1777430207525_296",
+          "parentId": "task_1777430207524_294",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777430207526,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777430207527
+        },
+        "task_1777430207525_297": {
+          "id": "task_1777430207525_297",
+          "parentId": "task_1777430207524_294",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777430207525_295",
+            "task_1777430207525_296"
+          ],
+          "children": [],
+          "finishedAt": 1777430207527
+        }
+      },
+      "createdAt": 1777430207524,
+      "updatedAt": 1777430207527
+    },
+    {
+      "rootId": "task_1777434566643_298",
+      "nodes": {
+        "task_1777434566643_298": {
+          "id": "task_1777434566643_298",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777434566644_299",
+            "task_1777434566644_300",
+            "task_1777434566644_301"
+          ],
+          "finishedAt": 1777434566647
+        },
+        "task_1777434566644_299": {
+          "id": "task_1777434566644_299",
+          "parentId": "task_1777434566643_298",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777434566645,
+          "error": "No images provided for image step",
+          "finishedAt": 1777434566646
+        },
+        "task_1777434566644_300": {
+          "id": "task_1777434566644_300",
+          "parentId": "task_1777434566643_298",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777434566645,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777434566646
+        },
+        "task_1777434566644_301": {
+          "id": "task_1777434566644_301",
+          "parentId": "task_1777434566643_298",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777434566644_299",
+            "task_1777434566644_300"
+          ],
+          "children": [],
+          "finishedAt": 1777434566646
+        }
+      },
+      "createdAt": 1777434566643,
+      "updatedAt": 1777434566647
+    },
+    {
+      "rootId": "task_1777434575095_302",
+      "nodes": {
+        "task_1777434575095_302": {
+          "id": "task_1777434575095_302",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777434575096_303",
+            "task_1777434575096_304",
+            "task_1777434575096_305"
+          ],
+          "finishedAt": 1777434575099
+        },
+        "task_1777434575096_303": {
+          "id": "task_1777434575096_303",
+          "parentId": "task_1777434575095_302",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777434575097,
+          "error": "No images provided for image step",
+          "finishedAt": 1777434575098
+        },
+        "task_1777434575096_304": {
+          "id": "task_1777434575096_304",
+          "parentId": "task_1777434575095_302",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777434575097,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777434575098
+        },
+        "task_1777434575096_305": {
+          "id": "task_1777434575096_305",
+          "parentId": "task_1777434575095_302",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777434575096_303",
+            "task_1777434575096_304"
+          ],
+          "children": [],
+          "finishedAt": 1777434575098
+        }
+      },
+      "createdAt": 1777434575095,
+      "updatedAt": 1777434575099
+    },
+    {
+      "rootId": "task_1777435101654_306",
+      "nodes": {
+        "task_1777435101654_306": {
+          "id": "task_1777435101654_306",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777435101654_307",
+            "task_1777435101654_308",
+            "task_1777435101655_309"
+          ],
+          "finishedAt": 1777435101657
+        },
+        "task_1777435101654_307": {
+          "id": "task_1777435101654_307",
+          "parentId": "task_1777435101654_306",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777435101656,
+          "error": "No images provided for image step",
+          "finishedAt": 1777435101656
+        },
+        "task_1777435101654_308": {
+          "id": "task_1777435101654_308",
+          "parentId": "task_1777435101654_306",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777435101656,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777435101656
+        },
+        "task_1777435101655_309": {
+          "id": "task_1777435101655_309",
+          "parentId": "task_1777435101654_306",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777435101654_307",
+            "task_1777435101654_308"
+          ],
+          "children": [],
+          "finishedAt": 1777435101657
+        }
+      },
+      "createdAt": 1777435101654,
+      "updatedAt": 1777435101657
+    },
+    {
+      "rootId": "task_1777435612310_310",
+      "nodes": {
+        "task_1777435612310_310": {
+          "id": "task_1777435612310_310",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777435612311_311",
+            "task_1777435612311_312",
+            "task_1777435612311_313"
+          ],
+          "finishedAt": 1777435612314
+        },
+        "task_1777435612311_311": {
+          "id": "task_1777435612311_311",
+          "parentId": "task_1777435612310_310",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777435612312,
+          "error": "No images provided for image step",
+          "finishedAt": 1777435612313
+        },
+        "task_1777435612311_312": {
+          "id": "task_1777435612311_312",
+          "parentId": "task_1777435612310_310",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777435612313,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777435612313
+        },
+        "task_1777435612311_313": {
+          "id": "task_1777435612311_313",
+          "parentId": "task_1777435612310_310",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777435612311_311",
+            "task_1777435612311_312"
+          ],
+          "children": [],
+          "finishedAt": 1777435612313
+        }
+      },
+      "createdAt": 1777435612310,
+      "updatedAt": 1777435612314
+    },
+    {
+      "rootId": "task_1777437977654_314",
+      "nodes": {
+        "task_1777437977654_314": {
+          "id": "task_1777437977654_314",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777437977655_315",
+            "task_1777437977655_316",
+            "task_1777437977655_317"
+          ],
+          "finishedAt": 1777437977658
+        },
+        "task_1777437977655_315": {
+          "id": "task_1777437977655_315",
+          "parentId": "task_1777437977654_314",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777437977656,
+          "error": "No images provided for image step",
+          "finishedAt": 1777437977657
+        },
+        "task_1777437977655_316": {
+          "id": "task_1777437977655_316",
+          "parentId": "task_1777437977654_314",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777437977656,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777437977657
+        },
+        "task_1777437977655_317": {
+          "id": "task_1777437977655_317",
+          "parentId": "task_1777437977654_314",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777437977655_315",
+            "task_1777437977655_316"
+          ],
+          "children": [],
+          "finishedAt": 1777437977657
+        }
+      },
+      "createdAt": 1777437977654,
+      "updatedAt": 1777437977658
+    },
+    {
+      "rootId": "task_1777438350464_318",
+      "nodes": {
+        "task_1777438350464_318": {
+          "id": "task_1777438350464_318",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777438350464_319",
+            "task_1777438350465_320",
+            "task_1777438350465_321"
+          ],
+          "finishedAt": 1777438350467
+        },
+        "task_1777438350464_319": {
+          "id": "task_1777438350464_319",
+          "parentId": "task_1777438350464_318",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777438350466,
+          "error": "No images provided for image step",
+          "finishedAt": 1777438350466
+        },
+        "task_1777438350465_320": {
+          "id": "task_1777438350465_320",
+          "parentId": "task_1777438350464_318",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777438350466,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777438350467
+        },
+        "task_1777438350465_321": {
+          "id": "task_1777438350465_321",
+          "parentId": "task_1777438350464_318",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777438350464_319",
+            "task_1777438350465_320"
+          ],
+          "children": [],
+          "finishedAt": 1777438350467
+        }
+      },
+      "createdAt": 1777438350464,
+      "updatedAt": 1777438350467
+    },
+    {
+      "rootId": "task_1777438550663_322",
+      "nodes": {
+        "task_1777438550663_322": {
+          "id": "task_1777438550663_322",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777438550663_323",
+            "task_1777438550663_324",
+            "task_1777438550663_325"
+          ],
+          "finishedAt": 1777438550666
+        },
+        "task_1777438550663_323": {
+          "id": "task_1777438550663_323",
+          "parentId": "task_1777438550663_322",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777438550664,
+          "error": "No images provided for image step",
+          "finishedAt": 1777438550665
+        },
+        "task_1777438550663_324": {
+          "id": "task_1777438550663_324",
+          "parentId": "task_1777438550663_322",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777438550665,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777438550665
+        },
+        "task_1777438550663_325": {
+          "id": "task_1777438550663_325",
+          "parentId": "task_1777438550663_322",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777438550663_323",
+            "task_1777438550663_324"
+          ],
+          "children": [],
+          "finishedAt": 1777438550666
+        }
+      },
+      "createdAt": 1777438550663,
+      "updatedAt": 1777438550666
+    },
+    {
+      "rootId": "task_1777438737294_326",
+      "nodes": {
+        "task_1777438737294_326": {
+          "id": "task_1777438737294_326",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777438737294_327",
+            "task_1777438737294_328",
+            "task_1777438737295_329"
+          ],
+          "finishedAt": 1777438737297
+        },
+        "task_1777438737294_327": {
+          "id": "task_1777438737294_327",
+          "parentId": "task_1777438737294_326",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777438737295,
+          "error": "No images provided for image step",
+          "finishedAt": 1777438737296
+        },
+        "task_1777438737294_328": {
+          "id": "task_1777438737294_328",
+          "parentId": "task_1777438737294_326",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777438737296,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777438737296
+        },
+        "task_1777438737295_329": {
+          "id": "task_1777438737295_329",
+          "parentId": "task_1777438737294_326",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777438737294_327",
+            "task_1777438737294_328"
+          ],
+          "children": [],
+          "finishedAt": 1777438737297
+        }
+      },
+      "createdAt": 1777438737294,
+      "updatedAt": 1777438737297
+    },
+    {
+      "rootId": "task_1777439440416_330",
+      "nodes": {
+        "task_1777439440416_330": {
+          "id": "task_1777439440416_330",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777439440417_331",
+            "task_1777439440417_332",
+            "task_1777439440417_333"
+          ],
+          "finishedAt": 1777439440420
+        },
+        "task_1777439440417_331": {
+          "id": "task_1777439440417_331",
+          "parentId": "task_1777439440416_330",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777439440418,
+          "error": "No images provided for image step",
+          "finishedAt": 1777439440419
+        },
+        "task_1777439440417_332": {
+          "id": "task_1777439440417_332",
+          "parentId": "task_1777439440416_330",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777439440419,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777439440419
+        },
+        "task_1777439440417_333": {
+          "id": "task_1777439440417_333",
+          "parentId": "task_1777439440416_330",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777439440417_331",
+            "task_1777439440417_332"
+          ],
+          "children": [],
+          "finishedAt": 1777439440419
+        }
+      },
+      "createdAt": 1777439440416,
+      "updatedAt": 1777439440420
+    },
+    {
+      "rootId": "task_1777443397973_334",
+      "nodes": {
+        "task_1777443397973_334": {
+          "id": "task_1777443397973_334",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777443397973_335",
+            "task_1777443397973_336",
+            "task_1777443397974_337"
+          ],
+          "finishedAt": 1777443397976
+        },
+        "task_1777443397973_335": {
+          "id": "task_1777443397973_335",
+          "parentId": "task_1777443397973_334",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777443397975,
+          "error": "No images provided for image step",
+          "finishedAt": 1777443397975
+        },
+        "task_1777443397973_336": {
+          "id": "task_1777443397973_336",
+          "parentId": "task_1777443397973_334",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777443397975,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777443397975
+        },
+        "task_1777443397974_337": {
+          "id": "task_1777443397974_337",
+          "parentId": "task_1777443397973_334",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777443397973_335",
+            "task_1777443397973_336"
+          ],
+          "children": [],
+          "finishedAt": 1777443397976
+        }
+      },
+      "createdAt": 1777443397973,
+      "updatedAt": 1777443397976
+    },
+    {
+      "rootId": "task_1777444018338_338",
+      "nodes": {
+        "task_1777444018338_338": {
+          "id": "task_1777444018338_338",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777444018339_339",
+            "task_1777444018339_340",
+            "task_1777444018339_341"
+          ],
+          "finishedAt": 1777444018341
+        },
+        "task_1777444018339_339": {
+          "id": "task_1777444018339_339",
+          "parentId": "task_1777444018338_338",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777444018340,
+          "error": "No images provided for image step",
+          "finishedAt": 1777444018341
+        },
+        "task_1777444018339_340": {
+          "id": "task_1777444018339_340",
+          "parentId": "task_1777444018338_338",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777444018340,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777444018341
+        },
+        "task_1777444018339_341": {
+          "id": "task_1777444018339_341",
+          "parentId": "task_1777444018338_338",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777444018339_339",
+            "task_1777444018339_340"
+          ],
+          "children": [],
+          "finishedAt": 1777444018341
+        }
+      },
+      "createdAt": 1777444018338,
+      "updatedAt": 1777444018341
+    },
+    {
+      "rootId": "task_1777455331262_342",
+      "nodes": {
+        "task_1777455331262_342": {
+          "id": "task_1777455331262_342",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777455331262_343",
+            "task_1777455331262_344",
+            "task_1777455331263_345"
+          ],
+          "finishedAt": 1777455331265
+        },
+        "task_1777455331262_343": {
+          "id": "task_1777455331262_343",
+          "parentId": "task_1777455331262_342",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777455331264,
+          "error": "No images provided for image step",
+          "finishedAt": 1777455331264
+        },
+        "task_1777455331262_344": {
+          "id": "task_1777455331262_344",
+          "parentId": "task_1777455331262_342",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777455331264,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777455331265
+        },
+        "task_1777455331263_345": {
+          "id": "task_1777455331263_345",
+          "parentId": "task_1777455331262_342",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777455331262_343",
+            "task_1777455331262_344"
+          ],
+          "children": [],
+          "finishedAt": 1777455331265
+        }
+      },
+      "createdAt": 1777455331262,
+      "updatedAt": 1777455331265
+    },
+    {
+      "rootId": "task_1777458731727_346",
+      "nodes": {
+        "task_1777458731727_346": {
+          "id": "task_1777458731727_346",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777458731728_347",
+            "task_1777458731728_348",
+            "task_1777458731728_349"
+          ],
+          "finishedAt": 1777458731730
+        },
+        "task_1777458731728_347": {
+          "id": "task_1777458731728_347",
+          "parentId": "task_1777458731727_346",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777458731729,
+          "error": "No images provided for image step",
+          "finishedAt": 1777458731730
+        },
+        "task_1777458731728_348": {
+          "id": "task_1777458731728_348",
+          "parentId": "task_1777458731727_346",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777458731729,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777458731730
+        },
+        "task_1777458731728_349": {
+          "id": "task_1777458731728_349",
+          "parentId": "task_1777458731727_346",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777458731728_347",
+            "task_1777458731728_348"
+          ],
+          "children": [],
+          "finishedAt": 1777458731730
+        }
+      },
+      "createdAt": 1777458731727,
+      "updatedAt": 1777458731730
+    },
+    {
+      "rootId": "task_1777459163679_350",
+      "nodes": {
+        "task_1777459163679_350": {
+          "id": "task_1777459163679_350",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777459163680_351",
+            "task_1777459163680_352",
+            "task_1777459163680_353"
+          ],
+          "finishedAt": 1777459163683
+        },
+        "task_1777459163680_351": {
+          "id": "task_1777459163680_351",
+          "parentId": "task_1777459163679_350",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777459163681,
+          "error": "No images provided for image step",
+          "finishedAt": 1777459163682
+        },
+        "task_1777459163680_352": {
+          "id": "task_1777459163680_352",
+          "parentId": "task_1777459163679_350",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777459163682,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777459163682
+        },
+        "task_1777459163680_353": {
+          "id": "task_1777459163680_353",
+          "parentId": "task_1777459163679_350",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777459163680_351",
+            "task_1777459163680_352"
+          ],
+          "children": [],
+          "finishedAt": 1777459163683
+        }
+      },
+      "createdAt": 1777459163679,
+      "updatedAt": 1777459163683
+    },
+    {
+      "rootId": "task_1777459695774_354",
+      "nodes": {
+        "task_1777459695774_354": {
+          "id": "task_1777459695774_354",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777459695775_355",
+            "task_1777459695775_356",
+            "task_1777459695775_357"
+          ],
+          "finishedAt": 1777459695778
+        },
+        "task_1777459695775_355": {
+          "id": "task_1777459695775_355",
+          "parentId": "task_1777459695774_354",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777459695776,
+          "error": "No images provided for image step",
+          "finishedAt": 1777459695777
+        },
+        "task_1777459695775_356": {
+          "id": "task_1777459695775_356",
+          "parentId": "task_1777459695774_354",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777459695777,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777459695777
+        },
+        "task_1777459695775_357": {
+          "id": "task_1777459695775_357",
+          "parentId": "task_1777459695774_354",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777459695775_355",
+            "task_1777459695775_356"
+          ],
+          "children": [],
+          "finishedAt": 1777459695778
+        }
+      },
+      "createdAt": 1777459695774,
+      "updatedAt": 1777459695778
+    },
+    {
+      "rootId": "task_1777460295417_358",
+      "nodes": {
+        "task_1777460295417_358": {
+          "id": "task_1777460295417_358",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777460295417_359",
+            "task_1777460295418_360",
+            "task_1777460295418_361"
+          ],
+          "finishedAt": 1777460295420
+        },
+        "task_1777460295417_359": {
+          "id": "task_1777460295417_359",
+          "parentId": "task_1777460295417_358",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777460295419,
+          "error": "No images provided for image step",
+          "finishedAt": 1777460295419
+        },
+        "task_1777460295418_360": {
+          "id": "task_1777460295418_360",
+          "parentId": "task_1777460295417_358",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777460295419,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777460295420
+        },
+        "task_1777460295418_361": {
+          "id": "task_1777460295418_361",
+          "parentId": "task_1777460295417_358",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777460295417_359",
+            "task_1777460295418_360"
+          ],
+          "children": [],
+          "finishedAt": 1777460295420
+        }
+      },
+      "createdAt": 1777460295417,
+      "updatedAt": 1777460295420
+    },
+    {
+      "rootId": "task_1777460947389_362",
+      "nodes": {
+        "task_1777460947389_362": {
+          "id": "task_1777460947389_362",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777460947389_363",
+            "task_1777460947390_364",
+            "task_1777460947390_365"
+          ],
+          "finishedAt": 1777460947393
+        },
+        "task_1777460947389_363": {
+          "id": "task_1777460947389_363",
+          "parentId": "task_1777460947389_362",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777460947391,
+          "error": "No images provided for image step",
+          "finishedAt": 1777460947392
+        },
+        "task_1777460947390_364": {
+          "id": "task_1777460947390_364",
+          "parentId": "task_1777460947389_362",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777460947392,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777460947392
+        },
+        "task_1777460947390_365": {
+          "id": "task_1777460947390_365",
+          "parentId": "task_1777460947389_362",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777460947389_363",
+            "task_1777460947390_364"
+          ],
+          "children": [],
+          "finishedAt": 1777460947392
+        }
+      },
+      "createdAt": 1777460947389,
+      "updatedAt": 1777460947393
+    },
+    {
+      "rootId": "task_1777461829454_366",
+      "nodes": {
+        "task_1777461829454_366": {
+          "id": "task_1777461829454_366",
+          "parentId": null,
+          "label": "Image + TTS + Render",
+          "kind": "workflow",
+          "status": "failed",
+          "progress": 100,
+          "deps": [],
+          "children": [
+            "task_1777461829455_367",
+            "task_1777461829455_368",
+            "task_1777461829455_369"
+          ],
+          "finishedAt": 1777461829458
+        },
+        "task_1777461829455_367": {
+          "id": "task_1777461829455_367",
+          "parentId": "task_1777461829454_366",
+          "label": "Generate Images",
+          "kind": "image",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777461829456,
+          "error": "No images provided for image step",
+          "finishedAt": 1777461829457
+        },
+        "task_1777461829455_368": {
+          "id": "task_1777461829455_368",
+          "parentId": "task_1777461829454_366",
+          "label": "Generate TTS",
+          "kind": "tts",
+          "status": "failed",
+          "progress": 0,
+          "deps": [],
+          "children": [],
+          "startedAt": 1777461829457,
+          "error": "Cannot resolve episode path: need scaffold output or episodePath/chapter/episode",
+          "finishedAt": 1777461829457
+        },
+        "task_1777461829455_369": {
+          "id": "task_1777461829455_369",
+          "parentId": "task_1777461829454_366",
+          "label": "Render MP4",
+          "kind": "render",
+          "status": "skipped",
+          "progress": 0,
+          "deps": [
+            "task_1777461829455_367",
+            "task_1777461829455_368"
+          ],
+          "children": [],
+          "finishedAt": 1777461829457
+        }
+      },
+      "createdAt": 1777461829454,
+      "updatedAt": 1777461829458
+    }
+  ],
+  "counter": 369
+}

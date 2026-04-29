@@ -14,14 +14,14 @@
 ```
 Error: expect(locator).toBeVisible() failed
 
-Locator: locator('table').first()
+Locator: locator('table').first().locator('th').filter({ hasText: 'Gate Score' })
 Expected: visible
 Timeout: 5000ms
 Error: element(s) not found
 
 Call log:
   - Expect "toBeVisible" with timeout 5000ms
-  - waiting for locator('table').first()
+  - waiting for locator('table').first().locator('th').filter({ hasText: 'Gate Score' })
 
 ```
 
@@ -30,22 +30,122 @@ Call log:
 ```yaml
 - generic [ref=e3]:
   - navigation [ref=e4]:
-    - heading "Bun Remotion" [level=2] [ref=e5]
-    - button "Dashboard" [ref=e6] [cursor=pointer]
-    - button "Monitoring" [ref=e7] [cursor=pointer]
-    - button "Projects" [active] [ref=e8] [cursor=pointer]
-    - button "Story Editor" [ref=e9] [cursor=pointer]
-    - button "Storygraph" [ref=e10] [cursor=pointer]
-    - button "Quality" [ref=e11] [cursor=pointer]
-    - button "Benchmark" [ref=e12] [cursor=pointer]
-    - button "Agent Chat" [ref=e13] [cursor=pointer]
-    - button "Assets" [ref=e14] [cursor=pointer]
-    - button "TTS" [ref=e15] [cursor=pointer]
-    - button "Render" [ref=e16] [cursor=pointer]
-    - button "Image" [ref=e17] [cursor=pointer]
-    - button "Workflows" [ref=e18] [cursor=pointer]
-  - main [ref=e19]:
-    - generic [ref=e20]: Loading projects...
+    - heading "Remotion Studio" [level=2] [ref=e5]
+    - generic [ref=e6]:
+      - generic [ref=e7]: Overview
+      - button "■ Dashboard" [ref=e8] [cursor=pointer]:
+        - generic [ref=e9]: ■
+        - text: Dashboard
+      - button "● Monitoring" [ref=e10] [cursor=pointer]:
+        - generic [ref=e11]: ●
+        - text: Monitoring
+      - button "▣ Progress" [ref=e12] [cursor=pointer]:
+        - generic [ref=e13]: ▣
+        - text: Progress
+      - button "▦ Kanban" [ref=e14] [cursor=pointer]:
+        - generic [ref=e15]: ▦
+        - text: Kanban
+    - generic [ref=e16]:
+      - generic [ref=e17]: Production
+      - button "📁 Projects" [active] [ref=e18] [cursor=pointer]:
+        - generic [ref=e19]: 📁
+        - text: Projects
+      - button "✍ Story Editor" [ref=e20] [cursor=pointer]:
+        - generic [ref=e21]: ✍
+        - text: Story Editor
+      - button "⚙ Workflows" [ref=e22] [cursor=pointer]:
+        - generic [ref=e23]: ⚙
+        - text: Workflows
+    - generic [ref=e24]:
+      - generic [ref=e25]: Analysis
+      - button "🕸 Storygraph" [ref=e26] [cursor=pointer]:
+        - generic [ref=e27]: 🕸
+        - text: Storygraph
+      - button "✔ Quality" [ref=e28] [cursor=pointer]:
+        - generic [ref=e29]: ✔
+        - text: Quality
+      - button "📊 Benchmark" [ref=e30] [cursor=pointer]:
+        - generic [ref=e31]: 📊
+        - text: Benchmark
+    - generic [ref=e32]:
+      - generic [ref=e33]: AI
+      - button "🤖 Agent Chat" [ref=e34] [cursor=pointer]:
+        - generic [ref=e35]: 🤖
+        - text: Agent Chat
+    - generic [ref=e36]:
+      - generic [ref=e37]: Assets
+      - button "🖼 Assets" [ref=e38] [cursor=pointer]:
+        - generic [ref=e39]: 🖼
+        - text: Assets
+      - button "🔊 TTS" [ref=e40] [cursor=pointer]:
+        - generic [ref=e41]: 🔊
+        - text: TTS
+      - button "▶ Render" [ref=e42] [cursor=pointer]:
+        - generic [ref=e43]: ▶
+        - text: Render
+      - button "🎨 Image" [ref=e44] [cursor=pointer]:
+        - generic [ref=e45]: 🎨
+        - text: Image
+    - generic [ref=e46]:
+      - button "◐" [ref=e47] [cursor=pointer]
+      - button "中" [ref=e48] [cursor=pointer]
+  - main [ref=e49]:
+    - generic [ref=e50]:
+      - generic [ref=e51]:
+        - generic [ref=e52]:
+          - heading "Projects (5)" [level=1] [ref=e54]
+          - paragraph [ref=e55]: Manage series and episodes
+        - button "+ New Episode" [ref=e56] [cursor=pointer]
+      - table [ref=e57]:
+        - rowgroup [ref=e58]:
+          - row "Series Category Episodes Scaffolded Gate Plan" [ref=e59]:
+            - columnheader "Series" [ref=e60]
+            - columnheader "Category" [ref=e61]
+            - columnheader "Episodes" [ref=e62]
+            - columnheader "Scaffolded" [ref=e63]
+            - columnheader "Gate" [ref=e64]
+            - columnheader "Plan" [ref=e65]
+        - rowgroup [ref=e66]:
+          - row "Galgame Meme Theater Galgame VN 7 7 100/100 Yes" [ref=e67] [cursor=pointer]:
+            - cell "Galgame Meme Theater" [ref=e68]
+            - cell "Galgame VN" [ref=e69]
+            - cell "7" [ref=e70]
+            - cell "7" [ref=e71]
+            - cell "100/100" [ref=e72]:
+              - generic [ref=e73]: 100/100
+            - cell "Yes" [ref=e74]
+          - row "My Core Is Boss Narrative Drama 12 12 100/100 Yes" [ref=e75] [cursor=pointer]:
+            - cell "My Core Is Boss" [ref=e76]
+            - cell "Narrative Drama" [ref=e77]
+            - cell "12" [ref=e78]
+            - cell "12" [ref=e79]
+            - cell "100/100" [ref=e80]:
+              - generic [ref=e81]: 100/100
+            - cell "Yes" [ref=e82]
+          - row "Storygraph Explainer Tech Explainer 3 0 100/100 Yes" [ref=e83] [cursor=pointer]:
+            - cell "Storygraph Explainer" [ref=e84]
+            - cell "Tech Explainer" [ref=e85]
+            - cell "3" [ref=e86]
+            - cell "0" [ref=e87]
+            - cell "100/100" [ref=e88]:
+              - generic [ref=e89]: 100/100
+            - cell "Yes" [ref=e90]
+          - row "Weapon Forger Narrative Drama 8 8 70/100 Yes" [ref=e91] [cursor=pointer]:
+            - cell "Weapon Forger" [ref=e92]
+            - cell "Narrative Drama" [ref=e93]
+            - cell "8" [ref=e94]
+            - cell "8" [ref=e95]
+            - cell "70/100" [ref=e96]:
+              - generic [ref=e97]: 70/100
+            - cell "Yes" [ref=e98]
+          - row "Xianxia System Meme Narrative Drama 0 0 100/100 —" [ref=e99] [cursor=pointer]:
+            - cell "Xianxia System Meme" [ref=e100]
+            - cell "Narrative Drama" [ref=e101]
+            - cell "0" [ref=e102]
+            - cell "0" [ref=e103]
+            - cell "100/100" [ref=e104]:
+              - generic [ref=e105]: 100/100
+            - cell "—" [ref=e106]
 ```
 
 # Test source
@@ -64,12 +164,12 @@ Call log:
   11  | 
   12  |   test("project list shows table with correct headers", async ({ page }) => {
   13  |     const table = page.locator("table").first();
-> 14  |     await expect(table).toBeVisible();
-      |                         ^ Error: expect(locator).toBeVisible() failed
+  14  |     await expect(table).toBeVisible();
   15  | 
   16  |     const expectedHeaders = ["Series", "Category", "Episodes", "Scaffolded", "Gate Score", "Plan"];
   17  |     for (const h of expectedHeaders) {
-  18  |       await expect(table.locator("th", { hasText: h })).toBeVisible();
+> 18  |       await expect(table.locator("th", { hasText: h })).toBeVisible();
+      |                                                         ^ Error: expect(locator).toBeVisible() failed
   19  |     }
   20  |   });
   21  | 
@@ -166,4 +266,8 @@ Call log:
   112 |     await expect(page.getByText(/Back/i)).toBeVisible();
   113 | 
   114 |     // Should show series dropdown
+  115 |     const select = page.locator("select").first();
+  116 |     await expect(select).toBeVisible();
+  117 |   });
+  118 | 
 ```

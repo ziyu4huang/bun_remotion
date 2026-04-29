@@ -59,5 +59,9 @@ Read relevant files before working on matching topics. Files are self-contained.
 - confirm-format-zhtw — When presenting episode content for user confirmation, show all story/dialog in zh_TW
 - fixture-to-assets-migration — SOP: fixture→assets rename + story guides + genre presets
 
+## Web UI / Vite
+- jsx-file-extension-rule — Files with JSX MUST use .tsx extension — esbuild refuses JSX in .ts files. Includes Vite cache clearing.
+- remotion-studio-webui — remotion_studio WebUI: 13 pages, dual-server ports, Bun commands, common pitfalls
+
 ## Audio / TTS
 - tts-voices — TTS voice configuration and selection

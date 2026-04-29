@@ -8,7 +8,7 @@
 > `TODO.md` — Pipeline tasks, run history, known issues | `bun_app/storygraph/TODO.md` — Code-level tasks (file/line specific)
 > `SKILL.md` — Operational playbook, commands | —
 
-## Architecture (v0.12.0)
+## Architecture (v0.33.0)
 
 ```
 series-config.ts ─── Auto-detect series, load patterns (charNames, traits, tech, gag source)
@@ -224,6 +224,9 @@ Each series has a `SeriesConfig` defining its characters, trait patterns, tech t
 - **Auto-detection:** merged-graph.json → merged mode; graph.json → single-episode mode
 - **Merged mode features:**
   - Episode-based coloring (default) with By Type and By Community toggles
+  - **Display controls:** PageRank glow toggle (show/hide top 10% glow)
+  - **Confidence-based edge opacity:** Edge opacity mapped from confidence scores (0.15–0.85 range)
+  - **Community highlight mode:** Click community in legend to highlight (dims others to 15% opacity, click again to restore)
   - Link edges rendered dashed with distinct colors:
     - `same_character` → coral (#FF6B6B)
     - `story_continues` → teal (#4ECDC4)
@@ -332,9 +335,8 @@ Trigger: Run after merge step when ≥ 3 episodes exist in merged graph.
 ### Known Limitations
 
 1. **Manual AI invocation**: Pipeline writes `crosslink-input.json` but doesn't call Claude directly. Requires manual subagent step or future API integration.
-2. **No algorithm-only cross-links**: `generated_by: "algorithm"` type is defined but never generated. Only AI cross-links flow through the pipeline.
-3. **PageRank bias**: Raw PageRank favors high-degree nodes (plot nodes, scenes). Character-specific filtering would be more meaningful.
-4. **Input size**: `crosslink-input.json` is ~66KB for 5 episodes. Larger series may hit context limits.
+2. **PageRank bias**: Raw PageRank favors high-degree nodes (plot nodes, scenes). Character-specific filtering would be more meaningful.
+3. **Input size**: `crosslink-input.json` is ~66KB for 5 episodes. Larger series may hit context limits.
 
 ### Key Files
 
@@ -493,5 +495,5 @@ Phase 26 is **orthogonal** to Phase 24 (story quality) and Phase 25 (Remotion fr
 ### Dependencies
 
 - `@mariozechner/pi-ai` — already in `bun_pi_agent/package.json`, needs adding to `storygraph/package.json`
-- `ZAI_API_KEY` env var — already configured in `~/.zshrc`
+- `Z_AI_API_KEY` env var — already configured in `~/.zshrc` (aliased to `ZAI_API_KEY` for pi-ai)
 - storygraph package.json — add `pi-ai` as optional peer dependency

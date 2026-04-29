@@ -54,9 +54,9 @@ export async function handleChat(req: Request): Promise<Response> {
       // Timeout after 5 minutes
       const timeout = setTimeout(() => {
         if (!closed) {
-          closed = true;
           agent.abort();
           send({ type: "timeout", message: "Request timed out" });
+          closed = true;
           controller.close();
         }
       }, 300_000);
@@ -64,8 +64,8 @@ export async function handleChat(req: Request): Promise<Response> {
       agent.prompt(body.message!).catch((err) => {
         clearTimeout(timeout);
         if (!closed) {
-          closed = true;
           send({ type: "error", message: String(err) });
+          closed = true;
           controller.close();
         }
       }).finally(() => {
@@ -85,7 +85,7 @@ export async function handleChat(req: Request): Promise<Response> {
   });
 }
 
-function serializeEvent(event: any): Record<string, unknown> {
+export function serializeEvent(event: any): Record<string, unknown> {
   // AgentMessage objects have circular refs and huge usage data — strip them
   if (event.type === "message_update") {
     const evt = event.assistantMessageEvent;

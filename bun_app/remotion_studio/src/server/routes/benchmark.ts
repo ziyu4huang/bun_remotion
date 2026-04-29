@@ -3,8 +3,7 @@ import { resolve } from "node:path";
 import { existsSync, readFileSync, readdirSync, copyFileSync, statSync } from "node:fs";
 import { runPipeline, runCheck, runScore } from "../../../../storygraph/src/pipeline-api";
 import { createJob } from "../middleware/job-queue";
-import { runAgentTask } from "../agent-bridge.js";
-import type { ApiResponse, Job, BenchmarkResult, BaselineInfo } from "../../shared/types";
+import type { ApiResponse, Job, BenchmarkResult, BaselineInfo, RegressionSeriesStatus } from "../../shared/types";
 
 const router = new Hono();
 
@@ -381,6 +380,72 @@ router.post("/baseline/:seriesId", (c) => {
   };
 
   return c.json<ApiResponse<BaselineInfo>>({ ok: true, data: info });
+});
+
+// ── GET /regression-status ── Aggregate regression across all series
+
+router.get("/regression-status", (c) => {
+  const threshold = Number(c.req.query("threshold")) || 10;
+  const dirs = readdirSync(PROJ_DIR, { withFileTypes: true })
+    .filter((d) => d.isDirectory() && !d.name.startsWith(".") && d.name !== "shared" && d.name !== "shared-fixture");
+
+  const statuses: RegressionSeriesStatus[] = [];
+
+  for (const dir of dirs) {
+    const seriesId = dir.name;
+    const outDir = resolve(PROJ_DIR, seriesId, "storygraph_out");
+    const baselinePath = resolve(outDir, "baseline-gate.json");
+    const currentGatePath = resolve(outDir, "gate.json");
+
+    const status: RegressionSeriesStatus = {
+      seriesId,
+      hasBaseline: existsSync(baselinePath),
+      baselineScore: null,
+      baselineDate: null,
+      currentScore: null,
+      scoreDelta: null,
+      regressionStatus: "NO_BASELINE",
+    };
+
+    if (status.hasBaseline) {
+      const baseline = readJsonSafe<{ score?: number; timestamp?: string; checks?: Array<{ name: string; score_impact: number }> }>(baselinePath);
+      status.baselineScore = baseline?.score ?? null;
+      status.baselineDate = baseline?.timestamp ?? null;
+    }
+
+    const current = readJsonSafe<{ score?: number; decision?: string; checks?: Array<{ name: string; score_impact: number }> }>(currentGatePath);
+    status.currentScore = current?.score ?? null;
+
+    if (!current?.score) {
+      status.regressionStatus = "NO_GATE";
+    } else if (status.hasBaseline && status.baselineScore != null) {
+      const delta = current.score - status.baselineScore;
+      status.scoreDelta = delta;
+
+      if (Math.abs(delta) > threshold) {
+        status.regressionStatus = "REGRESSION";
+      } else {
+        status.regressionStatus = "OK";
+      }
+
+      // Check-level deltas
+      const baseline = readJsonSafe<{ score?: number; checks?: Array<{ name: string; score_impact: number }> }>(baselinePath);
+      const baselineChecks = new Map((baseline?.checks ?? []).map((ch) => [ch.name, ch.score_impact]));
+      const checkDeltas: string[] = [];
+      for (const cur of (current.checks ?? [])) {
+        const prev = baselineChecks.get(cur.name);
+        if (prev != null && cur.score_impact !== prev) {
+          const d = cur.score_impact - prev;
+          checkDeltas.push(`${cur.name}: ${prev} → ${cur.score_impact} (${d > 0 ? "+" : ""}${d})`);
+        }
+      }
+      if (checkDeltas.length > 0) status.checkDeltas = checkDeltas;
+    }
+
+    statuses.push(status);
+  }
+
+  return c.json<ApiResponse<RegressionSeriesStatus[]>>({ ok: true, data: statuses });
 });
 
 export const benchmarkRoutes = router;

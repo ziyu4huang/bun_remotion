@@ -11,6 +11,9 @@ describe("getConfig", () => {
       "PI_AGENT_HOST",
       "PI_AGENT_PORT",
       "PI_AGENT_WORKDIR",
+      "PI_AGENT_BENCH_MAX_TOOL_CALLS",
+      "PI_AGENT_BENCH_MAX_TURNS",
+      "PI_AGENT_BENCH_MODE",
     ]) {
       originalEnv[key] = process.env[key];
     }
@@ -101,5 +104,27 @@ describe("getConfig", () => {
     const config = getConfig();
     expect(config.modelProvider).toBe("google");
     expect(config.modelName).toBe("gemini-2.0-flash");
+  });
+
+  test("bench config defaults", () => {
+    delete process.env.PI_AGENT_BENCH_MAX_TOOL_CALLS;
+    delete process.env.PI_AGENT_BENCH_MAX_TURNS;
+    delete process.env.PI_AGENT_BENCH_MODE;
+
+    const config = getConfig();
+    expect(config.benchMaxToolCalls).toBe(15);
+    expect(config.benchMaxTurns).toBe(10);
+    expect(config.benchMode).toBe("ai");
+  });
+
+  test("bench config from env vars", () => {
+    process.env.PI_AGENT_BENCH_MAX_TOOL_CALLS = "20";
+    process.env.PI_AGENT_BENCH_MAX_TURNS = "5";
+    process.env.PI_AGENT_BENCH_MODE = "hybrid";
+
+    const config = getConfig();
+    expect(config.benchMaxToolCalls).toBe(20);
+    expect(config.benchMaxTurns).toBe(5);
+    expect(config.benchMode).toBe("hybrid");
   });
 });

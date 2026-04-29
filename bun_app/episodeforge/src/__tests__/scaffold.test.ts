@@ -85,6 +85,41 @@ describe("scaffold() module API", () => {
 
     expect(result.success).toBe(false);
     expect(result.errors[0]).toContain("already exists");
+    expect(result.errors[0]).toContain("--force");
+
+    rmSync(resolve(TMP_REPO, "bun_remotion_proj"), { recursive: true, force: true });
+  });
+
+  test("--force backs up and overwrites existing directory", async () => {
+    const seriesDir = resolve(TMP_REPO, "bun_remotion_proj", "weapon-forger");
+    const epDir = resolve(seriesDir, "weapon-forger-ch1-ep97");
+    mkdirSync(epDir, { recursive: true });
+
+    // Write a marker file to verify backup
+    const { writeFileSync } = await import("node:fs");
+    writeFileSync(resolve(epDir, "marker.txt"), "old");
+
+    const result = await scaffold({
+      series: "weapon-forger",
+      chapter: 1,
+      episode: 97,
+      force: true,
+      skipInstall: true,
+      repoRoot: TMP_REPO,
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.filesWritten).toBeGreaterThan(0);
+
+    // New files should exist
+    expect(existsSync(resolve(epDir, "package.json"))).toBe(true);
+
+    // Backup should exist with marker
+    const entries = await import("node:fs").then((fs) =>
+      fs.readdirSync(seriesDir).filter((e) => e.startsWith("weapon-forger-ch1-ep97.bak."))
+    );
+    expect(entries.length).toBe(1);
+    expect(existsSync(resolve(seriesDir, entries[0], "marker.txt"))).toBe(true);
 
     rmSync(resolve(TMP_REPO, "bun_remotion_proj"), { recursive: true, force: true });
   });

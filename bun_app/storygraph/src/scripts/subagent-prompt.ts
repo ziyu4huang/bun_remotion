@@ -9,6 +9,7 @@
  * - KG quality scoring (Phase 31-A1)
  */
 
+import { readFileSync } from "node:fs";
 import type { StoryCrossLink } from "../types";
 import type { SeriesConfig } from "./series-config";
 import type {
@@ -504,10 +505,12 @@ ${narration}
 2. **scene** (id: ${input.episode_id}_scene_{n})
 3. **character_instance** (id: ${input.episode_id}_char_{id})
 4. **tech_term** (id: ${input.episode_id}_tech_{term})
-5. **plot_beat** — key story turning points (id: ${input.episode_id}_beat_{n})
-6. **theme** — recurring concepts like 成長, 認同 (id: ${input.episode_id}_theme_{keyword})
+5. **plot_event** — key story beats from narrator summaries (id: ${input.episode_id}_event_{n})
+6. **artifact** — created items or named objects like 飛劍, 丹爐, 陣法 (id: ${input.episode_id}_artifact_{name})
+7. **plot_beat** — dramatic turning points (id: ${input.episode_id}_beat_{n})
+8. **theme** — recurring concepts like 成長, 認同 (id: ${input.episode_id}_theme_{keyword})
 
-## Edges: part_of, appears_in, uses_tech_term, triggers, illustrates
+## Edges: part_of, appears_in, uses_tech_term, uses, triggers, illustrates
 
 ## Output: JSON only, no markdown fences
 
@@ -1260,4 +1263,223 @@ export function parseStoryQualityResponse(raw: string): StoryQualityResult {
   json.suggestions = Array.isArray(json.suggestions) ? json.suggestions : [];
 
   return json;
+}
+
+// ─── Enrichment Feedback Prompt (Phase 0-B) ───
+
+export interface FeedbackInput {
+  episode_id: string;
+  gateJsonPath: string;
+  consistencyReportPath: string;
+}
+
+/**
+ * Build a zh_TW feedback section from the previous gate.json run.
+ * Targets the AI extraction prompt to focus on previously missed traits,
+ * weak interactions, and other WARNs relevant to this episode.
+ *
+ * Returns a string to prepend to the AI prompt, or "" if no feedback available.
+ */
+export function buildEnrichmentFeedbackPrompt(input: FeedbackInput): string {
+  const { episode_id, gateJsonPath, consistencyReportPath } = input;
+
+  let warnGroups: string[] = [];
+  let reportContent = "";
+
+  // Read gate.json for WARN/FAIL summary
+  try {
+    const gateJson = JSON.parse(readFileSync(gateJsonPath, "utf-8"));
+    const checks = Array.isArray(gateJson.checks) ? gateJson.checks : [];
+    const warns = checks.filter((c: any) => c.status === "WARN" || c.status === "FAIL");
+    const groups = new Set(warns.map((c: any) => c.name.split(":")[0].trim()));
+    warnGroups = [...groups];
+  } catch {
+    return "";
+  }
+
+  if (warnGroups.length === 0) return "";
+
+  // Read consistency-report.md for episode-specific details
+  try {
+    reportContent = readFileSync(consistencyReportPath, "utf-8");
+  } catch {
+    // Fall back to group-level feedback only
+  }
+
+  // Extract lines mentioning this episode ID from consistency report
+  const epLines: string[] = [];
+  if (reportContent) {
+    let inWarnSection = false;
+    for (const line of reportContent.split("\n")) {
+      if (line.includes("WARN") || line.includes("⚠️")) inWarnSection = true;
+      if (line.startsWith("## ") || line.startsWith("# ")) inWarnSection = false;
+      if (inWarnSection && line.includes(episode_id)) {
+        const cleaned = line.replace(/^#+\s*/, "").trim();
+        if (cleaned) epLines.push(cleaned);
+      }
+    }
+  }
+
+  // Build feedback section
+  const lines: string[] = [];
+  lines.push("## 上次提取的問題回饋");
+  lines.push(`以下是上一輪知識圖譜提取中，第 ${episode_id} 集相關的警告：`);
+  lines.push("");
+
+  if (epLines.length > 0) {
+    lines.push("### 本集特定問題");
+    for (const l of epLines.slice(0, 8)) {
+      lines.push(`- ${l}`);
+    }
+    lines.push("");
+  }
+
+  if (warnGroups.length > 0) {
+    lines.push("### 全系列問題類型");
+    for (const g of warnGroups) {
+      lines.push(`- ${g}`);
+    }
+    lines.push("");
+  }
+
+  lines.push("請特別注意上述問題，在本次提取中盡量捕捉相關的節點和邊。");
+
+  return lines.join("\n");
+}
+
+// ─── Dual Review Prompt (Phase R2) ───
+
+export interface DualReviewInput {
+  series_name: string;
+  genre: string;
+  episode_count: number;
+  gate: {
+    score: number;
+    decision: string;
+    quality_breakdown: Record<string, number | null>;
+    checks: Array<{ name: string; status: string; score_impact: number }>;
+  };
+  consistency_report: string;
+  regression?: {
+    baseline_score: number;
+    current_score: number;
+    score_delta: number;
+    regressed: boolean;
+  } | null;
+}
+
+export interface DualReviewResult {
+  overall_verdict: "AGREE" | "PARTIAL_AGREE" | "DISAGREE";
+  reviewer_score: number;
+  reviewer_dimensions: Record<string, number>;
+  false_positives: string[];
+  false_negatives: string[];
+  missed_issues: string[];
+  strengths: string[];
+  weaknesses: string[];
+  recommendations: string[];
+}
+
+export function buildDualReviewPrompt(input: DualReviewInput): string {
+  const checkSummary = input.gate.checks
+    .slice(0, 30)
+    .map(c => `- [${c.status}] ${c.name} (impact: ${c.score_impact})`)
+    .join("\n");
+
+  const breakdownLines = Object.entries(input.gate.quality_breakdown)
+    .filter(([, v]) => v !== null)
+    .map(([dim, v]) => `- ${dim}: ${(v! * 100).toFixed(0)}%`)
+    .join("\n");
+
+  const regressionSection = input.regression
+    ? `## Regression Status
+- Baseline: ${input.regression.baseline_score} → Current: ${input.regression.current_score} (delta: ${input.regression.score_delta > 0 ? "+" : ""}${input.regression.score_delta})
+- Regressed: ${input.regression.regressed ? "YES" : "NO"}`
+    : "(no regression data)";
+
+  const reportPreview = input.consistency_report.length > 3000
+    ? input.consistency_report.slice(0, 3000) + "\n... (truncated)"
+    : input.consistency_report;
+
+  return `You are a senior quality reviewer providing an INDEPENDENT second opinion on a knowledge graph pipeline's quality assessment. The pipeline was run by a GLM-based agent. Your job is to catch what it may have missed.
+
+## Series: ${input.series_name} (${input.genre})
+## Episodes: ${input.episode_count}
+
+## Pipeline (GLM Agent) Assessment
+- Score: ${input.gate.score}/100 (${input.gate.decision})
+- Per-dimension:
+${breakdownLines}
+
+## Check Results
+${checkSummary}
+
+## Consistency Report
+${reportPreview || "(no report)"}
+
+${regressionSection}
+
+## Your Task
+
+Provide an independent review. Focus on:
+
+1. **Score validation**: Is the pipeline's ${input.gate.score}/100 justified? What score would YOU give?
+2. **False positives**: Are any WARN/FAIL checks unjustified? (over-sensitive thresholds)
+3. **False negatives**: Did the pipeline MISS real quality issues? (under-sensitive checks)
+4. **Blind spots**: What structural issues can a regex/statistical pipeline not detect that you can see from the report?
+
+Score each dimension 0-10:
+- **score_accuracy** — How accurately does ${input.gate.score}/100 reflect true quality?
+- **check_fairness** — Are the check results fair and well-calibrated?
+- **completeness** — Did the pipeline catch the important issues?
+- **blind_spot_detection** — Are there issues the pipeline is structurally blind to?
+- **actionability** — Can a writer act on the pipeline's feedback?
+
+## Output Format
+
+Return ONLY a JSON object, no markdown fences:
+
+{"overall_verdict":"AGREE|PARTIAL_AGREE|DISAGREE","reviewer_score":0,"reviewer_dimensions":{"score_accuracy":0,"check_fairness":0,"completeness":0,"blind_spot_detection":0,"actionability":0},"false_positives":["check names that are unjustified"],"false_negatives":["real issues the pipeline missed"],"missed_issues":["structural blind spots"],"strengths":["what the pipeline does well"],"weaknesses":["what the pipeline does poorly"],"recommendations":["how to improve the pipeline"]}
+
+IMPORTANT:
+- overall_verdict: AGREE (pipeline assessment is accurate), PARTIAL_AGREE (mostly right with gaps), DISAGREE (pipeline assessment is misleading)
+- reviewer_score: YOUR independent quality score for this KG (0-100)
+- Be critical — the value of a second opinion is catching what the first missed
+- Each array should have 2-5 items
+- Return ONLY the JSON, no other text
+
+Dual review:`;
+}
+
+export function parseDualReviewResponse(raw: string): DualReviewResult {
+  const json = JSON.parse(raw);
+
+  const verdicts = ["AGREE", "PARTIAL_AGREE", "DISAGREE"] as const;
+  const verdict: DualReviewResult["overall_verdict"] = verdicts.includes(json.overall_verdict)
+    ? json.overall_verdict
+    : "PARTIAL_AGREE";
+
+  const dims = json.reviewer_dimensions ?? {};
+  const validDims = ["score_accuracy", "check_fairness", "completeness", "blind_spot_detection", "actionability"];
+  for (const key of validDims) {
+    if (typeof dims[key] !== "number") dims[key] = 0;
+    else dims[key] = Math.max(0, Math.min(10, Math.round(dims[key])));
+  }
+
+  const toArray = (v: unknown): string[] =>
+    Array.isArray(v) ? v.map(String).slice(0, 5) : [];
+
+  return {
+    overall_verdict: verdict,
+    reviewer_score: typeof json.reviewer_score === "number"
+      ? Math.max(0, Math.min(100, Math.round(json.reviewer_score)))
+      : 50,
+    reviewer_dimensions: dims,
+    false_positives: toArray(json.false_positives),
+    false_negatives: toArray(json.false_negatives),
+    missed_issues: toArray(json.missed_issues),
+    strengths: toArray(json.strengths),
+    weaknesses: toArray(json.weaknesses),
+    recommendations: toArray(json.recommendations),
+  };
 }

@@ -25,7 +25,7 @@ const dialogLines = [
   { character: "narrator" as const, text: "守護者的殘魂飄到蕭長老面前，用一種近乎崩潰的語氣說：「他說得對。第三十七個岔路確實是個 bug，我當年沒有測試就上線了。三千年了，終於有人發現了。」", emotion: "default" as const, effect: "sweat" as ComicEffect },
   { character: "xiaoelder" as const, text: "守護者大人！您不要被這小子帶偏了！您是上古大能的殘魂！", emotion: "shock" as const },
   { character: "narrator" as const, text: "守護者搖了搖頭：「不，他真的看到了本源。三千年前我設計這個迷宮的時候，確實在最後一步偷懶了，直接用了一面實牆擋路，沒想到有人能穿牆。」", emotion: "default" as const },
-  { character: "zhaoxiaoqi" as const, text: "所以這個三千年無人通過的迷宮，最後一關的防禦措施就是……一堵牆？", emotion: "confused" as const },
+  { character: "zhaoxiaoqi" as const, text: "所以這個三千年無人通過的迷宮，最後一關的防禦措施就是……一堵牆？", emotion: "think" as const },
   { character: "linyi" as const, text: "對，一堵牆。而且還沒有碰撞體積。我 noclip 都不需要開就能穿過去。這個迷宮的設計師需要好好學學遊戲設計。", emotion: "smile" as const, effect: "gloating" as ComicEffect },
   { character: "narrator" as const, text: "蕭長老看著崩潰的守護者，又看著一臉無辜的林逸，手中的拂塵掉在了地上。他的崩潰進度條，從百分之四十五跳到了百分之五十。", emotion: "default" as const, effect: "sweat" as ComicEffect },
   { character: "xiaoelder" as const, text: "老夫的修仙世界觀……正在被一個外門弟子和一個三千年前的 bug 重構……", emotion: "shock" as const },

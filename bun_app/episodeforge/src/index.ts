@@ -18,12 +18,18 @@ export type { ScaffoldOptions, ScaffoldResult } from "./scaffold";
 
 import { parseArgs, showHelp } from "./args";
 import { scaffold } from "./scaffold";
+import { listSeries } from "./series-config";
 
 if (import.meta.main) {
   const args = parseArgs(process.argv.slice(2));
 
   if (args.help) {
     showHelp();
+    process.exit(0);
+  }
+
+  if (args.listSeries) {
+    listSeries();
     process.exit(0);
   }
 
@@ -34,6 +40,7 @@ if (import.meta.main) {
     episode: args.episode ?? undefined,
     scenes: args.scenes ?? undefined,
     dryRun: args.dryRun,
+    force: args.force,
     skipInstall: args.skipInstall,
   }).then((result) => {
     if (!result.success) {

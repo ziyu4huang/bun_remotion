@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeAll } from "bun:test";
 import { handleHealth } from "../server/routes/health.js";
-import { handleChat } from "../server/routes/chat.js";
+import { handleChat, serializeEvent } from "../server/routes/chat.js";
 import {
   handlePing,
   handleAgentsList,
@@ -87,6 +87,98 @@ describe("POST /chat", () => {
         if (done) break;
       }
     }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// serializeEvent — SSE event serialization
+// ---------------------------------------------------------------------------
+describe("serializeEvent", () => {
+  test("serializes message_update text_delta", () => {
+    const result = serializeEvent({
+      type: "message_update",
+      message: {},
+      assistantMessageEvent: { type: "text_delta", delta: "hello" },
+    });
+    expect(result.type).toBe("message_update");
+    expect(result.eventType).toBe("text_delta");
+    expect(result.delta).toBe("hello");
+  });
+
+  test("serializes message_update thinking_delta", () => {
+    const result = serializeEvent({
+      type: "message_update",
+      message: {},
+      assistantMessageEvent: { type: "thinking_delta", delta: "reasoning..." },
+    });
+    expect(result.eventType).toBe("thinking_delta");
+    expect(result.delta).toBe("reasoning...");
+  });
+
+  test("serializes message_update toolcall_start/end", () => {
+    const start = serializeEvent({
+      type: "message_update",
+      message: {},
+      assistantMessageEvent: { type: "toolcall_start", contentIndex: 2 },
+    });
+    expect(start.eventType).toBe("toolcall_start");
+    expect(start.contentIndex).toBe(2);
+
+    const end = serializeEvent({
+      type: "message_update",
+      message: {},
+      assistantMessageEvent: {
+        type: "toolcall_end",
+        toolCall: { id: "tc_1", name: "Bash" },
+      },
+    });
+    expect(end.eventType).toBe("toolcall_end");
+    expect((end as any).toolCall).toEqual({ id: "tc_1", name: "Bash" });
+  });
+
+  test("serializes tool_execution_start", () => {
+    const result = serializeEvent({
+      type: "tool_execution_start",
+      toolCallId: "tc_42",
+      toolName: "Read",
+      args: { path: "/tmp/x" },
+    });
+    expect(result.type).toBe("tool_execution_start");
+    expect(result.toolCallId).toBe("tc_42");
+    expect(result.toolName).toBe("Read");
+    expect(result.args).toEqual({ path: "/tmp/x" });
+  });
+
+  test("serializes tool_execution_end (no result in output)", () => {
+    const result = serializeEvent({
+      type: "tool_execution_end",
+      toolCallId: "tc_42",
+      toolName: "Read",
+      result: "file contents here",
+      isError: false,
+    });
+    expect(result.type).toBe("tool_execution_end");
+    expect(result.toolCallId).toBe("tc_42");
+    expect(result.isError).toBe(false);
+    // result is intentionally not included in serialization
+    expect(result).not.toHaveProperty("result");
+  });
+
+  test("serializes agent_start and agent_end", () => {
+    expect(serializeEvent({ type: "agent_start" })).toEqual({ type: "agent_start" });
+    expect(serializeEvent({ type: "agent_end", messages: [] })).toEqual({ type: "agent_end" });
+  });
+
+  test("serializes turn_start, turn_end, message_start, message_end", () => {
+    expect(serializeEvent({ type: "turn_start" })).toEqual({ type: "turn_start" });
+    expect(serializeEvent({ type: "turn_end", message: {}, toolResults: [] })).toEqual({ type: "turn_end" });
+    expect(serializeEvent({ type: "message_start", message: {} })).toEqual({ type: "message_start" });
+    expect(serializeEvent({ type: "message_end", message: {} })).toEqual({ type: "message_end" });
+  });
+
+  test("passes through unknown event types", () => {
+    const result = serializeEvent({ type: "some_new_event", data: 42 });
+    expect(result).toEqual({ type: "some_new_event" });
   });
 });
 

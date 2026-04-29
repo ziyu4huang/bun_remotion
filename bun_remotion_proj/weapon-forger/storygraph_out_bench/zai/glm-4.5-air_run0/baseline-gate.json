@@ -1,0 +1,551 @@
+{
+  "version": "2.0",
+  "timestamp": "2026-04-21T23:56:40.455Z",
+  "series": "weapon-forger",
+  "genre": "xianxia_comedy",
+  "generator": {
+    "mode": "hybrid",
+    "model": "glm-5",
+    "version": "0.16.0"
+  },
+  "score": 0,
+  "decision": "FAIL",
+  "previous_score": 0,
+  "score_delta": 0,
+  "checks": [
+    {
+      "name": "Gag Evolution: 忘加按鈕",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Gag Evolution: 現代科技用語",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Gag Evolution: 法寶反噬",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Tech Term Diversity",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Tech Term Diversity",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Tech Term Diversity",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Tech Term Diversity",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Tech Term Diversity",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Tech Term Diversity",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Tech Term Diversity",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Tech Term Diversity",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Trait Coverage",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Trait Coverage",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Trait Coverage",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Trait Coverage",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Trait Coverage",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Trait Coverage",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Trait Coverage",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Trait Coverage",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Trait Coverage",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Trait Coverage",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Trait Coverage",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Trait Coverage",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Trait Coverage",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Trait Coverage",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Trait Coverage",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Trait Coverage",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Interaction Density",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Interaction Density",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Interaction Density",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Interaction Density",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Interaction Density",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Interaction Density",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Interaction Density",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Interaction Density",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Interaction Density",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Interaction Density",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Interaction Density",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Interaction Density",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Interaction Density",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Interaction Density",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Interaction Density",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Duplicate Content",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Plot Arc",
+      "status": "FAIL",
+      "score_impact": -15,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Foreshadowing",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Character Growth: elder",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Character Growth: luyang",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Character Growth: mengjingzhou",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Pacing: ch1ep1",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Pacing: ch1ep2",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Pacing: ch1ep3",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Pacing: ch2ep1",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Pacing: ch2ep2",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Pacing: ch2ep3",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Pacing: ch3ep1",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Pacing: ch3ep2",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Thematic Coherence",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Community Structure",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Community Cohesion",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Community Cohesion",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Isolated Nodes",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Isolated Nodes",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Isolated Nodes",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Isolated Nodes",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Isolated Nodes",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Isolated Nodes",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Isolated Nodes",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Isolated Nodes",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Isolated Nodes",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Isolated Nodes",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Isolated Nodes",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Isolated Nodes",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Cross-Community Coherence",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Surprising Connection",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Surprising Connection",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Surprising Connection",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Surprising Connection",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Surprising Connection",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    }
+  ],
+  "quality_breakdown": {
+    "consistency": 0.5,
+    "arc_structure": 0.8,
+    "pacing": 0.9375,
+    "character_growth": 0.42200000000000004,
+    "thematic_coherence": 0.17647058823529413,
+    "gag_evolution": null
+  },
+  "supervisor_hints": {
+    "focus_areas": [
+      "Trait Coverage: ch3ep2_char_zhoumo has no detected character traits",
+      "Trait Coverage: ch3ep2_char_examiner has no detected character traits",
+      "Trait Coverage: ch1ep1_char_elder has no detected character traits",
+      "Trait Coverage: ch3ep1_char_elder has no detected character traits",
+      "Trait Coverage: ch3ep2_char_elder has no detected character traits",
+      "Trait Coverage: ch1ep1_char_luyang has no detected character traits",
+      "Trait Coverage: ch3ep2_char_luyang has no detected character traits",
+      "Trait Coverage: ch1ep1_char_mengjingzhou has no detected character traits",
+      "Trait Coverage: ch3ep2_char_mengjingzhou has no detected character traits",
+      "Trait Coverage: ch1ep1_char_canmingzi has no detected character traits",
+      "Trait Coverage: ch1ep3_char_cauldron has no detected character traits",
+      "Trait Coverage: ch2ep1_char_changlao has no detected character traits",
+      "Trait Coverage: ch2ep1_char_kaoguan has no detected character traits",
+      "Trait Coverage: ch2ep1_char_cangmingzi has no detected character traits",
+      "Trait Coverage: ch2ep3_char_cangmingzi has no detected character traits",
+      "Trait Coverage: ch2ep1_char_yunzhi has no detected character traits",
+      "Interaction Density: ch1ep1_char_elder has no interactions in ch1ep1",
+      "Interaction Density: ch1ep1_char_luyang has no interactions in ch1ep1",
+      "Interaction Density: ch1ep1_char_mengjingzhou has no interactions in ch1ep1",
+      "Interaction Density: ch1ep1_char_canmingzi has no interactions in ch1ep1",
+      "Interaction Density: ch1ep3_char_cauldron has no interactions in ch1ep3",
+      "Interaction Density: ch2ep1_char_changlao has no interactions in ch2ep1",
+      "Interaction Density: ch2ep1_char_kaoguan has no interactions in ch2ep1",
+      "Interaction Density: ch2ep1_char_cangmingzi has no interactions in ch2ep1",
+      "Interaction Density: ch2ep1_char_yunzhi has no interactions in ch2ep1",
+      "Interaction Density: ch2ep3_char_cangmingzi has no interactions in ch2ep3",
+      "Interaction Density: ch3ep2_char_zhoumo has no interactions in ch3ep2",
+      "Interaction Density: ch3ep2_char_examiner has no interactions in ch3ep2",
+      "Interaction Density: ch3ep2_char_elder has no interactions in ch3ep2",
+      "Interaction Density: ch3ep2_char_luyang has no interactions in ch3ep2",
+      "Interaction Density: ch3ep2_char_mengjingzhou has no interactions in ch3ep2",
+      "Plot Arc: No climax beat detected — the episode has no dramatic peak",
+      "Character Growth: elder: 長老 has a flat arc across 6 episodes (score: 40/100) — cha...",
+      "Character Growth: luyang: 陸陽 has a flat arc across 6 episodes (score: 25/100) — cha...",
+      "Character Growth: mengjingzhou: 孟景舟 has a flat arc across 6 episodes (score: 15/100) — ch...",
+      "Pacing: ch3ep2: Flat pacing — all scenes have similar dialog density (var...",
+      "Thematic Coherence: 主題連貫性偏低 (18%) — 3/17 主題跨集共享",
+      "Community Cohesion: Community 0 (\"Multi-ep (8 eps)\") has very low cohesion (0...",
+      "Community Cohesion: Community 1 (\"Gags: 忘加按鈕, 法寶反噬\") has very low cohesion (0...",
+      "Isolated Nodes: 考官 (community 12) has no edges to other community members...",
+      "Isolated Nodes: 雲芝 (community 13) has no edges to other community members...",
+      "Isolated Nodes: 底層邏輯閉環 (community 14) has no edges to other community mem...",
+      "Isolated Nodes: 指紋識別 (community 15) has no edges to other community membe...",
+      "Isolated Nodes: 指紋識別 (community 16) has no edges to other community membe...",
+      "Isolated Nodes: 自動格式化 (community 17) has no edges to other community memb...",
+      "Isolated Nodes: 團隊合作 (community 18) has no edges to other community membe...",
+      "Isolated Nodes: 用戶體驗 (community 19) has no edges to other community membe...",
+      "Isolated Nodes: 自動格式化 (community 20) has no edges to other community memb...",
+      "Isolated Nodes: 指紋識別 (community 21) has no edges to other community membe...",
+      "Isolated Nodes: 用戶體驗 (community 22) has no edges to other community membe...",
+      "Isolated Nodes: 自動格式化 (community 23) has no edges to other community memb..."
+    ],
+    "suggested_rubric_overrides": [],
+    "escalation_reason": "Score 0 below threshold 70"
+  },
+  "requires_claude_review": true
+}

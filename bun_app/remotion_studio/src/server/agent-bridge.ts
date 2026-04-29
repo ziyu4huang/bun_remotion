@@ -42,6 +42,10 @@ export async function runAgentTask(
   prompt: string,
   options?: {
     workDir?: string;
+    /** Prior conversation history to pass as initialMessages for multi-turn context */
+    history?: Array<{ role: "user" | "assistant"; content: string }>;
+    /** Override the agent definition's model (e.g. "deepseek/deepseek-v4-pro") */
+    model?: string;
     onEvent?: (event: AgentStreamEvent) => void;
   },
 ): Promise<AgentTaskResult> {
@@ -54,7 +58,7 @@ export async function runAgentTask(
     throw new Error(`Unknown agent: "${agentName}". Available: ${defs.map((d) => d.name).join(", ") || "(none)"}`);
   }
 
-  const agent = _createAgentFromDef!(def);
+  const agent = _createAgentFromDef!(def, options?.history, options?.model);
   const startTime = Date.now();
 
   let response = "";
@@ -79,9 +83,16 @@ export async function runAgentTask(
           break;
         }
         case "message_end": {
-          const content = event.message?.content;
-          if (typeof content === "string" && content && !response) {
-            response = content;
+          if (!response) {
+            const content = event.message?.content;
+            if (typeof content === "string" && content) {
+              response = content;
+            } else if (Array.isArray(content)) {
+              response = content
+                .filter((b: any) => b.type === "text" && typeof b.text === "string")
+                .map((b: any) => b.text)
+                .join("");
+            }
           }
           break;
         }
@@ -116,7 +127,17 @@ export async function runAgentTask(
   });
 
   try {
-    await agent.prompt(prompt);
+    // Timeout wrapper — agent.prompt() can hang if the LLM API is unresponsive
+    const AGENT_TIMEOUT_MS = 3 * 60 * 1000; // 3 minutes
+    await Promise.race([
+      agent.prompt(prompt),
+      new Promise<never>((_, reject) =>
+        setTimeout(() => {
+          agent.abort();
+          reject(new Error("Agent timed out after 3 minutes. The LLM API may be slow or unresponsive."));
+        }, AGENT_TIMEOUT_MS)
+      ),
+    ]);
   } catch (err) {
     const errMsg = err instanceof Error ? err.message : String(err);
     onEvent?.({ type: "error", message: errMsg });

@@ -18,6 +18,7 @@ import {
   createStorygraphBaselineListTool,
   createStorygraphSuggestTool,
   createStorygraphHealthTool,
+  createDualReviewTool,
 } from "../tools/storygraph-tools.js";
 import { createSpawnTaskTool } from "../tools/spawn-task.js";
 import {
@@ -67,6 +68,7 @@ const TOOL_FACTORIES: Record<string, () => AgentTool<any>> = {
   sg_baseline_list:    () => createStorygraphBaselineListTool(),
   sg_suggest:          () => createStorygraphSuggestTool(),
   sg_health:           () => createStorygraphHealthTool(),
+  sg_dual_review:      () => createDualReviewTool(),
   // Subagent
   spawn_task:          () => createSpawnTaskTool(),
   // Remotion content analysis

@@ -15,13 +15,20 @@
 > - `../../bun_app/bun_pi_agent/TODO.md` — bun_pi_agent Phase 3 tasks
 > - `../../bun_app/bun_pi_agent/PLAN.md` — bun_pi_agent architecture
 
-> **Status:** v0.9.13 — Server stability fixes applied (9 fixes: process error handlers, job eviction, SSE cleanup, DAG guard, agent abort, timeout middleware). 227 unit tests pass, 2 pre-existing failures. Next: Run headed E2E to verify server survives, or continue WebUI development.
+> **Status:** v1.7.2 — remotion_studio v0.12.0 (289 tests, agent-first all analytical pages). storygraph v0.36.0 (461 tests). bun_pi_agent v0.13.0 (483 tests, 33 tools, CI gate). episodeforge v0.3.0 (87 tests, P1 complete). R1-R4 + agent-first + episodeforge P1 complete. 1420 total tests.
 
 ## Next Task
 
-**Milestone: Server stability fixes applied.** 9 fixes across 6 files targeting crash vectors identified in code review. Core fixes: process-level error handlers (prevent crash on unhandled rejections), job TTL eviction (30-min cleanup), SSE stream cancel (subscriber cleanup on disconnect), DAG iteration guard, agent subscribe try/catch, agent route abort handling, request timeout middleware.
+**R1-R4 roadmap: COMPLETE**
+**Agent-first WebUI: COMPLETE** (Quality, Benchmark, Monitoring, Dashboard)
+**episodeforge P1: COMPLETE** (--list-series, --force, reorderScripts, PLAN.md rows, asset validation)
 
-**Next priority:** Run headed E2E tests to verify the server survives sustained load. If stable, continue with Ch3-Ep2 (隱藏關卡) or WebUI improvements.
+**Next priorities:**
+1. **Ch3-Ep3: 秘境 BOSS (仇恨繞柱)** — Next episode in my-core-is-boss series
+2. **Test reviewer integration** — Wire test-reviewer agent into studio
+3. **episodeforge P2** — Custom template overrides per series
+
+**Just completed:** episodeforge v0.3.0 — PLAN.md episode guide row auto-generation (weapon-forger, my-core-is-boss, galgame formats). All P1 tasks done.
 
 ## Implementation Order
 
@@ -34,6 +41,7 @@
 44-D: CI integration (--ci exit codes + structured JSON) ✓
 45: Web UI Benchmark page (routes + API + page) ✓
 Ch3-Ep1: 速通記錄 (noclip穿牆, rendered 152M, 6:01) ✓
+Ch3-Ep2: 隱藏關卡 (查看代碼, rendered 161M, 6:43) ✓
 46: Proactive storygraph tools (sg_suggest + sg_health) ✓
 
 ═══ DONE ═══
@@ -64,6 +72,8 @@ Ch3-Ep1: 速通記錄 (noclip穿牆, rendered 152M, 6:01) ✓
 52-D: Agent-backed workflow steps (Benchmark agent toggle + Quality gate button) ✓
 
 ═══ NEXT ═══
+
+Streaming verification: serializeEvent (8 tests) + SSE parse (7 tests) + message_end fix ✓
 
 53-A: Agent-backed workflow engine (steps delegate to sub-agents) ✓
 53-B: ~~LLM config API + Settings page~~ SKIPPED (env vars sufficient)
@@ -126,6 +136,90 @@ Replace flat linear workflow with DAG task tree. Parallel execution + resume.
 63-A: Workflows page tree upgrade (parallel branches visible) ✓
 63-B: Live tree polling (2s interval, cleanup on unmount) ✓
 63-C: E2E tests for workflows tree view (7 tests) ✓
+
+═══ DONE — WebUI Polish (Phases 64-66) ═══
+
+64-A: ErrorBoundary component (class component, fallback UI, reload button) ✓
+64-B: ToastContainer (module-level emitter, success/error/info, auto-dismiss) ✓
+64-C: Replace all 4 alert() calls with toast() ✓
+64-D: Add toast to silent failures (Dashboard, Projects, Workflows, TTS, Render) ✓
+65-A: Skeleton component (SkeletonRow shimmer + SkeletonCard) ✓
+65-B: 6 pages use skeletons (Dashboard, Projects, Workflows, Storygraph, Assets, Monitoring) ✓
+66-A: E2E helpers (forceApiError, delayApiRoute, waitForToast) ✓
+66-B: 4 new E2E test files (toast, loading, error, form interactions) ✓
+
+═══ DONE — Theme + Responsive + Dashboard (Phases 67-70) ═══
+
+67-A: Theme tokens (lightTheme + darkTheme with colors/spacing/radii/shadows/fonts) ✓
+67-B: Theme context (ThemeProvider, useTheme, useThemeMode) ✓
+67-C: Wire ThemeProvider into index.tsx ✓
+67-D: Migrate 13 shared components to theme tokens ✓
+67-E: Migrate App.tsx sidebar + theme toggle button ✓
+68-A: useMediaQuery hook ✓
+68-B: useSidebarState hook ✓
+68-C: Responsive App.tsx (hamburger, overlay sidebar, backdrop, touch targets) ✓
+69-A: Enhanced Dashboard job cards (timestamps, duration, errors, progress bars) ✓
+69-B: Job filter tabs (All/Running/Completed/Failed with counts) ✓
+69-C: Server-side cancel/delete jobs ✓
+69-D: Job API routes (POST cancel, DELETE, ?status= filter) ✓
+69-E: Collapsible task trees on Dashboard ✓
+70-A: All 13 pages migrated to theme tokens ✓
+70-B: E2E helper update (data-toast-type attribute) ✓
+
+═══ DONE — remotion_studio v0.3.0 (2026-04-27) ═══
+
+P0: JobStore persistence (data/jobs.json, 24h TTL, restart recovery) ✓
+P0: Switch routes to DAG (runWorkflowDAG auto-selected via TEMPLATE_DEPS) ✓
+P0: Restart recovery (mark interrupted jobs as failed) ✓
+P0: Rename CreateProject → ScaffoldEpisode ✓
+P0: E2E smoke test (API health + all 13 pages) ✓
+P1: Image step in full-pipeline (7-step DAG, parallel with pipeline) ✓
+P1: Cancel workflow (AbortController + dag-executor signal) ✓
+P1: API namespace cleanup (pipeline.* + TTS casing) ✓
+
+═══ DONE — remotion_studio v0.3.1 (2026-04-27) ═══
+
+P1: Pipeline progress table (GET /api/episode-progress + PipelineProgress.tsx page, 6 tests) ✓
+P1: Job history panel (listHistory + GET /api/jobs/history + Dashboard section, 6 tests) ✓
+
+═══ DONE — remotion_studio v0.4.0–v0.10.0 (2026-04-27) ═══
+
+v0.4.0: Batch operations (POST /api/batch, multi-episode TTS/render, 7 tests) ✓
+v0.5.0: Kanban board (EpisodeKanban.tsx) + asset search (HighlightText) ✓
+v0.6.0: Help text (Dashboard What's Next, Monitoring legend, info panels on 6 pages) ✓
+v0.7.0: Design brief (ImageGen), quality hints (StoryEditor), review checklist (Projects) ✓
+v0.8.0: Dialog preview (TTS scene-level preview, no new backend) ✓
+v0.9.0: Plan revision history (saveRevision, listRevisions, restore panel) ✓
+v0.10.0: Structured section editor (markdown-table utils, SectionEditor component, Structure tab) ✓
+v0.11.0: zh_TW localization (i18n system, 150+ strings, language toggle, 5 tests) ✓
+Bug fix: Stale server caused Progress/Kanban to return HTML — fixed by server restart ✓
+
+═══ PLANNED — bun_pi_agent Benchmark Improvements (Phases 71-75) ═══
+
+Fix benchmark that shows no model differentiation (all score 6.8/10).
+
+71-A: Tool call budget (beforeToolCall hook, max 15 calls, afterToolCall terminate) ✓
+71-B: Continuous efficiency scoring (decay: ≤2=3, ≤4=2, ≤6=1.5, ≤10=1, ≤15=0.5, >15=0) ✓
+71-C: Report turn counts + budget exceeded indicators ✓
+71-D: Tests (9 efficiency + 3 calibration + 3 report) ✓
+72-A: Expand task1 keywords (dialog→dialogue/conversation/speech, scene→segment/sequence, character→speaker/role) ✓
+72-B: Fix task2 response scoring (keyword quality instead of text length) ✓
+72-C: Tests (6 scoring calibration) ✓
+73-A: Structured bench system prompt (scoring dimensions + efficiency guidance) ✓
+74-A: AI-only mode for Suite A (was hybrid, regex dominated) ✓
+74-B: 5 new tasks (file write plan, error diagnosis, cross-file comparison, code gen, regression) ✓
+74-C: Update report for 10 tasks ✓
+74-D: Tests ✓
+75-A: Config fields (benchMaxToolCalls, benchMaxTurns, benchMode env vars) ✓
+75-B: Report recommendation section (best quality/efficiency/speed/value) ✓
+75-C: Tests ✓
+
+═══ PLANNED — Cross-App Regression Plan (Phases R1-R4) ═══
+
+R1: ~~storygraph regression test suite~~ ✓ (43 tests for graphify-regression.ts)
+R2: ~~pi-agent dual review~~ ✓ (sg_dual_review tool + sg-dual-reviewer agent + 17 tests)
+R3: ~~remotion_studio regression dashboard~~ ✓ (agent-first quality page, "Ask agent" CTA, 10 tests)
+R4: ~~CI gate~~ ✓ (`bun run ci:kg` / `ci:kg-all`, 6 tests)
 ```
 
 ## Completed Phases
@@ -191,6 +285,27 @@ Replace flat linear workflow with DAG task tree. Parallel execution + resume.
 | 63 | Workflows page tree upgrade (TaskTreeView + live polling + E2E tests) | 2026-04-26 |
 | — | E2E pipeline: headless→headed feedback loop, 72 tests, SKILL enforced, server crash found | 2026-04-26 |
 | — | Server stability fixes: 9 fixes (process handlers, job eviction, SSE cleanup, DAG guard, agent abort, timeout middleware) | 2026-04-26 |
+| — | UI polish: 4 shared components + sidebar grouping + all 13 pages updated + export-import test fix | 2026-04-26 |
+| Ch3-Ep2 | 隱藏關卡 (查看代碼, 161M, 6:43) | 2026-04-26 |
+| 64-66 | WebUI polish: ErrorBoundary + Toast notifications + Loading skeletons + Deeper E2E tests | 2026-04-26 |
+| — | Streaming verification: serializeEvent (8 tests) + SSE parse (7 tests) + message_end fix | 2026-04-27 |
+| — | remotion_studio v0.3.0: JobStore persistence, DAG routing, restart recovery, image step, cancel workflow, API namespace | 2026-04-27 |
+| — | Pipeline progress table: per-episode 7-step status page (GET /api/episode-progress, 6 tests, 242 total) | 2026-04-27 |
+| — | remotion_studio v0.3.2: Job history panel + configurable retention (JOB_TTL_DAYS) | 2026-04-27 |
+| — | remotion_studio v0.4.0: Batch operations — multi-episode TTS/render (7 tests, 255 total) | 2026-04-27 |
+| — | remotion_studio v0.5.0: Kanban board + asset search (EpisodeKanban.tsx, 15 pages) | 2026-04-27 |
+| — | remotion_studio v0.6.0: Help text, Monitoring legend, What's Next (6 pages improved) | 2026-04-27 |
+| — | remotion_studio v0.7.0: Design brief, quality hints, review checklist | 2026-04-27 |
+| — | remotion_studio v0.8.0: Dialog preview (test single scene TTS) | 2026-04-27 |
+| — | remotion_studio v0.9.0: Plan revision history with restore | 2026-04-27 |
+| — | remotion_studio v0.11.0: zh_TW localization (i18n system, 150+ strings, language toggle, 279 tests) | 2026-04-27 |
+| — | bun_pi_agent v0.9.0: E2E test suite (38 tests, 93 expect(), no API keys) + SSE error bug fix + test-reviewer agent (13th) | 2026-04-27 |
+| — | bun_pi_agent v0.10.2: GLM5 benchmark run (4 models × 2 suites), Z_AI_API_KEY fix, kg-suite path bugs | 2026-04-28 |
+| — | storygraph v0.35.0: Regression test suite (43 tests for graphify-regression.ts) | 2026-04-29 |
+| — | storygraph v0.36.0: Dual-agent review (sg_dual_review + sg-dual-reviewer + 17 tests) | 2026-04-29 |
+| — | bun_pi_agent: 33 tools (sg_dual_review), 14 agents (sg-dual-reviewer), 477 tests | 2026-04-29 |
+| R3 | remotion_studio agent-first quality page (Ask agent CTA, regression endpoint, 10 tests) | 2026-04-29 |
+| R4 | CI gate scripts (`ci:kg`, `ci:kg-all`, 6 tests, 1311 total across 4 apps) | 2026-04-29 |
 
 ## Archive
 

@@ -1,16 +1,22 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { api } from "../api";
+import { PageHeader, LoadingSpinner, EmptyState, SkeletonCard } from "../components";
 import type { AssetSummary, SeriesAssets, Asset } from "../../shared/types";
+import { useTheme, type Theme } from "../theme";
+import { useI18n } from "../i18n";
 
 type Tab = "characters" | "backgrounds" | "audio";
 
 export function Assets() {
+  const theme = useTheme();
+  const { t } = useI18n();
   const [summaries, setSummaries] = useState<AssetSummary[]>([]);
   const [selected, setSelected] = useState<string>("");
   const [assets, setAssets] = useState<SeriesAssets | null>(null);
   const [tab, setTab] = useState<Tab>("characters");
   const [loading, setLoading] = useState(true);
   const [preview, setPreview] = useState<Asset | null>(null);
+  const [search, setSearch] = useState("");
 
   const loadSummaries = useCallback(async () => {
     const res = await api.listAssets();
@@ -31,7 +37,16 @@ export function Assets() {
     else setAssets(null);
   }, [selected, loadAssets]);
 
-  if (loading) return <div style={{ color: "#666" }}>Loading...</div>;
+  if (loading) return (
+    <div>
+      <PageHeader title={t.assets.title} description={t.assets.description} />
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: theme.spacing.md }}>
+        {Array.from({ length: 6 }, (_, i) => (
+          <SkeletonCard key={i} rows={0} showHeader={false} imageHeight={120} />
+        ))}
+      </div>
+    </div>
+  );
 
   const currentList: Asset[] = assets
     ? tab === "characters" ? assets.characters
@@ -39,72 +54,100 @@ export function Assets() {
       : assets.audio
     : [];
 
+  const filtered = useMemo(() => {
+    if (!search.trim()) return currentList;
+    const q = search.toLowerCase();
+    return currentList.filter((a) => a.name.toLowerCase().includes(q));
+  }, [currentList, search]);
+
   // Group audio by episode
-  const audioByEpisode = new Map<string, Asset[]>();
-  for (const a of currentList) {
-    const key = a.episodeId ?? "unknown";
-    if (!audioByEpisode.has(key)) audioByEpisode.set(key, []);
-    audioByEpisode.get(key)!.push(a);
-  }
+  const audioByEpisode = useMemo(() => {
+    const map = new Map<string, Asset[]>();
+    for (const a of filtered) {
+      const key = a.episodeId ?? "unknown";
+      if (!map.has(key)) map.set(key, []);
+      map.get(key)!.push(a);
+    }
+    return map;
+  }, [filtered]);
 
   const tabs: { id: Tab; label: string; count: number }[] = assets ? [
-    { id: "characters", label: "Characters", count: assets.characters.length },
-    { id: "backgrounds", label: "Backgrounds", count: assets.backgrounds.length },
-    { id: "audio", label: "Audio", count: assets.audio.length },
+    { id: "characters", label: t.assets.characters, count: assets.characters.length },
+    { id: "backgrounds", label: t.assets.backgrounds, count: assets.backgrounds.length },
+    { id: "audio", label: t.assets.audio, count: assets.audio.length },
   ] : [];
 
   return (
     <div>
-      <h2 style={{ margin: "0 0 16px" }}>Assets</h2>
+      <PageHeader title={t.assets.title} description={t.assets.description} />
 
-      <div style={{ marginBottom: 16, display: "flex", gap: 8 }}>
+      <div style={{ marginBottom: theme.spacing.lg, display: "flex", gap: theme.spacing.sm, alignItems: "center" }}>
         <select
           value={selected}
           onChange={(e) => setSelected(e.target.value)}
-          style={{ padding: "6px 12px", borderRadius: 6, fontSize: 14 }}
+          style={{ padding: "6px 12px", borderRadius: theme.radii.lg, fontSize: theme.font.sizes.md }}
         >
-          <option value="">Select series...</option>
+          <option value="">{t.assets.selectSeries}</option>
           {summaries.map((s) => (
             <option key={s.seriesId} value={s.seriesId}>
               {s.seriesName} ({s.characters} chars, {s.backgrounds} bgs, {s.audio} audio)
             </option>
           ))}
         </select>
+        {assets && (
+          <input
+            type="text"
+            placeholder={t.assets.searchPlaceholder(tab)}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{
+              padding: "6px 12px", borderRadius: theme.radii.lg,
+              border: `1px solid ${theme.colors.border.default}`,
+              background: theme.colors.bg.surface, fontSize: theme.font.sizes.sm,
+              width: 200, outline: "none",
+            }}
+          />
+        )}
       </div>
 
       {assets && (
         <>
-          <div style={{ display: "flex", gap: 4, marginBottom: 16 }}>
+          <div style={{ display: "flex", gap: theme.spacing.xs, marginBottom: theme.spacing.lg }}>
             {tabs.map((t) => (
               <button
                 key={t.id}
-                onClick={() => setTab(t.id)}
+                onClick={() => { setTab(t.id); setSearch(""); }}
                 style={{
                   padding: "6px 14px",
-                  border: "1px solid #ddd",
-                  background: tab === t.id ? "#e3f2fd" : "#fff",
-                  borderRadius: 6,
+                  border: `1px solid ${theme.colors.border.medium}`,
+                  background: tab === t.id ? theme.colors.primaryLight : theme.colors.bg.page,
+                  borderRadius: theme.radii.lg,
                   cursor: "pointer",
-                  fontSize: 13,
+                  fontSize: theme.font.sizes.base,
                 }}
               >
                 {t.label} ({t.count})
               </button>
             ))}
+            {search.trim() && (
+              <span style={{ fontSize: theme.font.sizes.sm, color: theme.colors.text.muted, alignSelf: "center", marginLeft: 8 }}>
+                {t.assets.matchCount(filtered.length, currentList.length)}
+              </span>
+            )}
           </div>
 
           {tab !== "audio" ? (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: 12 }}>
-              {currentList.map((asset) => (
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: theme.spacing.md }}>
+              {filtered.map((asset) => (
                 <div
                   key={asset.id}
                   onClick={() => setPreview(asset)}
                   style={{
-                    border: "1px solid #eee",
-                    borderRadius: 8,
+                    border: `1px solid ${theme.colors.border.light}`,
+                    borderRadius: theme.radii.xl,
                     overflow: "hidden",
                     cursor: "pointer",
-                    background: "#fafafa",
+                    background: theme.colors.bg.surface,
                   }}
                 >
                   <img
@@ -113,63 +156,92 @@ export function Assets() {
                     style={{ width: "100%", height: 120, objectFit: "cover", display: "block" }}
                     loading="lazy"
                   />
-                  <div style={{ padding: "4px 8px", fontSize: 11, color: "#555", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                    {asset.name}
+                  <div style={{ padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`, fontSize: theme.font.sizes.sm, color: theme.colors.text.secondary, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    <HighlightText text={asset.name} query={search} theme={theme} />
                   </div>
                 </div>
               ))}
-              {currentList.length === 0 && <div style={{ color: "#999" }}>No {tab} found.</div>}
+              {filtered.length === 0 && (
+                <div style={{ color: theme.colors.text.muted }}>
+                  {currentList.length === 0 ? t.assets.noTabFound(tab) : t.assets.noTabSearchMatch(tab, search)}
+                </div>
+              )}
             </div>
           ) : (
             <div>
               {[...audioByEpisode.entries()].map(([epId, files]) => (
-                <div key={epId} style={{ marginBottom: 16 }}>
-                  <h4 style={{ margin: "0 0 8px", fontSize: 13, color: "#555" }}>{epId}</h4>
+                <div key={epId} style={{ marginBottom: theme.spacing.lg }}>
+                  <h4 style={{ margin: `0 0 ${theme.spacing.sm}px`, fontSize: theme.font.sizes.base, color: theme.colors.text.secondary }}>{epId}</h4>
                   {files.map((asset) => (
-                    <div key={asset.id} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-                      <span style={{ fontSize: 12, color: "#777", minWidth: 120 }}>{asset.name}</span>
+                    <div key={asset.id} style={{ display: "flex", alignItems: "center", gap: theme.spacing.sm, marginBottom: 6 }}>
+                      <span style={{ fontSize: 12, color: theme.colors.text.faint, minWidth: 120 }}>
+                        <HighlightText text={asset.name} query={search} theme={theme} />
+                      </span>
                       <audio
                         controls
                         src={api.assetFileUrl(asset.seriesId + "/" + asset.id)}
                         style={{ height: 32 }}
                       />
-                      <span style={{ fontSize: 11, color: "#aaa" }}>{formatSize(asset.size)}</span>
+                      <span style={{ fontSize: theme.font.sizes.sm, color: theme.colors.text.faint }}>{formatSize(asset.size)}</span>
                     </div>
                   ))}
                 </div>
               ))}
-              {currentList.length === 0 && <div style={{ color: "#999" }}>No audio found.</div>}
+              {filtered.length === 0 && (
+                <div style={{ color: theme.colors.text.muted }}>
+                  {currentList.length === 0 ? t.assets.noTabFound("audio") : t.assets.noTabSearchMatch("audio", search)}
+                </div>
+              )}
             </div>
           )}
         </>
       )}
 
       {!selected && summaries.length === 0 && (
-        <div style={{ color: "#999" }}>No series with assets found.</div>
+        <EmptyState icon="🖼" title={t.assets.noAssetsFound} description={t.assets.noSeriesWithAssets} />
+      )}
+
+      {!selected && summaries.length > 0 && (
+        <EmptyState icon="🖼" title={t.assets.selectSeriesPrompt} description={t.assets.selectSeriesDesc} />
       )}
 
       {preview && (
         <div
           onClick={() => setPreview(null)}
           style={{
-            position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)",
+            position: "fixed", inset: 0, background: theme.colors.bg.overlay,
             display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000,
           }}
         >
-          <div onClick={(e) => e.stopPropagation()} style={{ background: "#fff", borderRadius: 12, padding: 16, maxWidth: "90vw", maxHeight: "90vh" }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ background: theme.colors.bg.page, borderRadius: theme.radii.xxl, padding: theme.spacing.lg, maxWidth: "90vw", maxHeight: "90vh" }}>
             <img
               src={api.assetFileUrl(preview.seriesId + "/" + (preview.episodeId ? preview.episodeId + "/" : "") + preview.id.split("/").pop())}
               alt={preview.name}
-              style={{ maxWidth: "80vw", maxHeight: "75vh", display: "block", borderRadius: 8 }}
+              style={{ maxWidth: "80vw", maxHeight: "75vh", display: "block", borderRadius: theme.radii.xl }}
             />
-            <div style={{ marginTop: 8, fontSize: 13, color: "#555" }}>
+            <div style={{ marginTop: theme.spacing.sm, fontSize: theme.font.sizes.base, color: theme.colors.text.secondary }}>
               {preview.name} ({preview.format}, {formatSize(preview.size)})
             </div>
-            <button onClick={() => setPreview(null)} style={{ marginTop: 8, padding: "4px 12px", borderRadius: 4, border: "1px solid #ddd", cursor: "pointer" }}>Close</button>
+            <button onClick={() => setPreview(null)} style={{ marginTop: theme.spacing.sm, padding: `${theme.spacing.xs}px ${theme.spacing.md}px`, borderRadius: theme.radii.md, border: `1px solid ${theme.colors.border.medium}`, cursor: "pointer" }}>{t.assets.close}</button>
           </div>
         </div>
       )}
     </div>
+  );
+}
+
+function HighlightText({ text, query, theme }: { text: string; query: string; theme: Theme }) {
+  if (!query.trim()) return <>{text}</>;
+  const idx = text.toLowerCase().indexOf(query.toLowerCase());
+  if (idx === -1) return <>{text}</>;
+  return (
+    <>
+      {text.slice(0, idx)}
+      <mark style={{ background: theme.colors.warningLight, padding: "0 1px", borderRadius: 2 }}>
+        {text.slice(idx, idx + query.length)}
+      </mark>
+      {text.slice(idx + query.length)}
+    </>
   );
 }
 

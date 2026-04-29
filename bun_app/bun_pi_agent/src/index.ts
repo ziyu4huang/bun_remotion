@@ -2,7 +2,7 @@ import { existsSync, writeFileSync } from "fs";
 import { dirname, join } from "path";
 
 const args = process.argv.slice(2);
-const VERSION = "0.6.0";
+const VERSION = "0.13.0";
 
 // Embedded package.json content — needed by pi-coding-agent at startup.
 // For compiled binaries, pi-coding-agent reads dirname(process.execPath)/package.json
@@ -166,7 +166,7 @@ Environment:
   PI_AGENT_WORKDIR    Working directory for tools (default: cwd)
   PI_AGENT_RUNS_DIR   Run persistence directory (default: <workdir>/.pi-agent/runs)
   PI_AGENT_NAME       Default agent definition name (overridden by --agent)
-  ZAI_API_KEY         API key for z.ai provider
+  Z_AI_API_KEY        API key for z.ai provider (aliased to ZAI_API_KEY for pi-ai)
 
 Examples:
   bun_pi_agent                                          # Start ACP stdio mode

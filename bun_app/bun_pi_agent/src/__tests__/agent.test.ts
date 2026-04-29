@@ -4,7 +4,7 @@ import { createAgent } from "../agent.js";
 describe("createAgent", () => {
   const TRACKED_KEYS = [
     "PI_AGENT_MODEL", "PI_AGENT_WORKDIR",
-    "ZAI_API_KEY", "ANTHROPIC_API_KEY", "OPENAI_API_KEY", "GEMINI_API_KEY",
+    "ZAI_API_KEY", "Z_AI_API_KEY", "ANTHROPIC_API_KEY", "OPENAI_API_KEY", "GEMINI_API_KEY",
   ];
   const originalEnv: Record<string, string | undefined> = {};
 
@@ -83,7 +83,7 @@ describe("createAgent", () => {
     const agent = createAgent();
     const state = agent.state as any;
     expect(Array.isArray(state.tools)).toBe(true);
-    expect(state.tools.length).toBe(29);
+    expect(state.tools.length).toBe(33);
   });
 
   test("works with anthropic provider if key is set", () => {

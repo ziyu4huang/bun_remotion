@@ -1,6 +1,6 @@
 {
   "name": "bun_pi_agent",
-  "version": "0.5.0",
+  "version": "0.13.0",
   "private": true,
   "type": "module",
   "main": "src/index.ts",
@@ -11,6 +11,7 @@
     "dev": "bun --watch src/index.ts --cli",
     "build": "bun run scripts/build.ts",
     "test": "bun test src/",
+    "test:e2e": "bun test e2e/",
     "test:skills": "bun test src/skills/",
     "demo": "bun src/demo.ts",
     "acp-demo": "bun src/acp-demo.ts",

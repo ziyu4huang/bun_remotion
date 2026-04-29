@@ -1,0 +1,239 @@
+{
+  "version": "2.1",
+  "scoring_method": "group-based",
+  "timestamp": "2026-04-28T22:38:03.242Z",
+  "series": "xianxia-system-meme",
+  "genre": "xianxia_comedy",
+  "generator": {
+    "mode": "hybrid",
+    "model": "glm-5",
+    "version": "0.16.0"
+  },
+  "score": 100,
+  "decision": "PASS",
+  "previous_score": 100,
+  "score_delta": 0,
+  "group_scores": [
+    {
+      "group": "Character Consistency",
+      "pass_rate": 1,
+      "score_impact": 5
+    },
+    {
+      "group": "Gag Evolution",
+      "pass_rate": 1,
+      "score_impact": 5
+    },
+    {
+      "group": "Tech Term Diversity",
+      "pass_rate": 0,
+      "score_impact": -5
+    },
+    {
+      "group": "Trait Coverage",
+      "pass_rate": 1,
+      "score_impact": 5
+    },
+    {
+      "group": "Interaction Density",
+      "pass_rate": 1,
+      "score_impact": 5
+    },
+    {
+      "group": "Duplicate Content",
+      "pass_rate": 0,
+      "score_impact": -5
+    },
+    {
+      "group": "Plot Arc",
+      "pass_rate": 1,
+      "score_impact": 5
+    },
+    {
+      "group": "Foreshadowing",
+      "pass_rate": 1,
+      "score_impact": 5
+    },
+    {
+      "group": "Character Growth",
+      "pass_rate": 1,
+      "score_impact": 5
+    },
+    {
+      "group": "Pacing",
+      "pass_rate": 1,
+      "score_impact": 5
+    },
+    {
+      "group": "Thematic Coherence",
+      "pass_rate": 1,
+      "score_impact": 5
+    },
+    {
+      "group": "Community Structure",
+      "pass_rate": 1,
+      "score_impact": 5
+    },
+    {
+      "group": "Isolated Nodes",
+      "pass_rate": 1,
+      "score_impact": 5
+    },
+    {
+      "group": "Cross-Community Coherence",
+      "pass_rate": 0,
+      "score_impact": -5
+    },
+    {
+      "group": "Surprising Connection",
+      "pass_rate": 1,
+      "score_impact": 5
+    }
+  ],
+  "checks": [
+    {
+      "name": "Character Consistency: xiuxiu",
+      "status": "PASS",
+      "score_impact": 1.67,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Character Consistency: system",
+      "status": "PASS",
+      "score_impact": 1.67,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Character Consistency: shijie",
+      "status": "PASS",
+      "score_impact": 1.67,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Gag Evolution",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Tech Term Diversity",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Trait Coverage",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Interaction Density",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Duplicate Content",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Plot Arc",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Foreshadowing",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Character Growth",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Pacing",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Thematic Coherence",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Community Structure",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Isolated Nodes",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Cross-Community Coherence",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Surprising Connection",
+      "status": "PASS",
+      "score_impact": 1,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Surprising Connection",
+      "status": "PASS",
+      "score_impact": 1,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Surprising Connection",
+      "status": "PASS",
+      "score_impact": 1,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Surprising Connection",
+      "status": "PASS",
+      "score_impact": 1,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Surprising Connection",
+      "status": "PASS",
+      "score_impact": 1,
+      "fix_suggestion_zhTW": ""
+    }
+  ],
+  "quality_breakdown": {
+    "consistency": 1,
+    "arc_structure": null,
+    "pacing": 1,
+    "character_growth": 0.75,
+    "thematic_coherence": 1,
+    "gag_evolution": null
+  },
+  "supervisor_hints": {
+    "focus_areas": [
+      "Tech Term Diversity: unknown has only 1 tech terms (minimum 2 expected)",
+      "Duplicate Content: ep1 ↔ ep2: Jaccard similarity 0.594 > 0.5 — significant s...",
+      "Cross-Community Coherence: 15/50 edges cross community boundaries (30.0%): some comm..."
+    ],
+    "suggested_rubric_overrides": [],
+    "escalation_reason": null
+  },
+  "requires_claude_review": false
+}

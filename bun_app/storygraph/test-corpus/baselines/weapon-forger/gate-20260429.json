@@ -1,0 +1,395 @@
+{
+  "version": "2.1",
+  "scoring_method": "group-based",
+  "timestamp": "2026-04-29T00:26:36.611Z",
+  "series": "weapon-forger",
+  "genre": "xianxia_comedy",
+  "generator": {
+    "mode": "hybrid",
+    "model": "glm-5",
+    "version": "0.16.0"
+  },
+  "score": 100,
+  "decision": "PASS",
+  "previous_score": 100,
+  "score_delta": 0,
+  "group_scores": [
+    {
+      "group": "Character Consistency",
+      "pass_rate": 0.5,
+      "score_impact": 0
+    },
+    {
+      "group": "Gag Evolution",
+      "pass_rate": 1,
+      "score_impact": 5
+    },
+    {
+      "group": "Tech Term Diversity",
+      "pass_rate": 1,
+      "score_impact": 5
+    },
+    {
+      "group": "Trait Coverage",
+      "pass_rate": 0,
+      "score_impact": -5
+    },
+    {
+      "group": "Interaction Density",
+      "pass_rate": 1,
+      "score_impact": 5
+    },
+    {
+      "group": "Duplicate Content",
+      "pass_rate": 1,
+      "score_impact": 5
+    },
+    {
+      "group": "Plot Arc",
+      "pass_rate": 1,
+      "score_impact": 5
+    },
+    {
+      "group": "Foreshadowing",
+      "pass_rate": 1,
+      "score_impact": 5
+    },
+    {
+      "group": "Character Growth",
+      "pass_rate": 0,
+      "score_impact": -5
+    },
+    {
+      "group": "Pacing",
+      "pass_rate": 1,
+      "score_impact": 5
+    },
+    {
+      "group": "Thematic Coherence",
+      "pass_rate": 1,
+      "score_impact": 5
+    },
+    {
+      "group": "Episode Continuity",
+      "pass_rate": 1,
+      "score_impact": 5
+    },
+    {
+      "group": "Community Structure",
+      "pass_rate": 1,
+      "score_impact": 5
+    },
+    {
+      "group": "Community Cohesion",
+      "pass_rate": 0,
+      "score_impact": -5
+    },
+    {
+      "group": "Isolated Nodes",
+      "pass_rate": 1,
+      "score_impact": 5
+    },
+    {
+      "group": "Cross-Community Coherence",
+      "pass_rate": 1,
+      "score_impact": 5
+    },
+    {
+      "group": "Surprising Connection",
+      "pass_rate": 1,
+      "score_impact": 5
+    }
+  ],
+  "checks": [
+    {
+      "name": "Character Consistency: zhoumo",
+      "status": "WARN",
+      "score_impact": 0,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Character Consistency: examiner",
+      "status": "PASS",
+      "score_impact": 0,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Gag Evolution: 忘加按鈕",
+      "status": "PASS",
+      "score_impact": 1.67,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Gag Evolution: 現代科技用語",
+      "status": "PASS",
+      "score_impact": 1.67,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Gag Evolution: 法寶反噬",
+      "status": "PASS",
+      "score_impact": 1.67,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Tech Term Diversity",
+      "status": "PASS",
+      "score_impact": 0.71,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Tech Term Diversity",
+      "status": "PASS",
+      "score_impact": 0.71,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Tech Term Diversity",
+      "status": "PASS",
+      "score_impact": 0.71,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Tech Term Diversity",
+      "status": "PASS",
+      "score_impact": 0.71,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Tech Term Diversity",
+      "status": "PASS",
+      "score_impact": 0.71,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Tech Term Diversity",
+      "status": "PASS",
+      "score_impact": 0.71,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Tech Term Diversity",
+      "status": "PASS",
+      "score_impact": 0.71,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Trait Coverage",
+      "status": "WARN",
+      "score_impact": -1.67,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Trait Coverage",
+      "status": "WARN",
+      "score_impact": -1.67,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Trait Coverage",
+      "status": "WARN",
+      "score_impact": -1.67,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Interaction Density",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Duplicate Content",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Plot Arc",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Foreshadowing",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Character Growth: zhoumo",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Pacing: ch1ep1",
+      "status": "PASS",
+      "score_impact": 0.63,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Pacing: ch1ep2",
+      "status": "PASS",
+      "score_impact": 0.63,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Pacing: ch1ep3",
+      "status": "PASS",
+      "score_impact": 0.63,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Pacing: ch2ep1",
+      "status": "PASS",
+      "score_impact": 0.63,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Pacing: ch2ep2",
+      "status": "PASS",
+      "score_impact": 0.63,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Pacing: ch2ep3",
+      "status": "PASS",
+      "score_impact": 0.63,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Pacing: ch3ep1",
+      "status": "PASS",
+      "score_impact": 0.63,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Pacing: ch3ep2",
+      "status": "PASS",
+      "score_impact": 0.63,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Thematic Coherence",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Episode Continuity",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Community Structure",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Community Cohesion",
+      "status": "WARN",
+      "score_impact": -0.83,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Community Cohesion",
+      "status": "WARN",
+      "score_impact": -0.83,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Community Cohesion",
+      "status": "WARN",
+      "score_impact": -0.83,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Community Cohesion",
+      "status": "WARN",
+      "score_impact": -0.83,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Community Cohesion",
+      "status": "WARN",
+      "score_impact": -0.83,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Community Cohesion",
+      "status": "WARN",
+      "score_impact": -0.83,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Isolated Nodes",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Cross-Community Coherence",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Surprising Connection",
+      "status": "PASS",
+      "score_impact": 1,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Surprising Connection",
+      "status": "PASS",
+      "score_impact": 1,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Surprising Connection",
+      "status": "PASS",
+      "score_impact": 1,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Surprising Connection",
+      "status": "PASS",
+      "score_impact": 1,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Surprising Connection",
+      "status": "PASS",
+      "score_impact": 1,
+      "fix_suggestion_zhTW": ""
+    }
+  ],
+  "quality_breakdown": {
+    "consistency": 0.6666666666666666,
+    "arc_structure": null,
+    "pacing": 1,
+    "character_growth": 0.5175,
+    "thematic_coherence": 1,
+    "gag_evolution": null
+  },
+  "supervisor_hints": {
+    "focus_areas": [
+      "Character Consistency: zhoumo: Episode instance ch3ep2_char_zhoumo missing core traits: ...",
+      "Trait Coverage: ch3ep1_char_elder has no detected traits (regex missed: b...",
+      "Trait Coverage: ch3ep2_char_luyang has no detected traits (regex missed: ...",
+      "Trait Coverage: ch3ep2_char_mengjingzhou has no detected traits (regex mi...",
+      "Character Growth: zhoumo: 周墨 has a flat arc across 8 episodes (score: 18/100) — cha...",
+      "Community Cohesion: Community 0 (\"Multi-ep (6 eps)\") has very low cohesion (0...",
+      "Community Cohesion: Community 1 (\"Story: ch1ep1\") has very low cohesion (0.07...",
+      "Community Cohesion: Community 2 (\"Characters: 陸陽 (ch2ep1), 孟景舟 (ch2ep1), 陸陽 (...",
+      "Community Cohesion: Community 3 (\"Multi-ep (4 eps)\") has very low cohesion (0...",
+      "Community Cohesion: Community 4 (\"Gags: 忘加按鈕, 現代科技用語, 法寶反噬\") has very low coh...",
+      "Community Cohesion: Community 5 (\"Multi-ep (4 eps)\") has very low cohesion (0..."
+    ],
+    "suggested_rubric_overrides": [],
+    "escalation_reason": null
+  },
+  "requires_claude_review": false
+}

@@ -1,262 +1,163 @@
 import { useState, useEffect, useCallback } from "react";
 import { api } from "../api";
-import type { Project, Job, BaselineInfo, BenchmarkResult } from "../../shared/types";
-
-type Mode = "regex" | "hybrid" | "ai";
+import { PageHeader, LoadingSpinner, StatusBadge, AgentResultPanel } from "../components";
+import { useAgentTask } from "../hooks/useAgentTask";
+import { useTheme, type Theme } from "../theme";
+import { useI18n } from "../i18n";
+import type { Project, Job, BaselineInfo } from "../../shared/types";
 
 export function Benchmark() {
+  const theme = useTheme();
+  const { t } = useI18n();
   const [projects, setProjects] = useState<Project[]>([]);
   const [baselines, setBaselines] = useState<BaselineInfo[]>([]);
-  const [selected, setSelected] = useState<string>("");
-  const [mode, setMode] = useState<Mode>("hybrid");
-  const [threshold, setThreshold] = useState(10);
-  const [agentMode, setAgentMode] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [job, setJob] = useState<Job | null>(null);
-  const [progress, setProgress] = useState(0);
-  const [progressMsg, setProgressMsg] = useState("");
-  const [lastResult, setLastResult] = useState<BenchmarkResult | null>(null);
-  const [agentReport, setAgentReport] = useState<string | null>(null);
+  const { task: agentTask, start: handleAskAgent } = useAgentTask("sg-benchmark-runner");
+  const [selected, setSelected] = useState<string>("");
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    const [projRes, baseRes] = await Promise.all([
-      api.listProjects(),
-      api.benchmark.listBaselines(),
-    ]);
-    if (projRes.data) setProjects(projRes.data);
-    if (baseRes.data) setBaselines(baseRes.data);
-    setLoading(false);
-  }, []);
-
-  useEffect(() => { load(); }, [load]);
-
-  const handleRunFull = async () => {
-    if (!selected) return;
-    setProgress(0);
-    setProgressMsg("");
-    setJob(null);
-    setLastResult(null);
-    setAgentReport(null);
-
-    const res = await api.benchmark.run(selected, mode, threshold, agentMode);
-    if (!res.ok || !res.data) { alert(res.error ?? "Failed to start benchmark"); return; }
-
-    setJob(res.data);
-    api.streamJob(res.data.id, (p) => {
-      setProgress(p.progress);
-      if (p.message) setProgressMsg(p.message);
-    });
-
-    const poll = setInterval(async () => {
-      const status = await api.getJob(res.data.id);
-      if (status.data?.status === "completed" || status.data?.status === "failed") {
-        clearInterval(poll);
-        setJob(status.data);
-        if (status.data.status === "completed" && status.data.result) {
-          const result = status.data.result as BenchmarkResult;
-          setLastResult(result);
-          if (result.agentReport) setAgentReport(result.agentReport);
-        }
-        load();
-      }
-    }, 1000);
-  };
-
-  const handleRegression = async () => {
-    if (!selected) return;
-    const res = await api.benchmark.regression(selected, threshold);
-    if (res.ok && res.data) setLastResult(res.data);
-    else alert(res.error ?? "Regression check failed");
-  };
-
-  const handleUpdateBaseline = async (seriesId: string) => {
-    const res = await api.benchmark.updateBaseline(seriesId);
-    if (res.ok) load();
-    else alert(res.error ?? "Failed to update baseline");
-  };
-
-  if (loading) return <div style={{ color: "#666" }}>Loading...</div>;
+  if (loading) return <LoadingSpinner text={t.benchmark.loading} />;
 
   return (
     <div>
-      <h2 style={{ marginBottom: 20 }}>Benchmark</h2>
+      <PageHeader title={t.benchmark.title} description={t.benchmark.description} />
 
-      {/* Controls */}
-      <div style={{ display: "flex", gap: 16, marginBottom: 20, alignItems: "center", flexWrap: "wrap" }}>
-        <select
-          value={selected}
-          onChange={(e) => setSelected(e.target.value)}
-          style={selectStyle}
-        >
-          <option value="">Select series...</option>
-          {projects.map((p) => (
-            <option key={p.id} value={p.id}>{p.name}</option>
-          ))}
-        </select>
+      {/* Ask benchmark agent */}
+      <div style={{ marginBottom: theme.spacing.xl, padding: theme.spacing.lg, background: theme.colors.bg.muted, borderRadius: theme.radii.xl }}>
+        <h3 style={{ margin: `0 0 ${theme.spacing.sm}px 0` }}>Ask Benchmark Agent</h3>
+        <p style={{ margin: `0 0 ${theme.spacing.md}px 0`, color: theme.colors.text.secondary, fontSize: theme.font.sizes.base }}>
+          The agent runs benchmarks, analyzes scores, checks regression, and explains results.
+        </p>
 
-        <select value={mode} onChange={(e) => setMode(e.target.value as Mode)} style={selectStyle}>
-          <option value="hybrid">Hybrid</option>
-          <option value="regex">Regex</option>
-          <option value="ai">AI only</option>
-        </select>
+        {/* Series selector for context */}
+        <div style={{ marginBottom: theme.spacing.md }}>
+          <select
+            value={selected}
+            onChange={(e) => setSelected(e.target.value)}
+            style={{ padding: `${theme.spacing.sm}px ${theme.spacing.md}px`, fontSize: theme.font.sizes.md, borderRadius: theme.radii.lg, border: `1px solid ${theme.colors.border.medium}`, minWidth: 200 }}
+          >
+            <option value="">All series</option>
+            {projects.map((p) => (
+              <option key={p.id} value={p.id}>{p.name}</option>
+            ))}
+          </select>
+        </div>
 
-        <label style={{ fontSize: 14 }}>
-          Threshold:
-          <input
-            type="number"
-            value={threshold}
-            onChange={(e) => setThreshold(Number(e.target.value))}
-            style={{ ...selectStyle, width: 60, marginLeft: 4 }}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: theme.spacing.sm }}>
+          <AgentPromptButton
+            label="Run full benchmark"
+            prompt={selected
+              ? `Run a full benchmark on series "${selected}": pipeline → check → regression → score. Report the results and explain what each metric means.`
+              : "Run a full benchmark on the series with the lowest quality score. Report results and suggest improvements."}
+            onClick={handleAskAgent}
+            theme={theme}
+            variant="primary"
           />
-        </label>
+          <AgentPromptButton
+            label="Compare all baselines"
+            prompt="Compare all series baselines against current scores. Which series regressed? Which improved? Explain the trends and suggest actions."
+            onClick={handleAskAgent}
+            theme={theme}
+          />
+          {selected && (
+            <AgentPromptButton
+              label={`Analyze ${selected} regression`}
+              prompt={`Check regression for series "${selected}". Compare current scores against the baseline. If there's regression, explain what changed and why, and suggest fixes.`}
+              onClick={handleAskAgent}
+              theme={theme}
+            />
+          )}
+          <AgentPromptButton
+            label="Recommend improvements"
+            prompt="Review all series quality scores and baselines. Which series need the most attention? What specific improvements would raise the quality gate scores?"
+            onClick={handleAskAgent}
+            theme={theme}
+          />
+        </div>
 
-        <label style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 13, cursor: "pointer" }}>
-          <input type="checkbox" checked={agentMode} onChange={(e) => setAgentMode(e.target.checked)} />
-          Agent mode
-        </label>
-
-        <button onClick={handleRunFull} disabled={!selected || job?.status === "running"} style={primaryBtn(selected)}>
-          {agentMode ? "Agent Benchmark" : "Run Full Benchmark"}
-        </button>
-        <button onClick={handleRegression} disabled={!selected} style={secondaryBtn(selected)}>
-          Regression Check
-        </button>
+        {/* Agent response */}
+        {agentTask.status !== "idle" && (
+          <AgentResultPanel task={agentTask} theme={theme} />
+        )}
       </div>
 
-      {/* Job progress */}
-      {job && (
-        <div style={{ padding: 16, background: "#f5f5f5", borderRadius: 8, marginBottom: 20 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-            <span>Job: <b>{job.type}</b></span>
-            <span style={{ color: job.status === "completed" ? "#2e7d32" : job.status === "failed" ? "#d32f2f" : "#1976d2" }}>
-              {job.status}
-            </span>
-          </div>
-          {job.status === "running" && (
-            <>
-              <div style={{ background: "#e0e0e0", borderRadius: 3, height: 8, overflow: "hidden" }}>
-                <div style={{ background: "#1976d2", height: "100%", width: `${progress}%`, transition: "width 0.3s" }} />
-              </div>
-              {progressMsg && <div style={{ fontSize: 12, color: "#666", marginTop: 4 }}>{progressMsg}</div>}
-            </>
-          )}
-          {job.status === "failed" && <div style={{ color: "#d32f2f", fontSize: 14, marginTop: 4 }}>{job.error}</div>}
-        </div>
-      )}
-
-      {/* Last result */}
-      {lastResult && (
-        <div style={{ padding: 16, background: "#fff3e0", borderRadius: 8, marginBottom: 20, border: "1px solid #ffe0b2" }}>
-          <h3 style={{ margin: "0 0 12px 0" }}>Last Result — {lastResult.seriesId}</h3>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 12 }}>
-            <Metric label="Gate Score" value={`${lastResult.gateScore}/100`} />
-            <Metric label="Decision" value={lastResult.gateDecision} color={decisionColor(lastResult.gateDecision)} />
-            <Metric label="Blended" value={lastResult.blendedScore != null ? `${lastResult.blendedScore}` : "—"} />
-            <Metric
-              label="Regression"
-              value={lastResult.regressionStatus}
-              color={lastResult.regressionStatus === "OK" ? "#2e7d32" : lastResult.regressionStatus === "REGRESSION" ? "#d32f2f" : "#f57c00"}
-            />
-            <Metric label="Baseline" value={lastResult.baselineScore != null ? `${lastResult.baselineScore}` : "none"} />
-            <Metric
-              label="Delta"
-              value={lastResult.scoreDelta != null ? `${lastResult.scoreDelta > 0 ? "+" : ""}${lastResult.scoreDelta}` : "—"}
-              color={lastResult.scoreDelta != null ? (lastResult.scoreDelta >= 0 ? "#2e7d32" : "#d32f2f") : undefined}
-            />
-          </div>
-          {lastResult.checkDeltas && lastResult.checkDeltas.length > 0 && (
-            <div style={{ marginTop: 12, fontSize: 13, color: "#555" }}>
-              <b>Check changes:</b>
-              <ul style={{ margin: "4px 0", paddingLeft: 20 }}>
-                {lastResult.checkDeltas.map((d, i) => <li key={i}>{d}</li>)}
-              </ul>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Agent report */}
-      {agentReport && (
-        <div style={{ padding: 16, background: "#e8f5e9", borderRadius: 8, marginBottom: 20, border: "1px solid #c8e6c9" }}>
-          <h3 style={{ margin: "0 0 8px 0" }}>Agent Report</h3>
-          <pre style={{ whiteSpace: "pre-wrap", fontSize: 13, lineHeight: 1.5, margin: 0, fontFamily: "inherit" }}>
-            {agentReport}
-          </pre>
-        </div>
-      )}
-
-      {/* Baselines table */}
-      <h3 style={{ marginBottom: 12 }}>Baselines</h3>
-      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
-        <thead>
-          <tr style={{ borderBottom: "2px solid #e0e0e0", textAlign: "left" }}>
-            <th style={thStyle}>Series</th>
-            <th style={thStyle}>Baseline</th>
-            <th style={thStyle}>Current</th>
-            <th style={thStyle}>Delta</th>
-            <th style={thStyle}>Status</th>
-            <th style={thStyle}>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {baselines.map((b) => (
-            <tr key={b.seriesId} style={{ borderBottom: "1px solid #eee", background: selected === b.seriesId ? "#e3f2fd" : "" }}>
-              <td style={tdStyle}>{b.seriesId}</td>
-              <td style={tdStyle}>{b.baselineScore != null ? `${b.baselineScore}` : "—"}</td>
-              <td style={tdStyle}>{b.currentScore != null ? `${b.currentScore}` : "—"}</td>
-              <td style={tdStyle}>
-                {b.delta != null ? (
-                  <span style={{ color: b.delta >= 0 ? "#2e7d32" : "#d32f2f" }}>
-                    {b.delta > 0 ? "+" : ""}{b.delta}
-                  </span>
-                ) : "—"}
-              </td>
-              <td style={tdStyle}>
-                {b.hasBaseline ? "OK" : "No baseline"}
-              </td>
-              <td style={tdStyle}>
-                {b.currentScore != null && (
-                  <button
-                    onClick={() => handleUpdateBaseline(b.seriesId)}
-                    style={{ padding: "2px 8px", fontSize: 12, border: "1px solid #1976d2", borderRadius: 4, background: "#fff", color: "#1976d2", cursor: "pointer" }}
-                  >
-                    Save baseline
-                  </button>
-                )}
-              </td>
+      {/* Baselines table (read-only) */}
+      <h3 style={{ marginBottom: theme.spacing.md }}>{t.benchmark.baselines}</h3>
+      {baselines.length === 0 ? (
+        <div style={{ color: theme.colors.text.tertiary }}>No baseline data yet. Run a benchmark to establish baselines.</div>
+      ) : (
+        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: theme.font.sizes.md }}>
+          <thead>
+            <tr style={{ borderBottom: `2px solid ${theme.colors.border.default}`, textAlign: "left" }}>
+              <th style={thStyle(theme)}>{t.benchmark.series}</th>
+              <th style={thStyle(theme)}>{t.benchmark.baseline}</th>
+              <th style={thStyle(theme)}>{t.benchmark.current}</th>
+              <th style={thStyle(theme)}>{t.benchmark.delta}</th>
+              <th style={thStyle(theme)}>{t.benchmark.status}</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {baselines.map((b) => (
+              <tr key={b.seriesId} style={{ borderBottom: `1px solid ${theme.colors.border.light}`, background: selected === b.seriesId ? theme.colors.primaryLight : "" }}>
+                <td style={tdStyle(theme)}>{b.seriesId}</td>
+                <td style={tdStyle(theme)}>{b.baselineScore != null ? `${b.baselineScore}` : "—"}</td>
+                <td style={tdStyle(theme)}>{b.currentScore != null ? `${b.currentScore}` : "—"}</td>
+                <td style={tdStyle(theme)}>
+                  {b.delta != null ? (
+                    <span style={{ color: b.delta >= 0 ? theme.colors.success : theme.colors.error }}>
+                      {b.delta > 0 ? "+" : ""}{b.delta}
+                    </span>
+                  ) : "—"}
+                </td>
+                <td style={tdStyle(theme)}>
+                  {b.hasBaseline
+                    ? <StatusBadge status="ok" label={t.benchmark.ok} />
+                    : <StatusBadge status="pending" label={t.benchmark.noBaseline} />}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 }
 
-function Metric({ label, value, color }: { label: string; value: string; color?: string }) {
+function AgentPromptButton({ label, prompt, onClick, theme, variant }: {
+  label: string;
+  prompt: string;
+  onClick: (prompt: string) => void;
+  theme: Theme;
+  variant?: "primary" | "warning";
+}) {
+  const bg = variant === "warning" ? theme.colors.warning
+    : variant === "primary" ? theme.colors.primary
+    : theme.colors.bg.page;
+  const fg = variant ? theme.colors.bg.page : theme.colors.text.primary;
+  const border = variant ? "none" : `1px solid ${theme.colors.border.medium}`;
+
   return (
-    <div>
-      <div style={{ fontSize: 12, color: "#888" }}>{label}</div>
-      <div style={{ fontSize: 18, fontWeight: 600, color: color ?? "#333" }}>{value}</div>
-    </div>
+    <button
+      onClick={() => onClick(prompt)}
+      style={{
+        padding: `${theme.spacing.sm}px ${theme.spacing.md}px`,
+        border,
+        borderRadius: theme.radii.lg,
+        background: bg,
+        color: fg,
+        cursor: "pointer",
+        fontSize: theme.font.sizes.base,
+        fontWeight: variant ? theme.font.weights.semibold : theme.font.weights.normal,
+      }}
+    >
+      {label}
+    </button>
   );
 }
 
-function decisionColor(d: string): string {
-  if (d === "PASS") return "#2e7d32";
-  if (d === "WARN") return "#f57c00";
-  return "#d32f2f";
+function thStyle(t: Theme): React.CSSProperties {
+  return { padding: `${t.spacing.sm}px ${t.spacing.md}px` };
 }
 
-const selectStyle: React.CSSProperties = { padding: "8px 12px", fontSize: 14, borderRadius: 6, border: "1px solid #ccc", minWidth: 120 };
-
-function primaryBtn(enabled: string): React.CSSProperties {
-  return { padding: "8px 16px", background: enabled ? "#1976d2" : "#ccc", color: "#fff", border: "none", borderRadius: 6, cursor: enabled ? "pointer" : "default", fontWeight: 600, fontSize: 14 };
+function tdStyle(t: Theme): React.CSSProperties {
+  return { padding: `${t.spacing.sm}px ${t.spacing.md}px` };
 }
-
-function secondaryBtn(enabled: string): React.CSSProperties {
-  return { padding: "8px 16px", background: enabled ? "#f57c00" : "#ccc", color: "#fff", border: "none", borderRadius: 6, cursor: enabled ? "pointer" : "default", fontWeight: 600, fontSize: 14 };
-}
-
-const thStyle: React.CSSProperties = { padding: "8px 12px" };
-const tdStyle: React.CSSProperties = { padding: "8px 12px" };

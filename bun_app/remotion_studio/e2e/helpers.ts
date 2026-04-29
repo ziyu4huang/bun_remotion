@@ -48,6 +48,8 @@ export async function isAgentBridgeAvailable(page: Page): Promise<boolean> {
 export const NAV_LABELS = [
   "Dashboard",
   "Monitoring",
+  "Progress",
+  "Kanban",
   "Projects",
   "Story Editor",
   "Storygraph",
@@ -60,3 +62,27 @@ export const NAV_LABELS = [
   "Image",
   "Workflows",
 ] as const;
+
+/** Intercept an API route and return an error response. */
+export async function forceApiError(page: Page, path: string, status = 500, error = "Internal server error") {
+  await page.route(`**/api/${path}**`, (route) =>
+    route.fulfill({
+      status,
+      contentType: "application/json",
+      body: JSON.stringify({ ok: false, error }),
+    }),
+  );
+}
+
+/** Intercept an API route and delay the response. */
+export async function delayApiRoute(page: Page, path: string, delayMs: number) {
+  await page.route(`**/api/${path}**`, async (route) => {
+    await new Promise((r) => setTimeout(r, delayMs));
+    route.continue();
+  });
+}
+
+/** Wait for a toast notification of a given type to appear. */
+export async function waitForToast(page: Page, type: "success" | "error" | "info", timeout = 5000) {
+  return page.locator(`[data-toast-type="${type}"]`).first().waitFor({ timeout });
+}

@@ -15,7 +15,7 @@
 import { resolve } from "node:path";
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import Graph from "graphology";
-import { computePageRank, computeJaccardSimilarity } from "./story-algorithms";
+import { computePageRank, computeJaccardSimilarity, generateAlgorithmCrossLinks, normalizePageRankByType } from "./story-algorithms";
 import { buildCrossLinkPrompt } from "./subagent-prompt";
 import type { NodeSummary, EdgeSummary } from "./subagent-prompt";
 import type { StoryCrossLink, CrossLinkType } from "../types";
@@ -103,6 +103,16 @@ console.log(`Graph: ${G.order} nodes, ${G.size} edges, ${linkEdges.length} link 
 
 console.log(`Computing PageRank...`);
 const pageRankScores = computePageRank(G);
+const normalizedPR = normalizePageRankByType(pageRankScores, G);
+
+// Log top characters by normalized PageRank
+const topChars = Object.entries(normalizedPR)
+  .filter(([, v]) => v.type === "character_instance")
+  .sort(([, a], [, b]) => b.normalized - a.normalized)
+  .slice(0, 3)
+  .map(([id, v]) => `${id}=${v.normalized.toFixed(3)}`)
+  .join(", ");
+if (topChars) console.log(`Top characters (normalized PR): ${topChars}`);
 
 // Reconstruct per-episode graphs for Jaccard
 console.log(`Computing Jaccard similarity...`);
@@ -126,32 +136,23 @@ const similarityMatrix = episodeGraphs.length >= 2
 console.log(`Episodes: ${episodes.join(", ")}`);
 console.log(`PageRank: top 3 = ${Object.entries(pageRankScores).sort(([, a], [, b]) => b - a).slice(0, 3).map(([id, s]) => `${id}=${s.toFixed(3)}`).join(", ")}`);
 
-// ─── Step 3b: Generate algorithm cross-links from Jaccard > 0.5 ───
+// ─── Step 3b: Generate algorithm cross-links (all 4 types) ───
 
-const algorithmCrossLinks: StoryCrossLink[] = [];
-for (let i = 0; i < episodes.length; i++) {
-  for (let j = i + 1; j < episodes.length; j++) {
-    const sim = similarityMatrix[episodes[i]]?.[episodes[j]] ?? 0;
-    if (sim > 0.5) {
-      const epANode = nodes.find((n: any) => n.type === "episode_plot" && n.episode === episodes[i]);
-      const epBNode = nodes.find((n: any) => n.type === "episode_plot" && n.episode === episodes[j]);
-      if (epANode && epBNode) {
-        algorithmCrossLinks.push({
-          from: epANode.id,
-          to: epBNode.id,
-          link_type: "story_anti_pattern",
-          confidence: sim,
-          evidence: [`Jaccard similarity: ${sim.toFixed(3)}`],
-          generated_by: "algorithm",
-          rationale: `${episodes[i]} and ${episodes[j]} have significant structural overlap (Jaccard: ${sim.toFixed(3)})`,
-        });
-      }
-    }
-  }
-}
+const algorithmCrossLinks = generateAlgorithmCrossLinks({
+  nodes,
+  links,
+  linkEdges,
+  pageRankScores,
+  normalizedPageRank: normalizedPR,
+  similarityMatrix,
+  episodes,
+});
 
 if (algorithmCrossLinks.length > 0) {
-  console.log(`Algorithm cross-links: ${algorithmCrossLinks.length} (from Jaccard > 0.5)`);
+  const byType: Record<string, number> = {};
+  for (const cl of algorithmCrossLinks) byType[cl.link_type] = (byType[cl.link_type] || 0) + 1;
+  const breakdown = Object.entries(byType).map(([t, c]) => `${t}: ${c}`).join(", ");
+  console.log(`Algorithm cross-links: ${algorithmCrossLinks.length} (${breakdown})`);
 }
 
 // ─── Step 4: Build prompt ───
@@ -174,6 +175,17 @@ const linkEdgeSummaries = linkEdges.map(le => ({
 }));
 
 const maxCrossLinks = Math.min(15, Math.max(5, Math.floor(nodes.length / 10)));
+
+// For large graphs, summarize instead of sending raw data
+const MAX_RAW_NODES = 200;
+const MAX_RAW_EDGES = 400;
+const summarizedNodes = nodeSummaries.length > MAX_RAW_NODES
+  ? nodeSummaries.slice(0, MAX_RAW_NODES).concat([{ id: `...+${nodeSummaries.length - MAX_RAW_NODES} more`, label: "", type: "summary" }])
+  : nodeSummaries;
+const summarizedEdges = edgeSummaries.length > MAX_RAW_EDGES
+  ? edgeSummaries.slice(0, MAX_RAW_EDGES)
+  : edgeSummaries;
+
 const prompt = buildCrossLinkPrompt(
   nodeSummaries, edgeSummaries, linkEdgeSummaries,
   pageRankScores, similarityMatrix, maxCrossLinks,
@@ -184,8 +196,8 @@ const prompt = buildCrossLinkPrompt(
 const inputPayload = {
   prompt,
   graph: {
-    nodes: nodeSummaries,
-    edges: edgeSummaries,
+    nodes: summarizedNodes,
+    edges: summarizedEdges,
     link_edges: linkEdgeSummaries,
   },
   metrics: {

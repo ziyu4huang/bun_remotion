@@ -14,6 +14,9 @@ import {
 } from "@agentclientprotocol/sdk";
 import type { AnyMessage } from "@agentclientprotocol/sdk";
 import { createAcpAgentHandler } from "./agent-handler.js";
+import { initSessionStore } from "./session-store.js";
+import { getConfig } from "../config.js";
+import { startSkillsWatcher, stopSkillsWatcher } from "../skills/index.js";
 
 // ---------------------------------------------------------------------------
 // Stdin → ReadableStream adapter
@@ -55,6 +58,10 @@ export function startStdio(): void {
   // Log to stderr (stdout is reserved for JSON-RPC messages)
   const log = (...args: unknown[]) => process.stderr.write(args.join(" ") + "\n");
 
+  const config = getConfig();
+  initSessionStore(config.convDir, { maxAge: config.maxConvAge, maxCount: config.maxConvCount });
+  startSkillsWatcher();
+
   log("bun_pi_agent: starting ACP stdio mode");
 
   const input = readableStreamFromStdin();
@@ -77,9 +84,10 @@ export function startStdio(): void {
       process.exit(1);
     });
 
-  // Also exit when stdin closes (client process died)
+  // Cleanup on exit
   process.stdin.on("close", () => {
     log("bun_pi_agent: stdin closed");
+    stopSkillsWatcher();
     process.exit(0);
   });
 }

@@ -1,6 +1,24 @@
 import { test, expect } from "@playwright/test";
 import { navigateTo, waitForPageLoad, collectConsoleErrors, assertNoConsoleErrors, NAV_LABELS } from "./helpers";
 
+test.describe("API Health", () => {
+  test("GET /api/health responds with ok", async ({ request }) => {
+    const resp = await request.get("/api/health");
+    expect(resp.ok()).toBe(true);
+    const data = await resp.json();
+    expect(data.ok).toBe(true);
+    expect(data.data.status).toBe("ok");
+  });
+
+  test("GET /api/jobs returns array", async ({ request }) => {
+    const resp = await request.get("/api/jobs");
+    expect(resp.ok()).toBe(true);
+    const data = await resp.json();
+    expect(data.ok).toBe(true);
+    expect(Array.isArray(data.data)).toBe(true);
+  });
+});
+
 test.describe("Smoke Tests — All Pages Load", () => {
   test("default page is Dashboard", async ({ page }) => {
     const errors = collectConsoleErrors(page);

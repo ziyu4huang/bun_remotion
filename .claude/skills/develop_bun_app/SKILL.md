@@ -2,7 +2,7 @@
 name: develop_bun_app
 description: Develop bun_app utilities — scaffold, test, build, and maintain Bun/TypeScript apps under bun_app/
 trigger: /develop_bun_app
-version: 1.3.0
+version: 1.6.0
 ---
 
 # /develop_bun_app
@@ -16,7 +16,14 @@ Scaffold, test, build, and maintain Bun/TypeScript utility apps under `bun_app/`
 | `storygraph` | `storygraph` | Knowledge graph generator (AST + story KG) |
 | `episodeforge` | `episodeforge` | Remotion episode scaffold generator |
 | `remotion_types` | `remotion_types` | Shared category types + scene templates |
-| `bun_pi_agent` | `bun_pi_agent` | Coding assistant agent (CLI + HTTP SSE) |
+| `bun_pi_agent` | `bun_pi_agent` | Multi-agent coding assistant (ACP stdio + CLI + HTTP SSE, 32 tools, 13 agents) |
+| `remotion_studio` | `remotion_studio` | Web UI for video production (15 pages, DAG workflow engine) |
+| `bun_image` | `bun_image` | AI image generation via z.ai/Playwright CDP bridge |
+| `bun_tts` | `bun_tts` | Text-to-speech via mlx_tts + Gemini API |
+
+## Cross-App Status
+
+Run `bun scripts/cross-app-status.ts` from repo root to get a health table of all bun_apps (version, tests, PLAN.md, TODO.md).
 
 ## Conventions
 

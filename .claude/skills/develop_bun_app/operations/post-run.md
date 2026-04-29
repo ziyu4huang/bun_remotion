@@ -22,7 +22,13 @@ Knowledge capture after completing an operation on a bun_app. Run this after sca
    - Architecture diagram (new module relationships)
    - Dependencies table (added/removed packages)
    - Configuration table (new env vars)
-5. **Write feedback memory** (if reusable lesson):
+5. **Update NEXT.md** (REQUIRED — never skip):
+   - Update "Status" line in header
+   - Update "Just completed" with what was done this session
+   - Update "Next Task" section with recommended next step
+   - Add entry to "Completed Phases" table if a phase finished
+   - If app has no NEXT.md yet, create it (see remotion-best-practices/NEXT.md or storygraph/NEXT.md for template)
+6. **Write feedback memory** (if reusable lesson):
    - Path: `.agent/memory/feedback/<topic>.md`
    - Content: rule, **Why:** context, **How to apply:** scope
 
@@ -79,4 +85,5 @@ bun run --cwd bun_app/<name> test
 - TODO.md Development History has a new entry for this session
 - Completed tasks moved to Done section
 - PLAN.md module table matches actual source files
+- NEXT.md updated with current status and next task
 - No orphaned TODO items (tasks for code that doesn't exist)

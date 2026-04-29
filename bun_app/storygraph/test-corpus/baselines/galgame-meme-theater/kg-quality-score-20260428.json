@@ -1,0 +1,38 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-04-18T21:49:46.611Z",
+  "series": "galgame-meme-theater",
+  "genre": "galgame_meme",
+  "generator": {
+    "mode": "regex",
+    "model": "glm-5"
+  },
+  "programmatic": {
+    "score": 0,
+    "decision": "FAIL",
+    "quality_breakdown": {
+      "consistency": 0.8333333333333334,
+      "arc_structure": null,
+      "pacing": 1,
+      "character_growth": null,
+      "thematic_coherence": 1,
+      "gag_evolution": 0.9
+    }
+  },
+  "ai": {
+    "dimensions": {
+      "entity_accuracy": 4,
+      "relationship_correctness": 5,
+      "completeness": 3,
+      "cross_episode_coherence": 4,
+      "actionability": 5
+    },
+    "overall": 4.2,
+    "justification": "The source narrations are heavily truncated—only opening lines and TypeScript interface declarations are visible, making it impossible to verify most entity labels against actual content. The graph lists 15 gag_manifestations and only 4 character_instances across 7 episodes, which seems low for a meme theater format that likely features many recurring gags and characters. Episode themes (daily life, school, workplace, romance, AI survival) are captured in titles but the graph structure (6 scenes for 7 episodes) suggests significant content gaps. Cross-episode links exist (15) but with so few character instances, these likely miss recurring character dynamics. The graph may be actionable for basic scene scaffolding but lacks the dialog timing and gag-specific detail needed for full Remotion generation. The programmatic score of 0/100 further suggests foundational extraction issues."
+  },
+  "blended": {
+    "overall": 0.252,
+    "formula": "0.4 × programmatic + 0.6 × ai",
+    "decision": "REJECT"
+  }
+}

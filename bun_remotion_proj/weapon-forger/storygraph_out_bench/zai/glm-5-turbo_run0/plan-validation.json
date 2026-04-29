@@ -1,0 +1,16 @@
+{
+  "valid": false,
+  "errors": [
+    {
+      "rule": "CHARACTER_CONSISTENCY",
+      "message": "Episode ch2ep2 references undefined character \"soul\"",
+      "episode": "ch2ep2"
+    }
+  ],
+  "warnings": [],
+  "stats": {
+    "totalEpisodes": 12,
+    "completedEpisodes": 7,
+    "chaptersChecked": 4
+  }
+}

@@ -1,32 +1,17 @@
 import type { Job, JobProgress, JobStatus } from "../../shared/types";
+import { JobStore } from "../services/job-store";
 
-type JobFn<T = unknown> = (progress: (p: number, msg?: string) => void) => Promise<T>;
+type JobFn<T = unknown> = (progress: (p: number, msg?: string) => void, signal?: AbortSignal) => Promise<T>;
 
-const jobs = new Map<string, Job>();
+const store = new JobStore();
 const subscribers = new Map<string, Set<(progress: JobProgress) => void>>();
-
-const JOB_TTL_MS = 30 * 60 * 1000; // 30 minutes
-
-let counter = 0;
-
-function nextId(): string {
-  return `job_${Date.now()}_${++counter}`;
-}
-
-function evictExpiredJobs(): void {
-  const now = Date.now();
-  for (const [id, job] of jobs) {
-    if ((job.status === "completed" || job.status === "failed") && now - job.updatedAt > JOB_TTL_MS) {
-      jobs.delete(id);
-      subscribers.delete(id);
-    }
-  }
-}
+const abortControllers = new Map<string, AbortController>();
 
 function updateJob(job: Job, status: JobStatus, progress?: number): void {
   job.status = status;
   if (progress !== undefined) job.progress = progress;
   job.updatedAt = Date.now();
+  store.set(job);
 
   const sub = subscribers.get(job.id);
   if (sub) {
@@ -37,7 +22,7 @@ function updateJob(job: Job, status: JobStatus, progress?: number): void {
 
 export function createJob<T = unknown>(type: string, fn: JobFn<T>): Job<T> {
   const job: Job<T> = {
-    id: nextId(),
+    id: store.nextId(),
     type,
     status: "pending",
     progress: 0,
@@ -45,7 +30,10 @@ export function createJob<T = unknown>(type: string, fn: JobFn<T>): Job<T> {
     updatedAt: Date.now(),
   };
 
-  jobs.set(job.id, job);
+  store.set(job);
+
+  const controller = new AbortController();
+  abortControllers.set(job.id, controller);
 
   // run async
   Promise.resolve().then(async () => {
@@ -53,7 +41,7 @@ export function createJob<T = unknown>(type: string, fn: JobFn<T>): Job<T> {
     try {
       const result = await fn((p, msg) => {
         updateJob(job, "running", Math.min(100, Math.max(0, p)));
-      });
+      }, controller.signal);
       job.result = result;
       updateJob(job, "completed", 100);
     } catch (err) {
@@ -65,20 +53,46 @@ export function createJob<T = unknown>(type: string, fn: JobFn<T>): Job<T> {
         for (const cb of sub) cb(null as never);
         subscribers.delete(job.id);
       }
-      evictExpiredJobs();
+      abortControllers.delete(job.id);
     }
   });
 
   return job;
 }
 
-export function getJob<T = unknown>(jobId: string): Job<T> | undefined {
-  return jobs.get(jobId) as Job<T> | undefined;
+export function cancelJob(jobId: string): Job | null {
+  const job = store.get(jobId);
+  if (!job || (job.status !== "running" && job.status !== "pending")) return null;
+
+  // Abort the running workflow
+  const controller = abortControllers.get(jobId);
+  if (controller) controller.abort();
+
+  job.error = "Cancelled by user";
+  updateJob(job, "failed", job.progress);
+  const sub = subscribers.get(job.id);
+  if (sub) {
+    for (const cb of sub) cb(null as never);
+    subscribers.delete(job.id);
+  }
+  return job;
 }
 
-export function listJobs(): Job[] {
-  evictExpiredJobs();
-  return [...jobs.values()];
+export function deleteJob(jobId: string): boolean {
+  subscribers.delete(jobId);
+  return store.delete(jobId);
+}
+
+export function getJob<T = unknown>(jobId: string): Job<T> | undefined {
+  return store.get(jobId) as Job<T> | undefined;
+}
+
+export function listJobs(status?: string): Job[] {
+  return store.list(status);
+}
+
+export function listJobHistory(olderThanMs?: number): Job[] {
+  return store.listHistory(olderThanMs);
 }
 
 export function subscribe(jobId: string, cb: (progress: JobProgress | null) => void): () => void {
@@ -88,10 +102,14 @@ export function subscribe(jobId: string, cb: (progress: JobProgress | null) => v
   return () => set.delete(cb as (p: JobProgress) => void);
 }
 
+export function markInterruptedJobs(): number {
+  return store.markInterrupted();
+}
+
 /** Build an SSE Response that streams progress events for a job until completion/failure. */
 export function sseStream(jobId: string): Response {
   const encoder = new TextEncoder();
-  const job = jobs.get(jobId);
+  const job = store.get(jobId);
 
   if (!job) {
     return new Response(JSON.stringify({ ok: false, error: "Job not found" }), { status: 404 });
@@ -119,7 +137,6 @@ export function sseStream(jobId: string): Response {
       unsub = subscribe(jobId, (evt) => send(evt));
     },
     cancel() {
-      // Client disconnected — clean up subscriber
       unsub?.();
     },
   });

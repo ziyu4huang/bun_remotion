@@ -1,0 +1,267 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-04-19T14:36:34.625Z",
+  "series": "weapon-forger",
+  "total_records": 7,
+  "records": [
+    {
+      "ep_id": "ch1ep1",
+      "timestamp": "2026-04-19T14:36:34.623Z",
+      "features": {
+        "prev_summary": false,
+        "foreshadowing": false,
+        "character_constraints": true,
+        "gag_evolution": false,
+        "interaction_history": true,
+        "pacing_profile": false,
+        "thematic_clusters": false,
+        "tech_terms": true
+      },
+      "outcome": {
+        "gate_score": 0,
+        "gate_decision": "FAIL",
+        "ai_overall": 6.2,
+        "blended_overall": 0.372,
+        "consistency": 0.8333333333333334,
+        "pacing": 0.5,
+        "arc_structure": null,
+        "character_growth": 0.5575,
+        "thematic_coherence": 1,
+        "gag_evolution": null
+      }
+    },
+    {
+      "ep_id": "ch1ep2",
+      "timestamp": "2026-04-19T14:36:34.623Z",
+      "features": {
+        "prev_summary": true,
+        "foreshadowing": false,
+        "character_constraints": true,
+        "gag_evolution": false,
+        "interaction_history": true,
+        "pacing_profile": false,
+        "thematic_clusters": false,
+        "tech_terms": true
+      },
+      "outcome": {
+        "gate_score": 0,
+        "gate_decision": "FAIL",
+        "ai_overall": 6.2,
+        "blended_overall": 0.372,
+        "consistency": 0.8333333333333334,
+        "pacing": 0.5,
+        "arc_structure": null,
+        "character_growth": 0.5575,
+        "thematic_coherence": 1,
+        "gag_evolution": null
+      }
+    },
+    {
+      "ep_id": "ch1ep3",
+      "timestamp": "2026-04-19T14:36:34.624Z",
+      "features": {
+        "prev_summary": true,
+        "foreshadowing": false,
+        "character_constraints": true,
+        "gag_evolution": false,
+        "interaction_history": true,
+        "pacing_profile": false,
+        "thematic_clusters": false,
+        "tech_terms": true
+      },
+      "outcome": {
+        "gate_score": 0,
+        "gate_decision": "FAIL",
+        "ai_overall": 6.2,
+        "blended_overall": 0.372,
+        "consistency": 0.8333333333333334,
+        "pacing": 0.5,
+        "arc_structure": null,
+        "character_growth": 0.5575,
+        "thematic_coherence": 1,
+        "gag_evolution": null
+      }
+    },
+    {
+      "ep_id": "ch2ep1",
+      "timestamp": "2026-04-19T14:36:34.624Z",
+      "features": {
+        "prev_summary": true,
+        "foreshadowing": false,
+        "character_constraints": true,
+        "gag_evolution": false,
+        "interaction_history": true,
+        "pacing_profile": false,
+        "thematic_clusters": false,
+        "tech_terms": true
+      },
+      "outcome": {
+        "gate_score": 0,
+        "gate_decision": "FAIL",
+        "ai_overall": 6.2,
+        "blended_overall": 0.372,
+        "consistency": 0.8333333333333334,
+        "pacing": 0.5,
+        "arc_structure": null,
+        "character_growth": 0.5575,
+        "thematic_coherence": 1,
+        "gag_evolution": null
+      }
+    },
+    {
+      "ep_id": "ch2ep2",
+      "timestamp": "2026-04-19T14:36:34.624Z",
+      "features": {
+        "prev_summary": true,
+        "foreshadowing": false,
+        "character_constraints": true,
+        "gag_evolution": false,
+        "interaction_history": true,
+        "pacing_profile": false,
+        "thematic_clusters": false,
+        "tech_terms": true
+      },
+      "outcome": {
+        "gate_score": 0,
+        "gate_decision": "FAIL",
+        "ai_overall": 6.2,
+        "blended_overall": 0.372,
+        "consistency": 0.8333333333333334,
+        "pacing": 0.5,
+        "arc_structure": null,
+        "character_growth": 0.5575,
+        "thematic_coherence": 1,
+        "gag_evolution": null
+      }
+    },
+    {
+      "ep_id": "ch2ep3",
+      "timestamp": "2026-04-19T14:36:34.624Z",
+      "features": {
+        "prev_summary": true,
+        "foreshadowing": false,
+        "character_constraints": true,
+        "gag_evolution": false,
+        "interaction_history": true,
+        "pacing_profile": false,
+        "thematic_clusters": false,
+        "tech_terms": true
+      },
+      "outcome": {
+        "gate_score": 0,
+        "gate_decision": "FAIL",
+        "ai_overall": 6.2,
+        "blended_overall": 0.372,
+        "consistency": 0.8333333333333334,
+        "pacing": 0.5,
+        "arc_structure": null,
+        "character_growth": 0.5575,
+        "thematic_coherence": 1,
+        "gag_evolution": null
+      }
+    },
+    {
+      "ep_id": "ch3ep1",
+      "timestamp": "2026-04-19T14:36:34.624Z",
+      "features": {
+        "prev_summary": true,
+        "foreshadowing": false,
+        "character_constraints": true,
+        "gag_evolution": false,
+        "interaction_history": true,
+        "pacing_profile": false,
+        "thematic_clusters": false,
+        "tech_terms": true
+      },
+      "outcome": {
+        "gate_score": 0,
+        "gate_decision": "FAIL",
+        "ai_overall": 6.2,
+        "blended_overall": 0.372,
+        "consistency": 0.8333333333333334,
+        "pacing": 0.5,
+        "arc_structure": null,
+        "character_growth": 0.5575,
+        "thematic_coherence": 1,
+        "gag_evolution": null
+      }
+    }
+  ],
+  "correlation": [
+    {
+      "section": "prev_summary",
+      "episodes_present": 6,
+      "episodes_absent": 1,
+      "avg_score_when_present": 0,
+      "avg_score_when_absent": 0,
+      "score_delta": 0,
+      "sample_size": 7
+    },
+    {
+      "section": "foreshadowing",
+      "episodes_present": 0,
+      "episodes_absent": 7,
+      "avg_score_when_present": 0,
+      "avg_score_when_absent": 0,
+      "score_delta": 0,
+      "sample_size": 7
+    },
+    {
+      "section": "character_constraints",
+      "episodes_present": 7,
+      "episodes_absent": 0,
+      "avg_score_when_present": 0,
+      "avg_score_when_absent": 0,
+      "score_delta": 0,
+      "sample_size": 7
+    },
+    {
+      "section": "gag_evolution",
+      "episodes_present": 0,
+      "episodes_absent": 7,
+      "avg_score_when_present": 0,
+      "avg_score_when_absent": 0,
+      "score_delta": 0,
+      "sample_size": 7
+    },
+    {
+      "section": "interaction_history",
+      "episodes_present": 7,
+      "episodes_absent": 0,
+      "avg_score_when_present": 0,
+      "avg_score_when_absent": 0,
+      "score_delta": 0,
+      "sample_size": 7
+    },
+    {
+      "section": "pacing_profile",
+      "episodes_present": 0,
+      "episodes_absent": 7,
+      "avg_score_when_present": 0,
+      "avg_score_when_absent": 0,
+      "score_delta": 0,
+      "sample_size": 7
+    },
+    {
+      "section": "thematic_clusters",
+      "episodes_present": 0,
+      "episodes_absent": 7,
+      "avg_score_when_present": 0,
+      "avg_score_when_absent": 0,
+      "score_delta": 0,
+      "sample_size": 7
+    },
+    {
+      "section": "tech_terms",
+      "episodes_present": 7,
+      "episodes_absent": 0,
+      "avg_score_when_present": 0,
+      "avg_score_when_absent": 0,
+      "score_delta": 0,
+      "sample_size": 7
+    }
+  ],
+  "recommendations": [
+    "Never populated: foreshadowing, gag_evolution, pacing_profile, thematic_clusters. Consider if these sections add value."
+  ]
+}

@@ -43,6 +43,12 @@ export interface SeriesConfig {
   voiceCharacters: string[];
   /** Transition types used between scenes (cycling) */
   transitions: TransitionDef[];
+  /**
+   * PLAN.md episode guide row template.
+   * Keys: {episode} (e.g. "ch1-ep3"), {ch}, {ep}, {title} (placeholder), {characters}, {status} (defaults to "Planned").
+   * If omitted, no PLAN.md update is attempted.
+   */
+  planMdRow?: string;
 }
 
 export const SERIES_REGISTRY: Record<string, SeriesConfig> = {
@@ -63,6 +69,7 @@ export const SERIES_REGISTRY: Record<string, SeriesConfig> = {
       { importName: "slide", from: "@remotion/transitions/slide", usage: 'slide({ direction: "from-right" })' },
       { importName: "wipe", from: "@remotion/transitions/wipe", usage: 'wipe({ direction: "from-right" })' },
     ],
+    planMdRow: "| {episode} | {title} | {language} | {characters} | Planned |",
   },
   "my-core-is-boss": {
     id: "my-core-is-boss",
@@ -82,6 +89,7 @@ export const SERIES_REGISTRY: Record<string, SeriesConfig> = {
       { importName: "wipe", from: "@remotion/transitions/wipe", usage: 'wipe({ direction: "from-right" })' },
       { importName: "flip", from: "@remotion/transitions/flip", usage: "flip()" },
     ],
+    planMdRow: "| {ch} | {ep} | {title} | {characters} | Planned |",
   },
   "galgame-meme-theater": {
     id: "galgame-meme-theater",
@@ -102,6 +110,7 @@ export const SERIES_REGISTRY: Record<string, SeriesConfig> = {
       { importName: "wipe", from: "@remotion/transitions/wipe", usage: 'wipe({ direction: "from-right" })' },
       { importName: "clockWipe", from: "@remotion/transitions/clock-wipe", usage: "clockWipe()" },
     ],
+    planMdRow: "| ep{ep} | {title} | {theme} | Planned |",
   },
 
   // ─── Standalone Category-Based Presets ───
@@ -139,4 +148,17 @@ export function requireSeriesConfig(seriesId: string): SeriesConfig {
     process.exit(1);
   }
   return config;
+}
+
+export function listSeries(): void {
+  const entries = Object.values(SERIES_REGISTRY);
+  const maxId = Math.max(...entries.map((e) => e.id.length));
+
+  console.log("Available series:\n");
+  for (const s of entries) {
+    const kind = s.standalone ? "standalone" : s.chapterBased ? "chapter-based" : "flat";
+    console.log(`  ${s.id.padEnd(maxId)}  ${s.displayName}`);
+    console.log(`  ${"".padEnd(maxId)}  ${kind}, ${s.defaultContentScenes} scenes, voices: ${s.voiceCharacters.join(", ")}`);
+    console.log();
+  }
 }

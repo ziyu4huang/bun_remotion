@@ -102,7 +102,7 @@ describe("DAG Executor", () => {
     expect(st.getNode(root.rootId, b.id)!.status).toBe("completed");
   });
 
-  test("full-pipeline tree executes all 6 steps", async () => {
+  test("full-pipeline tree executes all 7 steps", async () => {
     const tpl = getTemplate("full-pipeline");
     const tree = buildTaskTree(tpl);
     const st = makeStore();
@@ -134,17 +134,19 @@ describe("DAG Executor", () => {
     const loadedTree = st.getTree(storeTree.rootId)!;
     await executeTaskTree(loadedTree, st, executor);
 
-    // All 6 steps executed
-    expect(executionOrder.length).toBe(6);
-    // scaffold before pipeline before check/score before tts before render
+    // All 7 steps executed
+    expect(executionOrder.length).toBe(7);
+    // scaffold before [image, pipeline] before check/score before tts before render
     const scaffoldIdx = executionOrder.indexOf("scaffold");
     const pipelineIdx = executionOrder.indexOf("pipeline");
     const checkIdx = executionOrder.indexOf("check");
     const scoreIdx = executionOrder.indexOf("score");
     const ttsIdx = executionOrder.indexOf("tts");
     const renderIdx = executionOrder.indexOf("render");
+    const imageIdx = executionOrder.indexOf("image");
 
     expect(scaffoldIdx).toBeLessThan(pipelineIdx);
+    expect(scaffoldIdx).toBeLessThan(imageIdx);
     expect(pipelineIdx).toBeLessThan(checkIdx);
     expect(pipelineIdx).toBeLessThan(scoreIdx);
     expect(checkIdx).toBeLessThan(ttsIdx);

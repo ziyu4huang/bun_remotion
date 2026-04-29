@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { api } from "../api";
+import { useTheme } from "../theme";
 import { type ChatMessage, type ToolCallDisplay, clearHistory, ToolCallCard, UserBubble, ThinkingIndicator, TurnSeparator, MarkdownText } from "./index";
 import type { AgentInfo, AgentStreamEvent, AgentTaskResult } from "../../shared/types";
 
@@ -19,7 +20,7 @@ interface AdvisorPanelBaseProps {
 export function AdvisorPanelBase({
   agentName,
   title,
-  titleColor = "#7b1fa2",
+  titleColor,
   contextLabel,
   historyKey,
   systemPrefix,
@@ -28,6 +29,8 @@ export function AdvisorPanelBase({
   setMessages,
   preferredAgents,
 }: AdvisorPanelBaseProps) {
+  const theme = useTheme();
+  const accent = titleColor ?? theme.colors.purple;
   const [agents, setAgents] = useState<AgentInfo[]>([]);
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
@@ -147,44 +150,46 @@ export function AdvisorPanelBase({
     abortRef.current = abort;
   };
 
+  const panelBase = { width: 320, borderLeft: `1px solid ${theme.colors.border.default}`, padding: theme.spacing.lg, background: theme.colors.bg.surface };
+
   if (bridgeOk === false) {
     return (
-      <div style={{ width: 320, borderLeft: "1px solid #e0e0e0", padding: 16, background: "#fafafa" }}>
-        <h3 style={{ margin: "0 0 12px", fontSize: 14, color: titleColor }}>{title}</h3>
-        <div style={{ color: "#999", fontSize: 13 }}>Agent bridge unavailable</div>
+      <div style={panelBase}>
+        <h3 style={{ margin: `0 0 ${theme.spacing.md}px`, fontSize: theme.font.sizes.md, color: accent }}>{title}</h3>
+        <div style={{ color: theme.colors.text.muted, fontSize: theme.font.sizes.base }}>Agent bridge unavailable</div>
       </div>
     );
   }
 
   if (!agent) {
     return (
-      <div style={{ width: 320, borderLeft: "1px solid #e0e0e0", padding: 16, background: "#fafafa" }}>
-        <h3 style={{ margin: "0 0 12px", fontSize: 14, color: titleColor }}>{title}</h3>
-        <div style={{ color: "#999", fontSize: 13 }}>No advisor agent found</div>
+      <div style={panelBase}>
+        <h3 style={{ margin: `0 0 ${theme.spacing.md}px`, fontSize: theme.font.sizes.md, color: accent }}>{title}</h3>
+        <div style={{ color: theme.colors.text.muted, fontSize: theme.font.sizes.base }}>No advisor agent found</div>
       </div>
     );
   }
 
   return (
-    <div style={{ width: 320, borderLeft: "1px solid #e0e0e0", display: "flex", flexDirection: "column", background: "#fafafa" }}>
-      <div style={{ padding: "12px 16px", borderBottom: "1px solid #e0e0e0", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+    <div style={{ width: 320, borderLeft: `1px solid ${theme.colors.border.default}`, display: "flex", flexDirection: "column", background: theme.colors.bg.surface }}>
+      <div style={{ padding: "12px 16px", borderBottom: `1px solid ${theme.colors.border.default}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div>
-          <h3 style={{ margin: 0, fontSize: 14, color: titleColor }}>{title}</h3>
-          <div style={{ fontSize: 12, color: "#999" }}>{agent.name} · {contextLabel}</div>
+          <h3 style={{ margin: 0, fontSize: theme.font.sizes.md, color: accent }}>{title}</h3>
+          <div style={{ fontSize: theme.font.sizes.sm, color: theme.colors.text.muted }}>{agent.name} · {contextLabel}</div>
         </div>
         {messages.length > 0 && !streaming && (
           <button
             onClick={() => { setMessages([]); clearHistory(historyKey); }}
-            style={{ padding: "2px 8px", background: "none", border: "1px solid #ccc", borderRadius: 3, cursor: "pointer", fontSize: 11, color: "#999" }}
+            style={{ padding: "2px 8px", background: "none", border: `1px solid ${theme.colors.border.medium}`, borderRadius: theme.radii.sm, cursor: "pointer", fontSize: theme.font.sizes.sm, color: theme.colors.text.muted }}
           >
             Clear
           </button>
         )}
       </div>
 
-      <div style={{ flex: 1, overflowY: "auto", padding: 12 }}>
+      <div style={{ flex: 1, overflowY: "auto", padding: theme.spacing.md }}>
         {messages.length === 0 && !streaming && (
-          <div style={{ color: "#999", fontSize: 13, textAlign: "center", marginTop: 40 }}>
+          <div style={{ color: theme.colors.text.muted, fontSize: theme.font.sizes.base, textAlign: "center", marginTop: 40 }}>
             {placeholder}
           </div>
         )}
@@ -198,7 +203,7 @@ export function AdvisorPanelBase({
               {msg.role === "user" ? (
                 <UserBubble msg={msg} />
               ) : (
-                <div style={{ marginBottom: 12 }}>
+                <div style={{ marginBottom: theme.spacing.md }}>
                   {msg.toolCalls && msg.toolCalls.length > 0 && (
                     <div style={{ marginBottom: 6 }}>
                       {msg.toolCalls.map((tc, j) => (
@@ -209,16 +214,16 @@ export function AdvisorPanelBase({
                   <div style={{
                     padding: "8px 10px",
                     borderRadius: "8px 8px 8px 2px",
-                    background: msg.isError ? "#ffebee" : "#fff",
-                    boxShadow: "0 1px 2px rgba(0,0,0,0.06)",
+                    background: msg.isError ? theme.colors.errorLight : theme.colors.bg.page,
+                    boxShadow: theme.shadows.sm,
                     whiteSpace: "pre-wrap",
-                    fontSize: 13,
+                    fontSize: theme.font.sizes.base,
                     lineHeight: 1.4,
                   }}>
                     <MarkdownText content={msg.content} />
                   </div>
                   {msg.meta && (
-                    <div style={{ fontSize: 10, color: "#aaa", marginTop: 2, marginLeft: 4 }}>
+                    <div style={{ fontSize: theme.font.sizes.xs, color: theme.colors.text.faint, marginTop: 2, marginLeft: 4 }}>
                       {msg.meta.turnCount} turns · {msg.meta.toolCallCount} tools · {(msg.meta.durationMs / 1000).toFixed(1)}s
                     </div>
                   )}
@@ -229,7 +234,7 @@ export function AdvisorPanelBase({
         })}
 
         {activeTools.length > 0 && (
-          <div style={{ marginBottom: 8 }}>
+          <div style={{ marginBottom: theme.spacing.sm }}>
             {activeTools.map((tc, i) => (
               <ToolCallCard key={`active-${i}`} tc={tc} />
             ))}
@@ -239,7 +244,7 @@ export function AdvisorPanelBase({
         <div ref={endRef} />
       </div>
 
-      <div style={{ padding: 12, borderTop: "1px solid #e0e0e0" }}>
+      <div style={{ padding: theme.spacing.md, borderTop: `1px solid ${theme.colors.border.default}` }}>
         <div style={{ display: "flex", gap: 6 }}>
           <input
             value={input}
@@ -247,19 +252,19 @@ export function AdvisorPanelBase({
             onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
             placeholder={placeholder}
             disabled={streaming}
-            style={{ flex: 1, padding: "8px 10px", fontSize: 13, borderRadius: 4, border: "1px solid #ccc" }}
+            style={{ flex: 1, padding: "8px 10px", fontSize: theme.font.sizes.base, borderRadius: theme.radii.md, border: `1px solid ${theme.colors.border.medium}` }}
           />
           <button
             onClick={handleSend}
             disabled={streaming || !input.trim()}
             style={{
               padding: "8px 12px",
-              background: streaming || !input.trim() ? "#ccc" : titleColor,
-              color: "#fff",
+              background: streaming || !input.trim() ? theme.colors.border.medium : accent,
+              color: theme.colors.bg.page,
               border: "none",
-              borderRadius: 4,
+              borderRadius: theme.radii.md,
               cursor: streaming ? "default" : "pointer",
-              fontSize: 13,
+              fontSize: theme.font.sizes.base,
             }}
           >
             {streaming ? "..." : "Ask"}

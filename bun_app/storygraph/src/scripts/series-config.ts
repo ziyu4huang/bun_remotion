@@ -54,6 +54,8 @@ export interface SeriesConfig {
   effectPattern?: RegExp;
   /** Per-genre title extraction pattern (must capture title in group 1) */
   titlePattern?: RegExp;
+  /** Artifact creation patterns: regex to match in dialog, with artifact type label */
+  artifactPatterns?: { pattern: RegExp; artifactType: string }[];
 }
 
 // ─── Weapon Forger (誰讓他煉器的) ───
@@ -138,6 +140,14 @@ export const weaponForgerConfig: SeriesConfig = {
   gagSource: "plan_md",
   episodeDirPattern: /^weapon-forger-ch(\d+)-ep(\d+)$/,
   genre: "xianxia_comedy",
+  artifactPatterns: [
+    { pattern: /飛劍|飞剑/, artifactType: "法宝_飛劍" },
+    { pattern: /丹爐|丹炉/, artifactType: "法宝_丹爐" },
+    { pattern: /陣法|阵法/, artifactType: "法宝_陣法" },
+    { pattern: /系統|系统/, artifactType: "法宝_系統" },
+    { pattern: /法寶|法宝/, artifactType: "法宝" },
+    { pattern: /護盾|护盾/, artifactType: "法宝_護盾" },
+  ],
 };
 
 // ─── My Core Is Boss (我的核心是大佬) ───
@@ -157,29 +167,29 @@ export const myCoreIsBossConfig: SeriesConfig = {
       { pattern: /bug/i, trait: "萬物皆有Bug" },
       { pattern: /跳過|跳過對話|全部跳過/, trait: "跳過強迫症" },
       { pattern: /載入中|載入.*慢/, trait: "永遠載入中" },
-      { pattern: /NPC|建模|UI|系統面板|任務面板|新手教程/, trait: "遊戲化世界觀" },
-      { pattern: /捷徑|三秒通關|速通/, trait: "速通玩家" },
+      { pattern: /NPC|建模|UI|系統面板|任務面板|新手教程|刷新|掛機|經驗值|升級|刷怪|倍率|加成|獎勵|任務進度/, trait: "遊戲化世界觀" },
+      { pattern: /捷徑|三秒通關|速通|效率.*快|一刀.*個/, trait: "速通玩家" },
       { pattern: /這也有|怎麼.*bug|又有bug/, trait: "吐槽遊戲設計" },
       { pattern: /為什麼.*跪|跪什麼|在跪/, trait: "困惑被崇拜" },
     ],
     zhaoxiaoqi: [
-      { pattern: /太深奧|天地至理|蘊含|禁錮|上古失傳|裂縫|座標|弱點|扭曲空間|封鎖/, trait: "過度解讀" },
-      { pattern: /師兄的意思|師兄是說|師兄根本不需要|說明他能/, trait: "主動腦補" },
+      { pattern: /太深奧|天地至理|蘊含|禁錮|上古失傳|裂縫|座標|弱點|扭曲空間|封鎖|朝聖|輪迴|朝拜|歸順|感應|超度|即.*是|選擇.*歸順/, trait: "過度解讀" },
+      { pattern: /師兄的意思|師兄是說|師兄根本不需要|說明他能|師兄是指/, trait: "主動腦補" },
       { pattern: /語錄|記下來|我要記/, trait: "語錄記錄狂" },
       { pattern: /追隨|頭號/, trait: "死忠粉絲" },
       { pattern: /師兄又在謙虛|謙虛|師兄說的.*就是/, trait: "選擇性聽力" },
     ],
     xiaoelder: [
-      { pattern: /這小子|小子.*放肆|哪來的小子|還不快/, trait: "嚴肅長老表面" },
-      { pattern: /老夫修行|修行.*年|傳說中|渡劫期/, trait: "老資格自居" },
+      { pattern: /這小子|小子.*放肆|哪來的小子|還不快|老夫/, trait: "嚴肅長老表面" },
+      { pattern: /老夫修行|修行.*年|傳說中|渡劫期|古籍.*記載|上古神通/, trait: "老資格自居" },
       { pattern: /不可能|怎麼可能/, trait: "三觀崩塌中" },
       { pattern: /跪|腿軟|膝蓋/, trait: "崩潰屈服" },
       { pattern: /隱藏等級|大乘期|超越/, trait: "過度解讀實力" },
       { pattern: /筆記本|偷偷.*記|寫進|偷偷拿出/, trait: "偷偷記錄研究" },
     ],
     chenmo: [
-      { pattern: /邏輯.*問題|問題.*邏輯|底層代碼/, trait: "程式師思維" },
-      { pattern: /系統.*作弊|作弊.*系統/, trait: "系統分析" },
+      { pattern: /邏輯.*問題|問題.*邏輯|底層代碼|代碼|模組/, trait: "程式師思維" },
+      { pattern: /系統.*作弊|作弊.*系統|分析|漏洞/, trait: "系統分析" },
     ],
   },
   techPatterns: [
@@ -196,6 +206,11 @@ export const myCoreIsBossConfig: SeriesConfig = {
   gagFilePath: "assets/story/plot-lines.md",
   episodeDirPattern: /^my-core-is-boss-ch(\d+)-ep(\d+)$/,
   genre: "xianxia_comedy",
+  artifactPatterns: [
+    { pattern: /核心|core/i, artifactType: "遊戲核心" },
+    { pattern: /系統面板|任務面板/, artifactType: "遊戲UI" },
+    { pattern: /NPC/, artifactType: "NPC" },
+  ],
 };
 
 // ─── Galgame Meme Theater (美少女梗圖劇場) ───
@@ -357,7 +372,13 @@ export function discoverEpisodes(seriesDir: string): { dirname: string; epId: st
 
   const entries = readdirSync(seriesDir, { withFileTypes: true });
   return entries
-    .filter(e => e.isDirectory() || (e.isSymbolicLink() && statSync(resolve(seriesDir, e.name)).isDirectory()))
+    .filter(e => {
+      if (e.isDirectory()) return true;
+      if (e.isSymbolicLink()) {
+        try { return statSync(resolve(seriesDir, e.name)).isDirectory(); } catch { return false; }
+      }
+      return false;
+    })
     .map(e => {
       const epId = extractEpId(config, e.name);
       return epId ? { dirname: e.name, epId, sortKey: epSortKey(epId) } : null;

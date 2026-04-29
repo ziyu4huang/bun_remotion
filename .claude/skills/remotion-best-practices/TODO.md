@@ -12,7 +12,7 @@
 
 > **Rule:** Strategic/pipeline tasks → this file. Code implementation tasks → `../storygraph/TODO.md` or `../../bun_app/bun_pi_agent/TODO.md`.
 
-> **Status:** v0.9.9 — Phase 54 complete (all 9 sub-agents built). Next: Episode creation (Ch3-Ep2).
+> **Status:** v1.6.0 — R1+R2 complete. storygraph v0.36.0 (461 tests, dual-agent review). bun_pi_agent v0.13.0 (477 tests, 33 tools, 14 agents). Next: R3 (remotion_studio regression dashboard).
 
 ---
 

@@ -34,7 +34,12 @@ agentRoutes.get("/status", async (c) => {
 // ── POST /chat — send prompt to agent, stream response via SSE ──
 
 agentRoutes.post("/chat", async (c) => {
-  const body = await c.req.json<{ agentName?: string; prompt?: string }>();
+  const body = await c.req.json<{
+    agentName?: string;
+    prompt?: string;
+    history?: Array<{ role: "user" | "assistant"; content: string }>;
+    model?: string;
+  }>();
   if (!body.agentName || !body.prompt) {
     return c.json<ApiResponse>(
       { ok: false, error: "agentName and prompt are required" },
@@ -48,6 +53,8 @@ agentRoutes.post("/chat", async (c) => {
 
     try {
       const result = await runAgentTask(body.agentName!, body.prompt!, {
+        history: body.history,
+        model: body.model,
         onEvent(event) {
           if (aborted) return;
           stream.writeSSE({ data: JSON.stringify(event) });
@@ -77,6 +84,8 @@ agentRoutes.post("/tasks", async (c) => {
   const body = await c.req.json<{
     agentName?: string;
     prompt?: string;
+    history?: Array<{ role: "user" | "assistant"; content: string }>;
+    model?: string;
   }>();
   if (!body.agentName || !body.prompt) {
     return c.json<ApiResponse>(
@@ -96,6 +105,8 @@ agentRoutes.post("/tasks", async (c) => {
   const job = createJob<AgentTaskResult>(`agent:${body.agentName}`, async (progress) => {
     let lastPct = 0;
     const result = await runAgentTask(body.agentName!, body.prompt!, {
+      history: body.history,
+      model: body.model,
       onEvent(event) {
         if (event.type === "turn_end") {
           lastPct = Math.min(90, lastPct + 20);

@@ -1,9 +1,11 @@
-import { readFileSync, writeFileSync, existsSync, readdirSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, readdirSync, mkdirSync } from "node:fs";
 import { resolve, join } from "node:path";
 import { parsePlan, splitSections } from "../../../../storygraph/src/scripts/plan-parser";
 
 const REPO_ROOT = resolve(import.meta.dir, "../../../../..");
 const BUN_REMOTION_DIR = join(REPO_ROOT, "bun_remotion_proj");
+const REVISIONS_DIR = join(REPO_ROOT, "bun_app/remotion_studio/data/plan-revisions");
+const MAX_REVISIONS = 50;
 
 export interface PlanSection {
   key: string;
@@ -91,12 +93,72 @@ export function writePlanRaw(seriesId: string, content: string): { ok: boolean; 
   if (!seriesDir) return { ok: false, error: "Series not found" };
 
   const planPath = join(seriesDir, "PLAN.md");
+
+  // Save revision before overwriting
+  if (existsSync(planPath)) {
+    try {
+      const prev = readFileSync(planPath, "utf-8");
+      saveRevision(seriesId, prev);
+    } catch { /* ignore */ }
+  }
+
   try {
     writeFileSync(planPath, content, "utf-8");
     return { ok: true };
   } catch (e) {
     return { ok: false, error: (e as Error).message };
   }
+}
+
+function saveRevision(seriesId: string, content: string): void {
+  const dir = join(REVISIONS_DIR, seriesId);
+  if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
+  const ts = new Date().toISOString().replace(/[:.]/g, "-");
+  writeFileSync(join(dir, `${ts}.json`), JSON.stringify({ timestamp: ts, content }), "utf-8");
+
+  // Prune old revisions
+  try {
+    const files = readdirSync(dir).filter((f) => f.endsWith(".json")).sort();
+    while (files.length > MAX_REVISIONS) {
+      const old = files.shift()!;
+      try { writeFileSync(join(dir, old), ""); } catch { /* ignore */ }
+    }
+  } catch { /* ignore */ }
+}
+
+export interface PlanRevision {
+  id: string;
+  timestamp: string;
+  size: number;
+}
+
+export function listRevisions(seriesId: string): PlanRevision[] {
+  const dir = join(REVISIONS_DIR, seriesId);
+  if (!existsSync(dir)) return [];
+  try {
+    return readdirSync(dir)
+      .filter((f) => f.endsWith(".json"))
+      .sort()
+      .reverse()
+      .map((f) => ({
+        id: f.replace(".json", ""),
+        timestamp: f.replace(".json", "").replace(/-/g, (m, offset) => {
+          // Restore ISO format: first 10 dashes are date/time, keep those; skip
+          return offset < 19 ? "-" : "";
+        }),
+        size: readFileSync(join(dir, f), "utf-8").length,
+      }));
+  } catch { return []; }
+}
+
+export function readRevision(seriesId: string, revId: string): string | null {
+  const dir = join(REVISIONS_DIR, seriesId);
+  const path = join(dir, `${revId}.json`);
+  if (!existsSync(path)) return null;
+  try {
+    const data = JSON.parse(readFileSync(path, "utf-8"));
+    return data.content ?? null;
+  } catch { return null; }
 }
 
 export function readEpisodePlan(seriesId: string, episodeDir: string): string | null {

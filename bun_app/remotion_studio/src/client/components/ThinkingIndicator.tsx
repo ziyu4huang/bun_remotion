@@ -1,11 +1,14 @@
+import { useTheme } from "../theme";
+
 export function ThinkingIndicator() {
+  const theme = useTheme();
   return (
     <div style={{
       display: "flex",
       alignItems: "center",
       gap: 6,
       padding: "6px 10px",
-      color: "#999",
+      color: theme.colors.text.muted,
       fontStyle: "italic",
       fontSize: 12,
     }}>
@@ -27,9 +30,10 @@ export function ThinkingIndicator() {
 }
 
 export function TurnSeparator() {
+  const theme = useTheme();
   return (
     <div style={{
-      borderBottom: "1px solid #e0e0e0",
+      borderBottom: `1px solid ${theme.colors.border.default}`,
       margin: "16px 0",
     }} />
   );

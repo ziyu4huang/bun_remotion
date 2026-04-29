@@ -25,15 +25,15 @@
 #
 # CUSTOMIZATION:
 # Override these environment variables if needed:
-#   DEEPSEEK_MODEL_DEFAULT="deepseek-chat"      # Default model to use
-#   DEEPSEEK_MODEL_REASONER="deepseek-reasoner" # Reasoning/Opus-equivalent model
-#   DEEPSEEK_MODEL_AIR="deepseek-chat"          # Fast/Haiku-equivalent model
+#   DEEPSEEK_MODEL_DEFAULT="deepseek-v4-pro[1m]"    # Default model to use
+#   DEEPSEEK_MODEL_REASONER="deepseek-v4-pro[1m]"   # Reasoning/Opus-equivalent model
+#   DEEPSEEK_MODEL_AIR="deepseek-v4-flash"          # Fast/Haiku-equivalent model
 ########################################
 
 # Default values (only set if not already defined)
-: "${DEEPSEEK_MODEL_DEFAULT:="deepseek-chat"}"
-: "${DEEPSEEK_MODEL_REASONER:="deepseek-reasoner"}"
-: "${DEEPSEEK_MODEL_AIR:="deepseek-chat"}"
+: "${DEEPSEEK_MODEL_DEFAULT:="deepseek-v4-pro[1m]"}"
+: "${DEEPSEEK_MODEL_REASONER:="deepseek-v4-pro[1m]"}"
+: "${DEEPSEEK_MODEL_AIR:="deepseek-v4-flash"}"
 
 deepseek()
 {
@@ -46,24 +46,25 @@ deepseek()
 
   # Run in subshell to avoid side effects
   (
-    # Set environment variables for this command only
     export ANTHROPIC_AUTH_TOKEN="${DEEPSEEK_API_KEY}"
     export ANTHROPIC_BASE_URL="https://api.deepseek.com/anthropic"
     export ANTHROPIC_MODEL="${DEEPSEEK_MODEL_DEFAULT}"
-    export ANTHROPIC_DEFAULT_HAIKU_MODEL="${DEEPSEEK_MODEL_AIR}"
-    export ANTHROPIC_DEFAULT_SONNET_MODEL="${DEEPSEEK_MODEL_DEFAULT}"
     export ANTHROPIC_DEFAULT_OPUS_MODEL="${DEEPSEEK_MODEL_REASONER}"
-    echo "Using model: ${ANTHROPIC_MODEL}"
+    export ANTHROPIC_DEFAULT_SONNET_MODEL="${DEEPSEEK_MODEL_DEFAULT}"
+    export ANTHROPIC_DEFAULT_HAIKU_MODEL="${DEEPSEEK_MODEL_AIR}"
+    export CLAUDE_CODE_SUBAGENT_MODEL="${DEEPSEEK_MODEL_AIR}"
+    export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
+    export CLAUDE_CODE_DISABLE_NONSTREAMING_FALLBACK=1
+    export CLAUDE_CODE_EFFORT_LEVEL=max
     export API_TIMEOUT_MS=600000
     export BASH_DEFAULT_TIMEOUT_MS=600000
     export BASH_MAX_TIMEOUT_MS=600000
     export MAX_MCP_OUTPUT_TOKENS=50000
     export DISABLE_COST_WARNINGS=1
-    export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
     export CLAUDE_CONFIG_DIR="${HOME}/.claude-deepseek"
-    # Set the starting working directory for Claude Code
     export CLAUDE_START_CWD="${PWD}"
 
+    echo "Using model: ${ANTHROPIC_MODEL}"
     exec claude "$@" --dangerously-skip-permissions
   )
 }

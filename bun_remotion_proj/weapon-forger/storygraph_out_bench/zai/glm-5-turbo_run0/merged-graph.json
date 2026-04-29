@@ -1,0 +1,6099 @@
+{
+  "manifest": {
+    "generator": "storygraph_merge",
+    "version": "0.11.0",
+    "timestamp": "2026-04-27T22:30:33.205Z",
+    "episode_count": 8,
+    "link_edge_count": 108,
+    "community_count": 0
+  },
+  "nodes": [
+    {
+      "id": "ch1ep1_plot",
+      "label": "入宗考试 (ch1ep1)",
+      "type": "episode_plot",
+      "episode": "ch1ep1",
+      "properties": {
+        "language": "zh-CN"
+      }
+    },
+    {
+      "id": "ch1ep1_scene_TitleScene",
+      "label": "TitleScene",
+      "type": "scene",
+      "episode": "ch1ep1",
+      "properties": {
+        "dialog_line_count": "2",
+        "character_count": "1",
+        "effect_count": "0"
+      }
+    },
+    {
+      "id": "ch1ep1_scene_ContentScene1",
+      "label": "ContentScene1",
+      "type": "scene",
+      "episode": "ch1ep1",
+      "properties": {
+        "dialog_line_count": "12",
+        "character_count": "2",
+        "effect_count": "0"
+      }
+    },
+    {
+      "id": "ch1ep1_scene_ContentScene2",
+      "label": "ContentScene2",
+      "type": "scene",
+      "episode": "ch1ep1",
+      "properties": {
+        "dialog_line_count": "12",
+        "character_count": "2",
+        "effect_count": "2"
+      }
+    },
+    {
+      "id": "ch1ep1_scene_OutroScene",
+      "label": "OutroScene",
+      "type": "scene",
+      "episode": "ch1ep1",
+      "properties": {
+        "dialog_line_count": "3",
+        "character_count": "1",
+        "effect_count": "0"
+      }
+    },
+    {
+      "id": "ch1ep1_char_zhoumo",
+      "label": "周墨 (ch1ep1)",
+      "type": "character_instance",
+      "episode": "ch1ep1",
+      "properties": {
+        "character_id": "zhoumo",
+        "dialog_count": "13",
+        "dialog_text": "问道宗，传说中最正统的修仙宗门。今天，我终于来了。 | 周墨。特长是炼器。 | 我的炼器跟别人不太一样。我追求的是用户体验和底层逻辑闭环。 | 就是我的法宝会自己思考。 | 我带了三百个微型隐藏机关、两个指纹识别阵法、和一个自动格式化模块。 | 老师您有所不知，模块化才是未来。 | 模块化设计，指纹识别，自动格式化防偷，启动！ | 自动寻路飞剑，完成！ | 这是智能振动模式，帮助它定位目标。 | 灵气密度最高的目标。这是它的核心算法。 | 因为您的储物袋灵气浓度最高。它很聪明吧？ | 不不不，这是自动寻路功能。攻击和抢劫只是副产物。 | 收不回来了，我忘加停止按钮了。"
+      }
+    },
+    {
+      "id": "ch1ep1_char_examiner",
+      "label": "考官 (ch1ep1)",
+      "type": "character_instance",
+      "episode": "ch1ep1",
+      "properties": {
+        "character_id": "examiner",
+        "dialog_count": "11",
+        "dialog_text": "你是来参加入宗考试的？报上名来。 | 炼器？上一个说自己擅长炼器的，现在还在后山修丹炉。 | 说人话。 | 好，考试任务：炼制一件法器。限时一炷香。 | 你有什么材料？ | 这不是炼器，这是在造兵器工厂吧。 | 这把剑怎么在抖？ | 定位什么目标？ | 等等，它为什么朝我飞过来？！ | 这是抢劫吧！这是抢劫吧？！ | 把你的破剑收回去！"
+      }
+    },
+    {
+      "id": "ch1ep1_char_narrator",
+      "label": "旁白 (ch1ep1)",
+      "type": "character_instance",
+      "episode": "ch1ep1",
+      "properties": {
+        "character_id": "narrator",
+        "dialog_count": "5",
+        "dialog_text": "欢迎来到谁让他炼器的！第一章，入宗考试。 | 周墨来到问道宗参加入宗考试。他的炼器理念是模块化设计、用户体验和底层逻辑闭环。简单来说，他的法宝不按常理出牌。 | 感谢收看谁让他炼器的！第一章第一集，入宗考试。 | 周墨的飞剑虽然抢了考官的储物袋，但这种不按常理出牌的创造力，让考官对他另眼相看。 | 下集预告：考官宣布周墨的考试成绩，他的创造力究竟是被认可还是被赶出去？我们下集见。",
+        "role": "structural"
+      }
+    },
+    {
+      "id": "ch1ep1_tech_用户体验",
+      "label": "用户体验",
+      "type": "tech_term",
+      "episode": "ch1ep1"
+    },
+    {
+      "id": "ch1ep1_tech_底层逻辑闭环",
+      "label": "底层逻辑闭环",
+      "type": "tech_term",
+      "episode": "ch1ep1"
+    },
+    {
+      "id": "ch1ep1_tech_指纹识别",
+      "label": "指纹识别",
+      "type": "tech_term",
+      "episode": "ch1ep1"
+    },
+    {
+      "id": "ch1ep1_tech_自动格式化",
+      "label": "自动格式化",
+      "type": "tech_term",
+      "episode": "ch1ep1"
+    },
+    {
+      "id": "ch1ep1_tech_模块化设计",
+      "label": "模块化设计",
+      "type": "tech_term",
+      "episode": "ch1ep1"
+    },
+    {
+      "id": "ch1ep1_tech_自动寻路",
+      "label": "自动寻路",
+      "type": "tech_term",
+      "episode": "ch1ep1"
+    },
+    {
+      "id": "ch1ep1_tech_核心算法",
+      "label": "核心算法",
+      "type": "tech_term",
+      "episode": "ch1ep1"
+    },
+    {
+      "id": "ch1ep1_tech_算法",
+      "label": "算法",
+      "type": "tech_term",
+      "episode": "ch1ep1"
+    },
+    {
+      "id": "ch1ep1_gag_忘加按鈕",
+      "label": "忘加按鈕：忘加停止按鈕",
+      "type": "gag_manifestation",
+      "episode": "ch1ep1",
+      "properties": {
+        "gag_type": "忘加按鈕",
+        "episode": "ch1ep1"
+      }
+    },
+    {
+      "id": "ch1ep1_gag_現代科技用語",
+      "label": "現代科技用語：模組化設計、使用者體驗",
+      "type": "gag_manifestation",
+      "episode": "ch1ep1",
+      "properties": {
+        "gag_type": "現代科技用語",
+        "episode": "ch1ep1"
+      }
+    },
+    {
+      "id": "ch1ep1_gag_法寶反噬",
+      "label": "法寶反噬：飛劍搶儲物袋",
+      "type": "gag_manifestation",
+      "episode": "ch1ep1",
+      "properties": {
+        "gag_type": "法寶反噬",
+        "episode": "ch1ep1"
+      }
+    },
+    {
+      "id": "ch1ep1_trait_zhoumo_科技工程術語",
+      "label": "周墨: 科技工程術語",
+      "type": "character_trait",
+      "episode": "ch1ep1",
+      "properties": {
+        "character_id": "zhoumo"
+      }
+    },
+    {
+      "id": "ch1ep1_trait_zhoumo_忘加按鈕/功能",
+      "label": "周墨: 忘加按鈕/功能",
+      "type": "character_trait",
+      "episode": "ch1ep1",
+      "properties": {
+        "character_id": "zhoumo"
+      }
+    },
+    {
+      "id": "ch1ep1_trait_zhoumo_工程師思維",
+      "label": "周墨: 工程師思維",
+      "type": "character_trait",
+      "episode": "ch1ep1",
+      "properties": {
+        "character_id": "zhoumo"
+      }
+    },
+    {
+      "id": "ch1ep1_trait_examiner_崩潰吐槽",
+      "label": "考官: 崩潰吐槽",
+      "type": "character_trait",
+      "episode": "ch1ep1",
+      "properties": {
+        "character_id": "examiner"
+      }
+    },
+    {
+      "id": "ch1ep1_trait_examiner_權威考官",
+      "label": "考官: 權威考官",
+      "type": "character_trait",
+      "episode": "ch1ep1",
+      "properties": {
+        "character_id": "examiner"
+      }
+    },
+    {
+      "id": "ch1ep2_plot",
+      "label": "成績公布 (ch1ep2)",
+      "type": "episode_plot",
+      "episode": "ch1ep2",
+      "properties": {
+        "language": "zh-TW"
+      }
+    },
+    {
+      "id": "ch1ep2_scene_TitleScene",
+      "label": "TitleScene",
+      "type": "scene",
+      "episode": "ch1ep2",
+      "properties": {
+        "dialog_line_count": "2",
+        "character_count": "1",
+        "effect_count": "0"
+      }
+    },
+    {
+      "id": "ch1ep2_scene_ContentScene1",
+      "label": "ContentScene1",
+      "type": "scene",
+      "episode": "ch1ep2",
+      "properties": {
+        "dialog_line_count": "15",
+        "character_count": "3",
+        "effect_count": "3"
+      }
+    },
+    {
+      "id": "ch1ep2_scene_ContentScene2",
+      "label": "ContentScene2",
+      "type": "scene",
+      "episode": "ch1ep2",
+      "properties": {
+        "dialog_line_count": "19",
+        "character_count": "3",
+        "effect_count": "3"
+      }
+    },
+    {
+      "id": "ch1ep2_scene_OutroScene",
+      "label": "OutroScene",
+      "type": "scene",
+      "episode": "ch1ep2",
+      "properties": {
+        "dialog_line_count": "3",
+        "character_count": "1",
+        "effect_count": "0"
+      }
+    },
+    {
+      "id": "ch1ep2_char_zhoumo",
+      "label": "周墨 (ch1ep2)",
+      "type": "character_instance",
+      "episode": "ch1ep2",
+      "properties": {
+        "character_id": "zhoumo",
+        "dialog_count": "8",
+        "dialog_text": "技術上來說，是飛劍自己決定的。我只是寫了演算法而已。 | 這恰好證明了飛劍的目標鎖定功能非常精準。這是一個亮點。 | 請冷靜。我願意用我剩下的材料來賠償。我還有一個自動按摩陣法和一個智能鬧鐘。 | 是的！我追求的是使用者體驗和底層邏輯閉環。 | 因為萬一飛劍被別人搶走，它會在三分鐘後自動清除所有資料。就像手機一樣。 | 呃，一種......通訊法器。概念上的。 | 真的嗎？！ | 對，我說了，忘加停止按鈕了。"
+      }
+    },
+    {
+      "id": "ch1ep2_char_examiner",
+      "label": "考官 (ch1ep2)",
+      "type": "character_instance",
+      "episode": "ch1ep2",
+      "properties": {
+        "character_id": "examiner",
+        "dialog_count": "11",
+        "dialog_text": "周墨，你知不知道你剛才做了什麼？你的飛劍搶了我的儲物袋！ | 你還敢狡辯！你知道那裡面有多少靈石嗎？那是我三個月的薪水！ | 亮點？！你管搶劫叫亮點？！ | ......誰要你的智能鬧鐘啊。 | 我宣布，你的入宗考試—— | 長、長老？！ | 長老，這個人根本不適合修道！他的煉器方式簡直是褻瀆！ | 對吧！ | 什麼？！ | 長老，您不是在開玩笑吧？！ | ......他還沒收回去嗎？"
+      }
+    },
+    {
+      "id": "ch1ep2_char_elder",
+      "label": "長老 (ch1ep2)",
+      "type": "character_instance",
+      "episode": "ch1ep2",
+      "properties": {
+        "character_id": "elder",
+        "dialog_count": "15",
+        "dialog_text": "等一下。 | 讓我看看這個年輕人的作品。 | 這把飛劍......三個微型隱藏機關、指紋識別陣法、自動格式化模組...... | 你是說，這把劍會自己找目標、自己鎖定、還有防盜系統？ | 有意思......非常有意思。 | 周墨，你為什麼要給飛劍裝自動格式化？ | ......手機是什麼？ | 你的腦袋裡裝的都是什麼亂七八糟的。 | 你說得對。他的方式確實......不合常規。 | 但是，這恰恰是我們煉器峰最需要的。 | 三百年来，我們煉器峰的法寶設計越來越保守。大家都只知道照著古方煉，沒有人敢創新。 | 這個年輕人雖然方法奇怪，但他的思路......是我見過最新穎的。 | 周墨，恭喜你。你通過了入宗考試。 | 考官，你是不是還想讓他把飛劍收回來？ | 你看，這就說明他的防盜系統做得很好。連他自己都收不回來。"
+      }
+    },
+    {
+      "id": "ch1ep2_char_narrator",
+      "label": "旁白 (ch1ep2)",
+      "type": "character_instance",
+      "episode": "ch1ep2",
+      "properties": {
+        "character_id": "narrator",
+        "dialog_count": "5",
+        "dialog_text": "歡迎來到誰讓他煉器的！第一章，成績公布。 | 上一集，周墨的飛劍搶了考官的儲物袋。這一集，考官終於要公布成績了。周墨到底是被認可，還是被趕出去？答案可能出乎意料。 | 感謝收看誰讓他煉器的！第一章第二集，成績公布。 | 周墨以他獨特的煉器理念，獲得了煉器峰長老的認可。但考官的儲物袋......至今還沒拿回來。 | 下集預告：周墨正式加入煉器峰，他的第一個任務居然是——修丹爐。而且這個丹爐，會說話。",
+        "role": "structural"
+      }
+    },
+    {
+      "id": "ch1ep2_tech_演算法",
+      "label": "演算法",
+      "type": "tech_term",
+      "episode": "ch1ep2"
+    },
+    {
+      "id": "ch1ep2_tech_算法",
+      "label": "算法",
+      "type": "tech_term",
+      "episode": "ch1ep2"
+    },
+    {
+      "id": "ch1ep2_tech_使用者體驗",
+      "label": "使用者體驗",
+      "type": "tech_term",
+      "episode": "ch1ep2"
+    },
+    {
+      "id": "ch1ep2_tech_底層邏輯閉環",
+      "label": "底層邏輯閉環",
+      "type": "tech_term",
+      "episode": "ch1ep2"
+    },
+    {
+      "id": "ch1ep2_tech_指紋識別",
+      "label": "指紋識別",
+      "type": "tech_term",
+      "episode": "ch1ep2"
+    },
+    {
+      "id": "ch1ep2_tech_自動格式化",
+      "label": "自動格式化",
+      "type": "tech_term",
+      "episode": "ch1ep2"
+    },
+    {
+      "id": "ch1ep2_gag_忘加按鈕",
+      "label": "忘加按鈕：飛劍仍收不回來",
+      "type": "gag_manifestation",
+      "episode": "ch1ep2",
+      "properties": {
+        "gag_type": "忘加按鈕",
+        "episode": "ch1ep2"
+      }
+    },
+    {
+      "id": "ch1ep2_gag_現代科技用語",
+      "label": "現代科技用語：演算法、手機",
+      "type": "gag_manifestation",
+      "episode": "ch1ep2",
+      "properties": {
+        "gag_type": "現代科技用語",
+        "episode": "ch1ep2"
+      }
+    },
+    {
+      "id": "ch1ep2_gag_法寶反噬",
+      "label": "法寶反噬：考官袋未取回",
+      "type": "gag_manifestation",
+      "episode": "ch1ep2",
+      "properties": {
+        "gag_type": "法寶反噬",
+        "episode": "ch1ep2"
+      }
+    },
+    {
+      "id": "ch1ep2_trait_zhoumo_科技工程術語",
+      "label": "周墨: 科技工程術語",
+      "type": "character_trait",
+      "episode": "ch1ep2",
+      "properties": {
+        "character_id": "zhoumo"
+      }
+    },
+    {
+      "id": "ch1ep2_trait_zhoumo_忘加按鈕/功能",
+      "label": "周墨: 忘加按鈕/功能",
+      "type": "character_trait",
+      "episode": "ch1ep2",
+      "properties": {
+        "character_id": "zhoumo"
+      }
+    },
+    {
+      "id": "ch1ep2_trait_zhoumo_工程師思維",
+      "label": "周墨: 工程師思維",
+      "type": "character_trait",
+      "episode": "ch1ep2",
+      "properties": {
+        "character_id": "zhoumo"
+      }
+    },
+    {
+      "id": "ch1ep2_trait_zhoumo_用邏輯包裝荒謬",
+      "label": "周墨: 用邏輯包裝荒謬",
+      "type": "character_trait",
+      "episode": "ch1ep2",
+      "properties": {
+        "character_id": "zhoumo"
+      }
+    },
+    {
+      "id": "ch1ep2_trait_examiner_崩潰吐槽",
+      "label": "考官: 崩潰吐槽",
+      "type": "character_trait",
+      "episode": "ch1ep2",
+      "properties": {
+        "character_id": "examiner"
+      }
+    },
+    {
+      "id": "ch1ep2_trait_examiner_權威考官",
+      "label": "考官: 權威考官",
+      "type": "character_trait",
+      "episode": "ch1ep2",
+      "properties": {
+        "character_id": "examiner"
+      }
+    },
+    {
+      "id": "ch1ep2_trait_elder_欣賞創新",
+      "label": "長老: 欣賞創新",
+      "type": "character_trait",
+      "episode": "ch1ep2",
+      "properties": {
+        "character_id": "elder"
+      }
+    },
+    {
+      "id": "ch1ep2_trait_elder_認可但擔憂",
+      "label": "長老: 認可但擔憂",
+      "type": "character_trait",
+      "episode": "ch1ep2",
+      "properties": {
+        "character_id": "elder"
+      }
+    },
+    {
+      "id": "ch1ep3_plot",
+      "label": "丹爐修復 (ch1ep3)",
+      "type": "episode_plot",
+      "episode": "ch1ep3",
+      "properties": {
+        "language": "zh-TW"
+      }
+    },
+    {
+      "id": "ch1ep3_scene_TitleScene",
+      "label": "TitleScene",
+      "type": "scene",
+      "episode": "ch1ep3",
+      "properties": {
+        "dialog_line_count": "2",
+        "character_count": "1",
+        "effect_count": "0"
+      }
+    },
+    {
+      "id": "ch1ep3_scene_ContentScene1",
+      "label": "ContentScene1",
+      "type": "scene",
+      "episode": "ch1ep3",
+      "properties": {
+        "dialog_line_count": "14",
+        "character_count": "2",
+        "effect_count": "0"
+      }
+    },
+    {
+      "id": "ch1ep3_scene_ContentScene2",
+      "label": "ContentScene2",
+      "type": "scene",
+      "episode": "ch1ep3",
+      "properties": {
+        "dialog_line_count": "13",
+        "character_count": "2",
+        "effect_count": "0"
+      }
+    },
+    {
+      "id": "ch1ep3_scene_OutroScene",
+      "label": "OutroScene",
+      "type": "scene",
+      "episode": "ch1ep3",
+      "properties": {
+        "dialog_line_count": "3",
+        "character_count": "1",
+        "effect_count": "0"
+      }
+    },
+    {
+      "id": "ch1ep3_char_zhoumo",
+      "label": "周墨 (ch1ep3)",
+      "type": "character_instance",
+      "episode": "ch1ep3",
+      "properties": {
+        "character_id": "zhoumo",
+        "dialog_count": "14",
+        "dialog_text": "謝謝長老！請問我的第一個任務是什麼？ | 修丹爐？聽起來很簡單。 | 丹爐......罵人？ | 有意思。技術上來說，一個有意識的丹爐，這是一個高級智能終端。 | 沒什麼。帶我去看看吧。 | 嗯......火焰陣法老化、溫控模組失靈、意識晶片過載。所以您生氣是因為沒有人維護您，對吧？ | 問題的核心是使用者體驗。這座丹爐不是壞了，它是被忽視了三百年。 | 好了，我來幫您做一個全面的系統升級。火焰陣法重寫、自動控溫模組、還有——情緒管理系統。 | 準確地說，是情感交互界面。它生氣是因為沒有人聽它說話，所以我裝了一個傾聽模組。 | 這只是其中一個功能。我還加了語音控制。現在只需要說一聲「請幫忙燒一下」就自動點火了。 | 哦，那是音樂播放功能。我覺得丹爐工作時也需要娛樂，不然多無聊。 | 當然。使用者體驗是產品設計的核心。 | 不會。我加了定時休眠功能，它晚上會自動安靜下來。 | 嗯......不過我忘加音量控制了。"
+      }
+    },
+    {
+      "id": "ch1ep3_char_elder",
+      "label": "長老 (ch1ep3)",
+      "type": "character_instance",
+      "episode": "ch1ep3",
+      "properties": {
+        "character_id": "elder",
+        "dialog_count": "13",
+        "dialog_text": "周墨，歡迎加入煉器峰。從今天起，你就是正式弟子了。 | 修丹爐。 | 不簡單。這座丹爐有三百年歷史，上一位負責修理的弟子，被它罵哭了。 | 它會說話。而且說的都是髒話。昨天它還在罵我們煉器峰的人連火都不會點。 | 你在說什麼？ | 到了，就是這座。你小心點，它最近心情不好。 | 它好像......安靜了？ | 情緒管理系統？你要給丹爐做心理諮詢？ | 所以你修丹爐的方式是......陪它聊天？ | 倒是方便。不過......為什麼它在唱歌？ | 你連丹爐的使用者體驗都考慮到了？ | 好吧......不過它會不會在半夜自動開派對？ | 不錯不錯。看來你終於記得加停止鍵了。"
+      }
+    },
+    {
+      "id": "ch1ep3_char_narrator",
+      "label": "旁白 (ch1ep3)",
+      "type": "character_instance",
+      "episode": "ch1ep3",
+      "properties": {
+        "character_id": "narrator",
+        "dialog_count": "5",
+        "dialog_text": "歡迎來到誰讓他煉器的！第一章，第三集，丹爐修復。 | 周墨正式加入煉器峰。長老交給他第一個任務：修復一座三百年歷史的丹爐。聽說這座丹爐有個小毛病——它會自己說話。而且脾氣比長老還大。 | 感謝收看誰讓他煉器的！第一章第三集，丹爐修復。 | 周墨用他獨特的方式修好了會說話的丹爐。雖然這座丹爐現在會在半夜唱歌，但至少它不罵人了。周墨似乎有一種天賦——他總是忘記加最重要的那個按鈕。 | 下一章預告：周墨在煉器峰的日子剛開始，但他即將遇到兩個比他還不正常的人。問道宗禍害三人組，即將成軍。",
+        "role": "structural"
+      }
+    },
+    {
+      "id": "ch1ep3_tech_使用者體驗",
+      "label": "使用者體驗",
+      "type": "tech_term",
+      "episode": "ch1ep3"
+    },
+    {
+      "id": "ch1ep3_tech_系統升級",
+      "label": "系統升級",
+      "type": "tech_term",
+      "episode": "ch1ep3"
+    },
+    {
+      "id": "ch1ep3_tech_情緒管理系統",
+      "label": "情緒管理系統",
+      "type": "tech_term",
+      "episode": "ch1ep3"
+    },
+    {
+      "id": "ch1ep3_tech_情感交互界面",
+      "label": "情感交互界面",
+      "type": "tech_term",
+      "episode": "ch1ep3"
+    },
+    {
+      "id": "ch1ep3_tech_語音控制",
+      "label": "語音控制",
+      "type": "tech_term",
+      "episode": "ch1ep3"
+    },
+    {
+      "id": "ch1ep3_tech_定時休眠",
+      "label": "定時休眠",
+      "type": "tech_term",
+      "episode": "ch1ep3"
+    },
+    {
+      "id": "ch1ep3_gag_忘加按鈕",
+      "label": "忘加按鈕：忘加音量控制",
+      "type": "gag_manifestation",
+      "episode": "ch1ep3",
+      "properties": {
+        "gag_type": "忘加按鈕",
+        "episode": "ch1ep3"
+      }
+    },
+    {
+      "id": "ch1ep3_gag_現代科技用語",
+      "label": "現代科技用語：情感交互界面、系統升級",
+      "type": "gag_manifestation",
+      "episode": "ch1ep3",
+      "properties": {
+        "gag_type": "現代科技用語",
+        "episode": "ch1ep3"
+      }
+    },
+    {
+      "id": "ch1ep3_gag_法寶反噬",
+      "label": "法寶反噬：丹爐半夜唱歌",
+      "type": "gag_manifestation",
+      "episode": "ch1ep3",
+      "properties": {
+        "gag_type": "法寶反噬",
+        "episode": "ch1ep3"
+      }
+    },
+    {
+      "id": "ch1ep3_trait_zhoumo_科技工程術語",
+      "label": "周墨: 科技工程術語",
+      "type": "character_trait",
+      "episode": "ch1ep3",
+      "properties": {
+        "character_id": "zhoumo"
+      }
+    },
+    {
+      "id": "ch1ep3_trait_zhoumo_忘加按鈕/功能",
+      "label": "周墨: 忘加按鈕/功能",
+      "type": "character_trait",
+      "episode": "ch1ep3",
+      "properties": {
+        "character_id": "zhoumo"
+      }
+    },
+    {
+      "id": "ch1ep3_trait_zhoumo_工程師思維",
+      "label": "周墨: 工程師思維",
+      "type": "character_trait",
+      "episode": "ch1ep3",
+      "properties": {
+        "character_id": "zhoumo"
+      }
+    },
+    {
+      "id": "ch1ep3_trait_zhoumo_用邏輯包裝荒謬",
+      "label": "周墨: 用邏輯包裝荒謬",
+      "type": "character_trait",
+      "episode": "ch1ep3",
+      "properties": {
+        "character_id": "zhoumo"
+      }
+    },
+    {
+      "id": "ch1ep3_trait_zhoumo_萬物皆可修",
+      "label": "周墨: 萬物皆可修",
+      "type": "character_trait",
+      "episode": "ch1ep3",
+      "properties": {
+        "character_id": "zhoumo"
+      }
+    },
+    {
+      "id": "ch1ep3_trait_elder_欣賞創新",
+      "label": "長老: 欣賞創新",
+      "type": "character_trait",
+      "episode": "ch1ep3",
+      "properties": {
+        "character_id": "elder"
+      }
+    },
+    {
+      "id": "ch1ep3_trait_elder_毒舌警告",
+      "label": "長老: 毒舌警告",
+      "type": "character_trait",
+      "episode": "ch1ep3",
+      "properties": {
+        "character_id": "elder"
+      }
+    },
+    {
+      "id": "ch2ep1_plot",
+      "label": "禍害成軍 (ch2ep1)",
+      "type": "episode_plot",
+      "episode": "ch2ep1",
+      "properties": {
+        "language": "zh-TW"
+      }
+    },
+    {
+      "id": "ch2ep1_scene_TitleScene",
+      "label": "TitleScene",
+      "type": "scene",
+      "episode": "ch2ep1",
+      "properties": {
+        "dialog_line_count": "2",
+        "character_count": "1",
+        "effect_count": "2"
+      }
+    },
+    {
+      "id": "ch2ep1_scene_ContentScene1",
+      "label": "ContentScene1",
+      "type": "scene",
+      "episode": "ch2ep1",
+      "properties": {
+        "dialog_line_count": "11",
+        "character_count": "2",
+        "effect_count": "1"
+      }
+    },
+    {
+      "id": "ch2ep1_scene_ContentScene2",
+      "label": "ContentScene2",
+      "type": "scene",
+      "episode": "ch2ep1",
+      "properties": {
+        "dialog_line_count": "21",
+        "character_count": "3",
+        "effect_count": "1"
+      }
+    },
+    {
+      "id": "ch2ep1_scene_OutroScene",
+      "label": "OutroScene",
+      "type": "scene",
+      "episode": "ch2ep1",
+      "properties": {
+        "dialog_line_count": "3",
+        "character_count": "1",
+        "effect_count": "0"
+      }
+    },
+    {
+      "id": "ch2ep1_char_zhoumo",
+      "label": "周墨 (ch2ep1)",
+      "type": "character_instance",
+      "episode": "ch2ep1",
+      "properties": {
+        "character_id": "zhoumo",
+        "dialog_count": "13",
+        "dialog_text": "新的實驗！這次我改良了壓力釋放模組。理論上，效率應該提高百分之三百。 | 三、二、一——啟動！ | 什麼？ | 你的劍法叫投降劍法？ | 從邏輯上來說，確實是最短路徑。你直接跳過了戰鬥過程，抵達了終點。 | 不不不，你是把「效率」做到了極致。這是一種高級演算法思維。 | 這也是天賦？ | 你把單身當成一個研究課題？ | 我突然覺得，我們三個有一個共同點。 | 我們都不正常。 | 所以我提議，我們成立一個小組。叫「問道宗邏輯修正小組」。 | 修正整個修仙界對「正常」的定義。 | 成交。順帶一提，我剛才忘了說——第三個鍋爐的爆炸範圍可能還沒結束。"
+      }
+    },
+    {
+      "id": "ch2ep1_char_luyang",
+      "label": "陸陽 (ch2ep1)",
+      "type": "character_instance",
+      "episode": "ch2ep1",
+      "properties": {
+        "character_id": "luyang",
+        "dialog_count": "11",
+        "dialog_text": "那個，不好意思打擾了，請問你們這裡有沒有投降表？ | 我是問道宗新弟子陸陽，我的劍法叫「投降劍法」。剛才看到爆炸，想說先填好表，等一下可能用得上。 | 對啊！核心招式是「我認輸」和「別打了」。防守效率極高——因為對手通常笑到沒力氣繼續打。 | 對吧！終於有人理解我了！其他人只會說我沒出息。 | 你，你是唯一一個說我好話的人。 | 這位是？ | 那你研究什麼？ | 什麼？ | 說得好有道理。 | 我加入！不過我有一個條件——小組的第一條規則是「隨時可以投降」。 | 我的投降表呢？"
+      }
+    },
+    {
+      "id": "ch2ep1_char_mengjingzhou",
+      "label": "孟景舟 (ch2ep1)",
+      "type": "character_instance",
+      "episode": "ch2ep1",
+      "properties": {
+        "character_id": "mengjingzhou",
+        "dialog_count": "8",
+        "dialog_text": "等等，你們兩個在聊什麼？我從二十步外就感覺到了異常的邏輯波動。 | 孟景舟，問道宗弟子。我的天賦是「單身光環」——方圓三丈內，所有女性都會自動遠離我。 | 宗門鑒定說是「被動技能，無法關閉」。連女修都繞著我走，所以我有很充足的時間做研究。 | 為什麼我沒有女朋友。 | 二十三年了。我的論文已經寫到第七篇了，題目是「論問道宗女弟子的空間分布與我的絕緣性」。 | 什麼？ | 邏輯修正？修正什麼？ | 我也有條件——開會的時候不要提「女朋友」這三個字。"
+      }
+    },
+    {
+      "id": "ch2ep1_char_narrator",
+      "label": "旁白 (ch2ep1)",
+      "type": "character_instance",
+      "episode": "ch2ep1",
+      "properties": {
+        "character_id": "narrator",
+        "dialog_count": "5",
+        "dialog_text": "歡迎來到誰讓他煉器的！第二章，第一集，禍害成軍。 | 周墨在煉器峰的日子過得「精彩」——丹爐半夜唱歌、鍋爐接連爆炸、長老的頭髮越來越少。今天，他即將炸掉第三個鍋爐。但這一次，爆炸的範圍比預期大了一點。 | 感謝收看誰讓他煉器的！第二章第一集，禍害成軍。 | 問道宗邏輯修正小組正式成立。三個最不正常的弟子聚在一起，展開了全新的篇章。陸陽的投降劍法、孟景舟的單身研究、周墨的法寶實驗——問道宗從此再也沒有安寧的日子。 | 下集預告：三人組的第一個共同任務——探索後山的「低語洞窟」。聽說那裡住著一個上古大能的殘魂，但周墨覺得那只是一個「待修復的離線終端」。",
+        "role": "structural"
+      }
+    },
+    {
+      "id": "ch2ep1_tech_壓力釋放模組",
+      "label": "壓力釋放模組",
+      "type": "tech_term",
+      "episode": "ch2ep1"
+    },
+    {
+      "id": "ch2ep1_tech_演算法",
+      "label": "演算法",
+      "type": "tech_term",
+      "episode": "ch2ep1"
+    },
+    {
+      "id": "ch2ep1_tech_算法",
+      "label": "算法",
+      "type": "tech_term",
+      "episode": "ch2ep1"
+    },
+    {
+      "id": "ch2ep1_tech_演算法思維",
+      "label": "演算法思維",
+      "type": "tech_term",
+      "episode": "ch2ep1"
+    },
+    {
+      "id": "ch2ep1_tech_被動技能",
+      "label": "被動技能",
+      "type": "tech_term",
+      "episode": "ch2ep1"
+    },
+    {
+      "id": "ch2ep1_gag_忘加按鈕",
+      "label": "忘加按鈕：忘加防爆閥",
+      "type": "gag_manifestation",
+      "episode": "ch2ep1",
+      "properties": {
+        "gag_type": "忘加按鈕",
+        "episode": "ch2ep1"
+      }
+    },
+    {
+      "id": "ch2ep1_gag_現代科技用語",
+      "label": "現代科技用語：壓力釋放模組、演算法思維、被動技能、離線終端",
+      "type": "gag_manifestation",
+      "episode": "ch2ep1",
+      "properties": {
+        "gag_type": "現代科技用語",
+        "episode": "ch2ep1"
+      }
+    },
+    {
+      "id": "ch2ep1_gag_法寶反噬",
+      "label": "法寶反噬：第三個鍋爐爆炸",
+      "type": "gag_manifestation",
+      "episode": "ch2ep1",
+      "properties": {
+        "gag_type": "法寶反噬",
+        "episode": "ch2ep1"
+      }
+    },
+    {
+      "id": "ch2ep1_trait_zhoumo_科技工程術語",
+      "label": "周墨: 科技工程術語",
+      "type": "character_trait",
+      "episode": "ch2ep1",
+      "properties": {
+        "character_id": "zhoumo"
+      }
+    },
+    {
+      "id": "ch2ep1_trait_zhoumo_工程師思維",
+      "label": "周墨: 工程師思維",
+      "type": "character_trait",
+      "episode": "ch2ep1",
+      "properties": {
+        "character_id": "zhoumo"
+      }
+    },
+    {
+      "id": "ch2ep1_trait_luyang_投降反射",
+      "label": "陸陽: 投降反射",
+      "type": "character_trait",
+      "episode": "ch2ep1",
+      "properties": {
+        "character_id": "luyang"
+      }
+    },
+    {
+      "id": "ch2ep1_trait_luyang_隨時備好投降表",
+      "label": "陸陽: 隨時備好投降表",
+      "type": "character_trait",
+      "episode": "ch2ep1",
+      "properties": {
+        "character_id": "luyang"
+      }
+    },
+    {
+      "id": "ch2ep1_trait_mengjingzhou_研究狂",
+      "label": "孟景舟: 研究狂",
+      "type": "character_trait",
+      "episode": "ch2ep1",
+      "properties": {
+        "character_id": "mengjingzhou"
+      }
+    },
+    {
+      "id": "ch2ep1_trait_mengjingzhou_單身光環",
+      "label": "孟景舟: 單身光環",
+      "type": "character_trait",
+      "episode": "ch2ep1",
+      "properties": {
+        "character_id": "mengjingzhou"
+      }
+    },
+    {
+      "id": "ch2ep1_trait_mengjingzhou_一切皆為數據",
+      "label": "孟景舟: 一切皆為數據",
+      "type": "character_trait",
+      "episode": "ch2ep1",
+      "properties": {
+        "character_id": "mengjingzhou"
+      }
+    },
+    {
+      "id": "ch2ep2_plot",
+      "label": "低語洞窟 (ch2ep2)",
+      "type": "episode_plot",
+      "episode": "ch2ep2",
+      "properties": {
+        "language": "zh-TW"
+      }
+    },
+    {
+      "id": "ch2ep2_scene_TitleScene",
+      "label": "TitleScene",
+      "type": "scene",
+      "episode": "ch2ep2",
+      "properties": {
+        "dialog_line_count": "2",
+        "character_count": "1",
+        "effect_count": "0"
+      }
+    },
+    {
+      "id": "ch2ep2_scene_ContentScene1",
+      "label": "ContentScene1",
+      "type": "scene",
+      "episode": "ch2ep2",
+      "properties": {
+        "dialog_line_count": "9",
+        "character_count": "4",
+        "effect_count": "1"
+      }
+    },
+    {
+      "id": "ch2ep2_scene_ContentScene2",
+      "label": "ContentScene2",
+      "type": "scene",
+      "episode": "ch2ep2",
+      "properties": {
+        "dialog_line_count": "11",
+        "character_count": "4",
+        "effect_count": "0"
+      }
+    },
+    {
+      "id": "ch2ep2_scene_OutroScene",
+      "label": "OutroScene",
+      "type": "scene",
+      "episode": "ch2ep2",
+      "properties": {
+        "dialog_line_count": "3",
+        "character_count": "1",
+        "effect_count": "0"
+      }
+    },
+    {
+      "id": "ch2ep2_char_zhoumo",
+      "label": "周墨 (ch2ep2)",
+      "type": "character_instance",
+      "episode": "ch2ep2",
+      "properties": {
+        "character_id": "zhoumo",
+        "dialog_count": "9",
+        "dialog_text": "邏輯修正小組，第一次正式任務——低語洞窟探索。 | 先進去再說。這個洞窟的結構很有規律，像是某種陣法構建的空間。 | 有意思。一個語音觸發的自動防禦系統。讓我看看能不能重設密碼。 | 找到了。能量核心有裂痕，記憶區段損壞。他只能重複同一句話。 | 更精確地說，是「靈魂驅動的自動防禦系統」。我來修復他。 | 當然。這只是常規維護。修好了，以後別再大喊大叫。 | 忘加位置標記是普遍性問題。不過至少他不再重複那句話了。 | 有意思。那把劍被列為宗門至寶，但沒有人能拔出來。 | 原來忘加按鈕是家族遺傳。"
+      }
+    },
+    {
+      "id": "ch2ep2_char_luyang",
+      "label": "陸陽 (ch2ep2)",
+      "type": "character_instance",
+      "episode": "ch2ep2",
+      "properties": {
+        "character_id": "luyang",
+        "dialog_count": "3",
+        "dialog_text": "我帶了投降表。三份。 | 對不起對不起對不起！我投降！ | 三千年前的長老也忘東西？"
+      }
+    },
+    {
+      "id": "ch2ep2_char_mengjingzhou",
+      "label": "孟景舟 (ch2ep2)",
+      "type": "character_instance",
+      "episode": "ch2ep2",
+      "properties": {
+        "character_id": "mengjingzhou",
+        "dialog_count": "3",
+        "dialog_text": "我帶了研究筆記。如果洞窟裡有女性殘魂，我要記錄單身光環的有效範圍。 | 所以這個上古劍仙其實是一個記憶體壞掉的人工智慧？ | 等一下，他煉的那把劍——煉器峰傳說中的「滄溟之劍」不會就是吧？"
+      }
+    },
+    {
+      "id": "ch2ep2_char_soul",
+      "label": "滄溟子 (ch2ep2)",
+      "type": "character_instance",
+      "episode": "ch2ep2",
+      "properties": {
+        "character_id": "soul",
+        "dialog_count": "5",
+        "dialog_text": "吾乃上古劍仙——滄溟子！誰敢闖入吾之領地！ | 你說什麼？！吾乃—— | 你——你要修復吾？三千年来，你是第一個不逃跑的人。 | 吾想起了……吾是滄溟子，問道宗第三代長老。吾把畢生修為煉成了一把劍——但是忘記放哪了。 | 吾知道原因。吾當年……忘記加拔劍按鈕了。"
+      }
+    },
+    {
+      "id": "ch2ep2_char_narrator",
+      "label": "旁白 (ch2ep2)",
+      "type": "character_instance",
+      "episode": "ch2ep2",
+      "properties": {
+        "character_id": "narrator",
+        "dialog_count": "5",
+        "dialog_text": "歡迎來到誰讓他煉器的！第二章，第二集，低語洞窟。 | 邏輯修正小組成立後的第一個任務——探索後山的低語洞窟。聽說那裡住著一個上古大能的殘魂，已經嚇跑了十七批弟子。但周墨認為，這只是一個「待修復的離線終端」。 | 感謝收看誰讓他煉器的！第二章第二集，低語洞窟。 | 邏輯修正小組的第一個任務圓滿完成——殘魂被修好了，但那把「忘加拔劍按鈕」的滄溟之劍還在等著有人來拔。周墨已經在研究那個按鈕該怎麼加了。 | 下集預告：低語洞窟的事傳開了，長老派邏輯修正小組參加宗門秘境探索。別的宗門在破解上古禁制，周墨掏出了「雷射切割陣法」。長老說：「這不是禁制破解工具！」「但效率很高。」",
+        "role": "structural"
+      }
+    },
+    {
+      "id": "ch2ep2_tech_自動防禦系統",
+      "label": "自動防禦系統",
+      "type": "tech_term",
+      "episode": "ch2ep2"
+    },
+    {
+      "id": "ch2ep2_tech_記憶區段",
+      "label": "記憶區段",
+      "type": "tech_term",
+      "episode": "ch2ep2"
+    },
+    {
+      "id": "ch2ep2_tech_常規維護",
+      "label": "常規維護",
+      "type": "tech_term",
+      "episode": "ch2ep2"
+    },
+    {
+      "id": "ch2ep2_tech_人工智慧",
+      "label": "人工智慧",
+      "type": "tech_term",
+      "episode": "ch2ep2"
+    },
+    {
+      "id": "ch2ep2_gag_忘加按鈕",
+      "label": "忘加按鈕：忘加拔劍按鈕→家族遺傳",
+      "type": "gag_manifestation",
+      "episode": "ch2ep2",
+      "properties": {
+        "gag_type": "忘加按鈕",
+        "episode": "ch2ep2"
+      }
+    },
+    {
+      "id": "ch2ep2_gag_現代科技用語",
+      "label": "現代科技用語：自動防禦系統、密碼重設、記憶區段、人工智慧",
+      "type": "gag_manifestation",
+      "episode": "ch2ep2",
+      "properties": {
+        "gag_type": "現代科技用語",
+        "episode": "ch2ep2"
+      }
+    },
+    {
+      "id": "ch2ep2_gag_法寶反噬",
+      "label": "法寶反噬：滄溟之劍三千年沒人拔出",
+      "type": "gag_manifestation",
+      "episode": "ch2ep2",
+      "properties": {
+        "gag_type": "法寶反噬",
+        "episode": "ch2ep2"
+      }
+    },
+    {
+      "id": "ch2ep2_trait_zhoumo_科技工程術語",
+      "label": "周墨: 科技工程術語",
+      "type": "character_trait",
+      "episode": "ch2ep2",
+      "properties": {
+        "character_id": "zhoumo"
+      }
+    },
+    {
+      "id": "ch2ep2_trait_zhoumo_忘加按鈕/功能",
+      "label": "周墨: 忘加按鈕/功能",
+      "type": "character_trait",
+      "episode": "ch2ep2",
+      "properties": {
+        "character_id": "zhoumo"
+      }
+    },
+    {
+      "id": "ch2ep2_trait_zhoumo_工程師思維",
+      "label": "周墨: 工程師思維",
+      "type": "character_trait",
+      "episode": "ch2ep2",
+      "properties": {
+        "character_id": "zhoumo"
+      }
+    },
+    {
+      "id": "ch2ep2_trait_zhoumo_萬物皆可修",
+      "label": "周墨: 萬物皆可修",
+      "type": "character_trait",
+      "episode": "ch2ep2",
+      "properties": {
+        "character_id": "zhoumo"
+      }
+    },
+    {
+      "id": "ch2ep2_trait_luyang_投降反射",
+      "label": "陸陽: 投降反射",
+      "type": "character_trait",
+      "episode": "ch2ep2",
+      "properties": {
+        "character_id": "luyang"
+      }
+    },
+    {
+      "id": "ch2ep2_trait_luyang_隨時備好投降表",
+      "label": "陸陽: 隨時備好投降表",
+      "type": "character_trait",
+      "episode": "ch2ep2",
+      "properties": {
+        "character_id": "luyang"
+      }
+    },
+    {
+      "id": "ch2ep2_trait_mengjingzhou_研究狂",
+      "label": "孟景舟: 研究狂",
+      "type": "character_trait",
+      "episode": "ch2ep2",
+      "properties": {
+        "character_id": "mengjingzhou"
+      }
+    },
+    {
+      "id": "ch2ep2_trait_mengjingzhou_單身光環",
+      "label": "孟景舟: 單身光環",
+      "type": "character_trait",
+      "episode": "ch2ep2",
+      "properties": {
+        "character_id": "mengjingzhou"
+      }
+    },
+    {
+      "id": "ch2ep2_trait_mengjingzhou_一切皆為數據",
+      "label": "孟景舟: 一切皆為數據",
+      "type": "character_trait",
+      "episode": "ch2ep2",
+      "properties": {
+        "character_id": "mengjingzhou"
+      }
+    },
+    {
+      "id": "ch2ep2_trait_soul_上古大能口吻",
+      "label": "滄溟子: 上古大能口吻",
+      "type": "character_trait",
+      "episode": "ch2ep2",
+      "properties": {
+        "character_id": "soul"
+      }
+    },
+    {
+      "id": "ch2ep2_trait_soul_家族遺傳忘性",
+      "label": "滄溟子: 家族遺傳忘性",
+      "type": "character_trait",
+      "episode": "ch2ep2",
+      "properties": {
+        "character_id": "soul"
+      }
+    },
+    {
+      "id": "ch2ep3_plot",
+      "label": "三人成虎 (ch2ep3)",
+      "type": "episode_plot",
+      "episode": "ch2ep3",
+      "properties": {
+        "language": "zh-TW"
+      }
+    },
+    {
+      "id": "ch2ep3_scene_TitleScene",
+      "label": "TitleScene",
+      "type": "scene",
+      "episode": "ch2ep3",
+      "properties": {
+        "dialog_line_count": "2",
+        "character_count": "1",
+        "effect_count": "0"
+      }
+    },
+    {
+      "id": "ch2ep3_scene_ContentScene1",
+      "label": "ContentScene1",
+      "type": "scene",
+      "episode": "ch2ep3",
+      "properties": {
+        "dialog_line_count": "11",
+        "character_count": "5",
+        "effect_count": "0"
+      }
+    },
+    {
+      "id": "ch2ep3_scene_ContentScene2",
+      "label": "ContentScene2",
+      "type": "scene",
+      "episode": "ch2ep3",
+      "properties": {
+        "dialog_line_count": "20",
+        "character_count": "4",
+        "effect_count": "0"
+      }
+    },
+    {
+      "id": "ch2ep3_scene_OutroScene",
+      "label": "OutroScene",
+      "type": "scene",
+      "episode": "ch2ep3",
+      "properties": {
+        "dialog_line_count": "3",
+        "character_count": "1",
+        "effect_count": "0"
+      }
+    },
+    {
+      "id": "ch2ep3_char_zhoumo",
+      "label": "周墨 (ch2ep3)",
+      "type": "character_instance",
+      "episode": "ch2ep3",
+      "properties": {
+        "character_id": "zhoumo",
+        "dialog_count": "8",
+        "dialog_text": "藏經閣。三百年沒人維護的資訊系統。典型的「缺乏使用者回饋導致系統退化」。我對這個任務很有興趣。 | 放心，長老。我只是去做系統維護。 | 有趣。這些書的攻擊行為，本質上是「尋求關注」。三百年沒有人閱讀它們，它們的防禦機制是對「被忽視」的反應。 | 從工程學的角度來說，這是一個「缺乏正向回饋的系統」。解決方案很簡單——給它們「點讚」。 | 我給每本書加了一個「認可系統」。它們得到了三百年來第一個正向評價。問題解決。 | ……我來給它們加一個「自動評價系統」。 | 啊……我忘記加「評價標準」了。沒有標準的評價系統，就像沒有尺的裁縫—— | ……我本來想說「會亂剪一氣」，但你的比喻更好。"
+      }
+    },
+    {
+      "id": "ch2ep3_char_luyang",
+      "label": "陸陽 (ch2ep3)",
+      "type": "character_instance",
+      "episode": "ch2ep3",
+      "properties": {
+        "character_id": "luyang",
+        "dialog_count": "7",
+        "dialog_text": "長老，藏經閣為什麼會自己崩塌？ | 每次周墨說「放心」，我就開始擔心。 | 什麼——！ | 那是我的投降表！那是我精心設計的！裡面有十七種投降姿勢的插圖！ | 所以你的意思是……這些書在鬧脾氣？ | 但是周墨……藏經閣裡所有的書都在看著你。 | 會把衣服做成正方形。"
+      }
+    },
+    {
+      "id": "ch2ep3_char_mengjingzhou",
+      "label": "孟景舟 (ch2ep3)",
+      "type": "character_instance",
+      "episode": "ch2ep3",
+      "properties": {
+        "character_id": "mengjingzhou",
+        "dialog_count": "5",
+        "dialog_text": "……書會有怨念？ | ……長老這句話比我的論文還殘忍。 | 等等……這本書在批改我的論文？它加了一行：「論點不成立，建議重寫」——還畫了一個大大的叉。 | 就……就這樣？ | 周墨，你的自動評價系統出了問題。這些書的文學水平直線下降——它們現在只會互相吹捧。"
+      }
+    },
+    {
+      "id": "ch2ep3_char_elder",
+      "label": "長老 (ch2ep3)",
+      "type": "character_instance",
+      "episode": "ch2ep3",
+      "properties": {
+        "character_id": "elder",
+        "dialog_count": "4",
+        "dialog_text": "藏經閣三年前因為結構老化崩塌了。裡面的書籍至今沒有人整理。你們去修復一下。 | 三百年沒人去過。書的怨念太重，把建築震塌了。 | 你試試三百年沒有人翻開你寫的論文。 | 周墨，我警告你，不許把藏經閣改成什麼奇怪的東西。"
+      }
+    },
+    {
+      "id": "ch2ep3_char_narrator",
+      "label": "旁白 (ch2ep3)",
+      "type": "character_instance",
+      "episode": "ch2ep3",
+      "properties": {
+        "character_id": "narrator",
+        "dialog_count": "12",
+        "dialog_text": "歡迎來到誰讓他煉器的！第二章，第三集，三人成虎。 | 低語洞窟任務完成後，滄溟子的殘魂正式成為邏輯修正小組的「名譽顧問」。長老派了第二個任務：修復後山崩塌的藏經閣。三百年沒有人去過的藏經閣，書的怨念太重，把建築都震塌了。 | 長老召集邏輯修正小組，說明了任務內容。 | 三人來到藏經閣廢墟。剛踏進門，一本書從空中飛來—— | 書本直接搶走了陸陽口袋裡的投降表，然後開始朗讀。 | 另一本書飛向孟景舟，搶走了他的論文草稿。幾秒後，書上多了一堆紅筆批改。 | 周墨掏出一個小裝置，對著每本書按了一下。書們立刻安靜了下來。 | 數百本書同時翻開，書頁發出沙沙聲，仿佛在說——「我的呢？」 | 三天後。藏經閣裡的書開始互相寫評論。一本《劍道入門》給自己打了五星，評語是「本世紀最偉大的著作」。旁邊的《煉丹基礎》不甘示弱，寫了一篇長文評論自己「超越了上古大能」。 | 感謝收看誰讓他煉器的！第二章第三集，三人成虎。 | 邏輯修正小組成功「修復」了藏經閣——雖然現在裡面的書都在互相吹捧，文學水平跌到了谷底。周墨的自動評價系統效率很高，但忘了加評價標準，導致藏經閣成了修仙界最大的「假評價工廠」。 | 下集預告：",
+        "role": "structural"
+      }
+    },
+    {
+      "id": "ch2ep3_tech_資訊系統",
+      "label": "資訊系統",
+      "type": "tech_term",
+      "episode": "ch2ep3"
+    },
+    {
+      "id": "ch2ep3_tech_認可系統",
+      "label": "認可系統",
+      "type": "tech_term",
+      "episode": "ch2ep3"
+    },
+    {
+      "id": "ch2ep3_tech_自動評價系統",
+      "label": "自動評價系統",
+      "type": "tech_term",
+      "episode": "ch2ep3"
+    },
+    {
+      "id": "ch2ep3_tech_評價標準",
+      "label": "評價標準",
+      "type": "tech_term",
+      "episode": "ch2ep3"
+    },
+    {
+      "id": "ch2ep3_gag_忘加按鈕",
+      "label": "忘加按鈕：忘加評價標準",
+      "type": "gag_manifestation",
+      "episode": "ch2ep3",
+      "properties": {
+        "gag_type": "忘加按鈕",
+        "episode": "ch2ep3"
+      }
+    },
+    {
+      "id": "ch2ep3_gag_現代科技用語",
+      "label": "現代科技用語：資訊系統、認可系統、自動評價系統",
+      "type": "gag_manifestation",
+      "episode": "ch2ep3",
+      "properties": {
+        "gag_type": "現代科技用語",
+        "episode": "ch2ep3"
+      }
+    },
+    {
+      "id": "ch2ep3_gag_法寶反噬",
+      "label": "法寶反噬：書籍假評價工廠",
+      "type": "gag_manifestation",
+      "episode": "ch2ep3",
+      "properties": {
+        "gag_type": "法寶反噬",
+        "episode": "ch2ep3"
+      }
+    },
+    {
+      "id": "ch2ep3_trait_zhoumo_科技工程術語",
+      "label": "周墨: 科技工程術語",
+      "type": "character_trait",
+      "episode": "ch2ep3",
+      "properties": {
+        "character_id": "zhoumo"
+      }
+    },
+    {
+      "id": "ch2ep3_trait_zhoumo_忘加按鈕/功能",
+      "label": "周墨: 忘加按鈕/功能",
+      "type": "character_trait",
+      "episode": "ch2ep3",
+      "properties": {
+        "character_id": "zhoumo"
+      }
+    },
+    {
+      "id": "ch2ep3_trait_zhoumo_工程師思維",
+      "label": "周墨: 工程師思維",
+      "type": "character_trait",
+      "episode": "ch2ep3",
+      "properties": {
+        "character_id": "zhoumo"
+      }
+    },
+    {
+      "id": "ch2ep3_trait_zhoumo_用邏輯包裝荒謬",
+      "label": "周墨: 用邏輯包裝荒謬",
+      "type": "character_trait",
+      "episode": "ch2ep3",
+      "properties": {
+        "character_id": "zhoumo"
+      }
+    },
+    {
+      "id": "ch2ep3_trait_zhoumo_萬物皆可修",
+      "label": "周墨: 萬物皆可修",
+      "type": "character_trait",
+      "episode": "ch2ep3",
+      "properties": {
+        "character_id": "zhoumo"
+      }
+    },
+    {
+      "id": "ch2ep3_trait_elder_毒舌警告",
+      "label": "長老: 毒舌警告",
+      "type": "character_trait",
+      "episode": "ch2ep3",
+      "properties": {
+        "character_id": "elder"
+      }
+    },
+    {
+      "id": "ch2ep3_trait_luyang_投降反射",
+      "label": "陸陽: 投降反射",
+      "type": "character_trait",
+      "episode": "ch2ep3",
+      "properties": {
+        "character_id": "luyang"
+      }
+    },
+    {
+      "id": "ch2ep3_trait_luyang_隨時備好投降表",
+      "label": "陸陽: 隨時備好投降表",
+      "type": "character_trait",
+      "episode": "ch2ep3",
+      "properties": {
+        "character_id": "luyang"
+      }
+    },
+    {
+      "id": "ch2ep3_trait_mengjingzhou_研究狂",
+      "label": "孟景舟: 研究狂",
+      "type": "character_trait",
+      "episode": "ch2ep3",
+      "properties": {
+        "character_id": "mengjingzhou"
+      }
+    },
+    {
+      "id": "ch3ep1_plot",
+      "label": "秘境探索 (ch3ep1)",
+      "type": "episode_plot",
+      "episode": "ch3ep1",
+      "properties": {
+        "language": "zh-TW"
+      }
+    },
+    {
+      "id": "ch3ep1_scene_TitleScene",
+      "label": "TitleScene",
+      "type": "scene",
+      "episode": "ch3ep1",
+      "properties": {
+        "dialog_line_count": "2",
+        "character_count": "1",
+        "effect_count": "0"
+      }
+    },
+    {
+      "id": "ch3ep1_scene_ContentScene1",
+      "label": "ContentScene1",
+      "type": "scene",
+      "episode": "ch3ep1",
+      "properties": {
+        "dialog_line_count": "11",
+        "character_count": "5",
+        "effect_count": "0"
+      }
+    },
+    {
+      "id": "ch3ep1_scene_ContentScene2",
+      "label": "ContentScene2",
+      "type": "scene",
+      "episode": "ch3ep1",
+      "properties": {
+        "dialog_line_count": "16",
+        "character_count": "4",
+        "effect_count": "0"
+      }
+    },
+    {
+      "id": "ch3ep1_scene_OutroScene",
+      "label": "OutroScene",
+      "type": "scene",
+      "episode": "ch3ep1",
+      "properties": {
+        "dialog_line_count": "3",
+        "character_count": "1",
+        "effect_count": "0"
+      }
+    },
+    {
+      "id": "ch3ep1_char_zhoumo",
+      "label": "周墨 (ch3ep1)",
+      "type": "character_instance",
+      "episode": "ch3ep1",
+      "properties": {
+        "character_id": "zhoumo",
+        "dialog_count": "8",
+        "dialog_text": "長老，我準備了「雷射切割陣法」。根據古籍記載，這個秘境的禁制是三千年前的陣法構建，結構規律性很高，可以用線性切割的方式高效破解。 | 那是「聚焦式靈氣切割陣法發射器」。我簡稱它「雷射筆」。 | 這不是危險，這是效率。 | 閃開。 | 就這樣。三千年前的陣法結構是單層線性排列，沒有冗餘設計。一個工程師的基本常識：永遠不要信任沒有備份的系統。 | 嗯，雷射筆的切割範圍確實沒有設定邊界。我記得我加了方向控制……等等，我忘了加方向控制。 | 冷靜。這只是一個計時觸發的自動防禦協議。我來看看能不能找到……出口。 | ……這是一個需要優化的設計缺陷。"
+      }
+    },
+    {
+      "id": "ch3ep1_char_luyang",
+      "label": "陸陽 (ch3ep1)",
+      "type": "character_instance",
+      "episode": "ch3ep1",
+      "properties": {
+        "character_id": "luyang",
+        "dialog_count": "5",
+        "dialog_text": "長老放心，我帶了五份投降表，涵蓋所有可能的宗門。 | 看起來確實像一支筆。一支會把東西切開的筆。 | 我在旁邊觀察了。他的臉越來越紅。我覺得他快要—— | 但是周墨……你好像把所有禁制都切斷了。不只是入口這個——整座秘境的禁制系統。 | 我的投降表能遞給上古大能的保護機制嗎？"
+      }
+    },
+    {
+      "id": "ch3ep1_char_mengjingzhou",
+      "label": "孟景舟 (ch3ep1)",
+      "type": "character_instance",
+      "episode": "ch3ep1",
+      "properties": {
+        "character_id": "mengjingzhou",
+        "dialog_count": "6",
+        "dialog_text": "我帶了論文草稿——「秘境環境對單身光環的影響研究」。如果遇到女修，這是很好的數據採集機會。 | 記錄：周墨又造了一個危險的東西。這是第幾次了？ | 那個天劍宗的首席弟子已經砍了三十七劍了。禁制連個痕跡都沒有。 | ……就這樣？ | 一百八十息？那是我們能活多久的意思嗎？ | 出口也被你切斷了。你看，那個門已經變成兩半了。"
+      }
+    },
+    {
+      "id": "ch3ep1_char_elder",
+      "label": "長老 (ch3ep1)",
+      "type": "character_instance",
+      "episode": "ch3ep1",
+      "properties": {
+        "character_id": "elder",
+        "dialog_count": "3",
+        "dialog_text": "這次秘境探索，你們三個給我安分點。別丟問道宗的臉。 | ……你們能不能有一次正常的準備？ | 你說的是那個……看起來像一根會發光的筷子一樣的東西？"
+      }
+    },
+    {
+      "id": "ch3ep1_char_narrator",
+      "label": "旁白 (ch3ep1)",
+      "type": "character_instance",
+      "episode": "ch3ep1",
+      "properties": {
+        "character_id": "narrator",
+        "dialog_count": "10",
+        "dialog_text": "歡迎來到誰讓他煉器的！第三章，第一集，秘境探索。 | 低語洞窟的任務完成後，邏輯修正小組的名聲傳遍了問道宗——當然，是「禍害」那種名聲。長老決定把他們派去參加五年一次的宗門秘境探索，希望他們在別人面前丟臉。但周墨對這次任務充滿期待——因為秘境裡有大量上古陣法，簡直是工程師的天堂。 | 宗門秘境入口，五大宗門齊聚。各派精英弟子正在研究上古禁制的破解方法。 | 秘境內部。其他宗門的弟子們正在用各種方法破解禁制——有人用符咒，有人用劍氣，有人用陣盤。進度：零。 | 周墨按下雷射筆的按鈕。一道筆直的靈氣光束射出—— | 禁制。被切成了兩半。 | 整座秘境震動。牆壁上浮現出上古文字：「警告——禁制系統已離線——保護機制啟動——自毀倒數：一百八十息。」 | 感謝收看誰讓他煉器的！第三章第一集，秘境探索。 | 邏輯修正小組成功進入了秘境——然後成功觸發了自毀倒數。周墨的雷射筆效率很高，但忘了加方向限制，導致出口也被切斷了。現在問題很簡單：在一百八十息之內，找到一個不存在的出口。 | 下集預告：邏輯修正小組在自毀倒計時中瘋狂找出口，結果發現秘境的核心藏著一個更大的秘密——上古大能設計這個秘境的真正目的",
+        "role": "structural"
+      }
+    },
+    {
+      "id": "ch3ep1_tech_雷射切割",
+      "label": "雷射切割",
+      "type": "tech_term",
+      "episode": "ch3ep1"
+    },
+    {
+      "id": "ch3ep1_tech_冗餘設計",
+      "label": "冗餘設計",
+      "type": "tech_term",
+      "episode": "ch3ep1"
+    },
+    {
+      "id": "ch3ep1_tech_自動防禦協議",
+      "label": "自動防禦協議",
+      "type": "tech_term",
+      "episode": "ch3ep1"
+    },
+    {
+      "id": "ch3ep1_gag_忘加按鈕",
+      "label": "忘加按鈕：忘加方向控制",
+      "type": "gag_manifestation",
+      "episode": "ch3ep1",
+      "properties": {
+        "gag_type": "忘加按鈕",
+        "episode": "ch3ep1"
+      }
+    },
+    {
+      "id": "ch3ep1_gag_現代科技用語",
+      "label": "現代科技用語：雷射切割陣法、冗餘設計、備份系統",
+      "type": "gag_manifestation",
+      "episode": "ch3ep1",
+      "properties": {
+        "gag_type": "現代科技用語",
+        "episode": "ch3ep1"
+      }
+    },
+    {
+      "id": "ch3ep1_gag_法寶反噬",
+      "label": "法寶反噬：雷射筆切了出口→自毀倒數",
+      "type": "gag_manifestation",
+      "episode": "ch3ep1",
+      "properties": {
+        "gag_type": "法寶反噬",
+        "episode": "ch3ep1"
+      }
+    },
+    {
+      "id": "ch3ep1_trait_zhoumo_科技工程術語",
+      "label": "周墨: 科技工程術語",
+      "type": "character_trait",
+      "episode": "ch3ep1",
+      "properties": {
+        "character_id": "zhoumo"
+      }
+    },
+    {
+      "id": "ch3ep1_trait_zhoumo_工程師思維",
+      "label": "周墨: 工程師思維",
+      "type": "character_trait",
+      "episode": "ch3ep1",
+      "properties": {
+        "character_id": "zhoumo"
+      }
+    },
+    {
+      "id": "ch3ep1_trait_zhoumo_萬物皆可修",
+      "label": "周墨: 萬物皆可修",
+      "type": "character_trait",
+      "episode": "ch3ep1",
+      "properties": {
+        "character_id": "zhoumo"
+      }
+    },
+    {
+      "id": "ch3ep1_trait_luyang_投降反射",
+      "label": "陸陽: 投降反射",
+      "type": "character_trait",
+      "episode": "ch3ep1",
+      "properties": {
+        "character_id": "luyang"
+      }
+    },
+    {
+      "id": "ch3ep1_trait_luyang_隨時備好投降表",
+      "label": "陸陽: 隨時備好投降表",
+      "type": "character_trait",
+      "episode": "ch3ep1",
+      "properties": {
+        "character_id": "luyang"
+      }
+    },
+    {
+      "id": "ch3ep1_trait_luyang_天真神比喻",
+      "label": "陸陽: 天真神比喻",
+      "type": "character_trait",
+      "episode": "ch3ep1",
+      "properties": {
+        "character_id": "luyang"
+      }
+    },
+    {
+      "id": "ch3ep1_trait_mengjingzhou_研究狂",
+      "label": "孟景舟: 研究狂",
+      "type": "character_trait",
+      "episode": "ch3ep1",
+      "properties": {
+        "character_id": "mengjingzhou"
+      }
+    },
+    {
+      "id": "ch3ep1_trait_mengjingzhou_單身光環",
+      "label": "孟景舟: 單身光環",
+      "type": "character_trait",
+      "episode": "ch3ep1",
+      "properties": {
+        "character_id": "mengjingzhou"
+      }
+    },
+    {
+      "id": "ch3ep1_trait_mengjingzhou_一切皆為數據",
+      "label": "孟景舟: 一切皆為數據",
+      "type": "character_trait",
+      "episode": "ch3ep1",
+      "properties": {
+        "character_id": "mengjingzhou"
+      }
+    },
+    {
+      "id": "ch3ep2_plot",
+      "label": "智商測試 (ch3ep2)",
+      "type": "episode_plot",
+      "episode": "ch3ep2",
+      "properties": {
+        "language": "zh-TW"
+      }
+    },
+    {
+      "id": "ch3ep2_scene_TitleScene",
+      "label": "TitleScene",
+      "type": "scene",
+      "episode": "ch3ep2",
+      "properties": {
+        "dialog_line_count": "2",
+        "character_count": "1",
+        "effect_count": "0"
+      }
+    },
+    {
+      "id": "ch3ep2_scene_ContentScene1",
+      "label": "ContentScene1",
+      "type": "scene",
+      "episode": "ch3ep2",
+      "properties": {
+        "dialog_line_count": "9",
+        "character_count": "4",
+        "effect_count": "0"
+      }
+    },
+    {
+      "id": "ch3ep2_scene_ContentScene2",
+      "label": "ContentScene2",
+      "type": "scene",
+      "episode": "ch3ep2",
+      "properties": {
+        "dialog_line_count": "12",
+        "character_count": "4",
+        "effect_count": "0"
+      }
+    },
+    {
+      "id": "ch3ep2_scene_OutroScene",
+      "label": "OutroScene",
+      "type": "scene",
+      "episode": "ch3ep2",
+      "properties": {
+        "dialog_line_count": "3",
+        "character_count": "1",
+        "effect_count": "0"
+      }
+    },
+    {
+      "id": "ch3ep2_char_zhoumo",
+      "label": "周墨 (ch3ep2)",
+      "type": "character_instance",
+      "episode": "ch3ep2",
+      "properties": {
+        "character_id": "zhoumo",
+        "dialog_count": "7",
+        "dialog_text": "別爭了。我發現這個秘境的禁制系統底層有一個隱藏的子系統，從未被啟動過。坐標在正前方。 | 我剛才用雷射筆切斷禁制的時候，順便掃描了一下整個結構。工程師的基本習慣——動刀之前先做CT。 | ……那是流程上的優化空間。 | 這是一道陷阱題。答案不可能是這麼簡單的。 | 那不叫「忘記加」，那叫「最小可行性產品」。啟動創業的人都知道——先上線，再迭代。 | 不是歪理，是產品哲學。上古大能顯然也是個有經驗的項目管理者。 | ……這個上古大能的評價系統有待改進。"
+      }
+    },
+    {
+      "id": "ch3ep2_char_luyang",
+      "label": "陸陽 (ch3ep2)",
+      "type": "character_instance",
+      "episode": "ch3ep2",
+      "properties": {
+        "character_id": "luyang",
+        "dialog_count": "5",
+        "dialog_text": "我覺得我們應該往左走。直覺告訴我左邊有出口。 | 等等，你怎麼發現的？ | 「停下來的功能」。周墨，這題是不是在說你？ | 你這個迭代會把我們送走。 | 倒數還剩六十息！快走！"
+      }
+    },
+    {
+      "id": "ch3ep2_char_mengjingzhou",
+      "label": "孟景舟 (ch3ep2)",
+      "type": "character_instance",
+      "episode": "ch3ep2",
+      "properties": {
+        "character_id": "mengjingzhou",
+        "dialog_count": "4",
+        "dialog_text": "你上次直覺告訴你食堂有折扣，結果那是上個月的事。 | 你切之前怎麼不做CT？ | 但這確實就是你幹的事啊。你的雷射筆沒有方向限制，沒有範圍限制，也沒有停止按鈕。 | 等等，正確答案就是「停止功能」？那周墨的歪理居然答對了？"
+      }
+    },
+    {
+      "id": "ch3ep2_char_narrator",
+      "label": "旁白 (ch3ep2)",
+      "type": "character_instance",
+      "episode": "ch3ep2",
+      "properties": {
+        "character_id": "narrator",
+        "dialog_count": "10",
+        "dialog_text": "歡迎來到誰讓他煉器的！第三章，第二集，智商測試。 | 上一集，邏輯修正小組成功觸發了秘境自毀倒數。周墨忘記給雷射筆加方向限制，一刀切斷了所有禁制——包括出口。現在倒數還在跑，而他們唯一的生路，是往秘境深處走。 | 秘境深處。倒數已經從一百八十息變成一百二十息。地面每隔十息震動一次，牆上的上古文字閃爍著紅光。 | 三人到達秘境核心。一扇巨大的石門出現在眼前，上面刻著八個大字——「智商測試中心，請勿作弊」。石門自動開啟，裡面是一個空曠的大廳，中央漂浮著一個發光的水晶球。 | 水晶球亮起，投射出第一道題目：「一個法寶製造者造了一把能切斷一切的劍，但他忘記加了一個功能。請問是什麼？」 | 水晶球亮起綠光——答案正確。石門深處傳來新的通道開啟的聲音。 | 三人衝進新開啟的通道。身後的大廳開始崩塌。周墨回頭看了一眼——水晶球上浮現出最後一行字：「測試結果：勉強及格。恭喜你們沒有笨到死在這裡。」 | 感謝收看誰讓他煉器的！第三章第二集，智商測試。 | 邏輯修正小組勉強通過了上古大能的智商測試。周墨學到了一個教訓：做東西的時候，記得加停止按鈕。不過他好像沒有真的學到，因為他已經在想下一個法寶了。 | ",
+        "role": "structural"
+      }
+    },
+    {
+      "id": "ch3ep2_trait_zhoumo_忘加按鈕/功能",
+      "label": "周墨: 忘加按鈕/功能",
+      "type": "character_trait",
+      "episode": "ch3ep2",
+      "properties": {
+        "character_id": "zhoumo"
+      }
+    },
+    {
+      "id": "ch3ep2_trait_zhoumo_工程師思維",
+      "label": "周墨: 工程師思維",
+      "type": "character_trait",
+      "episode": "ch3ep2",
+      "properties": {
+        "character_id": "zhoumo"
+      }
+    },
+    {
+      "id": "ch3ep2_trait_zhoumo_萬物皆可修",
+      "label": "周墨: 萬物皆可修",
+      "type": "character_trait",
+      "episode": "ch3ep2",
+      "properties": {
+        "character_id": "zhoumo"
+      }
+    }
+  ],
+  "links": [
+    {
+      "source": "ch1ep1_scene_TitleScene",
+      "target": "ch1ep1_plot",
+      "relation": "part_of",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep1_scene_ContentScene1",
+      "target": "ch1ep1_plot",
+      "relation": "part_of",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep1_scene_ContentScene2",
+      "target": "ch1ep1_plot",
+      "relation": "part_of",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep1_scene_OutroScene",
+      "target": "ch1ep1_plot",
+      "relation": "part_of",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep1_char_zhoumo",
+      "target": "ch1ep1_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep1_char_examiner",
+      "target": "ch1ep1_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep1_char_narrator",
+      "target": "ch1ep1_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep1_char_zhoumo",
+      "target": "ch1ep1_tech_用户体验",
+      "relation": "uses_tech_term",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep1_char_zhoumo",
+      "target": "ch1ep1_tech_底层逻辑闭环",
+      "relation": "uses_tech_term",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep1_char_zhoumo",
+      "target": "ch1ep1_tech_指纹识别",
+      "relation": "uses_tech_term",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep1_char_zhoumo",
+      "target": "ch1ep1_tech_自动格式化",
+      "relation": "uses_tech_term",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep1_char_zhoumo",
+      "target": "ch1ep1_tech_模块化设计",
+      "relation": "uses_tech_term",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep1_char_zhoumo",
+      "target": "ch1ep1_tech_自动寻路",
+      "relation": "uses_tech_term",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep1_char_zhoumo",
+      "target": "ch1ep1_tech_核心算法",
+      "relation": "uses_tech_term",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep1_char_zhoumo",
+      "target": "ch1ep1_tech_算法",
+      "relation": "uses_tech_term",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep1_char_zhoumo",
+      "target": "ch1ep1_char_examiner",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep1_char_examiner",
+      "target": "ch1ep1_char_zhoumo",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep1_gag_忘加按鈕",
+      "target": "ch1ep1_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep1_gag_現代科技用語",
+      "target": "ch1ep1_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep1_gag_法寶反噬",
+      "target": "ch1ep1_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep1_trait_zhoumo_科技工程術語",
+      "target": "ch1ep1_char_zhoumo",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep1_trait_zhoumo_忘加按鈕/功能",
+      "target": "ch1ep1_char_zhoumo",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep1_trait_zhoumo_工程師思維",
+      "target": "ch1ep1_char_zhoumo",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep1_trait_examiner_崩潰吐槽",
+      "target": "ch1ep1_char_examiner",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep1_trait_examiner_權威考官",
+      "target": "ch1ep1_char_examiner",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_scene_TitleScene",
+      "target": "ch1ep2_plot",
+      "relation": "part_of",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_scene_ContentScene1",
+      "target": "ch1ep2_plot",
+      "relation": "part_of",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_scene_ContentScene2",
+      "target": "ch1ep2_plot",
+      "relation": "part_of",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_scene_OutroScene",
+      "target": "ch1ep2_plot",
+      "relation": "part_of",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_char_zhoumo",
+      "target": "ch1ep2_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_char_examiner",
+      "target": "ch1ep2_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_char_elder",
+      "target": "ch1ep2_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_char_narrator",
+      "target": "ch1ep2_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_char_zhoumo",
+      "target": "ch1ep2_tech_演算法",
+      "relation": "uses_tech_term",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_char_zhoumo",
+      "target": "ch1ep2_tech_算法",
+      "relation": "uses_tech_term",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_char_zhoumo",
+      "target": "ch1ep2_tech_使用者體驗",
+      "relation": "uses_tech_term",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_char_zhoumo",
+      "target": "ch1ep2_tech_底層邏輯閉環",
+      "relation": "uses_tech_term",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_char_elder",
+      "target": "ch1ep2_tech_指紋識別",
+      "relation": "uses_tech_term",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_char_elder",
+      "target": "ch1ep2_tech_自動格式化",
+      "relation": "uses_tech_term",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_char_examiner",
+      "target": "ch1ep2_char_zhoumo",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_char_zhoumo",
+      "target": "ch1ep2_char_examiner",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_char_examiner",
+      "target": "ch1ep2_char_elder",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_char_elder",
+      "target": "ch1ep2_char_examiner",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_char_zhoumo",
+      "target": "ch1ep2_char_elder",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_char_elder",
+      "target": "ch1ep2_char_zhoumo",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_gag_忘加按鈕",
+      "target": "ch1ep2_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_gag_現代科技用語",
+      "target": "ch1ep2_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_gag_法寶反噬",
+      "target": "ch1ep2_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_trait_zhoumo_科技工程術語",
+      "target": "ch1ep2_char_zhoumo",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_trait_zhoumo_忘加按鈕/功能",
+      "target": "ch1ep2_char_zhoumo",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_trait_zhoumo_工程師思維",
+      "target": "ch1ep2_char_zhoumo",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_trait_zhoumo_用邏輯包裝荒謬",
+      "target": "ch1ep2_char_zhoumo",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_trait_examiner_崩潰吐槽",
+      "target": "ch1ep2_char_examiner",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_trait_examiner_權威考官",
+      "target": "ch1ep2_char_examiner",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_trait_elder_欣賞創新",
+      "target": "ch1ep2_char_elder",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_trait_elder_認可但擔憂",
+      "target": "ch1ep2_char_elder",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_scene_TitleScene",
+      "target": "ch1ep3_plot",
+      "relation": "part_of",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_scene_ContentScene1",
+      "target": "ch1ep3_plot",
+      "relation": "part_of",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_scene_ContentScene2",
+      "target": "ch1ep3_plot",
+      "relation": "part_of",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_scene_OutroScene",
+      "target": "ch1ep3_plot",
+      "relation": "part_of",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_char_zhoumo",
+      "target": "ch1ep3_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_char_elder",
+      "target": "ch1ep3_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_char_narrator",
+      "target": "ch1ep3_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_char_zhoumo",
+      "target": "ch1ep3_tech_使用者體驗",
+      "relation": "uses_tech_term",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_char_zhoumo",
+      "target": "ch1ep3_tech_系統升級",
+      "relation": "uses_tech_term",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_char_zhoumo",
+      "target": "ch1ep3_tech_情緒管理系統",
+      "relation": "uses_tech_term",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_char_zhoumo",
+      "target": "ch1ep3_tech_情感交互界面",
+      "relation": "uses_tech_term",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_char_zhoumo",
+      "target": "ch1ep3_tech_語音控制",
+      "relation": "uses_tech_term",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_char_zhoumo",
+      "target": "ch1ep3_tech_定時休眠",
+      "relation": "uses_tech_term",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_char_elder",
+      "target": "ch1ep3_tech_情緒管理系統",
+      "relation": "uses_tech_term",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_char_elder",
+      "target": "ch1ep3_tech_使用者體驗",
+      "relation": "uses_tech_term",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_char_elder",
+      "target": "ch1ep3_char_zhoumo",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_char_zhoumo",
+      "target": "ch1ep3_char_elder",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_gag_忘加按鈕",
+      "target": "ch1ep3_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_gag_現代科技用語",
+      "target": "ch1ep3_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_gag_法寶反噬",
+      "target": "ch1ep3_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_trait_zhoumo_科技工程術語",
+      "target": "ch1ep3_char_zhoumo",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_trait_zhoumo_忘加按鈕/功能",
+      "target": "ch1ep3_char_zhoumo",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_trait_zhoumo_工程師思維",
+      "target": "ch1ep3_char_zhoumo",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_trait_zhoumo_用邏輯包裝荒謬",
+      "target": "ch1ep3_char_zhoumo",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_trait_zhoumo_萬物皆可修",
+      "target": "ch1ep3_char_zhoumo",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_trait_elder_欣賞創新",
+      "target": "ch1ep3_char_elder",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_trait_elder_毒舌警告",
+      "target": "ch1ep3_char_elder",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_scene_TitleScene",
+      "target": "ch2ep1_plot",
+      "relation": "part_of",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_scene_ContentScene1",
+      "target": "ch2ep1_plot",
+      "relation": "part_of",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_scene_ContentScene2",
+      "target": "ch2ep1_plot",
+      "relation": "part_of",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_scene_OutroScene",
+      "target": "ch2ep1_plot",
+      "relation": "part_of",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_char_zhoumo",
+      "target": "ch2ep1_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_char_luyang",
+      "target": "ch2ep1_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_char_mengjingzhou",
+      "target": "ch2ep1_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_char_narrator",
+      "target": "ch2ep1_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_char_zhoumo",
+      "target": "ch2ep1_tech_壓力釋放模組",
+      "relation": "uses_tech_term",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_char_zhoumo",
+      "target": "ch2ep1_tech_演算法",
+      "relation": "uses_tech_term",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_char_zhoumo",
+      "target": "ch2ep1_tech_算法",
+      "relation": "uses_tech_term",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_char_zhoumo",
+      "target": "ch2ep1_tech_演算法思維",
+      "relation": "uses_tech_term",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_char_mengjingzhou",
+      "target": "ch2ep1_tech_被動技能",
+      "relation": "uses_tech_term",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_char_zhoumo",
+      "target": "ch2ep1_char_luyang",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_char_luyang",
+      "target": "ch2ep1_char_zhoumo",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_char_mengjingzhou",
+      "target": "ch2ep1_char_luyang",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_char_luyang",
+      "target": "ch2ep1_char_mengjingzhou",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_char_mengjingzhou",
+      "target": "ch2ep1_char_zhoumo",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_char_zhoumo",
+      "target": "ch2ep1_char_mengjingzhou",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_gag_忘加按鈕",
+      "target": "ch2ep1_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_gag_現代科技用語",
+      "target": "ch2ep1_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_gag_法寶反噬",
+      "target": "ch2ep1_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_trait_zhoumo_科技工程術語",
+      "target": "ch2ep1_char_zhoumo",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_trait_zhoumo_工程師思維",
+      "target": "ch2ep1_char_zhoumo",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_trait_luyang_投降反射",
+      "target": "ch2ep1_char_luyang",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_trait_luyang_隨時備好投降表",
+      "target": "ch2ep1_char_luyang",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_trait_mengjingzhou_研究狂",
+      "target": "ch2ep1_char_mengjingzhou",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_trait_mengjingzhou_單身光環",
+      "target": "ch2ep1_char_mengjingzhou",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_trait_mengjingzhou_一切皆為數據",
+      "target": "ch2ep1_char_mengjingzhou",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_scene_TitleScene",
+      "target": "ch2ep2_plot",
+      "relation": "part_of",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_scene_ContentScene1",
+      "target": "ch2ep2_plot",
+      "relation": "part_of",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_scene_ContentScene2",
+      "target": "ch2ep2_plot",
+      "relation": "part_of",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_scene_OutroScene",
+      "target": "ch2ep2_plot",
+      "relation": "part_of",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_char_zhoumo",
+      "target": "ch2ep2_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_char_luyang",
+      "target": "ch2ep2_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_char_mengjingzhou",
+      "target": "ch2ep2_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_char_soul",
+      "target": "ch2ep2_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_char_narrator",
+      "target": "ch2ep2_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_char_zhoumo",
+      "target": "ch2ep2_tech_自動防禦系統",
+      "relation": "uses_tech_term",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_char_zhoumo",
+      "target": "ch2ep2_tech_記憶區段",
+      "relation": "uses_tech_term",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_char_zhoumo",
+      "target": "ch2ep2_tech_常規維護",
+      "relation": "uses_tech_term",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_char_mengjingzhou",
+      "target": "ch2ep2_tech_人工智慧",
+      "relation": "uses_tech_term",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_char_zhoumo",
+      "target": "ch2ep2_char_luyang",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_char_luyang",
+      "target": "ch2ep2_char_zhoumo",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_char_zhoumo",
+      "target": "ch2ep2_char_mengjingzhou",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_char_mengjingzhou",
+      "target": "ch2ep2_char_zhoumo",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_char_zhoumo",
+      "target": "ch2ep2_char_soul",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_char_soul",
+      "target": "ch2ep2_char_zhoumo",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_char_luyang",
+      "target": "ch2ep2_char_mengjingzhou",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_char_mengjingzhou",
+      "target": "ch2ep2_char_luyang",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_char_luyang",
+      "target": "ch2ep2_char_soul",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_char_soul",
+      "target": "ch2ep2_char_luyang",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_char_mengjingzhou",
+      "target": "ch2ep2_char_soul",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_char_soul",
+      "target": "ch2ep2_char_mengjingzhou",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_gag_忘加按鈕",
+      "target": "ch2ep2_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_gag_現代科技用語",
+      "target": "ch2ep2_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_gag_法寶反噬",
+      "target": "ch2ep2_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_trait_zhoumo_科技工程術語",
+      "target": "ch2ep2_char_zhoumo",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_trait_zhoumo_忘加按鈕/功能",
+      "target": "ch2ep2_char_zhoumo",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_trait_zhoumo_工程師思維",
+      "target": "ch2ep2_char_zhoumo",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_trait_zhoumo_萬物皆可修",
+      "target": "ch2ep2_char_zhoumo",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_trait_luyang_投降反射",
+      "target": "ch2ep2_char_luyang",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_trait_luyang_隨時備好投降表",
+      "target": "ch2ep2_char_luyang",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_trait_mengjingzhou_研究狂",
+      "target": "ch2ep2_char_mengjingzhou",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_trait_mengjingzhou_單身光環",
+      "target": "ch2ep2_char_mengjingzhou",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_trait_mengjingzhou_一切皆為數據",
+      "target": "ch2ep2_char_mengjingzhou",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_trait_soul_上古大能口吻",
+      "target": "ch2ep2_char_soul",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_trait_soul_家族遺傳忘性",
+      "target": "ch2ep2_char_soul",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_scene_TitleScene",
+      "target": "ch2ep3_plot",
+      "relation": "part_of",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_scene_ContentScene1",
+      "target": "ch2ep3_plot",
+      "relation": "part_of",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_scene_ContentScene2",
+      "target": "ch2ep3_plot",
+      "relation": "part_of",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_scene_OutroScene",
+      "target": "ch2ep3_plot",
+      "relation": "part_of",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_zhoumo",
+      "target": "ch2ep3_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_luyang",
+      "target": "ch2ep3_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_mengjingzhou",
+      "target": "ch2ep3_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_elder",
+      "target": "ch2ep3_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_narrator",
+      "target": "ch2ep3_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_zhoumo",
+      "target": "ch2ep3_tech_資訊系統",
+      "relation": "uses_tech_term",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_zhoumo",
+      "target": "ch2ep3_tech_認可系統",
+      "relation": "uses_tech_term",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_zhoumo",
+      "target": "ch2ep3_tech_自動評價系統",
+      "relation": "uses_tech_term",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_zhoumo",
+      "target": "ch2ep3_tech_評價標準",
+      "relation": "uses_tech_term",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_mengjingzhou",
+      "target": "ch2ep3_tech_自動評價系統",
+      "relation": "uses_tech_term",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_elder",
+      "target": "ch2ep3_char_luyang",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_luyang",
+      "target": "ch2ep3_char_elder",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_elder",
+      "target": "ch2ep3_char_mengjingzhou",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_mengjingzhou",
+      "target": "ch2ep3_char_elder",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_elder",
+      "target": "ch2ep3_char_zhoumo",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_zhoumo",
+      "target": "ch2ep3_char_elder",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_luyang",
+      "target": "ch2ep3_char_mengjingzhou",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_mengjingzhou",
+      "target": "ch2ep3_char_luyang",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_luyang",
+      "target": "ch2ep3_char_zhoumo",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_zhoumo",
+      "target": "ch2ep3_char_luyang",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_mengjingzhou",
+      "target": "ch2ep3_char_zhoumo",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_zhoumo",
+      "target": "ch2ep3_char_mengjingzhou",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_gag_忘加按鈕",
+      "target": "ch2ep3_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_gag_現代科技用語",
+      "target": "ch2ep3_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_gag_法寶反噬",
+      "target": "ch2ep3_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_trait_zhoumo_科技工程術語",
+      "target": "ch2ep3_char_zhoumo",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_trait_zhoumo_忘加按鈕/功能",
+      "target": "ch2ep3_char_zhoumo",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_trait_zhoumo_工程師思維",
+      "target": "ch2ep3_char_zhoumo",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_trait_zhoumo_用邏輯包裝荒謬",
+      "target": "ch2ep3_char_zhoumo",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_trait_zhoumo_萬物皆可修",
+      "target": "ch2ep3_char_zhoumo",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_trait_elder_毒舌警告",
+      "target": "ch2ep3_char_elder",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_trait_luyang_投降反射",
+      "target": "ch2ep3_char_luyang",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_trait_luyang_隨時備好投降表",
+      "target": "ch2ep3_char_luyang",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_trait_mengjingzhou_研究狂",
+      "target": "ch2ep3_char_mengjingzhou",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_scene_TitleScene",
+      "target": "ch3ep1_plot",
+      "relation": "part_of",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_scene_ContentScene1",
+      "target": "ch3ep1_plot",
+      "relation": "part_of",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_scene_ContentScene2",
+      "target": "ch3ep1_plot",
+      "relation": "part_of",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_scene_OutroScene",
+      "target": "ch3ep1_plot",
+      "relation": "part_of",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_char_zhoumo",
+      "target": "ch3ep1_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_char_luyang",
+      "target": "ch3ep1_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_char_mengjingzhou",
+      "target": "ch3ep1_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_char_elder",
+      "target": "ch3ep1_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_char_narrator",
+      "target": "ch3ep1_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_char_zhoumo",
+      "target": "ch3ep1_tech_雷射切割",
+      "relation": "uses_tech_term",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_char_zhoumo",
+      "target": "ch3ep1_tech_冗餘設計",
+      "relation": "uses_tech_term",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_char_zhoumo",
+      "target": "ch3ep1_tech_自動防禦協議",
+      "relation": "uses_tech_term",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_char_elder",
+      "target": "ch3ep1_char_luyang",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_char_luyang",
+      "target": "ch3ep1_char_elder",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_char_elder",
+      "target": "ch3ep1_char_mengjingzhou",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_char_mengjingzhou",
+      "target": "ch3ep1_char_elder",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_char_elder",
+      "target": "ch3ep1_char_zhoumo",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_char_zhoumo",
+      "target": "ch3ep1_char_elder",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_char_luyang",
+      "target": "ch3ep1_char_mengjingzhou",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_char_mengjingzhou",
+      "target": "ch3ep1_char_luyang",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_char_luyang",
+      "target": "ch3ep1_char_zhoumo",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_char_zhoumo",
+      "target": "ch3ep1_char_luyang",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_char_mengjingzhou",
+      "target": "ch3ep1_char_zhoumo",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_char_zhoumo",
+      "target": "ch3ep1_char_mengjingzhou",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_gag_忘加按鈕",
+      "target": "ch3ep1_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_gag_現代科技用語",
+      "target": "ch3ep1_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_gag_法寶反噬",
+      "target": "ch3ep1_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_trait_zhoumo_科技工程術語",
+      "target": "ch3ep1_char_zhoumo",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_trait_zhoumo_工程師思維",
+      "target": "ch3ep1_char_zhoumo",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_trait_zhoumo_萬物皆可修",
+      "target": "ch3ep1_char_zhoumo",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_trait_luyang_投降反射",
+      "target": "ch3ep1_char_luyang",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_trait_luyang_隨時備好投降表",
+      "target": "ch3ep1_char_luyang",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_trait_luyang_天真神比喻",
+      "target": "ch3ep1_char_luyang",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_trait_mengjingzhou_研究狂",
+      "target": "ch3ep1_char_mengjingzhou",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_trait_mengjingzhou_單身光環",
+      "target": "ch3ep1_char_mengjingzhou",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_trait_mengjingzhou_一切皆為數據",
+      "target": "ch3ep1_char_mengjingzhou",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep2_scene_TitleScene",
+      "target": "ch3ep2_plot",
+      "relation": "part_of",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep2_scene_ContentScene1",
+      "target": "ch3ep2_plot",
+      "relation": "part_of",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep2_scene_ContentScene2",
+      "target": "ch3ep2_plot",
+      "relation": "part_of",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep2_scene_OutroScene",
+      "target": "ch3ep2_plot",
+      "relation": "part_of",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep2_char_zhoumo",
+      "target": "ch3ep2_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep2_char_luyang",
+      "target": "ch3ep2_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep2_char_mengjingzhou",
+      "target": "ch3ep2_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep2_char_narrator",
+      "target": "ch3ep2_plot",
+      "relation": "appears_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep2_char_luyang",
+      "target": "ch3ep2_char_mengjingzhou",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep2_char_mengjingzhou",
+      "target": "ch3ep2_char_luyang",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep2_char_luyang",
+      "target": "ch3ep2_char_zhoumo",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep2_char_zhoumo",
+      "target": "ch3ep2_char_luyang",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep2_char_mengjingzhou",
+      "target": "ch3ep2_char_zhoumo",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep2_char_zhoumo",
+      "target": "ch3ep2_char_mengjingzhou",
+      "relation": "interacts_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep2_trait_zhoumo_忘加按鈕/功能",
+      "target": "ch3ep2_char_zhoumo",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep2_trait_zhoumo_工程師思維",
+      "target": "ch3ep2_char_zhoumo",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep2_trait_zhoumo_萬物皆可修",
+      "target": "ch3ep2_char_zhoumo",
+      "relation": "character_speaks_like",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep1_char_zhoumo",
+      "target": "ch1ep2_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_char_zhoumo",
+      "target": "ch1ep1_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep1_char_zhoumo",
+      "target": "ch1ep3_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_char_zhoumo",
+      "target": "ch1ep1_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep1_char_zhoumo",
+      "target": "ch2ep1_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_char_zhoumo",
+      "target": "ch1ep1_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep1_char_zhoumo",
+      "target": "ch2ep2_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_char_zhoumo",
+      "target": "ch1ep1_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep1_char_zhoumo",
+      "target": "ch2ep3_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_zhoumo",
+      "target": "ch1ep1_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep1_char_zhoumo",
+      "target": "ch3ep1_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_char_zhoumo",
+      "target": "ch1ep1_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep1_char_zhoumo",
+      "target": "ch3ep2_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep2_char_zhoumo",
+      "target": "ch1ep1_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_char_zhoumo",
+      "target": "ch1ep3_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_char_zhoumo",
+      "target": "ch1ep2_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_char_zhoumo",
+      "target": "ch2ep1_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_char_zhoumo",
+      "target": "ch1ep2_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_char_zhoumo",
+      "target": "ch2ep2_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_char_zhoumo",
+      "target": "ch1ep2_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_char_zhoumo",
+      "target": "ch2ep3_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_zhoumo",
+      "target": "ch1ep2_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_char_zhoumo",
+      "target": "ch3ep1_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_char_zhoumo",
+      "target": "ch1ep2_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_char_zhoumo",
+      "target": "ch3ep2_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep2_char_zhoumo",
+      "target": "ch1ep2_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_char_zhoumo",
+      "target": "ch2ep1_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_char_zhoumo",
+      "target": "ch1ep3_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_char_zhoumo",
+      "target": "ch2ep2_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_char_zhoumo",
+      "target": "ch1ep3_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_char_zhoumo",
+      "target": "ch2ep3_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_zhoumo",
+      "target": "ch1ep3_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_char_zhoumo",
+      "target": "ch3ep1_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_char_zhoumo",
+      "target": "ch1ep3_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_char_zhoumo",
+      "target": "ch3ep2_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep2_char_zhoumo",
+      "target": "ch1ep3_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_char_zhoumo",
+      "target": "ch2ep2_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_char_zhoumo",
+      "target": "ch2ep1_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_char_zhoumo",
+      "target": "ch2ep3_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_zhoumo",
+      "target": "ch2ep1_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_char_zhoumo",
+      "target": "ch3ep1_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_char_zhoumo",
+      "target": "ch2ep1_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_char_zhoumo",
+      "target": "ch3ep2_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep2_char_zhoumo",
+      "target": "ch2ep1_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_char_zhoumo",
+      "target": "ch2ep3_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_zhoumo",
+      "target": "ch2ep2_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_char_zhoumo",
+      "target": "ch3ep1_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_char_zhoumo",
+      "target": "ch2ep2_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_char_zhoumo",
+      "target": "ch3ep2_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep2_char_zhoumo",
+      "target": "ch2ep2_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_zhoumo",
+      "target": "ch3ep1_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_char_zhoumo",
+      "target": "ch2ep3_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_zhoumo",
+      "target": "ch3ep2_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep2_char_zhoumo",
+      "target": "ch2ep3_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_char_zhoumo",
+      "target": "ch3ep2_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep2_char_zhoumo",
+      "target": "ch3ep1_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep1_char_examiner",
+      "target": "ch1ep2_char_examiner",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_char_examiner",
+      "target": "ch1ep1_char_examiner",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep1_char_narrator",
+      "target": "ch1ep2_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_char_narrator",
+      "target": "ch1ep1_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep1_char_narrator",
+      "target": "ch1ep3_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_char_narrator",
+      "target": "ch1ep1_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep1_char_narrator",
+      "target": "ch2ep1_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_char_narrator",
+      "target": "ch1ep1_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep1_char_narrator",
+      "target": "ch2ep2_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_char_narrator",
+      "target": "ch1ep1_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep1_char_narrator",
+      "target": "ch2ep3_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_narrator",
+      "target": "ch1ep1_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep1_char_narrator",
+      "target": "ch3ep1_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_char_narrator",
+      "target": "ch1ep1_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep1_char_narrator",
+      "target": "ch3ep2_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep2_char_narrator",
+      "target": "ch1ep1_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_char_narrator",
+      "target": "ch1ep3_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_char_narrator",
+      "target": "ch1ep2_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_char_narrator",
+      "target": "ch2ep1_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_char_narrator",
+      "target": "ch1ep2_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_char_narrator",
+      "target": "ch2ep2_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_char_narrator",
+      "target": "ch1ep2_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_char_narrator",
+      "target": "ch2ep3_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_narrator",
+      "target": "ch1ep2_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_char_narrator",
+      "target": "ch3ep1_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_char_narrator",
+      "target": "ch1ep2_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_char_narrator",
+      "target": "ch3ep2_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep2_char_narrator",
+      "target": "ch1ep2_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_char_narrator",
+      "target": "ch2ep1_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_char_narrator",
+      "target": "ch1ep3_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_char_narrator",
+      "target": "ch2ep2_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_char_narrator",
+      "target": "ch1ep3_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_char_narrator",
+      "target": "ch2ep3_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_narrator",
+      "target": "ch1ep3_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_char_narrator",
+      "target": "ch3ep1_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_char_narrator",
+      "target": "ch1ep3_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_char_narrator",
+      "target": "ch3ep2_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep2_char_narrator",
+      "target": "ch1ep3_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_char_narrator",
+      "target": "ch2ep2_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_char_narrator",
+      "target": "ch2ep1_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_char_narrator",
+      "target": "ch2ep3_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_narrator",
+      "target": "ch2ep1_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_char_narrator",
+      "target": "ch3ep1_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_char_narrator",
+      "target": "ch2ep1_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_char_narrator",
+      "target": "ch3ep2_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep2_char_narrator",
+      "target": "ch2ep1_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_char_narrator",
+      "target": "ch2ep3_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_narrator",
+      "target": "ch2ep2_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_char_narrator",
+      "target": "ch3ep1_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_char_narrator",
+      "target": "ch2ep2_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_char_narrator",
+      "target": "ch3ep2_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep2_char_narrator",
+      "target": "ch2ep2_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_narrator",
+      "target": "ch3ep1_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_char_narrator",
+      "target": "ch2ep3_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_narrator",
+      "target": "ch3ep2_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep2_char_narrator",
+      "target": "ch2ep3_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_char_narrator",
+      "target": "ch3ep2_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep2_char_narrator",
+      "target": "ch3ep1_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_char_elder",
+      "target": "ch1ep3_char_elder",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_char_elder",
+      "target": "ch1ep2_char_elder",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_char_elder",
+      "target": "ch2ep3_char_elder",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_elder",
+      "target": "ch1ep2_char_elder",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_char_elder",
+      "target": "ch3ep1_char_elder",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_char_elder",
+      "target": "ch1ep2_char_elder",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_char_elder",
+      "target": "ch2ep3_char_elder",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_elder",
+      "target": "ch1ep3_char_elder",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_char_elder",
+      "target": "ch3ep1_char_elder",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_char_elder",
+      "target": "ch1ep3_char_elder",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_elder",
+      "target": "ch3ep1_char_elder",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_char_elder",
+      "target": "ch2ep3_char_elder",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_char_luyang",
+      "target": "ch2ep2_char_luyang",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_char_luyang",
+      "target": "ch2ep1_char_luyang",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_char_luyang",
+      "target": "ch2ep3_char_luyang",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_luyang",
+      "target": "ch2ep1_char_luyang",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_char_luyang",
+      "target": "ch3ep1_char_luyang",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_char_luyang",
+      "target": "ch2ep1_char_luyang",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_char_luyang",
+      "target": "ch3ep2_char_luyang",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep2_char_luyang",
+      "target": "ch2ep1_char_luyang",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_char_luyang",
+      "target": "ch2ep3_char_luyang",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_luyang",
+      "target": "ch2ep2_char_luyang",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_char_luyang",
+      "target": "ch3ep1_char_luyang",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_char_luyang",
+      "target": "ch2ep2_char_luyang",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_char_luyang",
+      "target": "ch3ep2_char_luyang",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep2_char_luyang",
+      "target": "ch2ep2_char_luyang",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_luyang",
+      "target": "ch3ep1_char_luyang",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_char_luyang",
+      "target": "ch2ep3_char_luyang",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_luyang",
+      "target": "ch3ep2_char_luyang",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep2_char_luyang",
+      "target": "ch2ep3_char_luyang",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_char_luyang",
+      "target": "ch3ep2_char_luyang",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep2_char_luyang",
+      "target": "ch3ep1_char_luyang",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_char_mengjingzhou",
+      "target": "ch2ep2_char_mengjingzhou",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_char_mengjingzhou",
+      "target": "ch2ep1_char_mengjingzhou",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_char_mengjingzhou",
+      "target": "ch2ep3_char_mengjingzhou",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_mengjingzhou",
+      "target": "ch2ep1_char_mengjingzhou",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_char_mengjingzhou",
+      "target": "ch3ep1_char_mengjingzhou",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_char_mengjingzhou",
+      "target": "ch2ep1_char_mengjingzhou",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_char_mengjingzhou",
+      "target": "ch3ep2_char_mengjingzhou",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep2_char_mengjingzhou",
+      "target": "ch2ep1_char_mengjingzhou",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_char_mengjingzhou",
+      "target": "ch2ep3_char_mengjingzhou",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_mengjingzhou",
+      "target": "ch2ep2_char_mengjingzhou",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_char_mengjingzhou",
+      "target": "ch3ep1_char_mengjingzhou",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_char_mengjingzhou",
+      "target": "ch2ep2_char_mengjingzhou",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_char_mengjingzhou",
+      "target": "ch3ep2_char_mengjingzhou",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep2_char_mengjingzhou",
+      "target": "ch2ep2_char_mengjingzhou",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_mengjingzhou",
+      "target": "ch3ep1_char_mengjingzhou",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_char_mengjingzhou",
+      "target": "ch2ep3_char_mengjingzhou",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_char_mengjingzhou",
+      "target": "ch3ep2_char_mengjingzhou",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep2_char_mengjingzhou",
+      "target": "ch2ep3_char_mengjingzhou",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_char_mengjingzhou",
+      "target": "ch3ep2_char_mengjingzhou",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep2_char_mengjingzhou",
+      "target": "ch3ep1_char_mengjingzhou",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep1_plot",
+      "target": "ch1ep2_plot",
+      "relation": "story_continues",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_plot",
+      "target": "ch1ep3_plot",
+      "relation": "story_continues",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_plot",
+      "target": "ch2ep1_plot",
+      "relation": "story_continues",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_plot",
+      "target": "ch2ep2_plot",
+      "relation": "story_continues",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_plot",
+      "target": "ch2ep3_plot",
+      "relation": "story_continues",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_plot",
+      "target": "ch3ep1_plot",
+      "relation": "story_continues",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch3ep1_plot",
+      "target": "ch3ep2_plot",
+      "relation": "story_continues",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep1_gag_忘加按鈕",
+      "target": "ch1ep2_gag_忘加按鈕",
+      "relation": "gag_evolves",
+      "confidence": "LINK",
+      "confidence_score": 0.8,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_gag_忘加按鈕",
+      "target": "ch1ep3_gag_忘加按鈕",
+      "relation": "gag_evolves",
+      "confidence": "LINK",
+      "confidence_score": 0.8,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_gag_忘加按鈕",
+      "target": "ch2ep1_gag_忘加按鈕",
+      "relation": "gag_evolves",
+      "confidence": "LINK",
+      "confidence_score": 0.8,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_gag_忘加按鈕",
+      "target": "ch2ep2_gag_忘加按鈕",
+      "relation": "gag_evolves",
+      "confidence": "LINK",
+      "confidence_score": 0.8,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_gag_忘加按鈕",
+      "target": "ch2ep3_gag_忘加按鈕",
+      "relation": "gag_evolves",
+      "confidence": "LINK",
+      "confidence_score": 0.8,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_gag_忘加按鈕",
+      "target": "ch3ep1_gag_忘加按鈕",
+      "relation": "gag_evolves",
+      "confidence": "LINK",
+      "confidence_score": 0.8,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep1_gag_現代科技用語",
+      "target": "ch1ep2_gag_現代科技用語",
+      "relation": "gag_evolves",
+      "confidence": "LINK",
+      "confidence_score": 0.8,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_gag_現代科技用語",
+      "target": "ch1ep3_gag_現代科技用語",
+      "relation": "gag_evolves",
+      "confidence": "LINK",
+      "confidence_score": 0.8,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_gag_現代科技用語",
+      "target": "ch2ep1_gag_現代科技用語",
+      "relation": "gag_evolves",
+      "confidence": "LINK",
+      "confidence_score": 0.8,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_gag_現代科技用語",
+      "target": "ch2ep2_gag_現代科技用語",
+      "relation": "gag_evolves",
+      "confidence": "LINK",
+      "confidence_score": 0.8,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_gag_現代科技用語",
+      "target": "ch2ep3_gag_現代科技用語",
+      "relation": "gag_evolves",
+      "confidence": "LINK",
+      "confidence_score": 0.8,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_gag_現代科技用語",
+      "target": "ch3ep1_gag_現代科技用語",
+      "relation": "gag_evolves",
+      "confidence": "LINK",
+      "confidence_score": 0.8,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep1_gag_法寶反噬",
+      "target": "ch1ep2_gag_法寶反噬",
+      "relation": "gag_evolves",
+      "confidence": "LINK",
+      "confidence_score": 0.8,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep2_gag_法寶反噬",
+      "target": "ch1ep3_gag_法寶反噬",
+      "relation": "gag_evolves",
+      "confidence": "LINK",
+      "confidence_score": 0.8,
+      "weight": 1
+    },
+    {
+      "source": "ch1ep3_gag_法寶反噬",
+      "target": "ch2ep1_gag_法寶反噬",
+      "relation": "gag_evolves",
+      "confidence": "LINK",
+      "confidence_score": 0.8,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep1_gag_法寶反噬",
+      "target": "ch2ep2_gag_法寶反噬",
+      "relation": "gag_evolves",
+      "confidence": "LINK",
+      "confidence_score": 0.8,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep2_gag_法寶反噬",
+      "target": "ch2ep3_gag_法寶反噬",
+      "relation": "gag_evolves",
+      "confidence": "LINK",
+      "confidence_score": 0.8,
+      "weight": 1
+    },
+    {
+      "source": "ch2ep3_gag_法寶反噬",
+      "target": "ch3ep1_gag_法寶反噬",
+      "relation": "gag_evolves",
+      "confidence": "LINK",
+      "confidence_score": 0.8,
+      "weight": 1
+    }
+  ],
+  "communities": {},
+  "community_analysis": null,
+  "link_edges": [
+    {
+      "source": "ch1ep1_char_zhoumo",
+      "target": "ch1ep2_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch1ep1_char_zhoumo",
+      "target": "ch1ep3_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch1ep1_char_zhoumo",
+      "target": "ch2ep1_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch1ep1_char_zhoumo",
+      "target": "ch2ep2_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch1ep1_char_zhoumo",
+      "target": "ch2ep3_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch1ep1_char_zhoumo",
+      "target": "ch3ep1_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch1ep1_char_zhoumo",
+      "target": "ch3ep2_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch1ep2_char_zhoumo",
+      "target": "ch1ep3_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch1ep2_char_zhoumo",
+      "target": "ch2ep1_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch1ep2_char_zhoumo",
+      "target": "ch2ep2_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch1ep2_char_zhoumo",
+      "target": "ch2ep3_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch1ep2_char_zhoumo",
+      "target": "ch3ep1_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch1ep2_char_zhoumo",
+      "target": "ch3ep2_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch1ep3_char_zhoumo",
+      "target": "ch2ep1_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch1ep3_char_zhoumo",
+      "target": "ch2ep2_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch1ep3_char_zhoumo",
+      "target": "ch2ep3_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch1ep3_char_zhoumo",
+      "target": "ch3ep1_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch1ep3_char_zhoumo",
+      "target": "ch3ep2_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch2ep1_char_zhoumo",
+      "target": "ch2ep2_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch2ep1_char_zhoumo",
+      "target": "ch2ep3_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch2ep1_char_zhoumo",
+      "target": "ch3ep1_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch2ep1_char_zhoumo",
+      "target": "ch3ep2_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch2ep2_char_zhoumo",
+      "target": "ch2ep3_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch2ep2_char_zhoumo",
+      "target": "ch3ep1_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch2ep2_char_zhoumo",
+      "target": "ch3ep2_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch2ep3_char_zhoumo",
+      "target": "ch3ep1_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch2ep3_char_zhoumo",
+      "target": "ch3ep2_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch3ep1_char_zhoumo",
+      "target": "ch3ep2_char_zhoumo",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch1ep1_char_examiner",
+      "target": "ch1ep2_char_examiner",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch1ep1_char_narrator",
+      "target": "ch1ep2_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch1ep1_char_narrator",
+      "target": "ch1ep3_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch1ep1_char_narrator",
+      "target": "ch2ep1_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch1ep1_char_narrator",
+      "target": "ch2ep2_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch1ep1_char_narrator",
+      "target": "ch2ep3_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch1ep1_char_narrator",
+      "target": "ch3ep1_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch1ep1_char_narrator",
+      "target": "ch3ep2_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch1ep2_char_narrator",
+      "target": "ch1ep3_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch1ep2_char_narrator",
+      "target": "ch2ep1_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch1ep2_char_narrator",
+      "target": "ch2ep2_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch1ep2_char_narrator",
+      "target": "ch2ep3_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch1ep2_char_narrator",
+      "target": "ch3ep1_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch1ep2_char_narrator",
+      "target": "ch3ep2_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch1ep3_char_narrator",
+      "target": "ch2ep1_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch1ep3_char_narrator",
+      "target": "ch2ep2_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch1ep3_char_narrator",
+      "target": "ch2ep3_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch1ep3_char_narrator",
+      "target": "ch3ep1_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch1ep3_char_narrator",
+      "target": "ch3ep2_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch2ep1_char_narrator",
+      "target": "ch2ep2_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch2ep1_char_narrator",
+      "target": "ch2ep3_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch2ep1_char_narrator",
+      "target": "ch3ep1_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch2ep1_char_narrator",
+      "target": "ch3ep2_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch2ep2_char_narrator",
+      "target": "ch2ep3_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch2ep2_char_narrator",
+      "target": "ch3ep1_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch2ep2_char_narrator",
+      "target": "ch3ep2_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch2ep3_char_narrator",
+      "target": "ch3ep1_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch2ep3_char_narrator",
+      "target": "ch3ep2_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch3ep1_char_narrator",
+      "target": "ch3ep2_char_narrator",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch1ep2_char_elder",
+      "target": "ch1ep3_char_elder",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch1ep2_char_elder",
+      "target": "ch2ep3_char_elder",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch1ep2_char_elder",
+      "target": "ch3ep1_char_elder",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch1ep3_char_elder",
+      "target": "ch2ep3_char_elder",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch1ep3_char_elder",
+      "target": "ch3ep1_char_elder",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch2ep3_char_elder",
+      "target": "ch3ep1_char_elder",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch2ep1_char_luyang",
+      "target": "ch2ep2_char_luyang",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch2ep1_char_luyang",
+      "target": "ch2ep3_char_luyang",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch2ep1_char_luyang",
+      "target": "ch3ep1_char_luyang",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch2ep1_char_luyang",
+      "target": "ch3ep2_char_luyang",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch2ep2_char_luyang",
+      "target": "ch2ep3_char_luyang",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch2ep2_char_luyang",
+      "target": "ch3ep1_char_luyang",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch2ep2_char_luyang",
+      "target": "ch3ep2_char_luyang",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch2ep3_char_luyang",
+      "target": "ch3ep1_char_luyang",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch2ep3_char_luyang",
+      "target": "ch3ep2_char_luyang",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch3ep1_char_luyang",
+      "target": "ch3ep2_char_luyang",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch2ep1_char_mengjingzhou",
+      "target": "ch2ep2_char_mengjingzhou",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch2ep1_char_mengjingzhou",
+      "target": "ch2ep3_char_mengjingzhou",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch2ep1_char_mengjingzhou",
+      "target": "ch3ep1_char_mengjingzhou",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch2ep1_char_mengjingzhou",
+      "target": "ch3ep2_char_mengjingzhou",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch2ep2_char_mengjingzhou",
+      "target": "ch2ep3_char_mengjingzhou",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch2ep2_char_mengjingzhou",
+      "target": "ch3ep1_char_mengjingzhou",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch2ep2_char_mengjingzhou",
+      "target": "ch3ep2_char_mengjingzhou",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch2ep3_char_mengjingzhou",
+      "target": "ch3ep1_char_mengjingzhou",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch2ep3_char_mengjingzhou",
+      "target": "ch3ep2_char_mengjingzhou",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch3ep1_char_mengjingzhou",
+      "target": "ch3ep2_char_mengjingzhou",
+      "relation": "same_character",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "graph_data"
+    },
+    {
+      "source": "ch1ep1_plot",
+      "target": "ch1ep2_plot",
+      "relation": "story_continues",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "PLAN.md"
+    },
+    {
+      "source": "ch1ep2_plot",
+      "target": "ch1ep3_plot",
+      "relation": "story_continues",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "PLAN.md"
+    },
+    {
+      "source": "ch1ep3_plot",
+      "target": "ch2ep1_plot",
+      "relation": "story_continues",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "PLAN.md"
+    },
+    {
+      "source": "ch2ep1_plot",
+      "target": "ch2ep2_plot",
+      "relation": "story_continues",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "PLAN.md"
+    },
+    {
+      "source": "ch2ep2_plot",
+      "target": "ch2ep3_plot",
+      "relation": "story_continues",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "PLAN.md"
+    },
+    {
+      "source": "ch2ep3_plot",
+      "target": "ch3ep1_plot",
+      "relation": "story_continues",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "PLAN.md"
+    },
+    {
+      "source": "ch3ep1_plot",
+      "target": "ch3ep2_plot",
+      "relation": "story_continues",
+      "confidence": "LINK",
+      "confidence_score": 1,
+      "source_file": "PLAN.md"
+    },
+    {
+      "source": "ch1ep1_gag_忘加按鈕",
+      "target": "ch1ep2_gag_忘加按鈕",
+      "relation": "gag_evolves",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "PLAN.md"
+    },
+    {
+      "source": "ch1ep2_gag_忘加按鈕",
+      "target": "ch1ep3_gag_忘加按鈕",
+      "relation": "gag_evolves",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "PLAN.md"
+    },
+    {
+      "source": "ch1ep3_gag_忘加按鈕",
+      "target": "ch2ep1_gag_忘加按鈕",
+      "relation": "gag_evolves",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "PLAN.md"
+    },
+    {
+      "source": "ch2ep1_gag_忘加按鈕",
+      "target": "ch2ep2_gag_忘加按鈕",
+      "relation": "gag_evolves",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "PLAN.md"
+    },
+    {
+      "source": "ch2ep2_gag_忘加按鈕",
+      "target": "ch2ep3_gag_忘加按鈕",
+      "relation": "gag_evolves",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "PLAN.md"
+    },
+    {
+      "source": "ch2ep3_gag_忘加按鈕",
+      "target": "ch3ep1_gag_忘加按鈕",
+      "relation": "gag_evolves",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "PLAN.md"
+    },
+    {
+      "source": "ch1ep1_gag_現代科技用語",
+      "target": "ch1ep2_gag_現代科技用語",
+      "relation": "gag_evolves",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "PLAN.md"
+    },
+    {
+      "source": "ch1ep2_gag_現代科技用語",
+      "target": "ch1ep3_gag_現代科技用語",
+      "relation": "gag_evolves",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "PLAN.md"
+    },
+    {
+      "source": "ch1ep3_gag_現代科技用語",
+      "target": "ch2ep1_gag_現代科技用語",
+      "relation": "gag_evolves",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "PLAN.md"
+    },
+    {
+      "source": "ch2ep1_gag_現代科技用語",
+      "target": "ch2ep2_gag_現代科技用語",
+      "relation": "gag_evolves",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "PLAN.md"
+    },
+    {
+      "source": "ch2ep2_gag_現代科技用語",
+      "target": "ch2ep3_gag_現代科技用語",
+      "relation": "gag_evolves",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "PLAN.md"
+    },
+    {
+      "source": "ch2ep3_gag_現代科技用語",
+      "target": "ch3ep1_gag_現代科技用語",
+      "relation": "gag_evolves",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "PLAN.md"
+    },
+    {
+      "source": "ch1ep1_gag_法寶反噬",
+      "target": "ch1ep2_gag_法寶反噬",
+      "relation": "gag_evolves",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "PLAN.md"
+    },
+    {
+      "source": "ch1ep2_gag_法寶反噬",
+      "target": "ch1ep3_gag_法寶反噬",
+      "relation": "gag_evolves",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "PLAN.md"
+    },
+    {
+      "source": "ch1ep3_gag_法寶反噬",
+      "target": "ch2ep1_gag_法寶反噬",
+      "relation": "gag_evolves",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "PLAN.md"
+    },
+    {
+      "source": "ch2ep1_gag_法寶反噬",
+      "target": "ch2ep2_gag_法寶反噬",
+      "relation": "gag_evolves",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "PLAN.md"
+    },
+    {
+      "source": "ch2ep2_gag_法寶反噬",
+      "target": "ch2ep3_gag_法寶反噬",
+      "relation": "gag_evolves",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "PLAN.md"
+    },
+    {
+      "source": "ch2ep3_gag_法寶反噬",
+      "target": "ch3ep1_gag_法寶反噬",
+      "relation": "gag_evolves",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "PLAN.md"
+    }
+  ],
+  "episode_count": 8
+}

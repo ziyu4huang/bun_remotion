@@ -36,7 +36,7 @@ describe("cross-project smoke", () => {
         const p = join(outDir, "gate.json");
         expect(existsSync(p)).toBe(true);
         const gate = JSON.parse(readFileSync(p, "utf-8"));
-        expect(gate.version).toBe("2.0");
+        expect(gate.version).toMatch(/^2\./);
         expect(typeof gate.score).toBe("number");
         expect(gate.score).toBeGreaterThanOrEqual(0);
         expect(gate.score).toBeLessThanOrEqual(100);

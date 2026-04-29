@@ -12,13 +12,16 @@
 # Error details
 
 ```
-Test timeout of 15000ms exceeded.
-```
+Error: expect(locator).toBeVisible() failed
 
-```
-Error: locator.click: Test timeout of 15000ms exceeded.
+Locator: getByRole('button', { name: 'Hide Advisor' })
+Expected: visible
+Timeout: 3000ms
+Error: element(s) not found
+
 Call log:
-  - waiting for locator('table').first().locator('tbody tr').first()
+  - Expect "toBeVisible" with timeout 3000ms
+  - waiting for getByRole('button', { name: 'Hide Advisor' })
 
 ```
 
@@ -27,22 +30,175 @@ Call log:
 ```yaml
 - generic [ref=e3]:
   - navigation [ref=e4]:
-    - heading "Bun Remotion" [level=2] [ref=e5]
-    - button "Dashboard" [ref=e6] [cursor=pointer]
-    - button "Monitoring" [ref=e7] [cursor=pointer]
-    - button "Projects" [active] [ref=e8] [cursor=pointer]
-    - button "Story Editor" [ref=e9] [cursor=pointer]
-    - button "Storygraph" [ref=e10] [cursor=pointer]
-    - button "Quality" [ref=e11] [cursor=pointer]
-    - button "Benchmark" [ref=e12] [cursor=pointer]
-    - button "Agent Chat" [ref=e13] [cursor=pointer]
-    - button "Assets" [ref=e14] [cursor=pointer]
-    - button "TTS" [ref=e15] [cursor=pointer]
-    - button "Render" [ref=e16] [cursor=pointer]
-    - button "Image" [ref=e17] [cursor=pointer]
-    - button "Workflows" [ref=e18] [cursor=pointer]
-  - main [ref=e19]:
-    - generic [ref=e20]: Loading projects...
+    - heading "Remotion Studio" [level=2] [ref=e5]
+    - generic [ref=e6]:
+      - generic [ref=e7]: Overview
+      - button "■ Dashboard" [ref=e8] [cursor=pointer]:
+        - generic [ref=e9]: ■
+        - text: Dashboard
+      - button "● Monitoring" [ref=e10] [cursor=pointer]:
+        - generic [ref=e11]: ●
+        - text: Monitoring
+      - button "▣ Progress" [ref=e12] [cursor=pointer]:
+        - generic [ref=e13]: ▣
+        - text: Progress
+      - button "▦ Kanban" [ref=e14] [cursor=pointer]:
+        - generic [ref=e15]: ▦
+        - text: Kanban
+    - generic [ref=e16]:
+      - generic [ref=e17]: Production
+      - button "📁 Projects" [ref=e18] [cursor=pointer]:
+        - generic [ref=e19]: 📁
+        - text: Projects
+      - button "✍ Story Editor" [ref=e20] [cursor=pointer]:
+        - generic [ref=e21]: ✍
+        - text: Story Editor
+      - button "⚙ Workflows" [ref=e22] [cursor=pointer]:
+        - generic [ref=e23]: ⚙
+        - text: Workflows
+    - generic [ref=e24]:
+      - generic [ref=e25]: Analysis
+      - button "🕸 Storygraph" [ref=e26] [cursor=pointer]:
+        - generic [ref=e27]: 🕸
+        - text: Storygraph
+      - button "✔ Quality" [ref=e28] [cursor=pointer]:
+        - generic [ref=e29]: ✔
+        - text: Quality
+      - button "📊 Benchmark" [ref=e30] [cursor=pointer]:
+        - generic [ref=e31]: 📊
+        - text: Benchmark
+    - generic [ref=e32]:
+      - generic [ref=e33]: AI
+      - button "🤖 Agent Chat" [ref=e34] [cursor=pointer]:
+        - generic [ref=e35]: 🤖
+        - text: Agent Chat
+    - generic [ref=e36]:
+      - generic [ref=e37]: Assets
+      - button "🖼 Assets" [ref=e38] [cursor=pointer]:
+        - generic [ref=e39]: 🖼
+        - text: Assets
+      - button "🔊 TTS" [ref=e40] [cursor=pointer]:
+        - generic [ref=e41]: 🔊
+        - text: TTS
+      - button "▶ Render" [ref=e42] [cursor=pointer]:
+        - generic [ref=e43]: ▶
+        - text: Render
+      - button "🎨 Image" [ref=e44] [cursor=pointer]:
+        - generic [ref=e45]: 🎨
+        - text: Image
+    - generic [ref=e46]:
+      - button "◐" [ref=e47] [cursor=pointer]
+      - button "中" [ref=e48] [cursor=pointer]
+  - main [ref=e49]:
+    - generic [ref=e50]:
+      - generic [ref=e51]:
+        - generic [ref=e52]:
+          - button "← Back" [ref=e53] [cursor=pointer]
+          - generic [ref=e54]:
+            - heading "Galgame Meme Theater" [level=1] [ref=e56]
+            - paragraph [ref=e57]: galgame_vn
+          - button "+ New Episode" [ref=e58] [cursor=pointer]
+          - button "Hide" [active] [ref=e59] [cursor=pointer]
+        - generic [ref=e60]:
+          - generic [ref=e61]: "Category: Galgame VN"
+          - generic [ref=e62]: "Episodes: 7"
+          - generic [ref=e63]:
+            - text: "Gate:"
+            - generic [ref=e64]: 100/100
+          - generic [ref=e65]: "Plan: Yes"
+        - table [ref=e66]:
+          - rowgroup [ref=e67]:
+            - row "Episode Ch Ep Scaffold TTS Render Gate Build" [ref=e68]:
+              - columnheader "Episode" [ref=e69]
+              - columnheader "Ch" [ref=e70]
+              - columnheader "Ep" [ref=e71]
+              - columnheader "Scaffold" [ref=e72]
+              - columnheader "TTS" [ref=e73]
+              - columnheader "Render" [ref=e74]
+              - columnheader "Gate" [ref=e75]
+              - columnheader "Build" [ref=e76]
+          - rowgroup [ref=e77]:
+            - row "galgame-meme-theater-ep1 — 1 Yes — Yes — Build" [ref=e78]:
+              - cell "galgame-meme-theater-ep1" [ref=e79]
+              - cell "—" [ref=e80]
+              - cell "1" [ref=e81]
+              - cell "Yes" [ref=e82]
+              - cell "—" [ref=e83]
+              - cell "Yes" [ref=e84]
+              - cell "—" [ref=e85]
+              - cell "Build" [ref=e86]:
+                - button "Build" [ref=e87] [cursor=pointer]
+            - row "galgame-meme-theater-ep2 — 2 Yes — Yes — Build" [ref=e88]:
+              - cell "galgame-meme-theater-ep2" [ref=e89]
+              - cell "—" [ref=e90]
+              - cell "2" [ref=e91]
+              - cell "Yes" [ref=e92]
+              - cell "—" [ref=e93]
+              - cell "Yes" [ref=e94]
+              - cell "—" [ref=e95]
+              - cell "Build" [ref=e96]:
+                - button "Build" [ref=e97] [cursor=pointer]
+            - row "galgame-meme-theater-ep3 — 3 Yes — Yes — Build" [ref=e98]:
+              - cell "galgame-meme-theater-ep3" [ref=e99]
+              - cell "—" [ref=e100]
+              - cell "3" [ref=e101]
+              - cell "Yes" [ref=e102]
+              - cell "—" [ref=e103]
+              - cell "Yes" [ref=e104]
+              - cell "—" [ref=e105]
+              - cell "Build" [ref=e106]:
+                - button "Build" [ref=e107] [cursor=pointer]
+            - row "galgame-meme-theater-ep4 — 4 Yes — Yes — Build" [ref=e108]:
+              - cell "galgame-meme-theater-ep4" [ref=e109]
+              - cell "—" [ref=e110]
+              - cell "4" [ref=e111]
+              - cell "Yes" [ref=e112]
+              - cell "—" [ref=e113]
+              - cell "Yes" [ref=e114]
+              - cell "—" [ref=e115]
+              - cell "Build" [ref=e116]:
+                - button "Build" [ref=e117] [cursor=pointer]
+            - row "galgame-meme-theater-ep5 — 5 Yes — Yes — Build" [ref=e118]:
+              - cell "galgame-meme-theater-ep5" [ref=e119]
+              - cell "—" [ref=e120]
+              - cell "5" [ref=e121]
+              - cell "Yes" [ref=e122]
+              - cell "—" [ref=e123]
+              - cell "Yes" [ref=e124]
+              - cell "—" [ref=e125]
+              - cell "Build" [ref=e126]:
+                - button "Build" [ref=e127] [cursor=pointer]
+            - row "galgame-meme-theater-ep6 — 6 Yes — Yes — Build" [ref=e128]:
+              - cell "galgame-meme-theater-ep6" [ref=e129]
+              - cell "—" [ref=e130]
+              - cell "6" [ref=e131]
+              - cell "Yes" [ref=e132]
+              - cell "—" [ref=e133]
+              - cell "Yes" [ref=e134]
+              - cell "—" [ref=e135]
+              - cell "Build" [ref=e136]:
+                - button "Build" [ref=e137] [cursor=pointer]
+            - row "galgame-meme-theater-ep7 — 7 Yes — Yes — Build" [ref=e138]:
+              - cell "galgame-meme-theater-ep7" [ref=e139]
+              - cell "—" [ref=e140]
+              - cell "7" [ref=e141]
+              - cell "Yes" [ref=e142]
+              - cell "—" [ref=e143]
+              - cell "Yes" [ref=e144]
+              - cell "—" [ref=e145]
+              - cell "Build" [ref=e146]:
+                - button "Build" [ref=e147] [cursor=pointer]
+        - button "Review Checklist (7 episodes) ▼" [ref=e149] [cursor=pointer]:
+          - generic [ref=e150]: Review Checklist (7 episodes)
+          - generic [ref=e151]: ▼
+      - generic [ref=e152]:
+        - generic [ref=e154]:
+          - heading "Story Advisor" [level=3] [ref=e155]
+          - generic [ref=e156]: studio-advisor · Galgame Meme Theater
+        - generic [ref=e158]: Ask about story, characters, pacing, or suggestions for this series
+        - generic [ref=e160]:
+          - textbox "Ask about story, characters, pacing, or suggestions for this series" [ref=e161]
+          - button "Ask" [disabled] [ref=e162] [cursor=pointer]
 ```
 
 # Test source
@@ -123,8 +279,7 @@ Call log:
   73  | 
   74  |   test("Ask Advisor button toggles advisor panel", async ({ page }) => {
   75  |     const firstRow = page.locator("table").first().locator("tbody tr").first();
-> 76  |     await firstRow.click();
-      |                    ^ Error: locator.click: Test timeout of 15000ms exceeded.
+  76  |     await firstRow.click();
   77  | 
   78  |     // Click Ask Advisor
   79  |     const advisorBtn = page.getByRole("button", { name: /Ask Advisor|Hide Advisor/i });
@@ -132,7 +287,8 @@ Call log:
   81  |     await advisorBtn.click();
   82  | 
   83  |     // Button should toggle to "Hide Advisor"
-  84  |     await expect(page.getByRole("button", { name: "Hide Advisor" })).toBeVisible({ timeout: 3_000 });
+> 84  |     await expect(page.getByRole("button", { name: "Hide Advisor" })).toBeVisible({ timeout: 3_000 });
+      |                                                                      ^ Error: expect(locator).toBeVisible() failed
   85  | 
   86  |     // Some advisor UI should appear (input or heading)
   87  |     const advisorUI = page.locator("main").getByText(/Advisor|advisor/i);

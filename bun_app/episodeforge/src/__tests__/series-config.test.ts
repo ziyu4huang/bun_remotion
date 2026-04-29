@@ -2,6 +2,7 @@ import { describe, test, expect } from "bun:test";
 import {
   getSeriesConfig,
   SERIES_REGISTRY,
+  listSeries,
   type SeriesConfig,
 } from "../series-config";
 
@@ -129,5 +130,9 @@ describe("SeriesConfig structure", () => {
     for (const config of Object.values(SERIES_REGISTRY)) {
       expect(config.language).toBe("zh-TW");
     }
+  });
+
+  test("listSeries is a function", () => {
+    expect(typeof listSeries).toBe("function");
   });
 });

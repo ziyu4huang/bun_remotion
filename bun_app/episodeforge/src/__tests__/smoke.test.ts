@@ -437,6 +437,46 @@ describe("collectFiles integration", () => {
   });
 });
 
+// ─── Audio Filename Consistency ──────────────────────────────────────────────────
+
+describe("audio filename consistency", () => {
+  /** Extract audio filenames from genNarration output */
+  function extractNarrationAudioFiles(output: string): string[] {
+    const matches = output.matchAll(/file:\s*"(\d+-[^"]+\.wav)"/g);
+    return [...matches].map((m) => m[1]);
+  }
+
+  /** Extract audio filenames from genMainComponent output */
+  function extractMainAudioFiles(output: string): string[] {
+    const matches = output.matchAll(/require\("[^"]*\/(\d+-[^"]+\.wav)"\)/g);
+    return [...matches].map((m) => m[1]);
+  }
+
+  test("weapon-forger: narration audio filenames match main component", () => {
+    const ctx = buildContext("weapon-forger", 1, 3);
+    const narrationFiles = extractNarrationAudioFiles(genNarration(ctx));
+    const mainFiles = extractMainAudioFiles(genMainComponent(ctx));
+
+    expect(narrationFiles).toEqual(mainFiles);
+  });
+
+  test("galgame-meme-theater: narration audio filenames match main component", () => {
+    const ctx = buildContext("galgame-meme-theater", null, 5);
+    const narrationFiles = extractNarrationAudioFiles(genNarration(ctx));
+    const mainFiles = extractMainAudioFiles(genMainComponent(ctx));
+
+    expect(narrationFiles).toEqual(mainFiles);
+  });
+
+  test("my-core-is-boss: narration audio filenames match main component", () => {
+    const ctx = buildContext("my-core-is-boss", 1, 2);
+    const narrationFiles = extractNarrationAudioFiles(genNarration(ctx));
+    const mainFiles = extractMainAudioFiles(genMainComponent(ctx));
+
+    expect(narrationFiles).toEqual(mainFiles);
+  });
+});
+
 // ─── parseArgs Smoke Test ─────────────────────────────────────────────────────────
 
 describe("parseArgs", () => {
@@ -481,6 +521,18 @@ describe("parseArgs", () => {
     expect(args.category).toBeNull();
     expect(args.dryRun).toBe(false);
     expect(args.skipInstall).toBe(false);
+    expect(args.force).toBe(false);
+    expect(args.listSeries).toBe(false);
     expect(args.help).toBe(false);
+  });
+
+  test("parses --force flag", () => {
+    const args = parseArgs(["--series", "weapon-forger", "--ch", "1", "--ep", "1", "--force"]);
+    expect(args.force).toBe(true);
+  });
+
+  test("parses --list-series flag", () => {
+    const args = parseArgs(["--list-series"]);
+    expect(args.listSeries).toBe(true);
   });
 });

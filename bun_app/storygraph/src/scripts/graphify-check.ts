@@ -19,9 +19,24 @@ import { resolve, basename } from "node:path";
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { computeJaccardSimilarity, computePlotArcScore, computeThemeCoherence, computeComedyArcScore, computeGagDiversity } from "./story-algorithms";
 import { callAI, parseArgsForAI } from "../ai-client";
-import { detectSeries, resolveGenre } from "./series-config";
+import { detectSeries, resolveGenre, discoverEpisodes } from "./series-config";
 import type { StoryGenre } from "./series-config";
 import type { CommunityReport } from "../types";
+import {
+  loadCharacterConstraints,
+  loadGagEvolution,
+  loadInteractionPatterns,
+  loadThematicCoherence,
+  loadPreviousEpisodeSummary,
+  loadMergedGraph,
+} from "./kg-loaders";
+import type {
+  CharacterConstraint,
+  GagEvolution,
+  InteractionPattern,
+  ThemeCluster,
+  EpisodeSummary,
+} from "./kg-loaders";
 
 // ─── Types ───
 
@@ -32,6 +47,10 @@ interface CheckResult {
   status: Status;
   details: string;
   evidence: string[];
+  /** Structural checks reflect graph topology, not writing quality — excluded from scoring */
+  _structural?: boolean;
+  /** Tooling-gap WARNs are regex misses, not writing quality issues — excluded from scoring */
+  _tooling_gap?: boolean;
 }
 
 // ─── Args ───
@@ -110,6 +129,33 @@ for (const le of linkEdges) {
   linkEdgesByRelation.set(le.relation, arr);
 }
 
+// ─── Load content-aware data from kg-loaders ───
+
+const outDir = resolve(seriesDir, "storygraph_out");
+const charConstraints = loadCharacterConstraints(outDir);
+const gagEvolutionData = loadGagEvolution(merged);
+const themeClusterData = loadThematicCoherence(merged);
+
+// Build charNames map for interaction patterns
+const charNamesMap: Record<string, string> = {};
+for (const n of merged.nodes) {
+  if (n.type === "character_instance" && n.properties?.character_id) {
+    const cid = n.properties.character_id;
+    if (!charNamesMap[cid]) charNamesMap[cid] = (n.label ?? cid).replace(/\s*\(ch\d+ep\d+\)$/, "");
+  }
+}
+const charIds = [...new Set(Object.keys(charNamesMap).filter(id => id !== "narrator"))];
+const interactionPatternData = loadInteractionPatterns(merged, charIds, charNamesMap);
+
+// Per-episode previous summaries (lazy: only computed for episodes with predecessors)
+const episodeIds = [...new Set((merged.nodes as any[]).map((n: any) => n.episode).filter(Boolean))].sort();
+const prevEpisodeSummaries = new Map<string, EpisodeSummary | null>();
+for (const epId of episodeIds) {
+  prevEpisodeSummaries.set(epId, loadPreviousEpisodeSummary(merged, epId));
+}
+
+console.log(`Content-aware data: ${charConstraints.length} char constraints, ${gagEvolutionData.length} gag chains, ${interactionPatternData.length} interaction pairs, ${themeClusterData.length} theme clusters`);
+
 // ─── Helper: get neighborhood ───
 
 function getNeighborIds(nodeId: string, relation?: string): string[] {
@@ -160,6 +206,12 @@ function checkCharacterConsistency(): { results: CheckResult[]; comparisons: Cha
     };
   }
 
+  // Build constraint lookup from enrichment data
+  const constraintLookup = new Map<string, CharacterConstraint>();
+  for (const c of charConstraints) {
+    constraintLookup.set(c.char_id, c);
+  }
+
   // Group by character: find all episode instances
   const charEpisodes = new Map<string, string[]>();
   for (const le of sameCharLinks) {
@@ -182,11 +234,9 @@ function checkCharacterConsistency(): { results: CheckResult[]; comparisons: Cha
       traits: getTraits(id),
     }));
 
-    // Find core traits (present in ≥75% of episodes, minimum 2 episodes required)
-    // With 2 episodes: threshold=2 → only shared traits are "core"
-    // With 3 episodes: threshold=3
-    // With 4+ episodes: threshold=ceil(N*0.75)
-    const minEpisodes = 2; // Need ≥2 episodes for consistency to be meaningful
+    // Use constraint stable_traits as core if available, otherwise use 75% threshold
+    const constraint = constraintLookup.get(charId);
+    const minEpisodes = 2;
     const traitCounts = new Map<string, number>();
     for (const ep of traitsPerEpisode) {
       for (const t of ep.traits) {
@@ -194,11 +244,25 @@ function checkCharacterConsistency(): { results: CheckResult[]; comparisons: Cha
       }
     }
     const coreThreshold = Math.ceil(traitsPerEpisode.length * 0.75);
-    const coreTraits = traitsPerEpisode.length >= minEpisodes
-      ? [...traitCounts.entries()]
-          .filter(([, count]) => count >= coreThreshold)
-          .map(([trait]) => trait)
-      : []; // Skip core trait check if only 1 episode instance
+
+    // Determine core traits: constraint stable_traits take priority
+    let coreTraits: string[];
+    let coreSource: string;
+    if (constraint && constraint.stable_traits.length > 0) {
+      // Use constraint data as ground truth for core traits
+      coreTraits = constraint.stable_traits;
+      coreSource = "enrichment";
+    } else {
+      coreTraits = traitsPerEpisode.length >= minEpisodes
+        ? [...traitCounts.entries()]
+            .filter(([, count]) => count >= coreThreshold)
+            .map(([trait]) => trait)
+        : [];
+      coreSource = "statistical";
+    }
+
+    // Build expected variant set from constraint data
+    const expectedVariants = new Set(constraint?.recent_variant_traits ?? []);
 
     // Build variant map: trait → which episodes have it
     const variantTraits = new Map<string, string[]>();
@@ -219,24 +283,34 @@ function checkCharacterConsistency(): { results: CheckResult[]; comparisons: Cha
     });
 
     // Check each episode for missing core traits
+    let suppressedCount = 0;
     for (const ep of traitsPerEpisode) {
       const missingCore = coreTraits.filter(ct => !ep.traits.includes(ct));
       if (missingCore.length > 0 && ep.traits.length > 0) {
-        results.push({
-          check: `Character Consistency: ${charId}`,
-          status: "WARN",
-          details: `Episode instance ${ep.id} missing core traits: ${missingCore.join(", ")}`,
-          evidence: [ep.id, ...missingCore.map(t => `missing: ${t}`)],
-        });
+        // Suppress WARN if the missing trait is an expected variant
+        const genuinelyMissing = missingCore.filter(ct => !expectedVariants.has(ct));
+        const expectedMissing = missingCore.filter(ct => expectedVariants.has(ct));
+        suppressedCount += expectedMissing.length;
+
+        if (genuinelyMissing.length > 0) {
+          results.push({
+            check: `Character Consistency: ${charId}`,
+            status: "WARN",
+            details: `Episode instance ${ep.id} missing core traits: ${genuinelyMissing.join(", ")}${expectedMissing.length > 0 ? ` (${expectedMissing.length} expected variants suppressed)` : ""}`,
+            evidence: [ep.id, ...genuinelyMissing.map(t => `missing: ${t}`)],
+          });
+        }
       }
     }
 
     // If all episodes have traits and no warnings, it's a pass
     if (results.filter(r => r.check.includes(charId)).length === 0 && traitsPerEpisode.every(e => e.traits.length > 0)) {
+      const constraintNote = constraint ? ` [enrichment: ${constraint.stable_traits.length} stable, ${constraint.recent_variant_traits.length} variant]` : "";
+      const suppressedNote = suppressedCount > 0 ? ` (${suppressedCount} expected variants suppressed)` : "";
       results.push({
         check: `Character Consistency: ${charId}`,
         status: "PASS",
-        details: `${charId} has consistent traits across ${instances.length} episodes (${coreTraits.length} core traits)`,
+        details: `${charId} has consistent traits across ${instances.length} episodes (${coreTraits.length} core traits via ${coreSource}${constraintNote}${suppressedNote})`,
         evidence: instances,
       });
     }
@@ -266,6 +340,12 @@ function checkGagEvolution(): CheckResult[] {
     if (!chain.includes(le.target)) chain.push(le.target);
   }
 
+  // Build lookup from kg-loaders gag evolution data for richer labels
+  const gagEvolutionLookup = new Map<string, GagEvolution>();
+  for (const ge of gagEvolutionData) {
+    gagEvolutionLookup.set(ge.gag_type, ge);
+  }
+
   for (const [gagType, chain] of gagChains) {
     // Get manifestation text for each node in chain
     const manifestations = chain.map(id => {
@@ -293,10 +373,12 @@ function checkGagEvolution(): CheckResult[] {
     }
 
     if (!stagnationFound) {
+      const geData = gagEvolutionLookup.get(gagType);
+      const depthNote = geData ? ` — ${geData.manifestations.length} unique manifestations tracked` : "";
       results.push({
         check: `Gag Evolution: ${gagType}`,
         status: "PASS",
-        details: `${gagType} evolves across ${chain.length} episodes without stagnation`,
+        details: `${gagType} evolves across ${chain.length} episodes without stagnation${depthNote}`,
         evidence: chain,
       });
     }
@@ -312,6 +394,54 @@ function similarity(a: string, b: string): number {
   const intersection = [...setA].filter(c => setB.has(c)).length;
   const union = new Set([...setA, ...setB]).size;
   return union > 0 ? intersection / union : 0;
+}
+
+// ─── Check 2b: Gag Fatigue (cross-episode pattern repetition) ───
+
+function checkGagFatigue(): CheckResult[] {
+  const results: CheckResult[] = [];
+  const gagNodes = (merged.nodes as any[]).filter(n => n.type === "gag_manifestation");
+  if (gagNodes.length < 3) return results;
+
+  // Group by gag type (extract from node ID: ch1ep1_gag_TYPE)
+  const byType = new Map<string, Array<{ id: string; episode: string; text: string }>>();
+  for (const n of gagNodes) {
+    const gagType = n.id.split("_gag_")[1] ?? "unknown";
+    if (!byType.has(gagType)) byType.set(gagType, []);
+    byType.get(gagType)!.push({
+      id: n.id,
+      episode: n.episode ?? n.id.match(/^ch\d+ep\d+/)?.[0] ?? "unknown",
+      text: n.label?.split("：")[1] ?? n.label ?? n.id,
+    });
+  }
+
+  for (const [gagType, manifestations] of byType) {
+    if (manifestations.length < 3) continue;
+
+    // Check pairwise similarity across ALL episodes (not just consecutive)
+    let similarPairs = 0;
+    const totalPairs = manifestations.length * (manifestations.length - 1) / 2;
+    for (let i = 0; i < manifestations.length; i++) {
+      for (let j = i + 1; j < manifestations.length; j++) {
+        if (similarity(manifestations[i].text, manifestations[j].text) > 0.7) {
+          similarPairs++;
+        }
+      }
+    }
+
+    const fatigueRatio = similarPairs / totalPairs;
+    if (fatigueRatio > 0.6) {
+      const episodes = [...new Set(manifestations.map(m => m.episode))];
+      results.push({
+        check: `Gag Fatigue: ${gagType}`,
+        status: "WARN",
+        details: `"${gagType}" manifests similarly across ${episodes.length} episodes (${(fatigueRatio * 100).toFixed(0)}% pairwise similarity) — audience fatigue risk`,
+        evidence: manifestations.map(m => m.id),
+      });
+    }
+  }
+
+  return results;
 }
 
 // ─── Check 3: Tech Term Diversity ───
@@ -351,6 +481,12 @@ function checkTechTermDiversity(): CheckResult[] {
 
 // ─── Check 4: Character Trait Coverage ───
 
+/** Extract baseline trait labels from SeriesConfig for a character */
+function getBaselineTraits(charId: string): string[] {
+  if (!seriesConfig?.traitPatterns?.[charId]) return [];
+  return seriesConfig.traitPatterns[charId].map(p => p.trait);
+}
+
 function checkTraitCoverage(): CheckResult[] {
   const results: CheckResult[] = [];
 
@@ -364,15 +500,29 @@ function checkTraitCoverage(): CheckResult[] {
   }
 
   for (const [charId, instances] of charInstances) {
+    if (charId === "narrator") continue;
+    const baseline = getBaselineTraits(charId);
+
     for (const instanceId of instances) {
       const traits = getTraits(instanceId);
-      if (charId !== "narrator" && traits.length === 0) {
-        results.push({
-          check: "Trait Coverage",
-          status: "WARN",
-          details: `${instanceId} has no detected character traits`,
-          evidence: [instanceId],
-        });
+      if (traits.length === 0) {
+        if (baseline.length > 0) {
+          // Regex missed but baseline exists — this is a tooling gap, not a writing quality issue
+          results.push({
+            check: "Trait Coverage",
+            status: "WARN",
+            details: `${instanceId}: regex missed traits (baseline has ${baseline.length}: ${baseline.slice(0, 3).join(", ")}${baseline.length > 3 ? "..." : ""}) — tooling limitation, not a writing quality concern`,
+            evidence: [instanceId, `baseline: ${baseline.join(", ")}`],
+            _tooling_gap: true,
+          });
+        } else {
+          results.push({
+            check: "Trait Coverage",
+            status: "WARN",
+            details: `${instanceId} has no detected character traits (no baseline defined)`,
+            evidence: [instanceId],
+          });
+        }
       }
     }
   }
@@ -434,10 +584,15 @@ function checkInteractionDensity(): CheckResult[] {
   }
 
   if (results.length === 0) {
+    // Report first-interaction pairs from content-aware data
+    const firstInteractions = interactionPatternData.filter(p => p.is_first_interaction);
+    const firstNote = firstInteractions.length > 0
+      ? ` — ${firstInteractions.length} first-interaction pair(s): ${firstInteractions.map(p => `${p.char_a_name} ↔ ${p.char_b_name}`).join(", ")}`
+      : "";
     results.push({
       check: "Interaction Density",
       status: "PASS",
-      details: "All character instances have at least 1 interaction",
+      details: `All character instances have at least 1 interaction${firstNote}`,
       evidence: [],
     });
   }
@@ -684,6 +839,14 @@ function checkPlotArc(): { results: CheckResult[]; beats: PlotArcBeat[]; arcScor
   const results: CheckResult[] = [];
 
   switch (arcResult.diagnosis) {
+    case "no_structural_data":
+      results.push({
+        check: "Plot Arc",
+        status: "PASS",
+        details: `${plotBeats.length} plot beats found but lack structural data (tension/beat_type) — run AI enrichment for arc analysis`,
+        evidence: beats.slice(0, 5).map(b => `${b.scene}:${b.beat_type}`),
+      });
+      break;
     case "no_climax":
       results.push({
         check: "Plot Arc",
@@ -1044,7 +1207,7 @@ function checkCharacterGrowth(): { results: CheckResult[]; characters: Character
 
     characters.push({ charId, charLabel, episodes: instances.length, classification, score, traitChanges });
 
-    // WARN: main character has flat arc across 3+ episodes
+    // Per-character check entry (evidence for character_growth dimension)
     if (classification === "flat" && instances.length >= 3) {
       results.push({
         check: `Character Growth: ${charId}`,
@@ -1052,16 +1215,27 @@ function checkCharacterGrowth(): { results: CheckResult[]; characters: Character
         details: `${charLabel} has a flat arc across ${instances.length} episodes (score: ${score}/100) — character may be stagnant`,
         evidence: instances,
       });
+    } else {
+      const topChanges = traitChanges.slice(0, 3).map(tc => `${tc.trait} (${tc.direction})`);
+      results.push({
+        check: `Character Growth: ${charId}`,
+        status: "PASS",
+        details: `${charLabel} arc: ${classification} across ${instances.length} episodes (score: ${score}/100) — ${topChanges.length > 0 ? topChanges.join(", ") : "stable traits"}`,
+        evidence: instances,
+      });
     }
   }
 
   if (results.length === 0 && characters.length > 0) {
-    results.push({
-      check: "Character Growth",
-      status: "PASS",
-      details: `${characters.length} characters analyzed — arc classifications: ${characters.map(c => `${c.charLabel}=${c.classification}`).join(", ")}`,
-      evidence: characters.map(c => c.charId),
-    });
+    // All characters had 0 trait changes — still report per-character
+    for (const c of characters) {
+      results.push({
+        check: `Character Growth: ${c.charId}`,
+        status: "PASS",
+        details: `${c.charLabel}: no trait changes across ${c.episodes} episodes`,
+        evidence: [],
+      });
+    }
   } else if (characters.length === 0) {
     results.push({
       check: "Character Growth",
@@ -1191,6 +1365,24 @@ function checkThematicCoherence(): { results: CheckResult[]; coherence: number; 
   const themeTable: string[] = [];
 
   if (themeResult.uniqueThemes.size === 0) {
+    // Comedy genres: recurring gag = thematic throughline
+    if (genre === "galgame_meme" || genre === "xianxia_comedy") {
+      const gagNodes = (merged.nodes as any[]).filter(n => n.type === "gag_manifestation");
+      const gagEpisodes = new Set(gagNodes.map(n => n.episode ?? "unknown"));
+      if (gagEpisodes.size >= 2) {
+        const gagTypes = new Set(gagNodes.map(n => n.id.split("_gag_")[1] ?? n.id));
+        return {
+          results: [{
+            check: "Thematic Coherence",
+            status: "PASS",
+            details: `Comedy thematic throughline: ${gagTypes.size} gag type(s) recurring across ${gagEpisodes.size} episodes — recurring premise serves as thematic backbone`,
+            evidence: [...gagTypes],
+          }],
+          coherence: 0.7,
+          themeTable: [],
+        };
+      }
+    }
     return {
       results: [{ check: "Thematic Coherence", status: "PASS", details: "No theme nodes found — thematic coherence not applicable (add --mode hybrid for AI theme extraction)", evidence: [] }],
       coherence: 1,
@@ -1207,23 +1399,145 @@ function checkThematicCoherence(): { results: CheckResult[]; coherence: number; 
     themeTable.push(`| ${keyword} | ${episodes.join(", ")} | ${status} |`);
   }
 
-  if (themeResult.coherence < 0.3) {
+  // Comedy genres: recurring gag structure supplements thematic coherence
+  let coherence = themeResult.coherence;
+  if (genre === "galgame_meme" || genre === "xianxia_comedy") {
+    const gagNodes = (merged.nodes as any[]).filter(n => n.type === "gag_manifestation");
+    const gagEpisodes = new Set(gagNodes.map(n => n.episode ?? "unknown"));
+    if (gagEpisodes.size >= 2) {
+      const gagTypes = new Set(gagNodes.map(n => n.id.split("_gag_")[1] ?? n.id));
+      // Each gag type recurring across episodes contributes to coherence
+      const gagBonus = Math.min(0.4, gagTypes.size * 0.15);
+      coherence = Math.min(1, coherence + gagBonus);
+      themeTable.push(`| (喜劇主線) | ${gagEpisodes.size} episodes | ✅ 梗主題貫穿 |`);
+    }
+  }
+
+  if (coherence < 0.3) {
+    const clusterNote = themeClusterData.length > 0 ? ` (${themeClusterData.length} theme cluster(s) from enrichment)` : "";
     results.push({
       check: "Thematic Coherence",
       status: "WARN",
-      details: `主題連貫性偏低 (${(themeResult.coherence * 100).toFixed(0)}%) — ${themeResult.sharedThemes.length}/${themeResult.uniqueThemes.size} 主題跨集共享`,
+      details: `主題連貫性偏低 (${(coherence * 100).toFixed(0)}%) — ${themeResult.sharedThemes.length}/${themeResult.uniqueThemes.size} 主題跨集共享${clusterNote}`,
       evidence: themeResult.sharedThemes.length > 0 ? themeResult.sharedThemes : ["No shared themes across episodes"],
     });
   } else {
+    const clusterNote = themeClusterData.length > 0 ? ` — ${themeClusterData.length} enrichment cluster(s): ${themeClusterData.slice(0, 3).map(tc => `"${tc.label}" (${tc.episodes.length} eps)`).join(", ")}` : "";
     results.push({
       check: "Thematic Coherence",
       status: "PASS",
-      details: `主題連貫性良好 (${(themeResult.coherence * 100).toFixed(0)}%) — ${themeResult.sharedThemes.length}/${themeResult.uniqueThemes.size} 主題跨集共享`,
+      details: `主題連貫性良好 (${(coherence * 100).toFixed(0)}%) — ${themeResult.sharedThemes.length}/${themeResult.uniqueThemes.size} 主題跨集共享${clusterNote}`,
       evidence: themeResult.sharedThemes,
     });
   }
 
-  return { results, coherence: themeResult.coherence, themeTable };
+  // Per-theme check entries (evidence for thematic_coherence dimension)
+  for (const [keyword, episodes] of themeResult.uniqueThemes) {
+    const isShared = episodes.length >= 2;
+    results.push({
+      check: `Theme: ${keyword}`,
+      status: isShared ? "PASS" : "WARN",
+      details: isShared
+        ? `"${keyword}" 共享 across ${episodes.length} episodes: ${episodes.join(", ")}`
+        : `"${keyword}" isolated to single episode: ${episodes[0]}`,
+      evidence: episodes,
+    });
+  }
+
+  return { results, coherence, themeTable };
+}
+
+// ─── Check 13b: Episode Coverage ───
+
+function checkEpisodeCoverage(): CheckResult[] {
+  const manifestCount = merged.manifest?.episode_count;
+  if (!manifestCount || !seriesConfig) return [];
+
+  // Discover expected episodes from series directory
+  const expected = discoverEpisodes(seriesDir);
+  if (expected.length <= manifestCount) return [];
+
+  const missing = expected.length - manifestCount;
+  const coverage = (manifestCount / expected.length * 100).toFixed(0);
+  return [{
+    check: "Episode Coverage",
+    status: coverageNum < 80 ? "WARN" : "PASS",
+    details: `${manifestCount}/${expected.length} episodes processed (${coverage}% coverage) — ${missing} episode(s) not yet extracted`,
+    evidence: [`processed: ${manifestCount}`, `expected: ${expected.length}`],
+  }];
+}
+const coverageNum = merged.manifest?.episode_count && seriesConfig
+  ? (merged.manifest.episode_count / discoverEpisodes(seriesDir).length * 100)
+  : 100;
+
+// ─── Check 14: Episode Continuity (content-aware) ───
+
+interface ContinuityGap {
+  prevEp: string;
+  currEp: string;
+  missingCharacters: string[];
+  continuityScore: number;
+}
+
+function checkEpisodeContinuity(): { results: CheckResult[]; gaps: ContinuityGap[] } {
+  const results: CheckResult[] = [];
+  const gaps: ContinuityGap[] = [];
+
+  if (episodeIds.length < 2 || isNarratorOnly) {
+    return { results: [{ check: "Episode Continuity", status: "PASS", details: "Not enough episodes or narrator-only — continuity check not applicable", evidence: [] }], gaps: [] };
+  }
+
+  for (const epId of episodeIds) {
+    const prevSummary = prevEpisodeSummaries.get(epId);
+    if (!prevSummary) continue;
+
+    // Get characters in current episode
+    const currCharIds = new Set(
+      (merged.nodes as any[])
+        .filter((n: any) => n.type === "character_instance" && (n.episode === epId || n.id.startsWith(`${epId}_`)))
+        .map((n: any) => n.properties?.character_id ?? "")
+        .filter((id: string) => id && id !== "narrator")
+    );
+
+    // Check which key characters from previous episode are absent
+    const prevCharIds = prevSummary.key_characters.map(c => c.id);
+    const missingCharacters = prevCharIds.filter(id => !currCharIds.has(id));
+
+    // Compute continuity score: ratio of prev key characters present in current
+    const continuityScore = prevCharIds.length > 0 ? (prevCharIds.length - missingCharacters.length) / prevCharIds.length : 1;
+
+    if (missingCharacters.length > 0 && prevCharIds.length >= 2) {
+      const missingLabels = missingCharacters.map(id => {
+        const charName = charNamesMap[id] ?? id;
+        return charName;
+      });
+
+      gaps.push({ prevEp: prevSummary.ep_id, currEp: epId, missingCharacters, continuityScore });
+
+      if (continuityScore < 0.3) {
+        results.push({
+          check: `Episode Continuity: ${epId}`,
+          status: "WARN",
+          details: `Low continuity from ${prevSummary.ep_id}: ${missingLabels.join(", ")} absent (${(continuityScore * 100).toFixed(0)}% carryover)`,
+          evidence: [epId, prevSummary.ep_id, ...missingCharacters.map(id => `missing: ${id}`)],
+        });
+      }
+    }
+  }
+
+  if (results.length === 0) {
+    const avgContinuity = gaps.length > 0
+      ? gaps.reduce((s, g) => s + g.continuityScore, 0) / gaps.length
+      : 1;
+    results.push({
+      check: "Episode Continuity",
+      status: "PASS",
+      details: `${episodeIds.length} episodes checked — avg character carryover: ${(avgContinuity * 100).toFixed(0)}%${gaps.length > 0 ? ` (${gaps.length} gaps detected, none critical)` : ""}`,
+      evidence: episodeIds,
+    });
+  }
+
+  return { results, gaps };
 }
 
 // ─── Run all checks ───
@@ -1249,12 +1563,13 @@ let arcReportData: { beats: any[]; arcScore: number; diagnosis: string } | null 
 
 if (isNarratorOnly) {
   arcChecks = [skipResult("Plot Arc", "Narrator-only — no dramatic arc to check")];
-} else if (genre === "galgame_meme") {
+} else if (genre === "galgame_meme" || genre === "xianxia_comedy") {
+  // Comedy genres use gag-driven arc detection
   const comedyArc = checkComedyArc();
   arcChecks = comedyArc.results;
   arcReportData = comedyArc;
 } else {
-  // xianxia_comedy, novel_system, generic all use Freytag pyramid
+  // novel_system, generic use Freytag pyramid
   const plotArc = checkPlotArc();
   arcChecks = plotArc.results;
   arcReportData = plotArc;
@@ -1265,8 +1580,8 @@ const foreshadowing = (genre === "xianxia_comedy" || genre === "novel_system")
   ? checkForeshadowing()
   : { results: [skipResult("Foreshadowing", `Foreshadowing check not applicable for ${genre} genre`)], records: [] as any[] };
 
-// Gag diversity only for comedy genre
-const gagDiversityChecks = genre === "galgame_meme"
+// Gag diversity for comedy genres
+const gagDiversityChecks = (genre === "galgame_meme" || genre === "xianxia_comedy")
   ? checkGagDiversityCheck()
   : [];
 
@@ -1280,9 +1595,11 @@ const charGrowth = isNarratorOnly
   : checkCharacterGrowth();
 const pacing = checkPacing();
 const themeCoherence = checkThematicCoherence();
+const episodeContinuity = checkEpisodeContinuity();
 const allChecks: CheckResult[] = [
   ...charConsistency.results,
   ...(isNarratorOnly ? [skipResult("Gag Evolution", "Narrator-only — no gag evolution to check")] : checkGagEvolution()),
+  ...(isNarratorOnly ? [] : checkGagFatigue()),
   ...techDiversityChecks,
   ...(isNarratorOnly ? [skipResult("Trait Coverage", "Narrator-only — no character traits to check")] : checkTraitCoverage()),
   ...(isNarratorOnly ? [skipResult("Interaction Density", "Narrator-only — no character interactions to check")] : checkInteractionDensity()),
@@ -1293,10 +1610,20 @@ const allChecks: CheckResult[] = [
   ...charGrowth.results,
   ...pacing.results,
   ...themeCoherence.results,
+  ...episodeContinuity.results,
+  ...checkEpisodeCoverage(),
   ...(communityAnalysis ? checkCommunityStructure(communityAnalysis) : []),
   ...(communityAnalysis ? checkIsolatedNodes(communityAnalysis) : []),
   ...(communityAnalysis ? checkCrossCommunityCoherence(communityAnalysis) : []),
 ];
+
+// Tag structural checks (graph topology, not writing quality)
+const STRUCTURAL_CHECKS = ["Community Structure", "Community Cohesion", "Community Connectivity", "Community Modularity", "Isolated Nodes", "Cross-Community Coherence", "Surprising Connection"];
+for (const c of allChecks) {
+  if (STRUCTURAL_CHECKS.some(s => c.check.startsWith(s))) {
+    (c as any)._structural = true;
+  }
+}
 
 // ─── Generate report ───
 
@@ -1314,10 +1641,13 @@ if (merged.manifest) {
 }
 report.push(``);
 
-const passCount = allChecks.filter(c => c.status === "PASS").length;
-const warnCount = allChecks.filter(c => c.status === "WARN").length;
-const failCount = allChecks.filter(c => c.status === "FAIL").length;
-const skipCount = allChecks.filter(c => c.status === "SKIP").length;
+const qualityChecks = allChecks.filter(c => !(c as any)._tooling_gap);
+const passCount = qualityChecks.filter(c => c.status === "PASS").length;
+const warnCount = qualityChecks.filter(c => c.status === "WARN" && !(c as any)._structural).length;
+const failCount = qualityChecks.filter(c => c.status === "FAIL" && !(c as any)._structural).length;
+const skipCount = qualityChecks.filter(c => c.status === "SKIP").length;
+const structuralNotes = qualityChecks.filter(c => (c as any)._structural && c.status !== "PASS");
+const toolingNotes = allChecks.filter(c => (c as any)._tooling_gap);
 
 report.push(`## Summary`);
 report.push(``);
@@ -1325,24 +1655,26 @@ report.push(`- **PASS:** ${passCount}`);
 report.push(`- **WARN:** ${warnCount}`);
 report.push(`- **FAIL:** ${failCount}`);
 if (skipCount > 0) report.push(`- **SKIP:** ${skipCount} (not scored)`);
+if (toolingNotes.length > 0) report.push(`- **Tooling Notes:** ${toolingNotes.length} (regex limitations, excluded from checks)`);
 
-// ─── Aggregate Quality Score ───
+// ─── Aggregate Quality Score (group-based, episode-normalized) ───
 
-// Only score non-SKIP checks
-const scoredChecks = allChecks.filter(c => c.status !== "SKIP");
-let aggregateScore = 100;
-for (const c of scoredChecks) {
-  if (c.status === "PASS") aggregateScore += 5;
-  else if (c.status === "WARN") aggregateScore -= 5;
-  else aggregateScore -= 15;
+import { computeGateScore } from "./gate-scoring";
+
+// Rebuild scoringGroups for per-check score_impact calculation below
+const scoringGroups = new Map<string, { pass: number, warn: number, fail: number }>();
+for (const c of allChecks.filter(c => c.status !== "SKIP")) {
+  const group = c.check.split(":")[0].trim();
+  const entry = scoringGroups.get(group) ?? { pass: 0, warn: 0, fail: 0 };
+  if (c.status === "PASS") entry.pass++;
+  else if (c.status === "WARN") entry.warn++;
+  else entry.fail++;
+  scoringGroups.set(group, entry);
 }
-aggregateScore = Math.max(0, Math.min(100, aggregateScore));
-const gateDecision: "PASS" | "WARN" | "FAIL" = aggregateScore >= 70 ? "PASS" : aggregateScore >= 40 ? "WARN" : "FAIL";
 
-report.push(`- **品質評分：** ${aggregateScore}/100 (${gateDecision})`);
-report.push(``);
+// Score line appended after gateResult is computed (below qualityBreakdown)
 
-console.log(`Results: ${passCount} PASS, ${warnCount} WARN, ${failCount} FAIL, ${skipCount} SKIP — Score: ${aggregateScore}/100 (${gateDecision})`);
+console.log(`Results: ${passCount} PASS, ${warnCount} WARN, ${failCount} FAIL, ${skipCount} SKIP — (score computed after dimension analysis)`);
 
 // Group by check type
 const checkGroups = new Map<string, CheckResult[]>();
@@ -1555,6 +1887,23 @@ if (themeCoherence.themeTable.length > 0) {
   report.push(``);
 }
 
+// ─── Episode Continuity Table ───
+
+if (episodeContinuity.gaps.length > 0) {
+  report.push(`## Episode Continuity Analysis`);
+  report.push(``);
+  report.push(`| Episode | Previous | Missing Characters | Carryover |`);
+  report.push(`|---------|----------|-------------------|-----------|`);
+
+  for (const gap of episodeContinuity.gaps) {
+    const missingLabels = gap.missingCharacters.map(id => charNamesMap[id] ?? id).join(", ");
+    const bar = "█".repeat(Math.round(gap.continuityScore * 10));
+    report.push(`| ${gap.currEp} | ${gap.prevEp} | ${missingLabels} | ${bar} ${(gap.continuityScore * 100).toFixed(0)}% |`);
+  }
+
+  report.push(``);
+}
+
 // ─── Subagent Enrichment ───
 
 const enrichmentPath = resolve(seriesDir, "storygraph_out", "check-enrichment-input.json");
@@ -1661,6 +2010,33 @@ if (aiConfig.mode === "ai") {
   console.log(`No enrichment output found at ${enrichmentOutputPath}`);
 }
 
+// ─── Structural Notes (graph topology, not writing quality) ───
+
+if (structuralNotes.length > 0) {
+  report.push(`## Structural Notes`);
+  report.push(``);
+  report.push(`These reflect graph topology and community detection artifacts, not writing quality. They are excluded from the quality score.`);
+  report.push(``);
+  for (const note of structuralNotes) {
+    const icon = note.status === "WARN" ? "🏗️" : "❌";
+    report.push(`- ${icon} **${note.check}**: ${note.details}`);
+  }
+  report.push(``);
+}
+
+// ─── Tooling Notes (regex limitations, not writing quality) ───
+
+if (toolingNotes.length > 0) {
+  report.push(`## Tooling Notes`);
+  report.push(``);
+  report.push(`These reflect regex extraction limitations, not writing quality issues. They are excluded from gate.json checks and the quality score.`);
+  report.push(``);
+  for (const note of toolingNotes) {
+    report.push(`- 🔧 **${note.check}**: ${note.details}`);
+  }
+  report.push(``);
+}
+
 writeFileSync(outPath, report.join("\n"));
 console.log(`\nReport: ${outPath}`);
 
@@ -1691,13 +2067,11 @@ if (existsSync(enrichmentOutputPath)) {
 
 const gatePath = resolve(seriesDir, "storygraph_out", "gate.json");
 let previousScore: number | null = null;
-let scoreDelta: number | null = null;
 if (existsSync(gatePath)) {
   try {
     const prevGate = JSON.parse(readFileSync(gatePath, "utf-8"));
     if (typeof prevGate.score === "number") {
       previousScore = prevGate.score;
-      scoreDelta = aggregateScore - previousScore;
     }
   } catch {
     // Invalid JSON — treat as no previous run
@@ -1718,7 +2092,7 @@ const consistencyChecks = allChecks.filter(c =>
   c.check.startsWith("Character Consistency") || c.check === "Trait Coverage" || c.check === "Interaction Density"
 );
 const pacingChecks = allChecks.filter(c => c.check.startsWith("Pacing"));
-const gagChecks = allChecks.filter(c => c.check.startsWith("Gag Evolution") || c.check.startsWith("Gag Diversity") || c.check.startsWith("Gag Stagnation"));
+const gagChecks = allChecks.filter(c => c.check.startsWith("Gag Evolution") || c.check.startsWith("Gag Diversity") || c.check.startsWith("Gag Stagnation") || c.check.startsWith("Gag Fatigue"));
 
 const qualityBreakdown: Record<string, number | null> = {
   consistency: passRatio(consistencyChecks),
@@ -1728,8 +2102,29 @@ const qualityBreakdown: Record<string, number | null> = {
     ? charGrowth.characters.reduce((s, c) => s + c.score, 0) / charGrowth.characters.length / 100
     : null,
   thematic_coherence: themeCoherence.coherence,
-  gag_evolution: genre === "galgame_meme" ? passRatio(gagChecks) : null,
+  gag_evolution: (genre === "galgame_meme" || genre === "xianxia_comedy") ? passRatio(gagChecks) : null,
 };
+
+// Score with dimension-aware ceilings
+const gateResult = computeGateScore(
+  allChecks.map(c => ({
+    check: c.check,
+    status: c.status,
+    _tooling_gap: (c as any)._tooling_gap === true,
+    _structural: (c as any)._structural === true,
+  })),
+  qualityBreakdown,
+);
+let aggregateScore = gateResult.score;
+const gateDecision = gateResult.decision;
+const groupScores = gateResult.group_scores;
+
+const scoreDelta = previousScore !== null ? aggregateScore - previousScore : null;
+
+// Append score to report (deferred from Summary section)
+report.push(`- **品質評分：** ${aggregateScore}/100 (${gateDecision})${gateResult.ceiling_applied ? ` [ceiling: ${gateResult.ceiling_applied}]` : ""}`);
+report.push(``);
+console.log(`Score: ${aggregateScore}/100 (${gateDecision})${gateResult.ceiling_applied ? ` [ceiling: ${gateResult.ceiling_applied}]` : ""}`);
 
 // ─── 33-A4: supervisor_hints ───
 
@@ -1754,24 +2149,39 @@ const requiresClaudeReview = aggregateScore < 70 || failCount > 0 || (scoreDelta
 // ─── Write gate.json v2 ───
 
 const gateData = {
-  version: "2.0",
+  version: "2.1",
+  scoring_method: "dimension-aware group-based",
   timestamp: new Date().toISOString(),
   series: seriesConfig?.seriesId ?? basename(seriesDir),
   genre,
   generator: {
     mode: aiConfig.mode,
     model: aiConfig.model,
-    version: "0.16.0",
+    version: "0.17.0",
   },
   score: aggregateScore,
   decision: gateDecision,
   previous_score: previousScore,
   score_delta: scoreDelta,
-  checks: allChecks.map(c => ({
+  group_scores: groupScores,
+  ceiling_applied: gateResult.ceiling_applied,
+  checks: allChecks.filter(c => !(c as any)._tooling_gap).map(c => ({
     name: c.check,
     status: c.status,
-    score_impact: c.status === "PASS" ? 5 : c.status === "WARN" ? -5 : c.status === "SKIP" ? 0 : -15,
+    score_impact: (() => {
+      // Per-check score_impact reflects group contribution divided equally
+      const group = c.check.split(":")[0].trim();
+      const gs = groupScores.find(g => g.group === group);
+      const groupTotal = scoringGroups.get(group);
+      const n = groupTotal ? groupTotal.pass + groupTotal.warn + groupTotal.fail : 1;
+      return gs ? Math.round(gs.score_impact / n * 100) / 100 : 0;
+    })(),
     fix_suggestion_zhTW: fixSuggestions.get(c.check) ?? (c.status !== "PASS" ? "(see consistency-report.md for details)" : ""),
+  })),
+  tooling_notes: allChecks.filter(c => (c as any)._tooling_gap).map(c => ({
+    name: c.check,
+    status: c.status,
+    details: c.details,
   })),
   quality_breakdown: qualityBreakdown,
   supervisor_hints: {

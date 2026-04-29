@@ -3,6 +3,86 @@
 > On-demand reference only. NOT loaded every session.
 > Active status: `NEXT.md`
 
+## 2026-04-29 — Phases R1+R2: Regression Test Suite + Dual-Agent Review
+
+**What:** Two phases delivering cross-app quality assurance infrastructure.
+
+**Phase R1 — storygraph regression test suite (v0.35.0):**
+- `graphify-regression.ts` had 10 exports, 0 tests — the biggest test gap across all apps
+- Created `regression.test.ts` (31 tests) covering computeDelta, compareGate, compareQuality, generateReport, discoverBaselineSeries, loadLatestBaseline, saveBaseline
+- Created `baseline-trend.test.ts` (12 tests) covering computeTrend: improving/stable/declining trends, blended_score loading, node_count reading, corrupt JSON, date sorting, edge cases
+- storygraph: 401→461 tests, 0 failures
+
+**Phase R2 — dual-agent review system (v0.36.0):**
+- `buildDualReviewPrompt()` in subagent-prompt.ts — sends gate.json + consistency report + regression data to Claude for independent review
+- `parseDualReviewResponse()` — robust parser: verdict validation (AGREE/PARTIAL_AGREE/DISAGREE), score clamping (0-100), dimension clamping (0-10), array length limits (5), graceful defaults
+- `sg_dual_review` tool in bun_pi_agent — reads pi-agent outputs, calls Claude via `callAI()` with anthropic provider, returns structured comparison
+- `sg-dual-reviewer` agent definition — `.agent/agents/sg-dual-reviewer.md` (14th agent)
+- bun_pi_agent: 32→33 tools, 13→14 agents, 476→477 tests
+- `dual-review.test.ts` (17 tests) — prompt builder (8) + response parser (9)
+
+**Architecture insight:** The dual review works by having the same-process pi-agent tool call `callAI()` with `provider: "anthropic"` instead of the default `"zai"`. No separate subprocess needed — pi-ai SDK already supports multi-provider. The prompt asks Claude to identify false positives (pipeline over-flagged), false negatives (pipeline missed), and structural blind spots that regex/statistical pipelines can't detect.
+
+**Cross-app test summary after R1+R2:**
+| App | Tests | Changes |
+|-----|-------|---------|
+| storygraph | 461 (+60) | 43 regression + 17 dual review |
+| bun_pi_agent | 477 (+1) | 1 agent count test, tool counts updated |
+| episodeforge | 78 (unchanged) | — |
+| remotion_studio | 279+E2E (unchanged) | — |
+
+**Assessment:** R1 fills the biggest test gap. R2 introduces a meaningful quality innovation — two independent LLMs (GLM for pipeline, Claude for review) cross-validate each other. The tool is wired and tested but hasn't been run against real data yet (needs ANTHROPIC_API_KEY). R3 (remotion_studio regression dashboard) and R4 (CI gate) remain.
+
+## 2026-04-27 — remotion_studio v0.3.2 → v0.10.0: P1 batch ops + P2 author experience
+
+**What:** 8 version bumps — batch operations, kanban board, help text, design brief, quality hints, review checklist, dialog preview, revision history, structured section editor.
+
+**Tests:** 248 → 274 pass, 0 fail. 16 new tests (markdown-table utility). 15 pages.
+
+**Bug fixed:** Progress/Kanban pages returned HTML instead of JSON — stale server started before `episode-progress` route was registered. Fix: server restart.
+
+**Key feature (v0.10.0):** Structured section editor transforms Story Editor from raw textarea to per-section editing UI — table-based editors for Characters/Episode Guide/Running Gags, text editors for prose sections. `markdown-table.ts` utility handles parse/serialize roundtrips. `replaceSectionInMarkdown()` enables section-level updates.
+
+**P2 progress:** 8 of 10 done. Remaining: zh_TW localization, video preview, export to platforms.
+
+## 2026-04-27 — remotion_studio v0.3.0: All P0 resolved + P1 features
+
+**What:** Deep iteration on remotion_studio — resolved all 5 P0 critical issues plus 3 P1 features in a single session.
+
+**P0 fixes:** JobStore persistence (data/jobs.json, 24h TTL), DAG auto-routing via TEMPLATE_DEPS, restart recovery (mark interrupted), E2E smoke test (API health), CreateProject → ScaffoldEpisode rename.
+
+**P1 features:** Image step in full-pipeline (7-step DAG, parallel), cancel workflow (AbortController + signal through dag-executor), API namespace (pipeline.*, TTS casing).
+
+**Tests:** 236 pass, 0 fail, 1605 expect(). Updated 3 test files for 7-step pipeline expectations.
+
+**Lesson:** When adding a step to a template, update all 3 places: template definition, TEMPLATE_DEPS, and test expectations. Missed this initially → 4 test failures → fixed in one pass.
+
+## 2026-04-26 — Ch3-Ep2: 隱藏關卡 (查看代碼)
+
+**What:** Generated TTS audio (32 segments, 5 scenes) and rendered my-core-is-boss ch3-ep2 to MP4.
+
+**Bug found + fixed:** `zhaoxiaoqi-confused` emotion doesn't exist (available: cry, default, gloating, shock, think). Render failed at frame 5585 with 404 on the missing image. Fixed by replacing `confused` → `shock` (ContentScene2) and `confused` → `think` (ContentScene3).
+
+**Audio durations:** [711, 2730, 2898, 4043, 1765] = 12,147 frames (~6:43 at 30fps). ContentScene3 longest at ~2:14.
+
+**Render:** 160.7 MB, 12,087 frames, ~25 min render time (4x concurrency).
+
+**Assessment:** Clean production. The scaffold template produced correct code (no old-API issues, no wrong paths). Only issue was the non-existent emotion variant — a data validation problem, not a code problem. Story content is solid: the "code review" gag escalation and guardian's "I'll write unit tests next time" punchline land well.
+
+## 2026-04-26 — Roadmap Sync + develop_bun_app TODO reconciliation
+
+**What:** Synced develop_bun_app TODO.md with remotion-best-practices roadmap. The two had diverged — develop_bun_app still showed phases 52–54 as `[ ]` unchecked even though they were all `✓` complete in NEXT.md. Phases 55–63 were not listed at all.
+
+**Changes:**
+- develop_bun_app TODO.md: Marked phases 52–63 as `[x]` done, added 55–63 section headers, bumped status to v1.4.0
+- develop_bun_app PLAN.md: Updated managed apps table (remotion_studio: 229 tests, 72 E2E, 13 pages)
+- NEXT.md: Updated status line to reflect sync
+- REFLECTIONS.md: This entry
+
+**Root cause:** develop_bun_app TODO was the original planning doc for phases 52–54. As work progressed, updates went to remotion-best-practices TODO instead. The two docs have overlapping scope — develop_bun_app tracks bun_app code-level tasks, remotion-best-practices tracks strategic pipeline. When a task belongs to both (like "studio-tts agent"), updates went to the active-working doc (remotion-best-practices) and the other fell behind.
+
+**Assessment:** Sync is complete. Next development task is Ch3-Ep2 or WebUI polish — both are new work, not roadmap catch-up.
+
 ## 2026-04-26: E2E Testing Pipeline (Headless→Headed)
 
 **What:** Built the headless→headed E2E testing pipeline enforced in SKILL. Fixed 3 test bugs, restructured Playwright config, discovered server crash issue.

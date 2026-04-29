@@ -1,9 +1,15 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { api } from "../api";
+import { PageHeader, StatusBadge, LoadingSpinner, EmptyState, SkeletonRow, AdvisorPanelBase, type ChatMessage, loadHistory, saveHistory } from "../components";
+import { toast } from "../components/ToastContainer";
 import { TaskTreeView } from "../components/TaskTreeNode";
+import { useTheme } from "../theme";
+import { useI18n } from "../i18n";
 import type { Project, WorkflowTemplate, WorkflowStepStatus, Job, JobProgress, WorkflowResult, TaskTree } from "../../shared/types";
 
 export function Workflows() {
+  const theme = useTheme();
+  const { t } = useI18n();
   const [templates, setTemplates] = useState<WorkflowTemplate[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<string>("");
   const [projects, setProjects] = useState<Project[]>([]);
@@ -19,6 +25,8 @@ export function Workflows() {
   const [stepStatuses, setStepStatuses] = useState<WorkflowStepStatus[]>([]);
   const [tree, setTree] = useState<TaskTree | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showAdvisor, setShowAdvisor] = useState(false);
+  const [advisorMsgs, setAdvisorMsgs] = useState<ChatMessage[]>([]);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const loadData = useCallback(async () => {
@@ -92,6 +100,8 @@ export function Workflows() {
 
       // Start tree polling for live updates
       startTreePolling(j.id);
+    } else {
+      toast("error", res.error ?? "Failed to trigger workflow");
     }
   };
 
@@ -131,21 +141,45 @@ export function Workflows() {
 
   const canTrigger = selectedTemplate && (!needsSeries || selectedSeries) && (!needsChapterEp || (chapter && episode)) && (!needsImages || imageItems.length > 0);
 
-  if (loading) return <div style={{ color: "#666" }}>Loading...</div>;
+  if (loading) return (
+    <div>
+      <PageHeader title={t.workflows.title} description={t.workflows.description} />
+      <div style={{ marginBottom: theme.spacing.lg }}>
+        <label style={{ fontSize: theme.font.sizes.base, color: theme.colors.text.secondary, display: "block", marginBottom: theme.spacing.xs }}>{t.workflows.template}</label>
+        <SkeletonRow width="300px" height={36} />
+      </div>
+    </div>
+  );
 
   return (
-    <div>
-      <h2 style={{ margin: "0 0 16px" }}>Workflows</h2>
+    <div style={{ display: "flex", gap: theme.spacing.xl }}>
+      <div style={{ flex: 1 }}>
+      <PageHeader title={t.workflows.title} description={t.workflows.description}>
+        <button
+          onClick={() => setShowAdvisor(!showAdvisor)}
+          style={{
+            padding: `${theme.spacing.xs}px ${theme.spacing.md}px`,
+            background: showAdvisor ? theme.colors.primaryDark : theme.colors.primaryLight,
+            color: showAdvisor ? theme.colors.bg.page : theme.colors.primaryDark,
+            border: `1px solid ${theme.colors.primaryDark}`,
+            borderRadius: theme.radii.md,
+            cursor: "pointer",
+            fontSize: theme.font.sizes.sm,
+          }}
+        >
+          {showAdvisor ? t.workflows.hideAdvisor : t.workflows.askAdvisor}
+        </button>
+      </PageHeader>
 
       {/* Template selector */}
-      <div style={{ marginBottom: 16 }}>
-        <label style={{ fontSize: 13, color: "#555", display: "block", marginBottom: 4 }}>Template</label>
+      <div style={{ marginBottom: theme.spacing.lg }}>
+        <label style={{ fontSize: theme.font.sizes.base, color: theme.colors.text.secondary, display: "block", marginBottom: theme.spacing.xs }}>{t.workflows.template}</label>
         <select
           value={selectedTemplate}
           onChange={(e) => { setSelectedTemplate(e.target.value); setStepStatuses([]); setTree(null); }}
-          style={{ padding: "6px 12px", borderRadius: 6, fontSize: 14, minWidth: 300 }}
+          style={{ padding: `6px ${theme.spacing.md}px`, borderRadius: theme.radii.lg, fontSize: theme.font.sizes.md, minWidth: 300 }}
         >
-          <option value="">Select template...</option>
+          <option value="">{t.workflows.selectTemplate}</option>
           {templates.map((t) => (
             <option key={t.id} value={t.id}>{t.label} — {t.description}</option>
           ))}
@@ -153,9 +187,9 @@ export function Workflows() {
       </div>
 
       {template && (
-        <div style={{ marginBottom: 16, padding: 12, background: "#f5f5f5", borderRadius: 8 }}>
-          <div style={{ fontSize: 13, color: "#555" }}>
-            Steps: {template.steps.map((s) => s.label).join(" → ")}
+        <div style={{ marginBottom: theme.spacing.lg, padding: theme.spacing.md, background: theme.colors.bg.muted, borderRadius: theme.radii.xl }}>
+          <div style={{ fontSize: theme.font.sizes.base, color: theme.colors.text.secondary }}>
+            {t.workflows.steps}: {template.steps.map((s) => s.label).join(" → ")}
           </div>
         </div>
       )}
@@ -163,16 +197,16 @@ export function Workflows() {
       {/* Config form */}
       {template && (
         <div>
-        <div style={{ marginBottom: 16, display: "flex", flexWrap: "wrap", gap: 12, alignItems: "flex-end" }}>
+        <div style={{ marginBottom: theme.spacing.lg, display: "flex", flexWrap: "wrap", gap: theme.spacing.md, alignItems: "flex-end" }}>
           {needsSeries && (
             <div>
-              <label style={{ fontSize: 13, color: "#555", display: "block", marginBottom: 4 }}>Series</label>
+              <label style={{ fontSize: theme.font.sizes.base, color: theme.colors.text.secondary, display: "block", marginBottom: theme.spacing.xs }}>{t.workflows.series}</label>
               <select
                 value={selectedSeries}
                 onChange={(e) => setSelectedSeries(e.target.value)}
-                style={{ padding: "6px 12px", borderRadius: 6, fontSize: 14 }}
+                style={{ padding: `6px ${theme.spacing.md}px`, borderRadius: theme.radii.lg, fontSize: theme.font.sizes.md }}
               >
-                <option value="">Select...</option>
+                <option value="">{t.workflows.selectSeries}</option>
                 {projects.map((p) => (
                   <option key={p.seriesId} value={p.seriesId}>{p.seriesId}</option>
                 ))}
@@ -183,19 +217,19 @@ export function Workflows() {
           {needsChapterEp && (
             <>
               <div>
-                <label style={{ fontSize: 13, color: "#555", display: "block", marginBottom: 4 }}>Chapter</label>
+                <label style={{ fontSize: theme.font.sizes.base, color: theme.colors.text.secondary, display: "block", marginBottom: theme.spacing.xs }}>{t.workflows.chapter}</label>
                 <input
                   type="number" min={1} value={chapter}
                   onChange={(e) => setChapter(e.target.value)}
-                  style={{ padding: "6px 12px", borderRadius: 6, fontSize: 14, width: 80 }}
+                  style={{ padding: `6px ${theme.spacing.md}px`, borderRadius: theme.radii.lg, fontSize: theme.font.sizes.md, width: 80 }}
                 />
               </div>
               <div>
-                <label style={{ fontSize: 13, color: "#555", display: "block", marginBottom: 4 }}>Episode</label>
+                <label style={{ fontSize: theme.font.sizes.base, color: theme.colors.text.secondary, display: "block", marginBottom: theme.spacing.xs }}>{t.workflows.episode}</label>
                 <input
                   type="number" min={1} value={episode}
                   onChange={(e) => setEpisode(e.target.value)}
-                  style={{ padding: "6px 12px", borderRadius: 6, fontSize: 14, width: 80 }}
+                  style={{ padding: `6px ${theme.spacing.md}px`, borderRadius: theme.radii.lg, fontSize: theme.font.sizes.md, width: 80 }}
                 />
               </div>
             </>
@@ -203,11 +237,11 @@ export function Workflows() {
 
           {needsMode && (
             <div>
-              <label style={{ fontSize: 13, color: "#555", display: "block", marginBottom: 4 }}>Mode</label>
+              <label style={{ fontSize: theme.font.sizes.base, color: theme.colors.text.secondary, display: "block", marginBottom: theme.spacing.xs }}>{t.workflows.mode}</label>
               <select
                 value={mode}
                 onChange={(e) => setMode(e.target.value as any)}
-                style={{ padding: "6px 12px", borderRadius: 6, fontSize: 14 }}
+                style={{ padding: `6px ${theme.spacing.md}px`, borderRadius: theme.radii.lg, fontSize: theme.font.sizes.md }}
               >
                 <option value="hybrid">Hybrid</option>
                 <option value="ai">AI</option>
@@ -218,11 +252,11 @@ export function Workflows() {
 
           {needsTtsEngine && (
             <div>
-              <label style={{ fontSize: 13, color: "#555", display: "block", marginBottom: 4 }}>TTS Engine</label>
+              <label style={{ fontSize: theme.font.sizes.base, color: theme.colors.text.secondary, display: "block", marginBottom: theme.spacing.xs }}>{t.workflows.ttsEngine}</label>
               <select
                 value={ttsEngine}
                 onChange={(e) => setTtsEngine(e.target.value as any)}
-                style={{ padding: "6px 12px", borderRadius: 6, fontSize: 14 }}
+                style={{ padding: `6px ${theme.spacing.md}px`, borderRadius: theme.radii.lg, fontSize: theme.font.sizes.md }}
               >
                 <option value="mlx">MLX (macOS)</option>
                 <option value="gemini">Gemini</option>
@@ -233,23 +267,23 @@ export function Workflows() {
           {needsImages && (
             <>
               <div>
-                <label style={{ fontSize: 13, color: "#555", display: "block", marginBottom: 4 }}>Asset Type</label>
+                <label style={{ fontSize: theme.font.sizes.base, color: theme.colors.text.secondary, display: "block", marginBottom: theme.spacing.xs }}>{t.workflows.assetType}</label>
                 <select
                   value={imageAssetType}
                   onChange={(e) => setImageAssetType(e.target.value as any)}
-                  style={{ padding: "6px 12px", borderRadius: 6, fontSize: 14 }}
+                  style={{ padding: `6px ${theme.spacing.md}px`, borderRadius: theme.radii.lg, fontSize: theme.font.sizes.md }}
                 >
-                  <option value="characters">Characters</option>
-                  <option value="backgrounds">Backgrounds</option>
+                  <option value="characters">{t.workflows.characters}</option>
+                  <option value="backgrounds">{t.workflows.backgrounds}</option>
                 </select>
               </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 6, paddingTop: 18 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: theme.spacing.sm, paddingTop: 18 }}>
                 <input
                   type="checkbox" checked={skipExistingImages}
                   onChange={(e) => setSkipExistingImages(e.target.checked)}
                   id="skipExistingImages"
                 />
-                <label htmlFor="skipExistingImages" style={{ fontSize: 13, color: "#555" }}>Skip existing</label>
+                <label htmlFor="skipExistingImages" style={{ fontSize: theme.font.sizes.base, color: theme.colors.text.secondary }}>{t.workflows.skipExisting}</label>
               </div>
             </>
           )}
@@ -257,41 +291,41 @@ export function Workflows() {
 
         {/* Image list editor */}
         {needsImages && (
-          <div style={{ marginBottom: 16 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-              <span style={{ fontSize: 13, color: "#555", fontWeight: 600 }}>Images ({imageItems.length})</span>
+          <div style={{ marginBottom: theme.spacing.lg }}>
+            <div style={{ display: "flex", alignItems: "center", gap: theme.spacing.sm, marginBottom: theme.spacing.sm }}>
+              <span style={{ fontSize: theme.font.sizes.base, color: theme.colors.text.secondary, fontWeight: theme.font.weights.semibold }}>{t.workflows.images} ({imageItems.length})</span>
               <button
                 onClick={() => setImageItems([...imageItems, { filename: "", prompt: "" }])}
-                style={{ padding: "2px 10px", borderRadius: 4, border: "1px solid #ccc", background: "#fff", fontSize: 13, cursor: "pointer" }}
+                style={{ padding: `2px ${theme.spacing.sm}px`, borderRadius: theme.radii.md, border: `1px solid ${theme.colors.border.medium}`, background: theme.colors.bg.page, fontSize: theme.font.sizes.base, cursor: "pointer" }}
               >
-                + Add
+                {t.workflows.add}
               </button>
             </div>
             {imageItems.map((item, idx) => (
-              <div key={idx} style={{ display: "flex", gap: 6, marginBottom: 6, alignItems: "center" }}>
+              <div key={idx} style={{ display: "flex", gap: theme.spacing.xs, marginBottom: theme.spacing.xs, alignItems: "center" }}>
                 <input
-                  placeholder="filename.png"
+                  placeholder={t.workflows.placeholderFilename}
                   value={item.filename}
                   onChange={(e) => {
                     const next = [...imageItems];
                     next[idx] = { ...next[idx], filename: e.target.value };
                     setImageItems(next);
                   }}
-                  style={{ padding: "4px 8px", borderRadius: 4, border: "1px solid #ddd", fontSize: 13, width: 150 }}
+                  style={{ padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`, borderRadius: theme.radii.md, border: `1px solid ${theme.colors.border.medium}`, fontSize: theme.font.sizes.base, width: 150 }}
                 />
                 <input
-                  placeholder="Prompt description..."
+                  placeholder={t.workflows.placeholderPrompt}
                   value={item.prompt}
                   onChange={(e) => {
                     const next = [...imageItems];
                     next[idx] = { ...next[idx], prompt: e.target.value };
                     setImageItems(next);
                   }}
-                  style={{ padding: "4px 8px", borderRadius: 4, border: "1px solid #ddd", fontSize: 13, flex: 1 }}
+                  style={{ padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`, borderRadius: theme.radii.md, border: `1px solid ${theme.colors.border.medium}`, fontSize: theme.font.sizes.base, flex: 1 }}
                 />
                 <button
                   onClick={() => setImageItems(imageItems.filter((_, i) => i !== idx))}
-                  style={{ padding: "2px 8px", borderRadius: 4, border: "1px solid #e5e7eb", background: "#fee2e2", color: "#991b1b", fontSize: 12, cursor: "pointer" }}
+                  style={{ padding: `2px ${theme.spacing.sm}px`, borderRadius: theme.radii.md, border: `1px solid #e5e7eb`, background: "#fee2e2", color: "#991b1b", fontSize: theme.font.sizes.xs, cursor: "pointer" }}
                 >
                   x
                 </button>
@@ -304,27 +338,27 @@ export function Workflows() {
             onClick={handleTrigger}
             disabled={!canTrigger || !!job}
             style={{
-              padding: "6px 16px",
-              borderRadius: 6,
+              padding: `6px ${theme.spacing.xl}px`,
+              borderRadius: theme.radii.lg,
               border: "none",
-              background: canTrigger && !job ? "#059669" : "#ccc",
-              color: "#fff",
+              background: canTrigger && !job ? "#059669" : theme.colors.border.medium,
+              color: theme.colors.bg.page,
               cursor: canTrigger && !job ? "pointer" : "not-allowed",
-              fontSize: 14,
+              fontSize: theme.font.sizes.md,
             }}
           >
-            Run Workflow
+            {t.workflows.runWorkflow}
           </button>
         </div>
       )}
 
       {/* Overall progress */}
       {job && (
-        <div style={{ marginBottom: 16 }}>
-          <div style={{ fontSize: 13, color: "#555", marginBottom: 4 }}>
+        <div style={{ marginBottom: theme.spacing.lg }}>
+          <div style={{ fontSize: theme.font.sizes.base, color: theme.colors.text.secondary, marginBottom: theme.spacing.xs }}>
             Workflow — {job.status} ({job.progress}%)
           </div>
-          <div style={{ background: "#e5e7eb", borderRadius: 4, height: 10, overflow: "hidden" }}>
+          <div style={{ background: "#e5e7eb", borderRadius: theme.radii.md, height: 10, overflow: "hidden" }}>
             <div style={{ background: "#059669", height: "100%", width: `${job.progress}%`, transition: "width 0.3s" }} />
           </div>
         </div>
@@ -332,19 +366,19 @@ export function Workflows() {
 
       {/* Task tree view (primary) */}
       {tree && (
-        <div style={{ marginTop: 16 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-            <h3 style={{ fontSize: 14, margin: 0 }}>Task Tree</h3>
+        <div style={{ marginTop: theme.spacing.lg }}>
+          <div style={{ display: "flex", alignItems: "center", gap: theme.spacing.sm, marginBottom: theme.spacing.sm }}>
+            <h3 style={{ fontSize: theme.font.sizes.md, margin: 0 }}>{t.workflows.taskTree}</h3>
             {job?.status === "running" && (
               <button
                 onClick={() => job && loadTree(job.id)}
-                style={{ fontSize: 11, padding: "2px 10px", borderRadius: 3, border: "1px solid #ccc", background: "transparent", cursor: "pointer" }}
+                style={{ fontSize: theme.font.sizes.sm, padding: `2px ${theme.spacing.sm}px`, borderRadius: theme.radii.sm, border: `1px solid ${theme.colors.border.medium}`, background: "transparent", cursor: "pointer" }}
               >
-                Refresh
+                {t.workflows.refresh}
               </button>
             )}
           </div>
-          <div style={{ border: "1px solid #e0e0e0", borderRadius: 8, padding: 8, background: "#fafafa" }}>
+          <div style={{ border: `1px solid ${theme.colors.border.default}`, borderRadius: theme.radii.xl, padding: theme.spacing.sm, background: theme.colors.bg.surface }}>
             <TaskTreeView
               tree={tree}
               onRetry={job ? handleRetryNode : undefined}
@@ -355,12 +389,12 @@ export function Workflows() {
 
       {/* Flat step list (fallback when no tree) */}
       {!tree && stepStatuses.length > 0 && (
-        <div style={{ marginTop: 16 }}>
-          <h3 style={{ fontSize: 14, margin: "0 0 8px" }}>Steps</h3>
+        <div style={{ marginTop: theme.spacing.lg }}>
+          <h3 style={{ fontSize: theme.font.sizes.md, margin: `0 0 ${theme.spacing.sm}px` }}>Steps</h3>
           {stepStatuses.map((step, i) => (
-            <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-              <span style={{ fontSize: 13, width: 160, flexShrink: 0 }}>{i + 1}. {step.label}</span>
-              <div style={{ background: "#e5e7eb", borderRadius: 3, height: 6, flex: 1, overflow: "hidden" }}>
+            <div key={i} style={{ display: "flex", alignItems: "center", gap: theme.spacing.sm, marginBottom: theme.spacing.xs }}>
+              <span style={{ fontSize: theme.font.sizes.base, width: 160, flexShrink: 0 }}>{i + 1}. {step.label}</span>
+              <div style={{ background: "#e5e7eb", borderRadius: theme.radii.sm, height: 6, flex: 1, overflow: "hidden" }}>
                 <div style={{
                   background: stepColor(step.status),
                   height: "100%",
@@ -368,23 +402,28 @@ export function Workflows() {
                   transition: "width 0.3s",
                 }} />
               </div>
-              <span style={{
-                fontSize: 11,
-                padding: "1px 6px",
-                borderRadius: 3,
-                background: statusBg(step.status),
-                color: statusColor(step.status),
-                minWidth: 60,
-                textAlign: "center",
-              }}>
-                {step.status}
-              </span>
+              <StatusBadge status={step.status} />
               {step.error && (
-                <span style={{ fontSize: 11, color: "#dc2626" }}>{step.error}</span>
+                <span style={{ fontSize: theme.font.sizes.sm, color: "#dc2626" }}>{step.error}</span>
               )}
             </div>
           ))}
         </div>
+      )}
+      </div>
+      {showAdvisor && (
+        <AdvisorPanelBase
+          agentName="studio-coordinator"
+          title={t.workflows.advisor}
+          titleColor={theme.colors.primaryDark}
+          contextLabel={selectedSeries || t.workflows.title}
+          historyKey="workflows-advisor"
+          systemPrefix={`Context: Workflows. Template: ${selectedTemplate || "none"}. Pipeline orchestration guidance.`}
+          placeholder={t.workflows.advisorPlaceholder}
+          messages={advisorMsgs}
+          setMessages={setAdvisorMsgs}
+          preferredAgents={["studio-coordinator", "studio-advisor"]}
+        />
       )}
     </div>
   );
@@ -396,23 +435,5 @@ function stepColor(status: string): string {
     case "running": return "#2563eb";
     case "failed": return "#dc2626";
     default: return "#9ca3af";
-  }
-}
-
-function statusBg(status: string): string {
-  switch (status) {
-    case "completed": return "#dcfce7";
-    case "running": return "#dbeafe";
-    case "failed": return "#fee2e2";
-    default: return "#f3f4f6";
-  }
-}
-
-function statusColor(status: string): string {
-  switch (status) {
-    case "completed": return "#166534";
-    case "running": return "#1e40af";
-    case "failed": return "#991b1b";
-    default: return "#6b7280";
   }
 }

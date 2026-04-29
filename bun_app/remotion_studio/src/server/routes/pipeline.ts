@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import { resolve } from "node:path";
+import { existsSync } from "node:fs";
 import { getPipelineStatus, runPipeline, runCheck, runScore } from "../../../../storygraph/src/pipeline-api";
 import { createJob } from "../middleware/job-queue";
 import { evaluateTrigger } from "../services/automation-rules";
@@ -85,6 +86,17 @@ router.post("/score", async (c) => {
   });
 
   return c.json<ApiResponse<Job>>({ ok: true, data: job }, 201);
+});
+
+// Serve graph.html visualization for a series
+router.get("/graph-html/:seriesId", (c) => {
+  const seriesId = c.req.param("seriesId");
+  const graphPath = resolve(REPO_ROOT, "bun_remotion_proj", seriesId, "storygraph_out", "graph.html");
+  if (!existsSync(graphPath)) {
+    return c.json<ApiResponse>({ ok: false, error: "graph.html not found — run pipeline first" }, 404);
+  }
+  const file = Bun.file(graphPath);
+  return new Response(file, { headers: { "Content-Type": "text/html; charset=utf-8" } });
 });
 
 export const pipelineRoutes = router;

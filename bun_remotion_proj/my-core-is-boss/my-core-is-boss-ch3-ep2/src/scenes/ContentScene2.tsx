@@ -22,7 +22,7 @@ const dialogLines = [
   { character: "narrator" as const, text: "守護者的殘魂顫抖著開口：「你……你看到了？」", emotion: "default" as const },
   { character: "linyi" as const, text: "嗯，看到了。這迷宮的第三十七個岔路左轉是死路，建議改成右轉。還有第五十二個轉角的符文陣有個邏輯錯誤，會導致迷路者永遠繞圈。", emotion: "smile" as const },
   { character: "narrator" as const, text: "守護者沉默了。他守了三千年的迷宮，被一個外門弟子用十秒鐘找到了所有 bug。", emotion: "default" as const, effect: "sweat" as ComicEffect },
-  { character: "zhaoxiaoqi" as const, text: "師兄在跟迷宮守護者……討論迷宮設計缺陷？這是修仙還是代碼審查？", emotion: "confused" as const },
+  { character: "zhaoxiaoqi" as const, text: "師兄在跟迷宮守護者……討論迷宮設計缺陷？這是修仙還是代碼審查？", emotion: "shock" as const },
   { character: "narrator" as const, text: "趙小七的筆記本翻開了新的一頁：《迷宮源代碼分析手冊——林逸師兄的代碼審查記錄》。旁註：「師兄說第三十七個岔路有 bug，但老師說三千年前沒有 bug 這個詞。」", emotion: "default" as const },
 ];
 

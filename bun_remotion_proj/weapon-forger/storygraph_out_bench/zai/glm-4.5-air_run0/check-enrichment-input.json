@@ -1,0 +1,476 @@
+{
+  "report": {
+    "summary": {
+      "pass": 24,
+      "warn": 7,
+      "fail": 0
+    },
+    "checks": [
+      {
+        "check": "Character Consistency: zhoumo",
+        "status": "WARN",
+        "details": "Episode instance ch2ep1_char_zhoumo missing core traits: 周墨: 忘加按鈕/功能"
+      },
+      {
+        "check": "Character Consistency: zhoumo",
+        "status": "WARN",
+        "details": "Episode instance ch3ep1_char_zhoumo missing core traits: 周墨: 忘加按鈕/功能"
+      },
+      {
+        "check": "Character Consistency: zhoumo",
+        "status": "WARN",
+        "details": "Episode instance ch3ep2_char_zhoumo missing core traits: 周墨: 科技工程術語"
+      },
+      {
+        "check": "Character Consistency: examiner",
+        "status": "PASS",
+        "details": "examiner has consistent traits across 2 episodes (2 core traits)"
+      },
+      {
+        "check": "Gag Evolution: 忘加按鈕",
+        "status": "PASS",
+        "details": "忘加按鈕 evolves across 7 episodes without stagnation"
+      },
+      {
+        "check": "Gag Evolution: 現代科技用語",
+        "status": "PASS",
+        "details": "現代科技用語 evolves across 7 episodes without stagnation"
+      },
+      {
+        "check": "Gag Evolution: 法寶反噬",
+        "status": "PASS",
+        "details": "法寶反噬 evolves across 7 episodes without stagnation"
+      },
+      {
+        "check": "Tech Term Diversity",
+        "status": "PASS",
+        "details": "ch1ep1 has 8 tech terms: 用户体验, 底层逻辑闭环, 指纹识别, 自动格式化, 模块化设计"
+      },
+      {
+        "check": "Tech Term Diversity",
+        "status": "PASS",
+        "details": "ch1ep2 has 6 tech terms: 演算法, 算法, 使用者體驗, 底層邏輯閉環, 指紋識別"
+      },
+      {
+        "check": "Tech Term Diversity",
+        "status": "PASS",
+        "details": "ch1ep3 has 6 tech terms: 使用者體驗, 系統升級, 情緒管理系統, 情感交互界面, 語音控制"
+      },
+      {
+        "check": "Tech Term Diversity",
+        "status": "PASS",
+        "details": "ch2ep1 has 5 tech terms: 壓力釋放模組, 演算法, 算法, 演算法思維, 被動技能"
+      },
+      {
+        "check": "Tech Term Diversity",
+        "status": "PASS",
+        "details": "ch2ep2 has 4 tech terms: 自動防禦系統, 記憶區段, 常規維護, 人工智慧"
+      },
+      {
+        "check": "Tech Term Diversity",
+        "status": "PASS",
+        "details": "ch2ep3 has 4 tech terms: 資訊系統, 認可系統, 自動評價系統, 評價標準"
+      },
+      {
+        "check": "Tech Term Diversity",
+        "status": "PASS",
+        "details": "ch3ep1 has 3 tech terms: 雷射切割, 冗餘設計, 自動防禦協議"
+      },
+      {
+        "check": "Trait Coverage",
+        "status": "WARN",
+        "details": "ch3ep1_char_elder has no detected character traits"
+      },
+      {
+        "check": "Trait Coverage",
+        "status": "WARN",
+        "details": "ch3ep2_char_luyang has no detected character traits"
+      },
+      {
+        "check": "Trait Coverage",
+        "status": "WARN",
+        "details": "ch3ep2_char_mengjingzhou has no detected character traits"
+      },
+      {
+        "check": "Interaction Density",
+        "status": "PASS",
+        "details": "All character instances have at least 1 interaction"
+      },
+      {
+        "check": "Duplicate Content",
+        "status": "PASS",
+        "details": "No duplicate content detected across 8 episodes (all Jaccard ≤ 0.5)"
+      },
+      {
+        "check": "Plot Arc",
+        "status": "PASS",
+        "details": "No plot_beat nodes found — plot arc analysis not yet run"
+      },
+      {
+        "check": "Foreshadowing",
+        "status": "PASS",
+        "details": "No foreshadowing nodes found — foreshadow tracking not yet run"
+      },
+      {
+        "check": "Character Growth: zhoumo",
+        "status": "WARN",
+        "details": "周墨 has a flat arc across 8 episodes (score: 18/100) — character may be stagnant"
+      },
+      {
+        "check": "Pacing: ch1ep1",
+        "status": "PASS",
+        "details": "Dynamic pacing (variance: 0.1065, 4 scenes)"
+      },
+      {
+        "check": "Pacing: ch1ep2",
+        "status": "PASS",
+        "details": "Dynamic pacing (variance: 0.1631, 4 scenes)"
+      },
+      {
+        "check": "Pacing: ch1ep3",
+        "status": "PASS",
+        "details": "Dynamic pacing (variance: 0.0541, 4 scenes)"
+      },
+      {
+        "check": "Pacing: ch2ep1",
+        "status": "PASS",
+        "details": "Dynamic pacing (variance: 0.0619, 4 scenes)"
+      },
+      {
+        "check": "Pacing: ch2ep2",
+        "status": "PASS",
+        "details": "Dynamic pacing (variance: 0.1115, 4 scenes)"
+      },
+      {
+        "check": "Pacing: ch2ep3",
+        "status": "PASS",
+        "details": "Dynamic pacing (variance: 0.0571, 4 scenes)"
+      },
+      {
+        "check": "Pacing: ch3ep1",
+        "status": "PASS",
+        "details": "Dynamic pacing (variance: 0.0594, 4 scenes)"
+      },
+      {
+        "check": "Pacing: ch3ep2",
+        "status": "PASS",
+        "details": "Dynamic pacing (variance: 0.0618, 4 scenes)"
+      },
+      {
+        "check": "Thematic Coherence",
+        "status": "PASS",
+        "details": "No theme nodes found — thematic coherence not applicable (add --mode hybrid for AI theme extraction)"
+      }
+    ]
+  },
+  "characterComparisons": [
+    {
+      "character": "周墨",
+      "id": "zhoumo",
+      "sharedTraits": [
+        "周墨: 科技工程術語",
+        "周墨: 忘加按鈕/功能",
+        "周墨: 工程師思維"
+      ],
+      "variantTraits": {
+        "周墨: 用邏輯包裝荒謬": [
+          "ch1ep2_char_zhoumo",
+          "ch1ep3_char_zhoumo",
+          "ch2ep3_char_zhoumo"
+        ],
+        "周墨: 萬物皆可修": [
+          "ch1ep3_char_zhoumo",
+          "ch2ep2_char_zhoumo",
+          "ch2ep3_char_zhoumo",
+          "ch3ep1_char_zhoumo",
+          "ch3ep2_char_zhoumo"
+        ]
+      },
+      "episodes": [
+        {
+          "id": "ch1ep1_char_zhoumo",
+          "traits": [
+            "周墨: 科技工程術語",
+            "周墨: 忘加按鈕/功能",
+            "周墨: 工程師思維"
+          ]
+        },
+        {
+          "id": "ch1ep2_char_zhoumo",
+          "traits": [
+            "周墨: 科技工程術語",
+            "周墨: 忘加按鈕/功能",
+            "周墨: 工程師思維",
+            "周墨: 用邏輯包裝荒謬"
+          ]
+        },
+        {
+          "id": "ch1ep3_char_zhoumo",
+          "traits": [
+            "周墨: 科技工程術語",
+            "周墨: 忘加按鈕/功能",
+            "周墨: 工程師思維",
+            "周墨: 用邏輯包裝荒謬",
+            "周墨: 萬物皆可修"
+          ]
+        },
+        {
+          "id": "ch2ep1_char_zhoumo",
+          "traits": [
+            "周墨: 科技工程術語",
+            "周墨: 工程師思維"
+          ]
+        },
+        {
+          "id": "ch2ep2_char_zhoumo",
+          "traits": [
+            "周墨: 科技工程術語",
+            "周墨: 忘加按鈕/功能",
+            "周墨: 工程師思維",
+            "周墨: 萬物皆可修"
+          ]
+        },
+        {
+          "id": "ch2ep3_char_zhoumo",
+          "traits": [
+            "周墨: 科技工程術語",
+            "周墨: 忘加按鈕/功能",
+            "周墨: 工程師思維",
+            "周墨: 用邏輯包裝荒謬",
+            "周墨: 萬物皆可修"
+          ]
+        },
+        {
+          "id": "ch3ep1_char_zhoumo",
+          "traits": [
+            "周墨: 科技工程術語",
+            "周墨: 工程師思維",
+            "周墨: 萬物皆可修"
+          ]
+        },
+        {
+          "id": "ch3ep2_char_zhoumo",
+          "traits": [
+            "周墨: 忘加按鈕/功能",
+            "周墨: 工程師思維",
+            "周墨: 萬物皆可修"
+          ]
+        }
+      ]
+    },
+    {
+      "character": "考官",
+      "id": "examiner",
+      "sharedTraits": [
+        "考官: 崩潰吐槽",
+        "考官: 權威考官"
+      ],
+      "variantTraits": {},
+      "episodes": [
+        {
+          "id": "ch1ep1_char_examiner",
+          "traits": [
+            "考官: 崩潰吐槽",
+            "考官: 權威考官"
+          ]
+        },
+        {
+          "id": "ch1ep2_char_examiner",
+          "traits": [
+            "考官: 崩潰吐槽",
+            "考官: 權威考官"
+          ]
+        }
+      ]
+    },
+    {
+      "character": "旁白",
+      "id": "narrator",
+      "sharedTraits": [],
+      "variantTraits": {},
+      "episodes": [
+        {
+          "id": "ch1ep1_char_narrator",
+          "traits": []
+        },
+        {
+          "id": "ch1ep2_char_narrator",
+          "traits": []
+        },
+        {
+          "id": "ch1ep3_char_narrator",
+          "traits": []
+        },
+        {
+          "id": "ch2ep1_char_narrator",
+          "traits": []
+        },
+        {
+          "id": "ch2ep2_char_narrator",
+          "traits": []
+        },
+        {
+          "id": "ch2ep3_char_narrator",
+          "traits": []
+        },
+        {
+          "id": "ch3ep1_char_narrator",
+          "traits": []
+        },
+        {
+          "id": "ch3ep2_char_narrator",
+          "traits": []
+        }
+      ]
+    },
+    {
+      "character": "長老",
+      "id": "elder",
+      "sharedTraits": [],
+      "variantTraits": {
+        "長老: 欣賞創新": [
+          "ch1ep2_char_elder",
+          "ch1ep3_char_elder"
+        ],
+        "長老: 認可但擔憂": [
+          "ch1ep2_char_elder"
+        ],
+        "長老: 毒舌警告": [
+          "ch1ep3_char_elder",
+          "ch2ep3_char_elder"
+        ]
+      },
+      "episodes": [
+        {
+          "id": "ch1ep2_char_elder",
+          "traits": [
+            "長老: 欣賞創新",
+            "長老: 認可但擔憂"
+          ]
+        },
+        {
+          "id": "ch1ep3_char_elder",
+          "traits": [
+            "長老: 欣賞創新",
+            "長老: 毒舌警告"
+          ]
+        },
+        {
+          "id": "ch2ep3_char_elder",
+          "traits": [
+            "長老: 毒舌警告"
+          ]
+        },
+        {
+          "id": "ch3ep1_char_elder",
+          "traits": []
+        }
+      ]
+    },
+    {
+      "character": "陸陽",
+      "id": "luyang",
+      "sharedTraits": [
+        "陸陽: 投降反射",
+        "陸陽: 隨時備好投降表"
+      ],
+      "variantTraits": {
+        "陸陽: 天真神比喻": [
+          "ch3ep1_char_luyang"
+        ]
+      },
+      "episodes": [
+        {
+          "id": "ch2ep1_char_luyang",
+          "traits": [
+            "陸陽: 投降反射",
+            "陸陽: 隨時備好投降表"
+          ]
+        },
+        {
+          "id": "ch2ep2_char_luyang",
+          "traits": [
+            "陸陽: 投降反射",
+            "陸陽: 隨時備好投降表"
+          ]
+        },
+        {
+          "id": "ch2ep3_char_luyang",
+          "traits": [
+            "陸陽: 投降反射",
+            "陸陽: 隨時備好投降表"
+          ]
+        },
+        {
+          "id": "ch3ep1_char_luyang",
+          "traits": [
+            "陸陽: 投降反射",
+            "陸陽: 隨時備好投降表",
+            "陸陽: 天真神比喻"
+          ]
+        },
+        {
+          "id": "ch3ep2_char_luyang",
+          "traits": []
+        }
+      ]
+    },
+    {
+      "character": "孟景舟",
+      "id": "mengjingzhou",
+      "sharedTraits": [
+        "孟景舟: 研究狂"
+      ],
+      "variantTraits": {
+        "孟景舟: 單身光環": [
+          "ch2ep1_char_mengjingzhou",
+          "ch2ep2_char_mengjingzhou",
+          "ch3ep1_char_mengjingzhou"
+        ],
+        "孟景舟: 一切皆為數據": [
+          "ch2ep1_char_mengjingzhou",
+          "ch2ep2_char_mengjingzhou",
+          "ch3ep1_char_mengjingzhou"
+        ]
+      },
+      "episodes": [
+        {
+          "id": "ch2ep1_char_mengjingzhou",
+          "traits": [
+            "孟景舟: 研究狂",
+            "孟景舟: 單身光環",
+            "孟景舟: 一切皆為數據"
+          ]
+        },
+        {
+          "id": "ch2ep2_char_mengjingzhou",
+          "traits": [
+            "孟景舟: 研究狂",
+            "孟景舟: 單身光環",
+            "孟景舟: 一切皆為數據"
+          ]
+        },
+        {
+          "id": "ch2ep3_char_mengjingzhou",
+          "traits": [
+            "孟景舟: 研究狂"
+          ]
+        },
+        {
+          "id": "ch3ep1_char_mengjingzhou",
+          "traits": [
+            "孟景舟: 研究狂",
+            "孟景舟: 單身光環",
+            "孟景舟: 一切皆為數據"
+          ]
+        },
+        {
+          "id": "ch3ep2_char_mengjingzhou",
+          "traits": []
+        }
+      ]
+    }
+  ],
+  "seriesDir": "/Users/huangziyu/proj/bun_remotion/bun_remotion_proj/weapon-forger",
+  "generatedAt": "2026-04-27T22:30:35.733Z"
+}

@@ -10,7 +10,7 @@ import {
 } from "../server/services/export-import-service";
 import type { ProjectExport } from "../shared/types";
 
-const REPO_ROOT = resolve(import.meta.dir, "../../../../..");
+const REPO_ROOT = resolve(import.meta.dir, "../../../..");
 const PROJ_DIR = resolve(REPO_ROOT, "bun_remotion_proj");
 const TEST_DIRS = ["weapon-forger-test-import", "test-round-trip"];
 

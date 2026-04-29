@@ -7,7 +7,7 @@ export default defineConfig({
   retries: 0,
   workers: 1,
   use: {
-    baseURL: "http://localhost:3000",
+    baseURL: "http://localhost:5173",
     locale: "zh-TW",
     viewport: { width: 1280, height: 800 },
   },

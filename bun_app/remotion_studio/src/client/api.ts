@@ -1,4 +1,4 @@
-import type { ApiResponse, Job, JobProgress, Project, AssetSummary, SeriesAssets, TTSStatus, RenderStatus, WorkflowTemplate, WorkflowResult, MonitoringOverview, SeriesHealth, SeriesQualitySnapshot, RegressionAlert, ScoreHistoryPoint, ImageStatus, ImageGenerateRequest, CharacterProfile, BenchmarkResult, BaselineInfo, AgentInfo, AgentStreamEvent, AgentTaskResult, TaskTree, TaskNode } from "../shared/types";
+import type { ApiResponse, Job, JobProgress, Project, AssetSummary, SeriesAssets, TTSStatus, RenderStatus, WorkflowTemplate, WorkflowResult, MonitoringOverview, SeriesHealth, SeriesQualitySnapshot, RegressionAlert, ScoreHistoryPoint, ImageStatus, ImageGenerateRequest, CharacterProfile, BenchmarkResult, BaselineInfo, AgentInfo, AgentStreamEvent, AgentTaskResult, TaskTree, TaskNode, EpisodeProgress, EpisodeProgressSummary, BatchRequest, BatchResult } from "../shared/types";
 
 const BASE = "/api";
 
@@ -14,9 +14,12 @@ export const api = {
   health: () => request<{ status: string; timestamp: string }>("/health"),
 
   // Jobs
-  listJobs: () => request<Job[]>("/jobs"),
+  listJobs: (status?: string) => request<Job[]>(`/jobs${status ? `?status=${status}` : ""}`),
   getJob: (id: string) => request<Job>(`/jobs/${id}`),
   createDemoJob: () => request<Job>("/jobs/demo", { method: "POST" }),
+  cancelJob: (id: string) => request<Job>(`/jobs/${id}/cancel`, { method: "POST" }),
+  deleteJob: (id: string) => request<{ deleted: boolean }>(`/jobs/${id}`, { method: "DELETE" }),
+  listJobHistory: (olderThan?: string) => request<Job[]>(`/jobs/history${olderThan ? `?olderThan=${olderThan}` : ""}`),
 
   /** Subscribe to job progress via SSE. Returns unsubscribe function. */
   streamJob(jobId: string, onProgress: (p: JobProgress) => void): () => void {
@@ -47,14 +50,16 @@ export const api = {
     dryRun?: boolean;
   }) => request<Job>("/scaffold", { method: "POST", body: JSON.stringify(body) }),
 
-  // Pipeline
-  getPipelineStatus: (seriesId: string) => request<Record<string, unknown>>(`/pipeline/status/${seriesId}`),
-  runPipeline: (seriesId: string, mode?: string) =>
-    request<Job>("/pipeline/run", { method: "POST", body: JSON.stringify({ seriesId, mode }) }),
-  runCheck: (seriesId: string, mode?: string) =>
-    request<Job>("/pipeline/check", { method: "POST", body: JSON.stringify({ seriesId, mode }) }),
-  runScore: (seriesId: string, mode?: string) =>
-    request<Job>("/pipeline/score", { method: "POST", body: JSON.stringify({ seriesId, mode }) }),
+  // Pipeline (namespaced)
+  pipeline: {
+    getStatus: (seriesId: string) => request<Record<string, unknown>>(`/pipeline/status/${seriesId}`),
+    run: (seriesId: string, mode?: string) =>
+      request<Job>("/pipeline/run", { method: "POST", body: JSON.stringify({ seriesId, mode }) }),
+    check: (seriesId: string, mode?: string) =>
+      request<Job>("/pipeline/check", { method: "POST", body: JSON.stringify({ seriesId, mode }) }),
+    score: (seriesId: string, mode?: string) =>
+      request<Job>("/pipeline/score", { method: "POST", body: JSON.stringify({ seriesId, mode }) }),
+  },
 
   // Quality
   getQuality: (seriesId: string) => request<Record<string, unknown>>(`/quality/${seriesId}`),
@@ -69,7 +74,7 @@ export const api = {
   assetFileUrl: (relPath: string) => `${BASE}/assets/file/${relPath}`,
 
   // TTS
-  getTtsStatus: (episodeId: string) => request<TTSStatus>(`/tts/status?episodeId=${encodeURIComponent(episodeId)}`),
+  getTTSStatus: (episodeId: string) => request<TTSStatus>(`/tts/status?episodeId=${encodeURIComponent(episodeId)}`),
   generateTTS: (episodeId: string, opts?: { scene?: string; skipExisting?: boolean; engine?: string }) =>
     request<Job>("/tts/generate", { method: "POST", body: JSON.stringify({ episodeId, ...opts }) }),
 
@@ -132,6 +137,14 @@ export const api = {
   getMonitoringOverview: () => request<MonitoringOverview>("/monitoring/overview"),
   getSeriesHealth: (seriesId: string) => request<SeriesHealth>(`/monitoring/series/${seriesId}`),
 
+  // Episode progress
+  getEpisodeProgress: () => request<{ episodes: EpisodeProgress[]; summary: EpisodeProgressSummary }>("/episode-progress"),
+
+  // Batch
+  batch: {
+    trigger: (body: BatchRequest) => request<Job<BatchResult>>("/batch", { method: "POST", body: JSON.stringify(body) }),
+  },
+
   // Benchmark
   benchmark: {
     listBaselines: () => request<BaselineInfo[]>("/benchmark/baselines"),
@@ -143,6 +156,8 @@ export const api = {
       request<BenchmarkResult>("/benchmark/regression", { method: "POST", body: JSON.stringify({ seriesId, threshold }) }),
     updateBaseline: (seriesId: string) =>
       request<BaselineInfo>(`/benchmark/baseline/${seriesId}`, { method: "POST" }),
+    regressionStatus: (threshold?: number) =>
+      request<RegressionSeriesStatus[]>(`/benchmark/regression-status${threshold ? `?threshold=${threshold}` : ""}`),
   },
 
   // Agent bridge
@@ -159,16 +174,30 @@ export const api = {
       agentName: string,
       prompt: string,
       onEvent: (event: AgentStreamEvent | { type: "result"; result: AgentTaskResult }) => void,
+      history?: Array<{ role: "user" | "assistant"; content: string }>,
+      model?: string,
     ): () => void {
+      const STREAM_TIMEOUT_MS = 3 * 60 * 1000; // 3 min total
       const controller = new AbortController();
+      let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
       (async () => {
         try {
-          const res = await fetch(`${BASE}/agent/chat`, {
+          // Total timeout races against the fetch
+          const fetchPromise = fetch(`${BASE}/agent/chat`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ agentName, prompt }),
+            body: JSON.stringify({ agentName, prompt, history, model }),
             signal: controller.signal,
           });
+          const timeoutPromise = new Promise<never>((_, reject) => {
+            timeoutId = setTimeout(() => {
+              controller.abort();
+              reject(new Error("Agent request timed out after 3 minutes."));
+            }, STREAM_TIMEOUT_MS);
+          });
+          const res = await Promise.race([fetchPromise, timeoutPromise]);
+
           if (!res.ok) {
             const body = await res.text();
             onEvent({ type: "error", message: `HTTP ${res.status}: ${body}` });
@@ -185,21 +214,32 @@ export const api = {
             buf = lines.pop()!;
             for (const line of lines) {
               if (line.startsWith("data:")) {
-                onEvent(JSON.parse(line.slice(5).trim()));
+                try {
+                  onEvent(JSON.parse(line.slice(5).trim()));
+                } catch {
+                  // skip malformed SSE lines
+                }
               }
             }
           }
           // flush remaining
           if (buf.startsWith("data:")) {
-            onEvent(JSON.parse(buf.slice(5).trim()));
+            try {
+              onEvent(JSON.parse(buf.slice(5).trim()));
+            } catch { /* skip malformed */ }
           }
         } catch (e: any) {
           if (e.name !== "AbortError") {
             onEvent({ type: "error", message: e.message });
           }
+        } finally {
+          clearTimeout(timeoutId);
         }
       })();
-      return () => controller.abort();
+      return () => {
+        clearTimeout(timeoutId);
+        controller.abort();
+      };
     },
   },
 };

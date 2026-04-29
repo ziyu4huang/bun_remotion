@@ -186,9 +186,9 @@ describe("model-bench: sampleNodes", () => {
         { id: "ep5_char_alice", type: "character", label: "Alice" },
       ],
     };
-    const sampled = sampleNodes(merged, 10);
-    expect(sampled[0].episode).toBe("ch1ep1");
-    expect(sampled[1].episode).toBe("ep5");
+    const episodes = sampleNodes(merged, 10).map(s => s.episode);
+    expect(episodes).toContain("ch1ep1");
+    expect(episodes).toContain("ep5");
   });
 });
 

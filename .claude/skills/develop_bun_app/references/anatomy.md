@@ -20,6 +20,17 @@ bun_app/<name>/
 │   ├── server/           # HTTP mode (optional)
 │   │   ├── index.ts      # Server startup
 │   │   └── routes/       # Route handlers
+│   ├── client/           # React frontend (optional, Vite)
+│   │   ├── index.tsx     # MUST be .tsx (entry has JSX)
+│   │   ├── App.tsx       # Router/layout
+│   │   ├── pages/        # Page components (.tsx)
+│   │   ├── components/   # Shared components (.tsx)
+│   │   ├── theme/        # Theme tokens + context
+│   │   │   ├── tokens.ts # Pure data — no JSX
+│   │   │   ├── context.tsx # MUST be .tsx (ThemeProvider uses JSX)
+│   │   │   └── index.ts  # Re-exports
+│   │   ├── hooks/        # Custom hooks (.ts)
+│   │   └── api.ts        # API client (no JSX)
 │   ├── tools/            # Tool definitions (optional)
 │   ├── skills/           # Skill loading (optional)
 │   └── __tests__/        # Test files (*.test.ts)
@@ -27,6 +38,23 @@ bun_app/<name>/
 │   └── build.ts
 └── dist/                 # Build output (gitignored)
 ```
+
+## JSX File Extension Rule (CRITICAL)
+
+**Any file containing JSX syntax (`<Component>`, `<div>`, etc.) MUST use `.tsx` extension.**
+
+Vite/esbuild only processes JSX in `.tsx` files. A `.ts` file with JSX will fail at build time with:
+```
+ERROR: Expected ">" but found "value"
+```
+
+**Common trap:** Files like `context.ts` that "just have a Provider wrapper" — they contain JSX and must be `.tsx`.
+
+**Quick check:** After creating/renaming any file in a React project:
+```bash
+grep -rn "return\s*(\s*<" src/ --include="*.ts" | grep -v node_modules
+```
+If this finds hits, rename those `.ts` files to `.tsx`.
 
 ## package.json template
 

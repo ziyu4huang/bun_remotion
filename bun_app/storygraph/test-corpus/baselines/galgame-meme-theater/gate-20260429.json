@@ -1,0 +1,251 @@
+{
+  "version": "2.1",
+  "scoring_method": "group-based",
+  "timestamp": "2026-04-29T00:26:51.134Z",
+  "series": "galgame-meme-theater",
+  "genre": "galgame_meme",
+  "generator": {
+    "mode": "hybrid",
+    "model": "glm-5",
+    "version": "0.16.0"
+  },
+  "score": 100,
+  "decision": "PASS",
+  "previous_score": 0,
+  "score_delta": 100,
+  "group_scores": [
+    {
+      "group": "Character Consistency",
+      "pass_rate": 1,
+      "score_impact": 5
+    },
+    {
+      "group": "Gag Evolution",
+      "pass_rate": 1,
+      "score_impact": 5
+    },
+    {
+      "group": "Trait Coverage",
+      "pass_rate": 0,
+      "score_impact": -5
+    },
+    {
+      "group": "Interaction Density",
+      "pass_rate": 1,
+      "score_impact": 5
+    },
+    {
+      "group": "Duplicate Content",
+      "pass_rate": 1,
+      "score_impact": 5
+    },
+    {
+      "group": "Comedy Arc",
+      "pass_rate": 1,
+      "score_impact": 5
+    },
+    {
+      "group": "Gag Diversity",
+      "pass_rate": 0,
+      "score_impact": -5
+    },
+    {
+      "group": "Character Growth",
+      "pass_rate": 1,
+      "score_impact": 5
+    },
+    {
+      "group": "Pacing",
+      "pass_rate": 1,
+      "score_impact": 5
+    },
+    {
+      "group": "Thematic Coherence",
+      "pass_rate": 1,
+      "score_impact": 5
+    },
+    {
+      "group": "Episode Continuity",
+      "pass_rate": 1,
+      "score_impact": 5
+    },
+    {
+      "group": "Community Structure",
+      "pass_rate": 1,
+      "score_impact": 5
+    },
+    {
+      "group": "Isolated Nodes",
+      "pass_rate": 1,
+      "score_impact": 5
+    },
+    {
+      "group": "Cross-Community Coherence",
+      "pass_rate": 0,
+      "score_impact": -5
+    },
+    {
+      "group": "Surprising Connection",
+      "pass_rate": 1,
+      "score_impact": 5
+    }
+  ],
+  "checks": [
+    {
+      "name": "Character Consistency",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Gag Evolution: 減肥/最後一杯",
+      "status": "PASS",
+      "score_impact": 1.25,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Gag Evolution: 小月嘴硬",
+      "status": "PASS",
+      "score_impact": 1.25,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Gag Evolution: 小樱社死",
+      "status": "PASS",
+      "score_impact": 1.25,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Gag Evolution: 已讀不回",
+      "status": "PASS",
+      "score_impact": 1.25,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Trait Coverage",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Interaction Density",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Duplicate Content",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Comedy Arc",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Foreshadowing",
+      "status": "SKIP",
+      "score_impact": 0,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Gag Diversity",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Character Growth",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Pacing",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Thematic Coherence",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Episode Continuity",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Community Structure",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Isolated Nodes",
+      "status": "PASS",
+      "score_impact": 5,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Cross-Community Coherence",
+      "status": "WARN",
+      "score_impact": -5,
+      "fix_suggestion_zhTW": "(see consistency-report.md for details)"
+    },
+    {
+      "name": "Surprising Connection",
+      "status": "PASS",
+      "score_impact": 1,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Surprising Connection",
+      "status": "PASS",
+      "score_impact": 1,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Surprising Connection",
+      "status": "PASS",
+      "score_impact": 1,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Surprising Connection",
+      "status": "PASS",
+      "score_impact": 1,
+      "fix_suggestion_zhTW": ""
+    },
+    {
+      "name": "Surprising Connection",
+      "status": "PASS",
+      "score_impact": 1,
+      "fix_suggestion_zhTW": ""
+    }
+  ],
+  "quality_breakdown": {
+    "consistency": 0.8333333333333334,
+    "arc_structure": null,
+    "pacing": 1,
+    "character_growth": null,
+    "thematic_coherence": 1,
+    "gag_evolution": 0.9
+  },
+  "supervisor_hints": {
+    "focus_areas": [
+      "Trait Coverage: ep7_char_xiaoyue has no detected traits (regex missed: ba...",
+      "Gag Diversity: Low gag diversity (27%): 4 unique types across 15 manifes...",
+      "Cross-Community Coherence: 12/53 edges cross community boundaries (22.6%): some comm..."
+    ],
+    "suggested_rubric_overrides": [],
+    "escalation_reason": null
+  },
+  "requires_claude_review": false
+}

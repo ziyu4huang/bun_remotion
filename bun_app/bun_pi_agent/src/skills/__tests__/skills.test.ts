@@ -1,10 +1,12 @@
 import { describe, test, expect, beforeEach, afterEach } from "bun:test";
 import { join, dirname, resolve } from "path";
 import { mkdirSync, rmSync, writeFileSync, existsSync } from "fs";
+import { invalidateSkillsCache, startSkillsWatcher, stopSkillsWatcher } from "../index.js";
 import {
   loadSkillsFromDir,
   formatSkillsForPrompt,
   loadAgentSkills,
+  invalidateSkillsCache,
 } from "../index.js";
 import type { Skill } from "@mariozechner/pi-coding-agent";
 
@@ -205,6 +207,7 @@ describe("loadAgentSkills - .claude/skills/ and .agent/skills/ discovery", () =>
   const TMP_CWD = join(FIXTURES_DIR, "__tmp_test_cwd__");
 
   beforeEach(() => {
+    invalidateSkillsCache();
     // Create a temp cwd with .claude/skills/test-skill/SKILL.md
     mkdirSync(join(TMP_CWD, ".claude/skills/test-skill"), { recursive: true });
     writeFileSync(
@@ -315,5 +318,82 @@ describe("formatSkillsForPrompt integration", () => {
     expect(prompt).toContain("<name>skill-with-scripts</name>");
     // disabled-skill should be excluded
     expect(prompt).not.toContain("<name>disabled-skill</name>");
+  });
+});
+
+describe("skills cache + hot-reload", () => {
+  const TMP_CWD = join(
+    dirname(import.meta.url.replace("file://", "")),
+    "__tmp_cache_cwd__",
+  );
+
+  beforeEach(() => {
+    invalidateSkillsCache();
+    mkdirSync(join(TMP_CWD, ".claude/skills/test-skill"), { recursive: true });
+    writeFileSync(
+      join(TMP_CWD, ".claude/skills/test-skill/SKILL.md"),
+      "---\nname: test-skill\ndescription: v1\n---\n# Test",
+    );
+  });
+
+  afterEach(() => {
+    stopSkillsWatcher();
+    rmSync(TMP_CWD, { recursive: true, force: true });
+  });
+
+  test("cache returns same result on second call with same cwd", () => {
+    const first = loadAgentSkills({ cwd: TMP_CWD });
+    const second = loadAgentSkills({ cwd: TMP_CWD });
+    expect(first).toBe(second); // same object reference
+  });
+
+  test("cache bypassed when cwd changes", () => {
+    const first = loadAgentSkills({ cwd: TMP_CWD });
+
+    const otherCwd = join(TMP_CWD, "other");
+    mkdirSync(otherCwd, { recursive: true });
+    const second = loadAgentSkills({ cwd: otherCwd });
+    expect(first).not.toBe(second);
+  });
+
+  test("cache bypassed when skillPaths provided", () => {
+    const first = loadAgentSkills({ cwd: TMP_CWD });
+    const second = loadAgentSkills({
+      cwd: TMP_CWD,
+      skillPaths: [join(FIXTURES_DIR, "another-skill")],
+    });
+    expect(first).not.toBe(second);
+  });
+
+  test("invalidateSkillsCache forces reload", () => {
+    const first = loadAgentSkills({ cwd: TMP_CWD });
+
+    // Add a new skill
+    mkdirSync(join(TMP_CWD, ".claude/skills/new-skill"), { recursive: true });
+    writeFileSync(
+      join(TMP_CWD, ".claude/skills/new-skill/SKILL.md"),
+      "---\nname: new-skill\ndescription: added after cache\n---\n# New",
+    );
+
+    // Without invalidation, cache still returns old result
+    const cached = loadAgentSkills({ cwd: TMP_CWD });
+    expect(cached).toBe(first);
+
+    // After invalidation, reload picks up new skill
+    invalidateSkillsCache();
+    const reloaded = loadAgentSkills({ cwd: TMP_CWD });
+    expect(reloaded).not.toBe(first);
+    const names = reloaded.skills.map((s) => s.name);
+    expect(names).toContain("new-skill");
+  });
+
+  test("startSkillsWatcher does not crash on valid dirs", () => {
+    expect(() => startSkillsWatcher(TMP_CWD)).not.toThrow();
+  });
+
+  test("startSkillsWatcher does not crash when dirs missing", () => {
+    const emptyCwd = join(TMP_CWD, "empty");
+    mkdirSync(emptyCwd, { recursive: true });
+    expect(() => startSkillsWatcher(emptyCwd)).not.toThrow();
   });
 });

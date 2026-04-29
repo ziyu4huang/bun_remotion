@@ -1,13 +1,23 @@
 import { useState, useEffect, useCallback } from "react";
 import { api } from "../api";
+import { PageHeader, LoadingSpinner, EmptyState, AdvisorPanelBase, type ChatMessage, loadHistory, saveHistory } from "../components";
+import { toast } from "../components/ToastContainer";
 import type { Project, TTSStatus, Job, JobProgress } from "../../shared/types";
+import { useTheme } from "../theme";
+import { useI18n } from "../i18n";
 
 export function TTS() {
+  const theme = useTheme();
+  const { t } = useI18n();
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedEpisode, setSelectedEpisode] = useState<string>("");
   const [status, setStatus] = useState<TTSStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [job, setJob] = useState<Job | null>(null);
+  const [previewScene, setPreviewScene] = useState<string>("");
+  const [previewJob, setPreviewJob] = useState<Job | null>(null);
+  const [showAdvisor, setShowAdvisor] = useState(false);
+  const [advisorMsgs, setAdvisorMsgs] = useState<ChatMessage[]>([]);
 
   const loadProjects = useCallback(async () => {
     const res = await api.listProjects();
@@ -19,7 +29,7 @@ export function TTS() {
 
   const loadStatus = useCallback(async (episodeId: string) => {
     if (!episodeId) { setStatus(null); return; }
-    const res = await api.getTtsStatus(episodeId);
+    const res = await api.getTTSStatus(episodeId);
     if (res.data) setStatus(res.data);
   }, []);
 
@@ -37,6 +47,8 @@ export function TTS() {
           setJob(null);
         }
       });
+    } else {
+      toast("error", t.tts.failedGenerate);
     }
   };
 
@@ -50,19 +62,39 @@ export function TTS() {
     }
   }
 
-  if (loading) return <div style={{ color: "#666" }}>Loading...</div>;
+  if (loading) return <LoadingSpinner />;
 
   return (
-    <div>
-      <h2 style={{ margin: "0 0 16px" }}>TTS Generation</h2>
+    <div style={{ display: "flex", gap: theme.spacing.xl }}>
+      <div style={{ flex: 1 }}>
+      <PageHeader title={t.tts.title} description={t.tts.description}>
+        <button
+          onClick={() => setShowAdvisor(!showAdvisor)}
+          style={{
+            padding: `${theme.spacing.xs}px ${theme.spacing.md}px`,
+            background: showAdvisor ? theme.colors.primaryDark : theme.colors.primaryLight,
+            color: showAdvisor ? theme.colors.bg.page : theme.colors.primaryDark,
+            border: `1px solid ${theme.colors.primaryDark}`,
+            borderRadius: theme.radii.md,
+            cursor: "pointer",
+            fontSize: theme.font.sizes.sm,
+          }}
+        >
+          {showAdvisor ? t.tts.hideAdvisor : t.tts.askAdvisor}
+        </button>
+      </PageHeader>
 
-      <div style={{ marginBottom: 16, display: "flex", gap: 8, alignItems: "center" }}>
+      <InfoPanel theme={theme}>
+        <strong>{t.tts.infoText}</strong>
+      </InfoPanel>
+
+      <div style={{ marginBottom: theme.spacing.lg, display: "flex", gap: theme.spacing.sm, alignItems: "center" }}>
         <select
           value={selectedEpisode}
           onChange={(e) => setSelectedEpisode(e.target.value)}
-          style={{ padding: "6px 12px", borderRadius: 6, fontSize: 14, minWidth: 300 }}
+          style={{ padding: "6px 12px", borderRadius: theme.radii.lg, fontSize: theme.font.sizes.md, minWidth: 300 }}
         >
-          <option value="">Select episode...</option>
+          <option value="">{t.tts.selectEpisode}</option>
           {episodes.map((ep) => (
             <option key={ep.id} value={ep.id}>{ep.label}</option>
           ))}
@@ -73,56 +105,60 @@ export function TTS() {
           disabled={!selectedEpisode || !status?.hasNarration || !!job}
           style={{
             padding: "6px 16px",
-            borderRadius: 6,
+            borderRadius: theme.radii.lg,
             border: "none",
-            background: selectedEpisode && status?.hasNarration && !job ? "#3b82f6" : "#ccc",
-            color: "#fff",
+            background: selectedEpisode && status?.hasNarration && !job ? theme.colors.blue : theme.colors.border.medium,
+            color: theme.colors.bg.page,
             cursor: selectedEpisode && status?.hasNarration && !job ? "pointer" : "not-allowed",
-            fontSize: 14,
+            fontSize: theme.font.sizes.md,
           }}
         >
-          Generate TTS
+          {t.tts.generateTts}
         </button>
       </div>
 
+      {!selectedEpisode && (
+        <EmptyState icon="🔊" title={t.tts.selectSeries} description={t.tts.selectSeriesDesc} />
+      )}
+
       {status && (
-        <div style={{ marginBottom: 16 }}>
-          <div style={{ display: "flex", gap: 16, marginBottom: 8 }}>
-            <Badge label="Narration" active={status.hasNarration} />
-            <Badge label="Audio" active={status.hasAudio} />
+        <div style={{ marginBottom: theme.spacing.lg }}>
+          <div style={{ display: "flex", gap: theme.spacing.lg, marginBottom: theme.spacing.sm }}>
+            <Badge label={t.tts.narration} active={status.hasNarration} t={t} />
+            <Badge label={t.tts.audio} active={status.hasAudio} t={t} />
           </div>
 
           {status.voiceMap && (
-            <div style={{ fontSize: 12, color: "#666", marginBottom: 8 }}>
+            <div style={{ fontSize: 12, color: theme.colors.text.tertiary, marginBottom: theme.spacing.sm }}>
               Voices: {Object.entries(status.voiceMap).map(([c, v]) => `${c}→${v}`).join(", ")}
             </div>
           )}
 
           {!status.hasNarration && (
-            <div style={{ color: "#ef4444", fontSize: 13 }}>
-              No narration.ts found. Run scaffold first.
+            <div style={{ color: theme.colors.error, fontSize: theme.font.sizes.base }}>
+              {t.tts.noNarration}
             </div>
           )}
         </div>
       )}
 
       {job && (
-        <div style={{ marginBottom: 16 }}>
-          <div style={{ fontSize: 13, color: "#555", marginBottom: 4 }}>
+        <div style={{ marginBottom: theme.spacing.lg }}>
+          <div style={{ fontSize: theme.font.sizes.base, color: theme.colors.text.secondary, marginBottom: theme.spacing.xs }}>
             {job.type} — {job.status} ({job.progress}%)
           </div>
-          <div style={{ background: "#e5e7eb", borderRadius: 4, height: 8, overflow: "hidden" }}>
-            <div style={{ background: "#3b82f6", height: "100%", width: `${job.progress}%`, transition: "width 0.3s" }} />
+          <div style={{ background: theme.colors.border.default, borderRadius: theme.radii.md, height: 8, overflow: "hidden" }}>
+            <div style={{ background: theme.colors.blue, height: "100%", width: `${job.progress}%`, transition: "width 0.3s" }} />
           </div>
         </div>
       )}
 
       {status && status.audioFiles.length > 0 && (
         <div>
-          <h3 style={{ fontSize: 14, margin: "0 0 8px" }}>Audio Files ({status.audioFiles.length})</h3>
+          <h3 style={{ fontSize: theme.font.sizes.md, margin: `0 0 ${theme.spacing.sm}px` }}>{t.tts.audioFiles(status.audioFiles.length)}</h3>
           {status.audioFiles.map((file) => (
-            <div key={file} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-              <span style={{ fontSize: 12, color: "#777", minWidth: 160 }}>{file}</span>
+            <div key={file} style={{ display: "flex", alignItems: "center", gap: theme.spacing.sm, marginBottom: 6 }}>
+              <span style={{ fontSize: 12, color: theme.colors.text.faint, minWidth: 160 }}>{file}</span>
               <audio
                 controls
                 src={api.assetFileUrl(status.episodeId + "/public/audio/" + file)}
@@ -132,20 +168,102 @@ export function TTS() {
           ))}
         </div>
       )}
+
+      {/* Scene Preview */}
+      {status?.hasNarration && (
+        <div style={{
+          marginTop: theme.spacing.xl,
+          border: `1px solid ${theme.colors.border.default}`, borderRadius: theme.radii.lg,
+          overflow: "hidden",
+        }}>
+          <div style={{ padding: "10px 14px", background: theme.colors.bg.muted, fontWeight: theme.font.weights.medium, fontSize: theme.font.sizes.sm }}>
+            Scene Preview — test TTS for a single scene
+          </div>
+          <div style={{ padding: 14, display: "flex", gap: theme.spacing.sm, alignItems: "center" }}>
+            <input
+              value={previewScene}
+              onChange={(e) => setPreviewScene(e.target.value)}
+              placeholder={t.tts.sceneNamePlaceholder}
+              style={{
+                padding: "4px 10px", borderRadius: theme.radii.md,
+                border: `1px solid ${theme.colors.border.medium}`, width: 200,
+                fontSize: theme.font.sizes.sm,
+              }}
+            />
+            <button
+              onClick={async () => {
+                if (!selectedEpisode || !previewScene) return;
+                const res = await api.generateTTS(selectedEpisode, { scene: previewScene });
+                if (res.data) {
+                  setPreviewJob(res.data);
+                  api.streamJob(res.data.id, (p: JobProgress) => {
+                    setPreviewJob((prev) => prev ? { ...prev, progress: p.progress } : null);
+                    if (p.progress >= 100) {
+                      loadStatus(selectedEpisode);
+                      setPreviewJob(null);
+                    }
+                  });
+                } else {
+                  toast("error", t.tts.failedPreview);
+                }
+              }}
+              disabled={!previewScene || !!previewJob || !!job}
+              style={{
+                padding: "4px 14px", borderRadius: theme.radii.md,
+                border: `1px solid ${theme.colors.blue}`,
+                background: previewScene && !previewJob && !job ? theme.colors.blue : theme.colors.border.medium,
+                color: "#fff", cursor: previewScene && !previewJob && !job ? "pointer" : "not-allowed",
+                fontSize: theme.font.sizes.sm,
+              }}
+            >
+              {previewJob ? t.tts.previewing(previewJob.progress) : t.tts.previewScene}
+            </button>
+          </div>
+        </div>
+      )}
+      </div>
+      {showAdvisor && (
+        <AdvisorPanelBase
+          agentName="studio-tts"
+          title={t.tts.advisor}
+          titleColor={theme.colors.blue}
+          contextLabel={selectedEpisode || t.tts.title}
+          historyKey="tts-advisor"
+          systemPrefix={`Context: TTS Generation. Episode: ${selectedEpisode || "none"}. Helping with voice synthesis and audio production.`}
+          placeholder={t.tts.advisorPlaceholder}
+          messages={advisorMsgs}
+          setMessages={setAdvisorMsgs}
+          preferredAgents={["studio-tts", "studio-advisor"]}
+        />
+      )}
     </div>
   );
 }
 
-function Badge({ label, active }: { label: string; active: boolean }) {
+function Badge({ label, active, t }: { label: string; active: boolean; t: any }) {
+  const theme = useTheme();
   return (
     <span style={{
       padding: "2px 8px",
-      borderRadius: 4,
+      borderRadius: theme.radii.md,
       fontSize: 12,
-      background: active ? "#dcfce7" : "#fee2e2",
-      color: active ? "#166534" : "#991b1b",
+      background: active ? theme.colors.successLight : theme.colors.errorLight,
+      color: active ? theme.colors.successDark : theme.colors.errorDark,
     }}>
-      {label}: {active ? "Yes" : "No"}
+      {label}: {active ? t.tts.yes : t.tts.no}
     </span>
+  );
+}
+
+function InfoPanel({ children, theme }: { children: React.ReactNode; theme: ReturnType<typeof useTheme> }) {
+  return (
+    <div style={{
+      padding: "8px 14px", marginBottom: theme.spacing.lg,
+      border: `1px solid ${theme.colors.info}33`, borderRadius: theme.radii.md,
+      background: `${theme.colors.info}08`, fontSize: theme.font.sizes.sm,
+      color: theme.colors.text.secondary, lineHeight: 1.5,
+    }}>
+      {children}
+    </div>
   );
 }

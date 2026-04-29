@@ -6,6 +6,8 @@ import {
   writePlanRaw,
   readEpisodePlan,
   writeEpisodePlan,
+  listRevisions,
+  readRevision,
 } from "../services/plan-editor";
 import type { ApiResponse } from "../../shared/types";
 
@@ -29,6 +31,19 @@ router.get("/:seriesId/raw", async (c) => {
   const raw = readPlanRaw(c.req.param("seriesId"));
   if (raw === null) return c.json<ApiResponse>({ ok: false, error: "PLAN.md not found" }, 404);
   return c.json<ApiResponse<string>>({ ok: true, data: raw });
+});
+
+// List revisions
+router.get("/:seriesId/revisions", async (c) => {
+  const revs = listRevisions(c.req.param("seriesId"));
+  return c.json<ApiResponse<typeof revs>>({ ok: true, data: revs });
+});
+
+// Read a specific revision
+router.get("/:seriesId/revisions/:revId", async (c) => {
+  const content = readRevision(c.req.param("seriesId"), c.req.param("revId"));
+  if (content === null) return c.json<ApiResponse>({ ok: false, error: "Revision not found" }, 404);
+  return c.json<ApiResponse<string>>({ ok: true, data: content });
 });
 
 // Write raw PLAN.md markdown

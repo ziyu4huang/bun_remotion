@@ -249,13 +249,15 @@ G.forEachEdge((_key, attrs, src, tgt) => {
       is_link: true,
     });
   } else {
-    // Regular edges: solid gray
+    // Regular edges: opacity from confidence score
+    const conf = typeof attrs.confidence === "number" ? attrs.confidence : 0.5;
+    const opacity = Math.max(0.15, Math.min(0.85, conf));
     vizEdges.push({
       from: src, to: tgt,
-      title: relation,
+      title: `${relation}${conf < 1 ? ` (conf: ${conf.toFixed(2)})` : ""}`,
       dashes: false,
       width: 1.5,
-      color_opacity: 0.5,
+      color_opacity: opacity,
       is_link: false,
     });
   }
@@ -366,6 +368,13 @@ const html = `<!DOCTYPE html>
       <button class="mode-btn active" id="btn-episode">By Episode</button>
       <button class="mode-btn" id="btn-type">By Type</button>
       <button class="mode-btn" id="btn-community">By Community</button>
+    </div>
+    <div id="viz-controls" style="padding:12px;border-bottom:1px solid #2a2a4e">
+      <h3 style="font-size:13px;color:#888;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">Display</h3>
+      ${Object.keys(pageRankScores).length > 0 ? `<label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer">
+        <input type="checkbox" id="toggle-pagerank" checked style="accent-color:#FFD166">
+        PageRank glow (top 10%)
+      </label>` : ''}
     </div>` : ''}
     <div id="legend-wrap">
       <h3 id="legend-title">${isMerged ? 'Episodes' : 'Node Types'}</h3>
@@ -509,6 +518,26 @@ if (IS_MERGED) {
   document.getElementById('btn-episode').addEventListener('click', () => { colorMode = 'episode'; setActiveBtn('episode'); recolorNodes(); });
   document.getElementById('btn-type').addEventListener('click', () => { colorMode = 'type'; setActiveBtn('type'); recolorNodes(); });
   document.getElementById('btn-community').addEventListener('click', () => { colorMode = 'community'; setActiveBtn('community'); recolorNodes(); });
+
+  // PageRank glow toggle
+  var prToggle = document.getElementById('toggle-pagerank');
+  if (prToggle) {
+    prToggle.addEventListener('change', function(e) {
+      var show = e.target.checked;
+      RAW_NODES.forEach(function(n) {
+        var pr = PAGE_RANK_SCORES[n.id] || 0;
+        var isHighPR = pr > 0 && pr >= prThreshold;
+        if (isHighPR) {
+          var c = nodeColor(n);
+          nodesDS.update({
+            id: n.id,
+            borderWidth: show ? 4 : 2,
+            shadow: show ? { enabled: true, color: c, size: 15, x: 0, y: 0 } : { enabled: false },
+          });
+        }
+      });
+    });
+  }
 }
 
 // Search
@@ -623,6 +652,7 @@ function buildLegend() {
     legendTitle.textContent = 'Communities';
     const commGroups = {};
     RAW_NODES.forEach(n => { const c = n.community; commGroups[c] = (commGroups[c] || 0) + 1; });
+    var highlightedCommunity = null;
     Object.entries(commGroups).sort((a, b) => b[1] - a[1]).forEach(([cid, count]) => {
       const color = COMMUNITY_COLORS[Number(cid) % COMMUNITY_COLORS.length];
       const label = RAW_NODES.find(n => n.community === Number(cid))?.community_name || ('Community ' + cid);
@@ -632,9 +662,19 @@ function buildLegend() {
       d.className = 'legend-item';
       d.innerHTML = '<span class="legend-dot" style="background:' + color + '"></span>' + escapeHtml(label) + cohesionStr + ' <span class="legend-count">' + count + '</span>';
       d.onclick = () => {
-        if (hidden.has('comm_' + cid)) { hidden.delete('comm_' + cid); d.classList.remove('dimmed'); }
-        else { hidden.add('comm_' + cid); d.classList.add('dimmed'); }
-        RAW_NODES.forEach(n => { nodesDS.update({ id: n.id, hidden: hidden.has('comm_' + n.community) }); });
+        if (highlightedCommunity === cid) {
+          // Click again to deselect — restore all
+          highlightedCommunity = null;
+          d.classList.remove('dimmed');
+          RAW_NODES.forEach(n => { nodesDS.update({ id: n.id, hidden: false, opacity: 1.0 }); });
+        } else {
+          // Highlight this community — dim others
+          highlightedCommunity = cid;
+          RAW_NODES.forEach(n => {
+            var inComm = (n.community === Number(cid));
+            nodesDS.update({ id: n.id, hidden: false, opacity: inComm ? 1.0 : 0.15 });
+          });
+        }
       };
       legend.appendChild(d);
     });

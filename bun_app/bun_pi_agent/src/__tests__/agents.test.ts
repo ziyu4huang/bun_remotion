@@ -218,8 +218,8 @@ Second body.`);
 
 describe("tool-registry", () => {
   test("ALL_TOOL_NAMES has expected count", () => {
-    // 7 coding + 9 storygraph + 1 spawn_task + 3 remotion + 3 scaffold + 3 tts + 3 render = 29
-    expect(ALL_TOOL_NAMES).toHaveLength(29);
+    // 7 coding + 9 sg + 1 spawn_task + 3 rm + 3 sc + 3 tts + 3 render + 3 image = 32
+    expect(ALL_TOOL_NAMES).toHaveLength(33);
   });
 
   test("ALL_TOOL_NAMES includes all expected tools", () => {
@@ -231,6 +231,8 @@ describe("tool-registry", () => {
       "rm_analyze", "rm_suggest", "rm_lint",
       "sc_scaffold", "sc_series_list", "sc_episode_list",
       "tts_generate", "tts_voices", "tts_status",
+      "render_episode", "render_status", "render_list",
+      "image_generate", "image_status", "image_characters",
     ];
     for (const name of expected) {
       expect(ALL_TOOL_NAMES).toContain(name);
@@ -261,9 +263,9 @@ describe("tool-registry", () => {
     expect(warnings).toHaveLength(0);
   });
 
-  test("createAllTools returns 29 tools", () => {
+  test("createAllTools returns 33 tools", () => {
     const tools = createAllTools();
-    expect(tools).toHaveLength(29);
+    expect(tools).toHaveLength(33);
   });
 
   test("createToolsByNames with storygraph tools", () => {

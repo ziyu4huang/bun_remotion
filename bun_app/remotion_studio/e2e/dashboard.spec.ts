@@ -37,20 +37,26 @@ test.describe("Dashboard", () => {
     await expect(completedText).toBeVisible({ timeout: 10_000 });
   });
 
-  test("job table appears after demo job completes", async ({ page }) => {
+  test("job cards appear after demo job completes", async ({ page }) => {
     // Run a demo job
     await page.getByRole("button", { name: /Run Demo Job/i }).click();
 
     // Wait for completion
     await page.locator("text=completed").first().waitFor({ state: "visible", timeout: 10_000 });
 
-    // Job table should have at least one row
-    const rows = page.locator("table tbody tr");
-    await expect(rows.first()).toBeVisible();
+    // Job queue section should have job cards (divs with borders in the job queue section)
+    const jobSection = page.locator("section").filter({ hasText: "Job Queue" });
+    await expect(jobSection).toBeVisible();
 
-    // Table headers should exist
-    const headers = page.locator("table thead th");
-    await expect(headers).toHaveCount(4); // ID, Type, Status, Progress
+    // Should show at least one status badge with "completed"
+    const completedBadge = page.getByText("completed").first();
+    await expect(completedBadge).toBeVisible();
+
+    // Should show filter tabs (All, Running, Completed, Failed)
+    const allTab = page.getByRole("button", { name: /^All/ });
+    await expect(allTab).toBeVisible();
+    const completedTab = page.getByRole("button", { name: /^Completed/ });
+    await expect(completedTab).toBeVisible();
   });
 
   test("multiple demo jobs queue correctly", async ({ page }) => {
@@ -61,9 +67,13 @@ test.describe("Dashboard", () => {
     await page.getByRole("button", { name: /Run Demo Job/i }).click();
     await page.locator("text=completed").first().waitFor({ state: "visible", timeout: 10_000 });
 
-    // Should have at least 2 rows in job table
-    const rows = page.locator("table tbody tr");
-    const count = await rows.count();
+    // Switch to Completed filter to see only completed jobs
+    const completedTab = page.getByRole("button", { name: /^Completed/ });
+    await completedTab.click();
+
+    // Should have at least 2 completed jobs visible
+    const statusBadges = page.getByText("completed");
+    const count = await statusBadges.count();
     expect(count).toBeGreaterThanOrEqual(2);
   });
 });

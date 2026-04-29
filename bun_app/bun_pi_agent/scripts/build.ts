@@ -11,17 +11,20 @@ const PKG_AGENT = join(APP, "node_modules", "@mariozechner", "pi-coding-agent");
 rmSync(DIST, { recursive: true, force: true });
 mkdirSync(DIST, { recursive: true });
 
+// External packages that can't be bundled (workspace-level deps, not needed by agent)
+const EXTERNALS = "--external playwright --external playwright-core --external electron --external chromium-bidi";
+
 // 1. Compile standalone binary
 console.log("[1/3] Compiling standalone binary...");
 execSync(
-  `bun build ${join(APP, "src/index.ts")} --outfile ${join(DIST, "agent-cli")} --compile --target bun --minify`,
+  `bun build ${join(APP, "src/index.ts")} --outfile ${join(DIST, "agent-cli")} --compile --target bun --minify ${EXTERNALS}`,
   { stdio: "inherit" }
 );
 
 // 2. Compile ACP demo binary
 console.log("[2/3] Compiling ACP demo binary...");
 execSync(
-  `bun build ${join(APP, "src/demo.ts")} --outfile ${join(DIST, "demo")} --compile --target bun --minify`,
+  `bun build ${join(APP, "src/demo.ts")} --outfile ${join(DIST, "demo")} --compile --target bun --minify ${EXTERNALS}`,
   { stdio: "inherit" }
 );
 

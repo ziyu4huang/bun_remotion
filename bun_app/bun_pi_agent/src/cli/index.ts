@@ -1,7 +1,7 @@
 import * as readline from "node:readline";
 import { createAgent } from "../agent.js";
 import { renderEvent } from "./renderer.js";
-import { getModel, getEnvApiKey } from "@mariozechner/pi-ai";
+import { getModel, getEnvApiKey, getModels } from "@mariozechner/pi-ai";
 
 export async function startCli() {
   const agent = createAgent();
@@ -44,19 +44,24 @@ export async function startCli() {
     if (input.startsWith("/model ")) {
       const modelStr = input.slice(7).trim();
       if (modelStr) {
-        try {
-          const [provider, ...nameParts] = modelStr.split("/");
-          const modelName = nameParts.join("/");
+        const [provider, ...nameParts] = modelStr.split("/");
+        const modelName = nameParts.join("/");
+        if (!provider || !modelName) {
+          console.log(`Usage: /model <provider/model>\n`);
+        } else {
           const apiKey = getEnvApiKey(provider as any);
           if (!apiKey) {
             console.log(`No API key for "${provider}". Set the environment variable and restart.\n`);
           } else {
             const model = getModel(provider as any, modelName as any);
-            agent.state.model = model;
-            console.log(`Model switched to ${provider}/${modelName}\n`);
+            if (!model) {
+              const available = getModels(provider as any).map(m => m.id).join(", ");
+              console.log(`Unknown model "${modelStr}". Available for ${provider}: ${available || "none"}\n`);
+            } else {
+              agent.state.model = model;
+              console.log(`Model switched to ${provider}/${modelName}\n`);
+            }
           }
-        } catch (e) {
-          console.log(`Invalid model: ${e}\n`);
         }
       }
       rl.prompt();
