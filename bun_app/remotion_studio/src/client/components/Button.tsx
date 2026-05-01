@@ -34,7 +34,7 @@ function variantStyles(variant: string, theme: Theme, disabled: boolean): React.
   }
 }
 
-export function Button({ variant = "primary", size = "md", disabled, style, children, ...rest }: ButtonProps) {
+export function Button({ variant = "primary", size = "md", disabled, style, type = "button", children, ...rest }: ButtonProps) {
   const theme = useTheme();
   const base: React.CSSProperties = {
     ...sizeStyles[size],
@@ -47,5 +47,5 @@ export function Button({ variant = "primary", size = "md", disabled, style, chil
     transition: "background 0.15s, opacity 0.15s",
     ...(style as React.CSSProperties),
   };
-  return <button disabled={disabled} style={base} {...rest}>{children}</button>;
+  return <button disabled={disabled} type={type} style={base} {...rest}>{children}</button>;
 }

@@ -32,6 +32,7 @@ export function StatusBadge({ status, label }: { status: string; label?: string 
   const colors = getColors(theme)[variant];
   return (
     <span
+      role="status"
       style={{
         display: "inline-block",
         padding: "2px 10px",

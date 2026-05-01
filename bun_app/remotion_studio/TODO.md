@@ -4,7 +4,7 @@
 > - Code PLAN: `bun_app/remotion_studio/PLAN.md`
 > - Code TODO: `bun_app/remotion_studio/TODO.md` — **(this file)**
 
-> **Status:** v0.32.0 — Responsive tables, toast alignment, error boundary. 316 tests, 0 fail. 21/21 smoke.
+> **Status:** v0.33.0 — Accessibility, uncommitted cleanup, bundle health check. 316 tests, 0 fail. 21/21 smoke.
 
 ## Known Issues
 
@@ -227,6 +227,25 @@
 - [x] Review checklist (per-series episode readiness in Projects detail)
 
 ## Development History
+
+### 2026-05-01 — v0.33.0: Accessibility + Uncommitted Cleanup + Bundle Health
+
+| Metric | Value |
+|--------|-------|
+| Unit tests | 316 pass, 0 fail |
+| Smoke E2E | 21/21 pass, 0 console errors |
+| Build chunks | 31 (419KB total) |
+| Aria coverage | Button, Card, StatusBadge, InputField, ToastContainer |
+
+**Changes applied:**
+- `components/Button.tsx`: Added `type="button"` default to prevent accidental form submits
+- `components/InputField.tsx`: Error message `<span>` now has `role="alert"` for screen readers
+- `components/StatusBadge.tsx`: Added `role="status"` for screen reader announcements
+- `components/ToastContainer.tsx`: Added `role="alert"` + `aria-live="polite"` on toast items, `aria-label` on dismiss button
+- `scripts/bundle-check.ts`: New — post-build size check with sorted chunk list, 600KB limit
+- `package.json`: build script now runs bundle-check; version bumped to 0.33.0
+- `.gitignore`: Added runtime data files (jobs.json, task-trees.json, agent-sessions.json, etc.) and test-results/
+- Committed 178 previously uncommitted files (v0.14.0–v0.32.0 accumulated changes)
 
 ### 2026-05-01 — v0.32.0: Responsive Tables + Toast + Error Boundary
 

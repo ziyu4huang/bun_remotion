@@ -74,7 +74,7 @@ export function ToastContainer() {
         {toasts.map(t => {
           const c = toastColors[t.type];
           return (
-            <div key={t.id} data-toast-type={t.type} style={{
+            <div key={t.id} role="alert" aria-live="polite" data-toast-type={t.type} style={{
               display: "flex", alignItems: "center", gap: 8,
               padding: "10px 14px", borderRadius: theme.radii.md,
               background: c.bg, color: c.color,
@@ -85,6 +85,7 @@ export function ToastContainer() {
             }}>
               <span style={{ flex: 1 }}>{t.message}</span>
               <button
+                aria-label="Dismiss notification"
                 onClick={() => dismiss(t.id)}
                 style={{
                   border: "none", background: "transparent", color: c.color,

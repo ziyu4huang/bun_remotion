@@ -27,7 +27,7 @@ export function InputField({ label, error, style, id, ...rest }: InputFieldProps
         </label>
       )}
       <input id={id} style={inputStyle} {...rest} />
-      {error && <span style={{ fontSize: theme.font.sizes.xs, color: theme.colors.error }}>{error}</span>}
+      {error && <span role="alert" style={{ fontSize: theme.font.sizes.xs, color: theme.colors.error }}>{error}</span>}
     </div>
   );
 }
