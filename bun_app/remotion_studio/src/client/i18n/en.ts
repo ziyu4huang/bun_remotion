@@ -588,4 +588,18 @@ export const en = {
     noResults: "No results",
     comingSoon: (name: string) => `${name} — coming soon`,
   },
+  advisor: {
+    newChat: "New",
+    clearChat: "Clear",
+    ask: "Ask",
+    attachFile: "Attach file",
+    attachFiles: "Attach Files",
+    selectSeries: "-- Select a series --",
+    selectSeriesPrompt: "Select a series above to browse files",
+    noFiles: "No files found",
+    added: "Added",
+    attach: "Attach",
+    bridgeDown: "Agent bridge unavailable",
+    noAgent: "No advisor agent found",
+  },
 } as const;

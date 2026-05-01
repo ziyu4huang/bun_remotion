@@ -588,4 +588,18 @@ export const zh_TW: Translations = {
     noResults: "無結果",
     comingSoon: (name: string) => `${name} — 即將推出`,
   },
+  advisor: {
+    newChat: "新對話",
+    clearChat: "清除",
+    ask: "詢問",
+    attachFile: "附加檔案",
+    attachFiles: "附加檔案",
+    selectSeries: "-- 選擇系列 --",
+    selectSeriesPrompt: "請先選擇系列以瀏覽檔案",
+    noFiles: "找不到檔案",
+    added: "已附加",
+    attach: "附加",
+    bridgeDown: "代理橋接器無法使用",
+    noAgent: "找不到顧問代理",
+  },
 };

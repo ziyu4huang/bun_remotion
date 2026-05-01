@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { api } from "../api";
 import { useTheme } from "../theme";
 import { useFilePicker } from "../hooks/useFilePicker";
+import { useI18n } from "../i18n";
 import { type ChatMessage, type ToolCallDisplay, clearHistory, saveHistoryToServer, loadHistoryFromServer, loadHistory, loadSessionId, saveSessionId, ToolCallCard, UserBubble, ThinkingIndicator, TurnSeparator, MarkdownText } from "./index";
 import type { AgentInfo, AgentStreamEvent, AgentTaskResult } from "../../shared/types";
 
@@ -31,6 +32,7 @@ export function AdvisorPanelBase({
   preferredAgents,
 }: AdvisorPanelBaseProps) {
   const theme = useTheme();
+  const { t } = useI18n();
   const accent = titleColor ?? theme.colors.aiAccent;
   const [agents, setAgents] = useState<AgentInfo[]>([]);
   const [input, setInput] = useState("");
@@ -206,7 +208,7 @@ export function AdvisorPanelBase({
     return (
       <div style={panelBase}>
         <h3 style={{ margin: `0 0 ${theme.spacing.md}px`, fontSize: theme.font.sizes.md, color: accent }}>{title}</h3>
-        <div style={{ color: theme.colors.text.muted, fontSize: theme.font.sizes.base }}>Agent bridge unavailable</div>
+        <div style={{ color: theme.colors.text.muted, fontSize: theme.font.sizes.base }}>{t.advisor.bridgeDown}</div>
       </div>
     );
   }
@@ -215,7 +217,7 @@ export function AdvisorPanelBase({
     return (
       <div style={panelBase}>
         <h3 style={{ margin: `0 0 ${theme.spacing.md}px`, fontSize: theme.font.sizes.md, color: accent }}>{title}</h3>
-        <div style={{ color: theme.colors.text.muted, fontSize: theme.font.sizes.base }}>No advisor agent found</div>
+        <div style={{ color: theme.colors.text.muted, fontSize: theme.font.sizes.base }}>{t.advisor.noAgent}</div>
       </div>
     );
   }
@@ -235,7 +237,7 @@ export function AdvisorPanelBase({
                 style={{ padding: "2px 8px", background: "none", border: `1px solid ${theme.colors.border.medium}`, borderRadius: theme.radii.sm, cursor: "pointer", fontSize: theme.font.sizes.sm, color: theme.colors.text.muted }}
                 title="Start a new conversation (keeps session)"
               >
-                New
+                {t.advisor.newChat}
               </button>
               <button
                 onClick={async () => {
@@ -250,7 +252,7 @@ export function AdvisorPanelBase({
                 style={{ padding: "2px 8px", background: "none", border: `1px solid ${theme.colors.border.medium}`, borderRadius: theme.radii.sm, cursor: "pointer", fontSize: theme.font.sizes.sm, color: theme.colors.text.muted }}
                 title="Clear all history and delete session"
               >
-                Clear
+                {t.advisor.clearChat}
               </button>
             </>
           )}
@@ -341,7 +343,7 @@ export function AdvisorPanelBase({
                 border: `1px solid ${theme.colors.border.medium}`,
                 borderRadius: theme.radii.md, cursor: "pointer", fontSize: 16, lineHeight: 1,
               }}
-              title="Attach file"
+              title={t.advisor.attachFile}
             >
               📎
             </button>
@@ -367,7 +369,7 @@ export function AdvisorPanelBase({
               fontSize: theme.font.sizes.base,
             }}
           >
-            {streaming ? "..." : "Ask"}
+            {streaming ? "..." : t.advisor.ask}
           </button>
         </div>
       </div>
@@ -383,12 +385,12 @@ export function AdvisorPanelBase({
             style={{ background: theme.colors.bg.page, borderRadius: theme.radii.xl, padding: theme.spacing.xl, width: "min(480px, 90vw)", maxHeight: "70vh", overflow: "hidden", display: "flex", flexDirection: "column", boxShadow: theme.shadows.lg }}
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: theme.spacing.md }}>
-              <h3 style={{ margin: 0, fontSize: theme.font.sizes.md, fontWeight: theme.font.weights.semibold }}>Attach Files</h3>
+              <h3 style={{ margin: 0, fontSize: theme.font.sizes.md, fontWeight: theme.font.weights.semibold }}>{t.advisor.attachFiles}</h3>
               <button onClick={closeFilePicker} style={{ background: "none", border: "none", fontSize: 18, cursor: "pointer", color: theme.colors.text.muted }}>×</button>
             </div>
             <div style={{ marginBottom: theme.spacing.sm }}>
               <select value={fileSeriesId} onChange={(e) => selectFileSeries(e.target.value)} style={{ width: "100%", padding: "6px 10px", fontSize: theme.font.sizes.sm, borderRadius: theme.radii.lg, border: `1px solid ${theme.colors.border.medium}` }}>
-                <option value="">-- Select a series --</option>
+                <option value="">{t.advisor.selectSeries}</option>
                 {fileSeriesList.map((s) => <option key={s.id} value={s.id}>{s.id}</option>)}
               </select>
             </div>
@@ -396,9 +398,9 @@ export function AdvisorPanelBase({
               {filePickerLoading ? (
                 <div style={{ textAlign: "center", padding: 30, color: theme.colors.text.muted }}>Loading...</div>
               ) : !fileSeriesId ? (
-                <div style={{ textAlign: "center", padding: 30, color: theme.colors.text.muted }}>Select a series above to browse files</div>
+                <div style={{ textAlign: "center", padding: 30, color: theme.colors.text.muted }}>{t.advisor.selectSeriesPrompt}</div>
               ) : fileList.length === 0 ? (
-                <div style={{ textAlign: "center", padding: 30, color: theme.colors.text.muted }}>No files found</div>
+                <div style={{ textAlign: "center", padding: 30, color: theme.colors.text.muted }}>{t.advisor.noFiles}</div>
               ) : (
                 <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
                   <tbody>
@@ -413,7 +415,7 @@ export function AdvisorPanelBase({
                           <td style={{ padding: "3px 0", textAlign: "right", fontSize: 10, color: theme.colors.text.muted, whiteSpace: "nowrap" }}>{(f.size / 1024).toFixed(1)}KB</td>
                           <td style={{ padding: "3px 0", textAlign: "right", width: 70 }}>
                             <button onClick={() => attachFile(f.path, f.name)} disabled={isAttached} style={{ padding: "1px 8px", fontSize: 11, borderRadius: theme.radii.md, border: `1px solid ${theme.colors.primary}`, background: isAttached ? theme.colors.successLight : theme.colors.bg.page, color: isAttached ? theme.colors.success : theme.colors.primary, cursor: isAttached ? "default" : "pointer" }}>
-                              {isAttached ? "Added" : "Attach"}
+                              {isAttached ? t.advisor.added : t.advisor.attach}
                             </button>
                           </td>
                         </tr>

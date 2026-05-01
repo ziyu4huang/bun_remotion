@@ -4,7 +4,7 @@
 > - Code PLAN: `bun_app/remotion_studio/PLAN.md`
 > - Code TODO: `bun_app/remotion_studio/TODO.md` — **(this file)**
 
-> **Status:** v0.34.0 — Mobile E2E, keyboard navigation. 316 tests, 0 fail. 21/21 smoke.
+> **Status:** v0.35.0 — i18n AdvisorPanelBase, stale TODO cleanup. 316 tests, 0 fail. 21/21 smoke.
 
 ## Known Issues
 
@@ -174,7 +174,7 @@
 
 ### 0-C: Mobile & Polish (deferred)
 
-- [ ] **Mobile responsive E2E** — Sidebar collapse, form layout, table scrolling at 375px viewport.
+- [x] **Mobile responsive E2E** — 7 tests at 375px viewport (hamburger, tables, wizard, palette, console errors).
 - [ ] **Onboarding tour** — New user walkthrough for pipeline workflow.
 
 ## Pending (deferred)
@@ -227,6 +227,22 @@
 - [x] Review checklist (per-series episode readiness in Projects detail)
 
 ## Development History
+
+### 2026-05-01 — v0.35.0: i18n AdvisorPanelBase + Stale TODO Cleanup
+
+| Metric | Value |
+|--------|-------|
+| Unit tests | 316 pass, 0 fail |
+| i18n keys added | 12 (advisor section, en + zh_TW) |
+| Strings migrated | 12 in AdvisorPanelBase |
+| Stale TODOs closed | 2 (file picker, mobile E2E) |
+| Bundle | 420KB, 31 chunks |
+
+**Changes applied:**
+- `i18n/en.ts` + `i18n/zh_TW.ts`: Added `advisor` section with 12 keys (newChat, clearChat, ask, attachFile, attachFiles, selectSeries, selectSeriesPrompt, noFiles, added, attach, bridgeDown, noAgent)
+- `components/AdvisorPanelBase.tsx`: Replaced 12 hardcoded English strings with `t.advisor.*` calls
+- `TODO.md`: Marked stale TODOs as done (file picker already implemented, mobile E2E done in v0.34.0)
+- `package.json`: version bumped to 0.35.0
 
 ### 2026-05-01 — v0.34.0: Mobile E2E + Keyboard Navigation
 
