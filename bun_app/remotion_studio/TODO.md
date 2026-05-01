@@ -4,7 +4,7 @@
 > - Code PLAN: `bun_app/remotion_studio/PLAN.md`
 > - Code TODO: `bun_app/remotion_studio/TODO.md` — **(this file)**
 
-> **Status:** v0.33.0 — Accessibility, uncommitted cleanup, bundle health check. 316 tests, 0 fail. 21/21 smoke.
+> **Status:** v0.34.0 — Mobile E2E, keyboard navigation. 316 tests, 0 fail. 21/21 smoke.
 
 ## Known Issues
 
@@ -160,7 +160,7 @@
 
 - [x] **Agent→Job bridge** — When agent tools trigger pipeline operations (scaffold, render, TTS), create a Job in remotion_studio's queue and show inline status in chat. `JobStatusCard` now renders inline during streaming for pipeline-tracked messages.
 - [x] **Agent context persistence** — Server-side session storage in `data/agent-sessions.json`. SessionStore CRUD service. API endpoints (GET/PUT/DELETE). Client migration from localStorage. AdvisorPanelBase integration.
-- [ ] **File attachment in advisor panels** — AdvisorPanelBase doesn't expose the file picker. Use the new `GET /api/agent/files` endpoint to let advisors browse and reference project files.
+- [x] **File attachment in advisor panels** — AdvisorPanelBase already has useFilePicker hook, attachment button, file picker modal, and file injection into streamChat.
 
 ### 0-B: E2E Flaky Test Fixup (v0.16.0 Goal 2)
 
@@ -227,6 +227,21 @@
 - [x] Review checklist (per-series episode readiness in Projects detail)
 
 ## Development History
+
+### 2026-05-01 — v0.34.0: Mobile E2E + Keyboard Navigation
+
+| Metric | Value |
+|--------|-------|
+| Unit tests | 316 pass, 0 fail |
+| Smoke E2E | 21/21 pass |
+| New E2E spec | mobile-responsive (7 tests at 375px) |
+| Bundle | 419KB, 31 chunks |
+
+**Changes applied:**
+- `e2e/mobile-responsive.spec.ts`: New — 7 tests at iPhone X viewport (375x812). Tests hamburger menu open/close, sidebar auto-close on nav, table scrolling, wizard stacking, command palette, console errors, nav item count.
+- `src/client/App.tsx`: Escape key closes mobile sidebar overlay. Nav buttons have `tabIndex={0}` and `onKeyDown` for Enter/Space activation.
+- `src/client/components/CommandPalette.tsx`: Tab key focuses search input (focus trap). Prevents Tab from leaving palette.
+- `package.json`: version bumped to 0.34.0
 
 ### 2026-05-01 — v0.33.0: Accessibility + Uncommitted Cleanup + Bundle Health
 

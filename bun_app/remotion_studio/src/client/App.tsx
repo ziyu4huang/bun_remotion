@@ -125,17 +125,20 @@ export function App() {
     if (isMobile) sidebar.close();
   }, [isMobile, sidebar]);
 
-  // Cmd+K / Ctrl+K to open command palette
+  // Cmd+K / Ctrl+K to open command palette; Escape to close mobile sidebar
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
         e.preventDefault();
         setPaletteOpen((v) => !v);
       }
+      if (e.key === "Escape" && isMobile && sidebar.isOpen) {
+        sidebar.close();
+      }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, []);
+  }, [isMobile, sidebar]);
 
   // Build palette items from nav sections
   const paletteItems: PaletteItem[] = useMemo(() =>
@@ -173,8 +176,10 @@ export function App() {
           {section.items.map((item) => (
             <button
               key={item.id}
+              tabIndex={0}
               onClick={() => navigate(item.id)}
               onMouseEnter={() => preloadPage(item.id)}
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigate(item.id); } }}
               style={{
                 display: "flex",
                 alignItems: "center",

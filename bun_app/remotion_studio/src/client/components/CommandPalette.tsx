@@ -42,6 +42,9 @@ export function CommandPalette({ items, onSelect, onClose }: CommandPaletteProps
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === "Escape") {
       onClose();
+    } else if (e.key === "Tab") {
+      e.preventDefault();
+      inputRef.current?.focus();
     } else if (e.key === "ArrowDown") {
       e.preventDefault();
       setSelectedIndex((i) => Math.min(i + 1, filtered.length - 1));
