@@ -18,6 +18,9 @@ export interface ThemeTokens {
     purpleLight: string;
     violet: string;
     blue: string;
+    aiAccent: string;
+    aiAccentHover: string;
+    aiAccentLight: string;
     text: {
       primary: string;
       secondary: string;
@@ -119,6 +122,9 @@ export const lightTheme: ThemeTokens = {
     purpleLight: "#f3e5f5",
     violet: "#8b5cf6",
     blue: "#3b82f6",
+    aiAccent: "#7c3aed",
+    aiAccentHover: "#6d28d9",
+    aiAccentLight: "#ede9fe",
 
     text: {
       primary: "#333333",
@@ -198,6 +204,9 @@ export const darkTheme: ThemeTokens = {
     purpleLight: "rgba(206,147,216,0.15)",
     violet: "#a78bfa",
     blue: "#60a5fa",
+    aiAccent: "#a78bfa",
+    aiAccentHover: "#8b5cf6",
+    aiAccentLight: "rgba(167,139,250,0.15)",
 
     text: {
       primary: "#e0e0e0",

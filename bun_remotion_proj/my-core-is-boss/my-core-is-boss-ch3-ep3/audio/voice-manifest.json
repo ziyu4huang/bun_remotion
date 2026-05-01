@@ -1,0 +1,322 @@
+[
+  {
+    "scene": "TitleScene",
+    "file": "01-title.wav",
+    "segments": [
+      {
+        "character": "narrator",
+        "voice": "vivian",
+        "voiceDescription": {
+          "voice": "vivian",
+          "gender": "female",
+          "accent": "Clear, neutral storytelling voice"
+        },
+        "text": "秘境最底層。三千年的封印即將解除，上古兇獸「噬天蛟」正在從沉睡中甦醒。守護者消散後的迷宮深處，一扇從未有人打開過的石門後面，Boss 競技場已經準備就緒。但林逸此刻只想知道一件事——這個 Boss 的仇恨機制到底是怎麼寫的。"
+      }
+    ]
+  },
+  {
+    "scene": "ContentScene1",
+    "file": "02-content1.wav",
+    "segments": [
+      {
+        "character": "narrator",
+        "voice": "vivian",
+        "voiceDescription": {
+          "voice": "vivian",
+          "gender": "female",
+          "accent": "Clear, neutral storytelling voice"
+        },
+        "text": "穿過守護者迷宮的最深處，林逸和趙小七來到了秘境的底層。巨大的競技場中央，一頭通體漆黑的上古兇獸正在緩緩睜開眼睛。它就是噬天蛟，三千年前被封印在秘境中的存在。"
+      },
+      {
+        "character": "narrator",
+        "voice": "vivian",
+        "voiceDescription": {
+          "voice": "vivian",
+          "gender": "female",
+          "accent": "Clear, neutral storytelling voice"
+        },
+        "text": "噬天蛟甦醒的瞬間，整個競技場都在顫動。然而林逸的視線沒有看向兇獸本身，而是看向了系統浮現在他面前的資訊面板——仇恨值列表和路徑尋找邏輯。"
+      },
+      {
+        "character": "linyi",
+        "voice": "ryan",
+        "voiceDescription": {
+          "voice": "ryan",
+          "gender": "male",
+          "accent": "Casual gamer tone, complains about bugs"
+        },
+        "text": "嗯……仇恨值列表，路徑尋找邏輯……追尾判定、碰撞體積、轉向速率……哈，這 Boss 的 AI 也太爛了吧。路徑尋找連大體型碰撞都沒處理。"
+      },
+      {
+        "character": "zhaoxiaoqi",
+        "voice": "serena",
+        "voiceDescription": {
+          "voice": "serena",
+          "gender": "female",
+          "accent": "Enthusiastic over-interpreter, warm energy"
+        },
+        "text": "師、師兄！上古兇獸甦醒了！我們要跑嗎？！"
+      },
+      {
+        "character": "linyi",
+        "voice": "ryan",
+        "voiceDescription": {
+          "voice": "ryan",
+          "gender": "male",
+          "accent": "Casual gamer tone, complains about bugs"
+        },
+        "text": "跑什麼？這不就是個 Boss 戰嗎。放心，繞柱就行。MMO 玩家基本功。"
+      },
+      {
+        "character": "narrator",
+        "voice": "vivian",
+        "voiceDescription": {
+          "voice": "vivian",
+          "gender": "female",
+          "accent": "Clear, neutral storytelling voice"
+        },
+        "text": "林逸說完，毫不猶豫地衝上前，對著噬天蛟揮了一拳。仇恨值瞬間拉滿。然後，他轉身就跑——繞著場地中央的巨大石柱開始跑圈。"
+      }
+    ]
+  },
+  {
+    "scene": "ContentScene2",
+    "file": "03-content2.wav",
+    "segments": [
+      {
+        "character": "narrator",
+        "voice": "vivian",
+        "voiceDescription": {
+          "voice": "vivian",
+          "gender": "female",
+          "accent": "Clear, neutral storytelling voice"
+        },
+        "text": "噬天蛟怒吼一聲，張開巨口朝林逸衝來。三千年的沉睡讓它積累了無盡的怒意，而眼前這個渺小的人類居然敢主動挑釁。它發誓要把這個蟲子撕碎。"
+      },
+      {
+        "character": "narrator",
+        "voice": "vivian",
+        "voiceDescription": {
+          "voice": "vivian",
+          "gender": "female",
+          "accent": "Clear, neutral storytelling voice"
+        },
+        "text": "然而，當噬天蛟龐大的身軀繞過第一根石柱時，它的路徑計算出現了……問題。巨大的蛟龍身體卡在了石柱和競技場牆壁之間，進退不得。它掙扎著，但越掙扎卡得越緊。"
+      },
+      {
+        "character": "linyi",
+        "voice": "ryan",
+        "voiceDescription": {
+          "voice": "ryan",
+          "gender": "male",
+          "accent": "Casual gamer tone, complains about bugs"
+        },
+        "text": "看到了吧？路徑尋找算法沒有處理大體型碰撞體，柱子和牆壁之間的空間不夠它轉身。經典 AI bug。我這個動作叫仇恨繞柱。"
+      },
+      {
+        "character": "zhaoxiaoqi",
+        "voice": "serena",
+        "voiceDescription": {
+          "voice": "serena",
+          "gender": "female",
+          "accent": "Enthusiastic over-interpreter, warm energy"
+        },
+        "text": "師兄！這招叫什麼？！上古兇獸被幾根石柱困住了！這是什麼陣法？！"
+      },
+      {
+        "character": "linyi",
+        "voice": "ryan",
+        "voiceDescription": {
+          "voice": "ryan",
+          "gender": "male",
+          "accent": "Casual gamer tone, complains about bugs"
+        },
+        "text": "不叫陣法，叫繞柱。就是拉著 Boss 的仇恨值繞柱子跑，它的路徑計算會出錯。在遊戲裡……呃，在任何戰鬥裡都一樣。"
+      },
+      {
+        "character": "narrator",
+        "voice": "vivian",
+        "voiceDescription": {
+          "voice": "vivian",
+          "gender": "female",
+          "accent": "Clear, neutral storytelling voice"
+        },
+        "text": "趙小七的筆記本再次翻開，筆走如龍：「林逸師兄以天地間之石柱為陣眼，不需佈陣，不需法力，僅憑跑位便困住上古兇獸。以天地為陣，困萬古兇獸於方寸之間。此乃何等境界！」"
+      },
+      {
+        "character": "narrator",
+        "voice": "vivian",
+        "voiceDescription": {
+          "voice": "vivian",
+          "gender": "female",
+          "accent": "Clear, neutral storytelling voice"
+        },
+        "text": "噬天蛟用盡全力終於掙脫了第一根柱子。它怒不可遏，再次朝林逸衝去。林逸淡定地換了一根柱子繼續繞。果然，噬天蛟又卡住了。這次卡得更深了——半個身體都嵌進了地板和柱子的夾角裡。"
+      }
+    ]
+  },
+  {
+    "scene": "ContentScene3",
+    "file": "04-content3.wav",
+    "segments": [
+      {
+        "character": "narrator",
+        "voice": "vivian",
+        "voiceDescription": {
+          "voice": "vivian",
+          "gender": "female",
+          "accent": "Clear, neutral storytelling voice"
+        },
+        "text": "就在噬天蛟第二次卡住的時候，蕭長老終於趕到了秘境最底層。他帶著一隊長老，浩浩蕩蕩地衝進了競技場。然而他看到的畫面，讓他瞬間僵在原地。"
+      },
+      {
+        "character": "xiaoelder",
+        "voice": "uncle_fu",
+        "voiceDescription": {
+          "voice": "uncle_fu",
+          "gender": "male",
+          "accent": "Stern elder, gradually breaking down"
+        },
+        "text": "老夫來遲——這、這是什麼情況？！上古兇獸為什麼卡在柱子裡？！"
+      },
+      {
+        "character": "narrator",
+        "voice": "vivian",
+        "voiceDescription": {
+          "voice": "vivian",
+          "gender": "female",
+          "accent": "Clear, neutral storytelling voice"
+        },
+        "text": "蕭長老看到的是：上古兇獸噬天蛟，三千年前令整個修仙界聞風喪膽的存在，此刻正卡在兩根石柱之間，像一條巨大的蟲子一樣扭動著，完全無法掙脫。而林逸，正在旁邊悠閒地喝水。"
+      },
+      {
+        "character": "xiaoelder",
+        "voice": "uncle_fu",
+        "voiceDescription": {
+          "voice": "uncle_fu",
+          "gender": "male",
+          "accent": "Stern elder, gradually breaking down"
+        },
+        "text": "以、以天地為柱……困萬古兇獸於方寸之間……這不是傳說中的太古困獸陣嗎？！"
+      },
+      {
+        "character": "zhaoxiaoqi",
+        "voice": "serena",
+        "voiceDescription": {
+          "voice": "serena",
+          "gender": "female",
+          "accent": "Enthusiastic over-interpreter, warm energy"
+        },
+        "text": "蕭長老您也看出來了！師兄的陣法造詣已經超越古今！他連一根手指都沒動，只是跑了一圈，上古兇獸就自己卡住了！"
+      },
+      {
+        "character": "linyi",
+        "voice": "ryan",
+        "voiceDescription": {
+          "voice": "ryan",
+          "gender": "male",
+          "accent": "Casual gamer tone, complains about bugs"
+        },
+        "text": "我真的只是繞著柱子跑了幾圈而已。"
+      },
+      {
+        "character": "narrator",
+        "voice": "vivian",
+        "voiceDescription": {
+          "voice": "vivian",
+          "gender": "female",
+          "accent": "Clear, neutral storytelling voice"
+        },
+        "text": "蕭長老的拂塵再次掉在了地上。他的崩潰進度條，從百分之五十跳到了百分之五十五。"
+      },
+      {
+        "character": "xiaoelder",
+        "voice": "uncle_fu",
+        "voiceDescription": {
+          "voice": "uncle_fu",
+          "gender": "male",
+          "accent": "Stern elder, gradually breaking down"
+        },
+        "text": "老夫……老夫決定了。從今以後，老夫只研究……柱子。"
+      },
+      {
+        "character": "narrator",
+        "voice": "vivian",
+        "voiceDescription": {
+          "voice": "vivian",
+          "gender": "female",
+          "accent": "Clear, neutral storytelling voice"
+        },
+        "text": "噬天蛟用盡全力終於掙脫了束縛，三千年的怒意在此刻爆發到極點。它猛地撞向林逸，但這一擊卻撞在了地面上。然後——"
+      },
+      {
+        "character": "narrator",
+        "voice": "vivian",
+        "voiceDescription": {
+          "voice": "vivian",
+          "gender": "female",
+          "accent": "Clear, neutral storytelling voice"
+        },
+        "text": "地板穿模了。噬天蛟巨大的身軀直接穿過了地面，像掉進了無底深淵一樣消失在了競技場的地板之下。整個過程不到兩秒。"
+      },
+      {
+        "character": "linyi",
+        "voice": "ryan",
+        "voiceDescription": {
+          "voice": "ryan",
+          "gender": "male",
+          "accent": "Casual gamer tone, complains about bugs"
+        },
+        "text": "地板穿模，經典。"
+      },
+      {
+        "character": "narrator",
+        "voice": "vivian",
+        "voiceDescription": {
+          "voice": "vivian",
+          "gender": "female",
+          "accent": "Clear, neutral storytelling voice"
+        },
+        "text": "三千年的上古兇獸，就這樣被一個地板 bug 送走了。競技場恢复了平靜，只留下一個巨大的地板漏洞和一群目瞪口呆的長老。"
+      },
+      {
+        "character": "xiaoelder",
+        "voice": "uncle_fu",
+        "voiceDescription": {
+          "voice": "uncle_fu",
+          "gender": "male",
+          "accent": "Stern elder, gradually breaking down"
+        },
+        "text": "柱子……老夫要研究柱子……還有地板……"
+      }
+    ]
+  },
+  {
+    "scene": "OutroScene",
+    "file": "05-outro.wav",
+    "segments": [
+      {
+        "character": "narrator",
+        "voice": "vivian",
+        "voiceDescription": {
+          "voice": "vivian",
+          "gender": "female",
+          "accent": "Clear, neutral storytelling voice"
+        },
+        "text": "秘境速通，三章完結。虛空遺跡從此多了一條新規則：禁止攜帶程式設計師進入。趙小七完成了她的第六本手冊——《上古陣法實戰筆記》，封面畫的是一根柱子和一條卡在柱子裡的蛟龍。蕭長老回到宗門後，開始系統性地研究宗門內所有柱子的構造，崩潰進度百分之五十五。"
+      },
+      {
+        "character": "narrator",
+        "voice": "vivian",
+        "voiceDescription": {
+          "voice": "vivian",
+          "gender": "female",
+          "accent": "Clear, neutral storytelling voice"
+        },
+        "text": "秘境篇落幕，但林逸的修仙之旅才剛剛開始。宗門即將發布新的團隊任務，而 MMO 玩家最擅長的事情，就是帶團刷副本。我的核心是大佬，第四章：副本開團。"
+      }
+    ]
+  }
+]

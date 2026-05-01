@@ -1,12 +1,12 @@
-import { test, expect } from "@playwright/test";
-import { navigateTo, waitForPageLoad, collectConsoleErrors, assertNoConsoleErrors } from "./helpers";
+import { test, expect } from "./fixtures";
+import { navigateTo, waitForPageLoad, collectConsoleErrors, assertNoConsoleErrors, gotoWithRetry } from "./helpers";
 
 test.describe("Pipeline Progress", () => {
   let errors: string[];
 
   test.beforeEach(async ({ page }) => {
     errors = collectConsoleErrors(page);
-    await page.goto("/");
+    await gotoWithRetry(page);
     await navigateTo(page, "Progress");
     await waitForPageLoad(page);
   });
@@ -24,11 +24,11 @@ test.describe("Pipeline Progress", () => {
   });
 
   test("filter tabs are clickable", async ({ page }) => {
-    const allTab = page.getByRole("button", { name: /All|全部/i });
+    const allTab = page.getByRole("button", { name: /^All\b|全部/i }).first();
     await expect(allTab).toBeVisible();
     await allTab.click();
 
-    const incompleteTab = page.getByRole("button", { name: /Incomplete|未完成/i });
+    const incompleteTab = page.getByRole("button", { name: /Incomplete|未完成/i }).first();
     if (await incompleteTab.isVisible().catch(() => false)) {
       await incompleteTab.click();
     }

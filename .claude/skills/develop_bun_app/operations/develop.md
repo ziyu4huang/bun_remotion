@@ -116,6 +116,34 @@ If tests fail:
 3. Re-run tests
 4. Repeat until 0 failures
 
+### Step 4b: For remotion_studio client changes — MANDATORY Playwright validation
+
+After ANY React/UI changes to `bun_app/remotion_studio/src/client/`, you MUST:
+
+1. **Rebuild** — catches esbuild/React errors unit tests miss:
+   ```bash
+   bun run --cwd bun_app/remotion_studio build
+   ```
+
+2. **Restart server** — production server serves built `dist/client/`:
+   ```bash
+   lsof -ti:5173 | xargs kill -9 2>/dev/null
+   PORT=5173 bun run bun_app/remotion_studio/src/server/index.ts &
+   ```
+
+3. **Run Playwright smoke** — catches React runtime errors, console errors, nav failures:
+   ```bash
+   bunx playwright test --config=bun_app/remotion_studio/playwright.config.ts --project=e2e bun_app/remotion_studio/e2e/smoke.spec.ts
+   ```
+
+**Common pitfalls caught by this workflow:**
+- `\u{XXXXX}` unicode escapes in JSX attributes — esbuild rejects them. Use literal emoji (📎) or `{'\u{XXXXX}'}` JSX expressions.
+- React hooks after conditional early-returns (error #310) — all `useMemo`/`useState`/`useEffect` before any `if (loading) return ...`.
+- Missing exports from `components/index.ts` — Vite tree-shakes but tests don't catch missing re-exports.
+- Stale `dist/client/` served by production server — unit tests run source, not built code.
+- NAV_LABELS count in `e2e/helpers.ts` — update when adding/removing nav items.
+- `bunx vite` resolves to latest global Vite — always use `bun run --cwd ... build` for project Vite.
+
 ## Step 5: Update Docs
 
 Update these files in order:

@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { api } from "../api";
 import { useTheme } from "../theme";
 import { useI18n } from "../i18n";
-import { PageHeader, EmptyState, SkeletonCard, StatusBadge } from "../components";
+import { PageHeader, EmptyState, SkeletonCard, StatusBadge, Button } from "../components";
 import type { EpisodeProgress, EpisodeProgressSummary, EpisodeStepProgress } from "../../shared/types";
 
 const KANBAN_STAGES: (keyof EpisodeStepProgress)[] = ["scaffold", "pipeline", "check", "score", "image", "tts", "render"];
@@ -40,7 +40,7 @@ export function EpisodeKanban() {
     return (
       <div style={{ padding: 24 }}>
         <PageHeader title={t.kanban.title} description={t.kanban.description} />
-        <EmptyState title={t.kanban.emptyTitle} description={t.kanban.emptyDesc} />
+        <EmptyState icon="▦" title={t.kanban.emptyTitle} description={t.kanban.emptyDesc} />
       </div>
     );
   }
@@ -79,23 +79,20 @@ export function EpisodeKanban() {
       {/* Series filter */}
       {seriesIds.length > 1 && (
         <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
-          <button onClick={() => setSeriesFilter("all")}
-            style={filterBtn(seriesFilter === "all", theme)}>
+          <Button onClick={() => setSeriesFilter("all")}
+            variant="outline" size="sm">
             {t.kanban.all} ({episodes.length})
-          </button>
+          </Button>
           {seriesIds.map((id) => (
-            <button key={id} onClick={() => setSeriesFilter(id)}
-              style={filterBtn(seriesFilter === id, theme)}>
+            <Button key={id} onClick={() => setSeriesFilter(id)}
+              variant="outline" size="sm">
               {id} ({episodes.filter((e) => e.seriesId === id).length})
-            </button>
+            </Button>
           ))}
-          <button onClick={load} style={{
-            marginLeft: "auto", padding: "6px 12px", borderRadius: theme.radii.md,
-            border: `1px solid ${theme.colors.border.default}`, background: "transparent",
-            cursor: "pointer", color: theme.colors.text.secondary, fontSize: theme.font.sizes.sm,
-          }}>
+          <Button onClick={load} variant="ghost" size="sm"
+            style={{ marginLeft: "auto" }}>
             {t.kanban.refresh}
-          </button>
+          </Button>
         </div>
       )}
 
@@ -120,13 +117,10 @@ export function EpisodeKanban() {
                 <span style={{ fontWeight: theme.font.weights.medium, fontSize: theme.font.sizes.sm }}>
                   {STEP_LABELS[stage]}
                 </span>
-                <span style={{
-                  fontSize: theme.font.sizes.xs, padding: "2px 8px", borderRadius: theme.radii.full,
-                  background: waiting > 0 ? theme.colors.warningLight : theme.colors.successLight,
-                  color: waiting > 0 ? theme.colors.warningDark : theme.colors.successDark,
-                }}>
-                  {waiting} {t.kanban.waiting}
-                </span>
+                <StatusBadge
+                  status={waiting > 0 ? "warn" : "ok"}
+                  label={`${waiting} ${t.kanban.waiting}`}
+                />
               </div>
               <div style={{ padding: 8, overflowY: "auto", flex: 1 }}>
                 {eps.length === 0 && (
@@ -194,12 +188,3 @@ function KanbanCard({ ep, stageKey, theme, t }: {
 
 const STEP_KEYS: (keyof EpisodeStepProgress)[] = ["scaffold", "pipeline", "check", "score", "image", "tts", "render"];
 
-function filterBtn(active: boolean, theme: ReturnType<typeof useTheme>): React.CSSProperties {
-  return {
-    padding: "6px 14px", borderRadius: theme.radii.md,
-    border: `1px solid ${active ? theme.colors.primary : theme.colors.border.default}`,
-    background: active ? theme.colors.primaryLight : "transparent",
-    color: active ? theme.colors.primaryDark : theme.colors.text.secondary,
-    cursor: "pointer", fontSize: theme.font.sizes.sm,
-  };
-}

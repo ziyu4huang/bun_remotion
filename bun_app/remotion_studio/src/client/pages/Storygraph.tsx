@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { api } from "../api";
-import { type ChatMessage, loadHistory, saveHistory, AdvisorPanelBase, PageHeader, LoadingSpinner, StatusBadge, SkeletonRow } from "../components";
+import { type ChatMessage, loadHistory, saveHistory, PageHeader, LoadingSpinner, StatusBadge, SkeletonRow, Button, Card } from "../components";
+import { AdvisorPanelBase } from "../components/AdvisorPanelBase";
 import { toast } from "../components/ToastContainer";
 import { useTheme, type Theme } from "../theme";
 import { useI18n } from "../i18n";
@@ -100,12 +101,13 @@ export function Storygraph() {
     <div style={{ display: "flex", gap: theme.spacing.xl }}>
     <div style={{ flex: 1 }}>
       <PageHeader title={t.storygraph.title} description={t.storygraph.descriptionFull}>
-        <button
+        <Button
+          variant="outline"
+          size="sm"
           onClick={() => setShowAdvisor(!showAdvisor)}
-          style={{ padding: `${theme.spacing.xs}px ${theme.spacing.md}px`, background: showAdvisor ? theme.colors.primaryDark : theme.colors.primaryLight, color: showAdvisor ? theme.colors.bg.page : theme.colors.primaryDark, border: `1px solid ${theme.colors.primaryDark}`, borderRadius: theme.radii.md, cursor: "pointer", fontSize: theme.font.sizes.sm }}
         >
           {showAdvisor ? t.storygraph.hideAdvisor : t.storygraph.askAdvisor}
-        </button>
+        </Button>
       </PageHeader>
 
       <div style={{ display: "flex", gap: theme.spacing.xl, marginBottom: theme.spacing.sm, alignItems: "center", flexWrap: "wrap" }}>
@@ -134,33 +136,26 @@ export function Storygraph() {
         </div>
 
         <div style={{ display: "flex", alignItems: "center" }}>
-          <button
+          <Button
+            variant="primary"
+            size="sm"
             onClick={() => handleRun("pipeline")}
             disabled={!selected || job?.status === "running"}
-            style={{
-              padding: `${theme.spacing.sm}px ${theme.spacing.xl}px`,
-              background: selected ? theme.colors.primary : theme.colors.border.medium,
-              color: theme.colors.bg.page,
-              border: "none",
-              borderRadius: theme.radii.lg,
-              cursor: selected ? "pointer" : "default",
-              fontWeight: theme.font.weights.semibold,
-            }}
           >
             {t.storygraph.extractKg}
-          </button>
+          </Button>
           <HelpTip text={t.storygraph.actionHelp.pipeline} />
         </div>
         <div style={{ display: "flex", alignItems: "center" }}>
-          <button onClick={() => handleRun("check")} disabled={!selected || job?.status === "running"} style={actionBtnStyle(selected, theme)}>
+          <Button variant="secondary" size="sm" onClick={() => handleRun("check")} disabled={!selected || job?.status === "running"}>
             {t.storygraph.qualityGate}
-          </button>
+          </Button>
           <HelpTip text={t.storygraph.actionHelp.check} />
         </div>
         <div style={{ display: "flex", alignItems: "center" }}>
-          <button onClick={() => handleRun("score")} disabled={!selected || job?.status === "running"} style={actionBtnStyle(selected, theme)}>
+          <Button variant="ai" size="sm" onClick={() => handleRun("score")} disabled={!selected || job?.status === "running"}>
             {t.storygraph.aiScore}
-          </button>
+          </Button>
           <HelpTip text={t.storygraph.actionHelp.score} />
         </div>
       </div>
@@ -174,7 +169,7 @@ export function Storygraph() {
 
       {/* Job status */}
       {job && (
-        <div style={{ padding: theme.spacing.xl, background: theme.colors.bg.muted, borderRadius: theme.radii.xl, marginBottom: theme.spacing.xxl }}>
+        <Card variant="default" padding="lg" style={{ marginBottom: theme.spacing.xxl }}>
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: theme.spacing.sm }}>
             <span>Job: <b>{job.type}</b></span>
             <StatusBadge status={job.status} />
@@ -185,7 +180,7 @@ export function Storygraph() {
             </div>
           )}
           {job.status === "failed" && <div style={{ color: theme.colors.error, fontSize: theme.font.sizes.md, marginTop: theme.spacing.xs }}>{job.error}</div>}
-        </div>
+        </Card>
       )}
 
       {/* Status table */}
@@ -240,17 +235,4 @@ export function Storygraph() {
     )}
     </div>
   );
-}
-
-function actionBtnStyle(enabled: string, t: Theme) {
-  return {
-    padding: `${t.spacing.sm}px ${t.spacing.xl}px`,
-    background: enabled ? t.colors.warning : t.colors.border.medium,
-    color: t.colors.bg.page,
-    border: "none",
-    borderRadius: t.radii.lg,
-    cursor: (enabled ? "pointer" : "default") as const,
-    fontWeight: t.font.weights.semibold as const,
-    fontSize: t.font.sizes.md,
-  };
 }

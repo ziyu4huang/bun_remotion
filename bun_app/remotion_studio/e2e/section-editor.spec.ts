@@ -1,12 +1,12 @@
-import { test, expect } from "@playwright/test";
-import { navigateTo, waitForPageLoad, collectConsoleErrors, assertNoConsoleErrors } from "./helpers";
+import { test, expect } from "./fixtures";
+import { navigateTo, waitForPageLoad, collectConsoleErrors, assertNoConsoleErrors, gotoWithRetry } from "./helpers";
 
 test.describe("Section Editor", () => {
   let errors: string[];
 
   test.beforeEach(async ({ page }) => {
     errors = collectConsoleErrors(page);
-    await page.goto("/");
+    await gotoWithRetry(page);
     await navigateTo(page, "Story Editor");
     await waitForPageLoad(page);
   });

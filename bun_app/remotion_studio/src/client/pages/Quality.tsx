@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { api } from "../api";
-import { PageHeader, LoadingSpinner, EmptyState, StatusBadge } from "../components";
+import { PageHeader, LoadingSpinner, EmptyState, StatusBadge, Button, Card } from "../components";
 import { useTheme, scoreColor } from "../theme";
 import { useI18n } from "../i18n";
 import type { Project, SeriesQualitySnapshot, RegressionAlert, ScoreHistoryPoint, AgentTaskResult } from "../../shared/types";
@@ -104,7 +104,7 @@ export function Quality() {
       <PageHeader title={t.quality.title} description={t.quality.description} />
 
       {/* Ask agent section */}
-      <div style={{ marginBottom: theme.spacing.xl, padding: theme.spacing.lg, background: theme.colors.bg.muted, borderRadius: theme.radii.xl }}>
+      <Card variant="default" padding="md" style={{ marginBottom: theme.spacing.xl }}>
         <h3 style={{ margin: `0 0 ${theme.spacing.sm}px 0` }}>Ask Quality Agent</h3>
         <p style={{ margin: `0 0 ${theme.spacing.md}px 0`, color: theme.colors.text.secondary, fontSize: theme.font.sizes.base }}>
           The agent analyzes quality data, explains scores, checks regressions, and suggests improvements.
@@ -167,7 +167,7 @@ export function Quality() {
             )}
           </div>
         )}
-      </div>
+      </Card>
 
       {/* Regression alerts banner */}
       {hasRegressions && (
@@ -183,29 +183,17 @@ export function Quality() {
 
       {/* View toggle */}
       <div style={{ marginBottom: theme.spacing.lg }}>
-        <button
+        <Button
+          variant={view === "overview" ? "primary" : "outline"}
+          size="sm"
           onClick={() => { setView("overview"); setSelected(""); }}
-          style={{
-            padding: `${theme.spacing.xs + 2}px ${theme.spacing.lg}px`,
-            marginRight: theme.spacing.sm,
-            border: `1px solid ${theme.colors.border.medium}`,
-            borderRadius: theme.radii.lg,
-            background: view === "overview" ? theme.colors.primary : theme.colors.bg.page,
-            color: view === "overview" ? theme.colors.bg.page : theme.colors.text.primary,
-            cursor: "pointer",
-          }}
-        >{t.quality.crossSeries}</button>
-        <button
+          style={{ marginRight: theme.spacing.sm }}
+        >{t.quality.crossSeries}</Button>
+        <Button
+          variant={view === "detail" ? "primary" : "outline"}
+          size="sm"
           onClick={() => setView("detail")}
-          style={{
-            padding: `${theme.spacing.xs + 2}px ${theme.spacing.lg}px`,
-            border: `1px solid ${theme.colors.border.medium}`,
-            borderRadius: theme.radii.lg,
-            background: view === "detail" ? theme.colors.primary : theme.colors.bg.page,
-            color: view === "detail" ? theme.colors.bg.page : theme.colors.text.primary,
-            cursor: "pointer",
-          }}
-        >{t.quality.perSeries}</button>
+        >{t.quality.perSeries}</Button>
       </div>
 
       {/* Cross-series comparison */}
@@ -215,6 +203,7 @@ export function Quality() {
           {comparison.length === 0 ? (
             <EmptyState icon="📊" title={t.quality.noPipelineData} description={t.quality.noPipelineDataDesc} />
           ) : (
+            <div style={{ overflowX: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: theme.font.sizes.base }}>
               <thead>
                 <tr style={{ borderBottom: `2px solid ${theme.colors.border.default}`, textAlign: "left" }}>
@@ -261,6 +250,7 @@ export function Quality() {
                 ))}
               </tbody>
             </table>
+            </div>
           )}
         </div>
       )}
@@ -333,7 +323,7 @@ export function Quality() {
                   <h3 style={{ marginBottom: theme.spacing.sm }}>{t.quality.aiQualityDimensions}</h3>
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: theme.spacing.sm }}>
                     {Object.entries(aiDimensions).map(([key, value]) => (
-                      <div key={key} style={{ padding: `${theme.spacing.sm}px ${theme.spacing.md}px`, background: theme.colors.bg.muted, borderRadius: theme.radii.lg }}>
+                      <Card key={key} variant="default" padding="sm">
                         <div style={{ fontSize: theme.font.sizes.sm, color: theme.colors.text.tertiary }}>{formatDimensionName(key)}</div>
                         <div style={{ display: "flex", alignItems: "center", gap: theme.spacing.sm }}>
                           <div style={{ fontSize: theme.font.sizes.xl, fontWeight: theme.font.weights.semibold, color: scoreColor(value, 10, theme) }}>
@@ -343,7 +333,7 @@ export function Quality() {
                             <div style={{ width: `${value * 10}%`, height: "100%", background: scoreColor(value, 10, theme), borderRadius: 2 }} />
                           </div>
                         </div>
-                      </div>
+                      </Card>
                     ))}
                   </div>
                 </div>
@@ -355,12 +345,12 @@ export function Quality() {
                   <h3 style={{ marginBottom: theme.spacing.sm }}>{t.quality.qualityBreakdown}</h3>
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: theme.spacing.sm }}>
                     {Object.entries(breakdown).map(([key, value]) => (
-                      <div key={key} style={{ padding: `${theme.spacing.sm}px ${theme.spacing.md}px`, background: theme.colors.bg.muted, borderRadius: theme.radii.lg }}>
+                      <Card key={key} variant="default" padding="sm">
                         <div style={{ fontSize: theme.font.sizes.sm, color: theme.colors.text.tertiary }}>{formatDimensionName(key)}</div>
                         <div style={{ fontSize: theme.font.sizes.xl, fontWeight: theme.font.weights.semibold, color: value == null ? theme.colors.text.muted : scoreColor(value * 100, 100, theme) }}>
                           {value == null ? "N/A" : `${(value * 100).toFixed(0)}%`}
                         </div>
-                      </div>
+                      </Card>
                     ))}
                   </div>
                 </div>
@@ -370,6 +360,7 @@ export function Quality() {
               {checks && checks.length > 0 && (
                 <div>
                   <h3 style={{ marginBottom: theme.spacing.sm }}>{t.quality.gateChecks} ({checks.length})</h3>
+                  <div style={{ overflowX: "auto" }}>
                   <table style={{ width: "100%", borderCollapse: "collapse", fontSize: theme.font.sizes.base }}>
                     <thead>
                       <tr style={{ borderBottom: `2px solid ${theme.colors.border.default}`, textAlign: "left" }}>
@@ -394,6 +385,7 @@ export function Quality() {
                       ))}
                     </tbody>
                   </table>
+                  </div>
                 </div>
               )}
             </div>
@@ -417,28 +409,16 @@ function AgentPromptButton({ label, prompt, onClick, theme, variant }: {
   theme: ReturnType<typeof useTheme>;
   variant?: "primary" | "warning";
 }) {
-  const bg = variant === "warning" ? theme.colors.warning
-    : variant === "primary" ? theme.colors.primary
-    : theme.colors.bg.page;
-  const fg = variant ? theme.colors.bg.page : theme.colors.text.primary;
-  const border = variant ? "none" : `1px solid ${theme.colors.border.medium}`;
+  const btnVariant = variant ? "primary" : "outline";
 
   return (
-    <button
+    <Button
+      variant={btnVariant}
+      size="sm"
       onClick={() => onClick(prompt)}
-      style={{
-        padding: `${theme.spacing.sm}px ${theme.spacing.md}px`,
-        border,
-        borderRadius: theme.radii.lg,
-        background: bg,
-        color: fg,
-        cursor: "pointer",
-        fontSize: theme.font.sizes.base,
-        fontWeight: variant ? theme.font.weights.semibold : theme.font.weights.normal,
-      }}
     >
       {label}
-    </button>
+    </Button>
   );
 }
 
@@ -448,10 +428,10 @@ function ScoreCard({ label, value, max, suffix }: { label: string; value?: numbe
   const color = typeof value === "number" && max ? scoreColor(value, max, theme) : theme.colors.text.primary;
 
   return (
-    <div style={{ padding: theme.spacing.lg, background: theme.colors.bg.muted, borderRadius: theme.radii.xl, minWidth: 120, textAlign: "center" }}>
+    <Card variant="default" padding="md" style={{ minWidth: 120, textAlign: "center" }}>
       <div style={{ fontSize: theme.font.sizes.sm, color: theme.colors.text.tertiary, marginBottom: theme.spacing.xs }}>{label}</div>
       <div style={{ fontSize: theme.font.sizes.xxl, fontWeight: theme.font.weights.bold, color }}>{display}</div>
-    </div>
+    </Card>
   );
 }
 

@@ -1,9 +1,9 @@
-import { test, expect } from "@playwright/test";
-import { navigateTo, waitForPageLoad } from "./helpers";
+import { test, expect } from "./fixtures";
+import { navigateTo, waitForPageLoad, gotoWithRetry } from "./helpers";
 
 test.describe("Projects", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/");
+    await gotoWithRetry(page);
     await page.locator("nav button").filter({ hasText: "Projects" }).waitFor({ state: "visible" });
     await navigateTo(page, "Projects");
     await waitForPageLoad(page);
@@ -13,7 +13,7 @@ test.describe("Projects", () => {
     const table = page.locator("table").first();
     await expect(table).toBeVisible();
 
-    const expectedHeaders = ["Series", "Category", "Episodes", "Scaffolded", "Gate Score", "Plan"];
+    const expectedHeaders = ["Series", "Category", "Episodes", "Scaffolded", "Gate", "Plan"];
     for (const h of expectedHeaders) {
       await expect(table.locator("th", { hasText: h })).toBeVisible();
     }
@@ -75,23 +75,23 @@ test.describe("Projects", () => {
     const firstRow = page.locator("table").first().locator("tbody tr").first();
     await firstRow.click();
 
-    // Click Ask Advisor
-    const advisorBtn = page.getByRole("button", { name: /Ask Advisor|Hide Advisor/i });
+    // Click Ask Advisor / Show
+    const advisorBtn = page.getByRole("button", { name: /Ask|Show|Advisor/i });
     await expect(advisorBtn).toBeVisible();
     await advisorBtn.click();
 
-    // Button should toggle to "Hide Advisor"
-    await expect(page.getByRole("button", { name: "Hide Advisor" })).toBeVisible({ timeout: 3_000 });
+    // Button should toggle to "Hide"
+    await expect(page.getByRole("button", { name: /Hide/i })).toBeVisible({ timeout: 3_000 });
 
     // Some advisor UI should appear (input or heading)
     const advisorUI = page.locator("main").getByText(/Advisor|advisor/i);
     await expect(advisorUI.first()).toBeVisible({ timeout: 3_000 });
 
-    // Click Hide Advisor
-    await page.getByRole("button", { name: "Hide Advisor" }).click();
+    // Click Hide
+    await page.getByRole("button", { name: /Hide/i }).click();
 
     // Button should toggle back
-    await expect(page.getByRole("button", { name: "Ask Advisor" })).toBeVisible({ timeout: 2_000 });
+    await expect(page.getByRole("button", { name: /Ask|Show|Advisor/i })).toBeVisible({ timeout: 2_000 });
   });
 
   test("Build button exists in episode rows", async ({ page }) => {

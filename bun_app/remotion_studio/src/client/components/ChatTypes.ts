@@ -2,7 +2,7 @@ export interface ChatMessage {
   role: "user" | "assistant";
   content: string;
   toolCalls?: ToolCallDisplay[];
-  meta?: { turnCount: number; toolCallCount: number; durationMs: number };
+  meta?: { turnCount: number; toolCallCount: number; durationMs: number; jobId?: string };
   isError?: boolean;
   thinking?: boolean;
 }

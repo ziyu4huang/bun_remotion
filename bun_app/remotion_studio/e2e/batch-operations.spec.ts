@@ -1,12 +1,12 @@
-import { test, expect } from "@playwright/test";
-import { navigateTo, waitForPageLoad, collectConsoleErrors, assertNoConsoleErrors } from "./helpers";
+import { test, expect } from "./fixtures";
+import { navigateTo, waitForPageLoad, collectConsoleErrors, assertNoConsoleErrors, gotoWithRetry } from "./helpers";
 
 test.describe("Batch Operations", () => {
   let errors: string[];
 
   test.beforeEach(async ({ page }) => {
     errors = collectConsoleErrors(page);
-    await page.goto("/");
+    await gotoWithRetry(page);
     await navigateTo(page, "Progress");
     await waitForPageLoad(page);
   });
@@ -48,12 +48,14 @@ test.describe("Batch Operations", () => {
   });
 
   test("filter tabs change view", async ({ page }) => {
-    const incompleteBtn = page.getByRole("button", { name: /Incomplete|未完成/i });
+    const incompleteBtn = page.getByRole("button", { name: /Incomplete|未完成/i }).first();
     if (await incompleteBtn.isVisible().catch(() => false)) {
       await incompleteBtn.click();
       await page.waitForTimeout(300);
-
-      const allBtn = page.getByRole("button", { name: /^All$|全部/i });
+    }
+    // Switch back to All tab
+    const allBtn = page.getByRole("button", { name: /^All\b|全部/i }).first();
+    if (await allBtn.isVisible().catch(() => false)) {
       await allBtn.click();
       await page.waitForTimeout(300);
     }

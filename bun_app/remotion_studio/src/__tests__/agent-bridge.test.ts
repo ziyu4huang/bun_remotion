@@ -1,5 +1,40 @@
 import { describe, test, expect, mock, beforeEach } from "bun:test";
 import { app } from "../server/index";
+import { bridge } from "../server/agent-bridge";
+import type { AgentProvider } from "../server/agent-interface";
+
+// ── Interface compliance ──
+
+describe("AgentProvider interface compliance", () => {
+  test("bridge implements AgentProvider", () => {
+    const provider: AgentProvider = bridge;
+    expect(typeof provider.isAvailable).toBe("function");
+    expect(typeof provider.listAgents).toBe("function");
+    expect(typeof provider.runTask).toBe("function");
+  });
+
+  test("isAvailable returns status object", async () => {
+    const result = await bridge.isAvailable();
+    expect(result).toHaveProperty("ok");
+    expect(typeof result.ok).toBe("boolean");
+    if (!result.ok) {
+      expect(typeof result.error).toBe("string");
+    }
+  });
+
+  test("listAgents returns AgentInfo[]", async () => {
+    const status = await bridge.isAvailable();
+    if (!status.ok) return; // skip if bridge unavailable
+    const agents = await bridge.listAgents();
+    expect(Array.isArray(agents)).toBe(true);
+    if (agents.length > 0) {
+      const agent = agents[0];
+      expect(agent).toHaveProperty("name");
+      expect(agent).toHaveProperty("description");
+      expect(agent).toHaveProperty("tools");
+    }
+  });
+});
 
 // ── Route-level tests (no real agent needed) ──
 

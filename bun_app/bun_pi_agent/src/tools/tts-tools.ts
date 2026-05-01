@@ -12,17 +12,18 @@ import type { AgentTool, AgentToolResult } from "@mariozechner/pi-agent-core";
 import { resolve, basename, join } from "node:path";
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { generateTTS } from "../../../bun_tts/src/tts-pipeline";
+import { details } from "./result-types.js";
 
 const REPO_ROOT = resolve(import.meta.dir, "../../../..");
 
 // ─── Helpers ───
 
-function textResult(text: string, details?: unknown): AgentToolResult<unknown> {
-  return { content: [{ type: "text" as const, text }], details: details ?? {} };
+function textResult(text: string, d: ReturnType<typeof details>): AgentToolResult<unknown> {
+  return { content: [{ type: "text" as const, text }], details: d };
 }
 
-function errorResult(msg: string): AgentToolResult<unknown> {
-  return { content: [{ type: "text" as const, text: `Error: ${msg}` }], details: { error: msg } };
+function errorResult(msg: string, tool: string): AgentToolResult<unknown> {
+  return { content: [{ type: "text" as const, text: `Error: ${msg}` }], details: details(tool, false, { error: msg }) };
 }
 
 // ─── Schemas ───
@@ -54,12 +55,12 @@ export function createTtsGenerateTool(): AgentTool<typeof generateSchema> {
     execute: async (params) => {
       const episodePath = resolve(params.episodeDir);
       if (!existsSync(episodePath)) {
-        return errorResult(`Episode directory not found: ${episodePath}`);
+        return errorResult(`Episode directory not found: ${episodePath}`, "tts_generate");
       }
 
       const narrationPath = join(episodePath, "scripts", "narration.ts");
       if (!existsSync(narrationPath)) {
-        return errorResult(`narration.ts not found at ${narrationPath}. Episode must have a narration script.`);
+        return errorResult(`narration.ts not found at ${narrationPath}. Episode must have a narration script.`, "tts_generate");
       }
 
       try {
@@ -73,7 +74,7 @@ export function createTtsGenerateTool(): AgentTool<typeof generateSchema> {
         });
 
         if (result.generated === 0 && result.skipped === 0) {
-          return errorResult("TTS generated 0 audio files. No scenes matched.");
+          return errorResult("TTS generated 0 audio files. No scenes matched.", "tts_generate");
         }
 
         const lines = [
@@ -86,9 +87,15 @@ export function createTtsGenerateTool(): AgentTool<typeof generateSchema> {
           lines.push(`    ${s.scene}: ${s.segmentCount} segments, ${s.durationFrames} frames`);
         }
 
-        return textResult(lines.join("\n"), result);
+        return textResult(lines.join("\n"), details("tts_generate", true, {
+          episode: basename(episodePath),
+          engine: params.engine ?? "default",
+          scenesGenerated: result.scenes.map((s: any) => s.scene),
+          skipExisting: params.skipExisting ?? false,
+          ...(result as unknown as Record<string, unknown>),
+        }));
       } catch (err) {
-        return errorResult(err instanceof Error ? err.message : String(err));
+        return errorResult(err instanceof Error ? err.message : String(err), "tts_generate");
       }
     },
   };
@@ -104,7 +111,7 @@ export function createTtsVoicesTool(): AgentTool<typeof voicesSchema> {
     execute: async (params) => {
       const targetPath = resolve(params.path);
       if (!existsSync(targetPath)) {
-        return errorResult(`Path not found: ${targetPath}`);
+        return errorResult(`Path not found: ${targetPath}`, "tts_voices");
       }
 
       // Try centralized voice-config.json (series-level)
@@ -124,9 +131,9 @@ export function createTtsVoicesTool(): AgentTool<typeof voicesSchema> {
             }
           }
 
-          return textResult(lines.join("\n"), { source: "voice-config.json", path: voiceConfigPath, config });
+          return textResult(lines.join("\n"), details("tts_voices", true, { source: "voice-config.json", path: voiceConfigPath, config }));
         } catch (err) {
-          return errorResult(`Failed to parse voice-config.json: ${err instanceof Error ? err.message : String(err)}`);
+          return errorResult(`Failed to parse voice-config.json: ${err instanceof Error ? err.message : String(err)}`, "tts_voices");
         }
       }
 
@@ -137,7 +144,7 @@ export function createTtsVoicesTool(): AgentTool<typeof voicesSchema> {
           const mod = await import(narrationPath);
           const { VOICE_MAP, VOICE_DESCRIPTION } = mod;
           if (!VOICE_MAP) {
-            return errorResult("narration.ts found but no VOICE_MAP exported.");
+            return errorResult("narration.ts found but no VOICE_MAP exported.", "tts_voices");
           }
 
           const lines = [`Voice map from narration.ts: ${narrationPath}`];
@@ -147,15 +154,16 @@ export function createTtsVoicesTool(): AgentTool<typeof voicesSchema> {
             lines.push(`  ${char} → ${voice}${info}`);
           }
 
-          return textResult(lines.join("\n"), { source: "narration.ts", path: narrationPath, voiceMap: VOICE_MAP });
+          return textResult(lines.join("\n"), details("tts_voices", true, { source: "narration.ts", path: narrationPath, voiceMap: VOICE_MAP }));
         } catch (err) {
-          return errorResult(`Failed to import narration.ts: ${err instanceof Error ? err.message : String(err)}`);
+          return errorResult(`Failed to import narration.ts: ${err instanceof Error ? err.message : String(err)}`, "tts_voices");
         }
       }
 
       return errorResult(
         `No voice configuration found at ${targetPath}.\n` +
-        `Expected: voice-config.json in assets/ or VOICE_MAP in scripts/narration.ts`
+        `Expected: voice-config.json in assets/ or VOICE_MAP in scripts/narration.ts`,
+        "tts_voices"
       );
     },
   };
@@ -171,17 +179,18 @@ export function createTtsStatusTool(): AgentTool<typeof statusSchema> {
     execute: async (params) => {
       const episodePath = resolve(params.episodeDir);
       if (!existsSync(episodePath)) {
-        return errorResult(`Episode directory not found: ${episodePath}`);
+        return errorResult(`Episode directory not found: ${episodePath}`, "tts_status");
       }
 
       // Find audio directory (public/audio/ or audio/)
       const audioDirs = [join(episodePath, "public", "audio"), join(episodePath, "audio")];
       let audioDir = audioDirs.find((d) => existsSync(d));
       if (!audioDir) {
-        return textResult(`No audio directory found for ${basename(episodePath)}.\nExpected: public/audio/ or audio/`, {
+        return textResult(`No audio directory found for ${basename(episodePath)}.\nExpected: public/audio/ or audio/`, details("tts_status", true, {
+          episode: basename(episodePath),
           hasAudio: false,
-          episodePath,
-        });
+          fileCount: 0,
+        }));
       }
 
       // Collect audio files
@@ -199,7 +208,7 @@ export function createTtsStatusTool(): AgentTool<typeof statusSchema> {
           }
         }
       } catch (err) {
-        return errorResult(`Failed to read audio directory: ${err instanceof Error ? err.message : String(err)}`);
+        return errorResult(`Failed to read audio directory: ${err instanceof Error ? err.message : String(err)}`, "tts_status");
       }
 
       wavFiles.sort((a, b) => a.name.localeCompare(b.name));
@@ -242,14 +251,17 @@ export function createTtsStatusTool(): AgentTool<typeof statusSchema> {
 
       const complete = wavFiles.length > 0 && existsSync(durationsPath);
 
-      return textResult(lines.join("\n"), {
+      const totalDurationSec = durations ? durations.reduce((a, b) => a + b, 0) / 30 : undefined;
+      return textResult(lines.join("\n"), details("tts_status", true, {
+        episode: basename(episodePath),
         hasAudio: true,
+        fileCount: wavFiles.length,
+        totalDurationSec,
         complete,
-        wavFiles: wavFiles.length,
         hasDurations: existsSync(durationsPath),
         hasSegmentDurations: existsSync(segmentDurationsPath),
         hasManifest: existsSync(manifestPath),
-      });
+      }));
     },
   };
 }

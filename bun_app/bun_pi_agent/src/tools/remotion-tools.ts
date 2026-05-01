@@ -3,15 +3,16 @@ import type { AgentTool, AgentToolResult } from "@mariozechner/pi-agent-core";
 import { resolve, basename } from "node:path";
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { detectCategoryFromDirname, type VideoCategoryId } from "../../../remotion_types/src/category-types";
+import { details } from "./result-types.js";
 
 // ─── Helpers ─────────────────────────────────────────────────────
 
-function textResult(text: string, details?: unknown): AgentToolResult<unknown> {
-  return { content: [{ type: "text" as const, text }], details: details ?? {} };
+function textResult(text: string, d: ReturnType<typeof details>): AgentToolResult<unknown> {
+  return { content: [{ type: "text" as const, text }], details: d };
 }
 
-function errorResult(msg: string): AgentToolResult<unknown> {
-  return { content: [{ type: "text" as const, text: `Error: ${msg}` }], details: { error: msg } };
+function errorResult(msg: string, tool: string): AgentToolResult<unknown> {
+  return { content: [{ type: "text" as const, text: `Error: ${msg}` }], details: details(tool, false, { error: msg }) };
 }
 
 function resolveDir(dir: string, fallbackBase?: string): string {
@@ -432,7 +433,7 @@ export function createRemotionAnalyzeTool(): AgentTool<typeof analyzeSchema> {
     execute: async (_id, params) => {
       try {
         const dir = resolveDir(params.episodeDir);
-        if (!existsSync(dir)) return errorResult(`Episode directory not found: ${dir}`);
+        if (!existsSync(dir)) return errorResult(`Episode directory not found: ${dir}`, "rm_analyze");
 
         const sourcePref = params.source ?? "auto";
         const seriesName = detectSeriesName(dir);
@@ -539,8 +540,21 @@ export function createRemotionAnalyzeTool(): AgentTool<typeof analyzeSchema> {
           }
         }
 
-        return textResult(lines.join("\n"), {
-          episodeId: basename(dir),
+        const analysisDimensions = [
+          ...Object.keys(effectDist).map(e => `effect:${e}`),
+          ...Object.keys(emotionDist).map(e => `emotion:${e}`),
+        ];
+        const scores: Record<string, number> = {};
+        for (const [ch, stats] of Object.entries(charStats)) {
+          scores[`char:${ch}.lines`] = stats.lineCount;
+          scores[`char:${ch}.scenes`] = stats.sceneCount;
+        }
+
+        return textResult(lines.join("\n"), details("rm_analyze", true, {
+          episode: basename(dir),
+          analysisDimensions,
+          scores,
+          issues: [] as string[],
           category,
           scenes,
           characterStats: charStats,
@@ -550,9 +564,9 @@ export function createRemotionAnalyzeTool(): AgentTool<typeof analyzeSchema> {
           totalSeconds,
           voiceMap,
           source: usedSource,
-        });
+        }));
       } catch (e: any) {
-        return errorResult(e.message ?? String(e));
+        return errorResult(e.message ?? String(e), "rm_analyze");
       }
     },
   };
@@ -577,7 +591,7 @@ export function createRemotionSuggestTool(): AgentTool<typeof suggestSchema> {
     execute: async (_id, params) => {
       try {
         const dir = resolveDir(params.seriesDir);
-        if (!existsSync(dir)) return errorResult(`Series directory not found: ${dir}`);
+        if (!existsSync(dir)) return errorResult(`Series directory not found: ${dir}`, "rm_suggest");
 
         const focus = params.focus ?? "all";
         const suggestions: Suggestion[] = [];
@@ -585,7 +599,7 @@ export function createRemotionSuggestTool(): AgentTool<typeof suggestSchema> {
         const seriesName = basename(dir);
 
         if (episodeNames.length === 0) {
-          return textResult(`No episodes found in ${dir}`, { suggestions: [], episodeCount: 0 });
+          return textResult(`No episodes found in ${dir}`, details("rm_suggest", true, { episode: basename(dir), suggestionCount: 0, categories: [] }));
         }
 
         // Collect data from all episodes
@@ -781,15 +795,19 @@ export function createRemotionSuggestTool(): AgentTool<typeof suggestSchema> {
         const medCount = filtered.filter(s => s.severity === "MEDIUM").length;
         lines.push("", `Story Debt: ${highCount + medCount} items (${highCount} high, ${medCount} medium severity)`);
 
-        return textResult(lines.join("\n"), {
+        const categories = [...new Set(filtered.map(s => s.category))];
+        return textResult(lines.join("\n"), details("rm_suggest", true, {
+          episode: seriesName,
+          suggestionCount: filtered.length,
+          categories,
           seriesName,
           episodeCount: episodeData.length,
           suggestions: filtered,
           storyDebtCount: highCount + medCount,
           focus,
-        });
+        }));
       } catch (e: any) {
-        return errorResult(e.message ?? String(e));
+        return errorResult(e.message ?? String(e), "rm_suggest");
       }
     },
   };
@@ -806,7 +824,7 @@ export function createRemotionLintTool(): AgentTool<typeof lintSchema> {
     execute: async (_id, params) => {
       try {
         const dir = resolveDir(params.episodeDir);
-        if (!existsSync(dir)) return errorResult(`Episode directory not found: ${dir}`);
+        if (!existsSync(dir)) return errorResult(`Episode directory not found: ${dir}`, "rm_lint");
 
         // Parse requested rules
         const requestedRules = params.rules
@@ -814,14 +832,14 @@ export function createRemotionLintTool(): AgentTool<typeof lintSchema> {
           : [...ALL_LINT_RULES];
 
         if (requestedRules.length === 0) {
-          return errorResult(`No valid rules specified. Available: ${ALL_LINT_RULES.join(", ")}`);
+          return errorResult(`No valid rules specified. Available: ${ALL_LINT_RULES.join(", ")}`, "rm_lint");
         }
 
         // Load all episode files
         const files = loadEpisodeFiles(dir);
 
         if (files.size === 0) {
-          return errorResult(`No .tsx files found in ${dir}/src/`);
+          return errorResult(`No .tsx files found in ${dir}/src/`, "rm_lint");
         }
 
         // Run lint rules
@@ -877,17 +895,20 @@ export function createRemotionLintTool(): AgentTool<typeof lintSchema> {
           }
         }
 
-        return textResult(lines.join("\n"), {
-          episodeDir: basename(dir),
+        const lintIssues = issues.map(i => ({ rule: i.rule, severity: i.severity, file: i.file }));
+        return textResult(lines.join("\n"), details("rm_lint", true, {
+          episode: basename(dir),
+          issues: lintIssues,
+          passCount: passedRules.length,
+          failCount: failedRules.size,
           rulesChecked: requestedRules,
           totalIssues: issues.length,
           errors: errors.length,
           warnings: warnings.length,
           strict,
-          issues: issues.map(i => ({ rule: i.rule, severity: i.severity, file: i.file, message: i.message })),
-        });
+        }));
       } catch (e: any) {
-        return errorResult(e.message ?? String(e));
+        return errorResult(e.message ?? String(e), "rm_lint");
       }
     },
   };

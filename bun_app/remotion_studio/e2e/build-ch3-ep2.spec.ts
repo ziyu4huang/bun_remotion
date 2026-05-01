@@ -9,8 +9,8 @@
  * 5. Monitor build progress (scaffold → pipeline → check → score → TTS → render)
  * 6. Verify completion
  */
-import { test, expect } from "@playwright/test";
-import { navigateTo, waitForPageLoad } from "./helpers";
+import { test, expect } from "./fixtures";
+import { navigateTo, waitForPageLoad, gotoWithRetry } from "./helpers";
 
 const BASE = "http://localhost:3000";
 const API = "http://localhost:5173/api";
@@ -20,7 +20,7 @@ test.describe.serial("Build Ch3-Ep2 Autonomous Flow", () => {
   // Run: bunx playwright test e2e/build-ch3-ep2.spec.ts
   test.skip(process.env.RUN_INTEGRATION !== "1", "Integration test — set RUN_INTEGRATION=1 to run");
   test("Step 1: Navigate to my-core-is-boss detail", async ({ page }) => {
-    await page.goto("/");
+    await gotoWithRetry(page);
     await navigateTo(page, "Projects");
     await waitForPageLoad(page);
 
@@ -62,7 +62,7 @@ test.describe.serial("Build Ch3-Ep2 Autonomous Flow", () => {
   });
 
   test("Step 2: Create Ch3-Ep2 via scaffold form", async ({ page }) => {
-    await page.goto("/");
+    await gotoWithRetry(page);
     await navigateTo(page, "Projects");
     await waitForPageLoad(page);
 
@@ -130,7 +130,7 @@ test.describe.serial("Build Ch3-Ep2 Autonomous Flow", () => {
 
   test("Step 3: Trigger Build Episode flow", async ({ page }) => {
     // Go back to project detail
-    await page.goto("/");
+    await gotoWithRetry(page);
     await navigateTo(page, "Projects");
     await waitForPageLoad(page);
 
@@ -204,7 +204,7 @@ test.describe.serial("Build Ch3-Ep2 Autonomous Flow", () => {
 
   test("Step 4: Monitor Build Episode progress", async ({ page }) => {
     // Navigate to project detail
-    await page.goto("/");
+    await gotoWithRetry(page);
     await navigateTo(page, "Projects");
     await waitForPageLoad(page);
 

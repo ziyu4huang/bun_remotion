@@ -15,7 +15,7 @@
 > - `../../bun_app/bun_pi_agent/TODO.md` — bun_pi_agent Phase 3 tasks
 > - `../../bun_app/bun_pi_agent/PLAN.md` — bun_pi_agent architecture
 
-> **Status:** v1.7.2 — remotion_studio v0.12.0 (289 tests, agent-first all analytical pages). storygraph v0.36.0 (461 tests). bun_pi_agent v0.13.0 (483 tests, 33 tools, CI gate). episodeforge v0.3.0 (87 tests, P1 complete). R1-R4 + agent-first + episodeforge P1 complete. 1420 total tests.
+> **Status:** v1.7.2 — remotion_studio v0.12.1 (299 tests, test-reviewer integration). storygraph v0.36.0 (461 tests). bun_pi_agent v0.13.0 (483 tests, 33 tools, CI gate). episodeforge v0.3.0 (87 tests, P1 complete). R1-R4 + agent-first + episodeforge P1 complete. 1430 total tests.
 
 ## Next Task
 
@@ -24,11 +24,10 @@
 **episodeforge P1: COMPLETE** (--list-series, --force, reorderScripts, PLAN.md rows, asset validation)
 
 **Next priorities:**
-1. **Ch3-Ep3: 秘境 BOSS (仇恨繞柱)** — Next episode in my-core-is-boss series
-2. **Test reviewer integration** — Wire test-reviewer agent into studio
-3. **episodeforge P2** — Custom template overrides per series
+1. **Ch4-Ep1: 組隊系統** — Next episode in my-core-is-boss series
+2. **episodeforge P2** — Custom template overrides per series
 
-**Just completed:** episodeforge v0.3.0 — PLAN.md episode guide row auto-generation (weapon-forger, my-core-is-boss, galgame formats). All P1 tasks done.
+**Just completed:** Ch3-Ep3 秘境 BOSS (仇恨繞柱) — rendered 153M, 6:52. Chapter 3 complete.
 
 ## Implementation Order
 
@@ -112,8 +111,11 @@ Visual differentiation for tool calls, thinking, and chat messages.
 
 ═══ FUTURE ═══
 
-Ch3-Ep2: 隱藏關卡 (查看代碼)
-Ch3-Ep3: 秘境 BOSS (仇恨繞柱)
+Ch3-Ep3: 秘境 BOSS (仇恨繞柱) ✓ (rendered 153M, 6:52)
+
+═══ FUTURE ═══
+
+Ch4-Ep1: 組隊系統
 
 ═══ PLANNED — Task Tree Workflow Engine (Phases 57–63) ═══
 Replace flat linear workflow with DAG task tree. Parallel execution + resume.
@@ -306,6 +308,8 @@ R4: ~~CI gate~~ ✓ (`bun run ci:kg` / `ci:kg-all`, 6 tests)
 | — | bun_pi_agent: 33 tools (sg_dual_review), 14 agents (sg-dual-reviewer), 477 tests | 2026-04-29 |
 | R3 | remotion_studio agent-first quality page (Ask agent CTA, regression endpoint, 10 tests) | 2026-04-29 |
 | R4 | CI gate scripts (`ci:kg`, `ci:kg-all`, 6 tests, 1311 total across 4 apps) | 2026-04-29 |
+| — | remotion_studio v0.12.1: test-reviewer integration (AgentChat starters, Dashboard test review, i18n) | 2026-04-30 |
+| Ch3-Ep3 | 秘境 BOSS (仇恨繞柱, rendered 153M, 6:52) | 2026-04-30 |
 
 ## Archive
 

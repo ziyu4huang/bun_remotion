@@ -1,9 +1,13 @@
-import { test, expect } from "@playwright/test";
-import { navigateTo, delayApiRoute } from "./helpers";
+import { test, expect } from "./fixtures";
+import { navigateTo, delayApiRoute, gotoWithRetry } from "./helpers";
 
 test.describe("Loading States — Skeletons", () => {
+  test.afterEach(async ({ page }) => {
+    await page.unrouteAll();
+  });
+
   test("Dashboard shows skeleton while loading jobs", async ({ page }) => {
-    await page.goto("/");
+    await gotoWithRetry(page);
     await delayApiRoute(page, "jobs", 500);
     await navigateTo(page, "Dashboard");
     await page.waitForTimeout(1500);
@@ -11,7 +15,7 @@ test.describe("Loading States — Skeletons", () => {
   });
 
   test("Projects shows skeleton table while loading", async ({ page }) => {
-    await page.goto("/");
+    await gotoWithRetry(page);
     await delayApiRoute(page, "projects", 500);
     await navigateTo(page, "Projects");
     await page.waitForTimeout(1500);
@@ -19,7 +23,7 @@ test.describe("Loading States — Skeletons", () => {
   });
 
   test("Workflows shows skeleton while loading templates", async ({ page }) => {
-    await page.goto("/");
+    await gotoWithRetry(page);
     await delayApiRoute(page, "workflows", 500);
     await navigateTo(page, "Workflows");
     await page.waitForTimeout(1500);
@@ -27,7 +31,7 @@ test.describe("Loading States — Skeletons", () => {
   });
 
   test("Monitoring shows skeleton cards while loading", async ({ page }) => {
-    await page.goto("/");
+    await gotoWithRetry(page);
     await delayApiRoute(page, "monitoring", 500);
     await navigateTo(page, "Monitoring");
     await page.waitForTimeout(1500);
@@ -35,7 +39,7 @@ test.describe("Loading States — Skeletons", () => {
   });
 
   test("Storygraph shows loading while fetching data", async ({ page }) => {
-    await page.goto("/");
+    await gotoWithRetry(page);
     await delayApiRoute(page, "pipeline", 500);
     await navigateTo(page, "Storygraph");
     await page.waitForTimeout(1500);
@@ -43,7 +47,7 @@ test.describe("Loading States — Skeletons", () => {
   });
 
   test("Benchmark shows loading while fetching data", async ({ page }) => {
-    await page.goto("/");
+    await gotoWithRetry(page);
     await delayApiRoute(page, "benchmark", 500);
     await navigateTo(page, "Benchmark");
     await page.waitForTimeout(1500);
@@ -51,7 +55,7 @@ test.describe("Loading States — Skeletons", () => {
   });
 
   test("Assets shows loading while fetching data", async ({ page }) => {
-    await page.goto("/");
+    await gotoWithRetry(page);
     await delayApiRoute(page, "assets", 500);
     await navigateTo(page, "Assets");
     await page.waitForTimeout(1500);
@@ -59,7 +63,7 @@ test.describe("Loading States — Skeletons", () => {
   });
 
   test("TTS shows loading while fetching projects", async ({ page }) => {
-    await page.goto("/");
+    await gotoWithRetry(page);
     await delayApiRoute(page, "projects", 500);
     await navigateTo(page, "TTS");
     await page.waitForTimeout(1500);
@@ -67,7 +71,7 @@ test.describe("Loading States — Skeletons", () => {
   });
 
   test("ImageGen shows loading while fetching data", async ({ page }) => {
-    await page.goto("/");
+    await gotoWithRetry(page);
     await delayApiRoute(page, "projects", 500);
     await navigateTo(page, "Image");
     await page.waitForTimeout(1500);

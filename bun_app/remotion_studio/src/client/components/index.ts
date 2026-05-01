@@ -1,5 +1,5 @@
 export { type ChatMessage, type ToolCallDisplay } from "./ChatTypes";
-export { loadHistory, saveHistory, clearHistory } from "./ChatHistory";
+export { loadHistory, saveHistory, clearHistory, loadSessionId, saveSessionId, loadHistoryFromServer, saveHistoryToServer, migrateHistoryIfNeeded } from "./ChatHistory";
 export { ToolCallCard } from "./ToolCallCard";
 export { UserBubble, AssistantBubble } from "./ChatBubble";
 export { ThinkingIndicator, TurnSeparator } from "./ThinkingIndicator";
@@ -15,3 +15,9 @@ export { ToastContainer, useToast, toast, type ToastType } from "./ToastContaine
 export { SkeletonRow, SkeletonCard } from "./Skeleton";
 export { SectionEditor } from "./SectionEditor";
 export { AgentResultPanel } from "./AgentResultPanel";
+export { PipelineToolCard, getPipelineOp } from "./PipelineToolCard";
+export type { PipelineToolInfo } from "./PipelineToolCard";
+export { JobStatusCard } from "./JobStatusCard";
+export { Button, type ButtonProps } from "./Button";
+export { Card, type CardProps } from "./Card";
+export { InputField, type InputFieldProps } from "./InputField";

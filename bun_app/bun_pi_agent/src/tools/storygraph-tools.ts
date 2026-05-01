@@ -1,6 +1,6 @@
 import { Type } from "@sinclair/typebox";
 import type { AgentTool, AgentToolResult } from "@mariozechner/pi-agent-core";
-import { resolve } from "node:path";
+import { resolve, basename } from "node:path";
 import { existsSync, readFileSync, copyFileSync, readdirSync, statSync } from "node:fs";
 
 // Import pipeline-api from storygraph workspace
@@ -28,20 +28,21 @@ import {
   type DualReviewResult,
 } from "../../../storygraph/src/scripts/subagent-prompt";
 import { callAI } from "../../../storygraph/src/ai-client";
+import { details } from "./result-types.js";
 
 // ─── Helpers ───
 
-function textResult(text: string, details?: unknown): AgentToolResult<unknown> {
+function textResult(text: string, d: ReturnType<typeof details>): AgentToolResult<unknown> {
   return {
     content: [{ type: "text" as const, text }],
-    details: details ?? {},
+    details: d,
   };
 }
 
-function errorResult(msg: string): AgentToolResult<unknown> {
+function errorResult(msg: string, tool: string): AgentToolResult<unknown> {
   return {
     content: [{ type: "text" as const, text: `Error: ${msg}` }],
-    details: { error: msg },
+    details: details(tool, false, { error: msg }),
   };
 }
 
@@ -90,16 +91,24 @@ export function createStorygraphPipelineTool(): AgentTool<typeof seriesDirWithOp
     execute: async (_id, params) => {
       try {
         const dir = resolveSeriesDir(params.seriesDir);
-        if (!existsSync(dir)) return errorResult(`Series directory not found: ${dir}`);
+        if (!existsSync(dir)) return errorResult(`Series directory not found: ${dir}`, "sg_pipeline");
         const result: PipelineResult = await runPipeline(dir, parseOptions(params));
         return textResult(
           `Pipeline ${result.success ? "succeeded" : "failed"} for ${result.seriesDir}\n` +
           `Steps:\n${result.steps.map(s => `  ${s.step}: ${s.success ? "OK" : "FAIL"} (${s.duration_ms}ms)${s.message ? " — " + s.message : ""}`).join("\n")}` +
           (result.errors.length ? `\nErrors: ${result.errors.join("; ")}` : ""),
-          result,
+          details("sg_pipeline", result.success, {
+            seriesId: basename(dir),
+            mode: params.mode ?? "hybrid",
+            nodes: (result as any).nodeCount ?? 0,
+            edges: (result as any).edgeCount ?? 0,
+            communities: (result as any).communityCount ?? 0,
+            durationMs: result.steps.reduce((sum, s) => sum + s.duration_ms, 0),
+            ...(result as unknown as Record<string, unknown>),
+          }),
         );
       } catch (e: any) {
-        return errorResult(e.message ?? String(e));
+        return errorResult(e.message ?? String(e), "sg_pipeline");
       }
     },
   };
@@ -114,17 +123,24 @@ export function createStorygraphCheckTool(): AgentTool<typeof seriesDirWithOptio
     execute: async (_id, params) => {
       try {
         const dir = resolveSeriesDir(params.seriesDir);
-        if (!existsSync(dir)) return errorResult(`Series directory not found: ${dir}`);
+        if (!existsSync(dir)) return errorResult(`Series directory not found: ${dir}`, "sg_check");
         const result: CheckResult = await runCheck(dir, parseOptions(params));
         const checkLines = result.checks.map(c => `  ${c.name}: ${c.status} (impact: ${c.score_impact})`).join("\n");
         return textResult(
           `Check ${result.success ? "passed" : "failed"} — score: ${result.gateScore}, decision: ${result.gateDecision}\n` +
           `Gate: ${result.gatePath}\nChecks:\n${checkLines}` +
           (result.errors.length ? `\nErrors: ${result.errors.join("; ")}` : ""),
-          result,
+          details("sg_check", result.success, {
+            seriesId: basename(dir),
+            gateScore: result.gateScore,
+            decision: result.gateDecision,
+            checkCount: result.checks.length,
+            failures: result.checks.filter(c => c.status === "FAIL").map(c => c.name),
+            ...(result as unknown as Record<string, unknown>),
+          }),
         );
       } catch (e: any) {
-        return errorResult(e.message ?? String(e));
+        return errorResult(e.message ?? String(e), "sg_check");
       }
     },
   };
@@ -139,7 +155,7 @@ export function createStorygraphScoreTool(): AgentTool<typeof seriesDirWithOptio
     execute: async (_id, params) => {
       try {
         const dir = resolveSeriesDir(params.seriesDir);
-        if (!existsSync(dir)) return errorResult(`Series directory not found: ${dir}`);
+        if (!existsSync(dir)) return errorResult(`Series directory not found: ${dir}`, "sg_score");
         const result: ScoreResult = await runScore(dir, parseOptions(params));
         return textResult(
           `Score: ${result.blended.overall} — ${result.blended.decision}\n` +
@@ -147,10 +163,15 @@ export function createStorygraphScoreTool(): AgentTool<typeof seriesDirWithOptio
           `Programmatic: ${result.programmatic.score} (${result.programmatic.decision})` +
           (result.ai ? `\nAI: ${result.ai.overall}/10 — ${result.ai.justification}` : "\nAI: unavailable") +
           (result.errors.length ? `\nErrors: ${result.errors.join("; ")}` : ""),
-          result,
+          details("sg_score", true, {
+            seriesId: basename(dir),
+            blendedScore: result.blended.overall,
+            dimensions: Object.keys(result.programmatic),
+            ...(result as unknown as Record<string, unknown>),
+          }),
         );
       } catch (e: any) {
-        return errorResult(e.message ?? String(e));
+        return errorResult(e.message ?? String(e), "sg_score");
       }
     },
   };
@@ -165,7 +186,7 @@ export function createStorygraphStatusTool(): AgentTool<typeof seriesDirSchema> 
     execute: async (_id, params) => {
       try {
         const dir = resolveSeriesDir(params.seriesDir);
-        if (!existsSync(dir)) return errorResult(`Series directory not found: ${dir}`);
+        if (!existsSync(dir)) return errorResult(`Series directory not found: ${dir}`, "sg_status");
         const status: PipelineStatusResult = getPipelineStatus(dir);
         return textResult(
           `Status for ${params.seriesDir}:\n` +
@@ -175,10 +196,10 @@ export function createStorygraphStatusTool(): AgentTool<typeof seriesDirSchema> 
           `  Quality score: ${status.hasQualityScore ? `YES (${status.blendedScore}, ${status.blendedDecision})` : "NO"}\n` +
           `  HTML: ${status.hasHTML ? "YES" : "NO"}` +
           (status.episodeCount ? `\n  Episodes: ${status.episodeCount}` : ""),
-          status,
+          details("sg_status", true, { ...(status as unknown as Record<string, unknown>) }),
         );
       } catch (e: any) {
-        return errorResult(e.message ?? String(e));
+        return errorResult(e.message ?? String(e), "sg_status");
       }
     },
   };
@@ -193,7 +214,7 @@ export function createStorygraphRegressionTool(): AgentTool<typeof regressionSch
     execute: async (_id, params) => {
       try {
         const dir = resolveSeriesDir(params.seriesDir);
-        if (!existsSync(dir)) return errorResult(`Series directory not found: ${dir}`);
+        if (!existsSync(dir)) return errorResult(`Series directory not found: ${dir}`, "sg_regression");
         const threshold = params.threshold ?? 10;
 
         const outDir = resolve(dir, "storygraph_out");
@@ -206,12 +227,12 @@ export function createStorygraphRegressionTool(): AgentTool<typeof regressionSch
               status: "NO_BASELINE",
               exitCode: 0,
               note: `Run sg_baseline_update to save a baseline at ${baselinePath}`,
-            }, null, 2), { hasBaseline: false, exitCode: 0 });
+            }, null, 2), details("sg_regression", true, { hasBaseline: false, exitCode: 0 }));
           }
           return textResult(
             `No baseline found at ${baselinePath}. Run sg_pipeline first, then save a baseline with the bash tool:\n` +
             `  cp ${currentGatePath} ${baselinePath}`,
-            { hasBaseline: false },
+            details("sg_regression", true, { hasBaseline: false }),
           );
         }
 
@@ -221,9 +242,9 @@ export function createStorygraphRegressionTool(): AgentTool<typeof regressionSch
               status: "NO_GATE",
               exitCode: 1,
               error: "No current gate.json found — run sg_pipeline or sg_check first",
-            }, null, 2), { exitCode: 1 });
+            }, null, 2), details("sg_regression", false, { exitCode: 1 }));
           }
-          return errorResult(`No current gate.json found — run sg_pipeline or sg_check first`);
+          return errorResult(`No current gate.json found — run sg_pipeline or sg_check first`, "sg_regression");
         }
 
         const baseline = JSON.parse(readFileSync(baselinePath, "utf-8"));
@@ -233,7 +254,7 @@ export function createStorygraphRegressionTool(): AgentTool<typeof regressionSch
         const regressed = Math.abs(scoreDelta) > threshold;
         const direction = scoreDelta > 0 ? "improvement" : "regression";
 
-        const details = {
+        const regressionDetails = {
           baselineScore: baseline.score,
           currentScore: current.score,
           scoreDelta,
@@ -247,9 +268,9 @@ export function createStorygraphRegressionTool(): AgentTool<typeof regressionSch
 
         // Per-check comparison
         const checkDeltas: string[] = [];
-        const baselineChecks = new Map<string, any>((baseline.checks ?? []).map((c: any) => [c.name as string, c]));
+        const baselineCheckMap = new Map<string, any>((baseline.checks ?? []).map((c: any) => [c.name as string, c]));
         for (const cur of (current.checks ?? []) as any[]) {
-          const prev = baselineChecks.get(cur.name as string);
+          const prev = baselineCheckMap.get(cur.name as string);
           if (prev && cur.score_impact !== prev.score_impact) {
             const delta = cur.score_impact - prev.score_impact;
             checkDeltas.push(`  ${cur.name}: ${prev.score_impact} → ${cur.score_impact} (${delta > 0 ? "+" : ""}${delta})`);
@@ -266,7 +287,7 @@ export function createStorygraphRegressionTool(): AgentTool<typeof regressionSch
             checkDeltas: checkDeltas.length ? checkDeltas : undefined,
             exitCode: regressed ? 1 : 0,
           };
-          return textResult(JSON.stringify(ciResult, null, 2), details);
+          return textResult(JSON.stringify(ciResult, null, 2), details("sg_regression", !regressed, regressionDetails));
         }
 
         return textResult(
@@ -274,10 +295,10 @@ export function createStorygraphRegressionTool(): AgentTool<typeof regressionSch
           `Baseline score: ${baseline.score} → Current: ${current.score} (delta: ${scoreDelta > 0 ? "+" : ""}${scoreDelta}, ${direction})\n` +
           `Threshold: ${threshold}` +
           (checkDeltas.length ? `\nCheck changes:\n${checkDeltas.join("\n")}` : "\nNo individual check changes."),
-          details,
+          details("sg_regression", !regressed, regressionDetails),
         );
       } catch (e: any) {
-        return errorResult(e.message ?? String(e));
+        return errorResult(e.message ?? String(e), "sg_regression");
       }
     },
   };
@@ -300,14 +321,14 @@ export function createStorygraphBaselineUpdateTool(): AgentTool<typeof baselineU
     execute: async (_id, params) => {
       try {
         const dir = resolveSeriesDir(params.seriesDir);
-        if (!existsSync(dir)) return errorResult(`Series directory not found: ${dir}`);
+        if (!existsSync(dir)) return errorResult(`Series directory not found: ${dir}`, "sg_baseline_update");
 
         const outDir = resolve(dir, "storygraph_out");
         const currentGatePath = resolve(outDir, "gate.json");
         const baselinePath = resolve(outDir, "baseline-gate.json");
 
         if (!existsSync(currentGatePath)) {
-          return errorResult(`No current gate.json found — run sg_pipeline or sg_check first`);
+          return errorResult(`No current gate.json found — run sg_pipeline or sg_check first`, "sg_baseline_update");
         }
 
         const gate = JSON.parse(readFileSync(currentGatePath, "utf-8"));
@@ -317,10 +338,10 @@ export function createStorygraphBaselineUpdateTool(): AgentTool<typeof baselineU
           `Baseline updated for ${params.seriesDir}\n` +
           `Score: ${gate.score}, Decision: ${gate.decision}\n` +
           `Baseline saved to: ${baselinePath}`,
-          { baselineScore: gate.score, baselineDecision: gate.decision, baselinePath },
+          details("sg_baseline_update", true, { baselineScore: gate.score, baselineDecision: gate.decision, baselinePath }),
         );
       } catch (e: any) {
-        return errorResult(e.message ?? String(e));
+        return errorResult(e.message ?? String(e), "sg_baseline_update");
       }
     },
   };
@@ -340,7 +361,7 @@ export function createStorygraphBaselineListTool(): AgentTool<typeof baselineLis
           : resolve(config.workDir, "bun_remotion_proj");
 
         if (!existsSync(searchDir)) {
-          return errorResult(`Search directory not found: ${searchDir}`);
+          return errorResult(`Search directory not found: ${searchDir}`, "sg_baseline_list");
         }
 
         // Discover series directories (contain PLAN.md)
@@ -350,7 +371,7 @@ export function createStorygraphBaselineListTool(): AgentTool<typeof baselineLis
         });
 
         if (entries.length === 0) {
-          return textResult(`No series found in ${searchDir}`, { series: [] });
+          return textResult(`No series found in ${searchDir}`, details("sg_baseline_list", true, { series: [] }));
         }
 
         const series: Array<{
@@ -396,10 +417,10 @@ export function createStorygraphBaselineListTool(): AgentTool<typeof baselineLis
 
         return textResult(
           `Series baselines in ${searchDir} (${series.length} series):\n${lines.join("\n")}`,
-          { series },
+          details("sg_baseline_list", true, { series }),
         );
       } catch (e: any) {
-        return errorResult(e.message ?? String(e));
+        return errorResult(e.message ?? String(e), "sg_baseline_list");
       }
     },
   };
@@ -421,9 +442,9 @@ export function createStorygraphSuggestTool(): AgentTool<typeof suggestSchema> {
     execute: async (_id, params) => {
       try {
         const dir = resolveSeriesDir(params.seriesDir);
-        if (!existsSync(dir)) return errorResult(`Series directory not found: ${dir}`);
+        if (!existsSync(dir)) return errorResult(`Series directory not found: ${dir}`, "sg_suggest");
         const result: SuggestResult = runSuggest(dir, params.targetEpId);
-        if (!result.success) return errorResult(result.errors.join("; "));
+        if (!result.success) return errorResult(result.errors.join("; "), "sg_suggest");
 
         const lines = [
           `Story Suggestions for ${params.seriesDir} (${result.genre}, ${result.episodeCount} episodes, latest: ${result.latestEpisode})`,
@@ -444,9 +465,9 @@ export function createStorygraphSuggestTool(): AgentTool<typeof suggestSchema> {
           lines.push("No story debt detected — series is healthy!");
         }
 
-        return textResult(lines.join("\n"), result);
+        return textResult(lines.join("\n"), details("sg_suggest", true, { ...result as Record<string, unknown> }));
       } catch (e: any) {
-        return errorResult(e.message ?? String(e));
+        return errorResult(e.message ?? String(e), "sg_suggest");
       }
     },
   };
@@ -461,9 +482,9 @@ export function createStorygraphHealthTool(): AgentTool<typeof seriesDirSchema> 
     execute: async (_id, params) => {
       try {
         const dir = resolveSeriesDir(params.seriesDir);
-        if (!existsSync(dir)) return errorResult(`Series directory not found: ${dir}`);
+        if (!existsSync(dir)) return errorResult(`Series directory not found: ${dir}`, "sg_health");
         const result: HealthResult = runHealth(dir);
-        if (!result.success) return errorResult(result.errors.join("; "));
+        if (!result.success) return errorResult(result.errors.join("; "), "sg_health");
 
         const lines = [
           `Story Health: ${params.seriesDir} — Gate: ${result.gateScore}/100 (${result.gateDecision})`,
@@ -483,9 +504,9 @@ export function createStorygraphHealthTool(): AgentTool<typeof seriesDirSchema> 
           lines.push(`  - ${item}`);
         }
 
-        return textResult(lines.join("\n"), result);
+        return textResult(lines.join("\n"), details("sg_health", true, { ...result as Record<string, unknown> }));
       } catch (e: any) {
-        return errorResult(e.message ?? String(e));
+        return errorResult(e.message ?? String(e), "sg_health");
       }
     },
   };
@@ -511,14 +532,14 @@ export function createDualReviewTool(): AgentTool<typeof dualReviewSchema> {
     execute: async (_id, params) => {
       try {
         const dir = resolveSeriesDir(params.seriesDir);
-        if (!existsSync(dir)) return errorResult(`Series directory not found: ${dir}`);
+        if (!existsSync(dir)) return errorResult(`Series directory not found: ${dir}`, "sg_dual_review");
 
         const outDir = resolve(dir, "storygraph_out");
         const gatePath = resolve(outDir, "gate.json");
         const reportPath = resolve(outDir, "consistency-report.md");
         const baselinePath = resolve(outDir, "baseline-gate.json");
 
-        if (!existsSync(gatePath)) return errorResult("No gate.json found — run sg_pipeline or sg_check first");
+        if (!existsSync(gatePath)) return errorResult("No gate.json found — run sg_pipeline or sg_check first", "sg_dual_review");
 
         const gate = JSON.parse(readFileSync(gatePath, "utf-8"));
         const report = existsSync(reportPath) ? readFileSync(reportPath, "utf-8") : "";
@@ -577,7 +598,7 @@ export function createDualReviewTool(): AgentTool<typeof dualReviewSchema> {
 
         const succeeded = reviewResults.filter(r => r.review !== null);
         if (succeeded.length === 0) {
-          return errorResult(`Both reviewers failed: ${reviewResults.map(r => `${r.label}: ${r.error}`).join("; ")}`);
+          return errorResult(`Both reviewers failed: ${reviewResults.map(r => `${r.label}: ${r.error}`).join("; ")}`, "sg_dual_review");
         }
 
         // Build merged output
@@ -621,7 +642,7 @@ export function createDualReviewTool(): AgentTool<typeof dualReviewSchema> {
 
         lines.push(`## Merged Verdict: ${mergedVerdict} (avg score: ${avgScore}/100)`);
 
-        return textResult(lines.join("\n"), {
+        return textResult(lines.join("\n"), details("sg_dual_review", true, {
           verdict: mergedVerdict,
           pipeline_score: gate.score,
           reviewer_score: avgScore,
@@ -630,9 +651,9 @@ export function createDualReviewTool(): AgentTool<typeof dualReviewSchema> {
           false_negatives: allFalseNegatives,
           recommendations: allRecommendations,
           reviewers: reviewResults.map(r => r.label),
-        });
+        }));
       } catch (e: any) {
-        return errorResult(e.message ?? String(e));
+        return errorResult(e.message ?? String(e), "sg_dual_review");
       }
     },
   };

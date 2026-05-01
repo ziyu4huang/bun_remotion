@@ -1,6 +1,8 @@
 import { Component, type ReactNode } from "react";
 import { lightTheme } from "../theme";
 import { en } from "../i18n/en.js";
+import { Card } from "./Card";
+import { Button } from "./Button";
 
 interface Props {
   children: ReactNode;
@@ -40,27 +42,16 @@ export class ErrorBoundary extends Component<Props, State> {
         display: "flex", justifyContent: "center", alignItems: "center",
         minHeight: "50vh", padding: 48,
       }}>
-        <div style={{
-          maxWidth: 480, width: "100%", padding: 32,
-          border: `1px solid ${t.colors.border.default}`, borderRadius: t.radii.xl, background: t.colors.bg.surface,
-          textAlign: "center",
-        }}>
+        <Card variant="surface" padding="lg" style={{ maxWidth: 480, width: "100%", textAlign: "center" }}>
           <div style={{ fontSize: 40, marginBottom: 16, color: t.colors.error }}>!</div>
           <h3 style={{ margin: "0 0 8px", color: t.colors.text.primary }}>{en.error.title}</h3>
-          <p style={{ color: t.colors.text.tertiary, fontSize: 14, margin: "0 0 20px" }}>
+          <p style={{ color: t.colors.text.tertiary, fontSize: t.font.sizes.sm, margin: "0 0 20px" }}>
             {this.state.error?.message ?? en.error.message}
           </p>
-          <button
-            onClick={() => window.location.reload()}
-            style={{
-              padding: "8px 20", border: "none", borderRadius: t.radii.lg,
-              background: t.colors.primary, color: t.colors.bg.page, fontSize: 14,
-              cursor: "pointer",
-            }}
-          >
+          <Button variant="primary" onClick={() => window.location.reload()}>
             {en.error.reload}
-          </button>
-        </div>
+          </Button>
+        </Card>
       </div>
     );
   }

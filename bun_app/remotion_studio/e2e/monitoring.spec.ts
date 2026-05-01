@@ -1,9 +1,9 @@
-import { test, expect } from "@playwright/test";
-import { navigateTo, waitForPageLoad } from "./helpers";
+import { test, expect } from "./fixtures";
+import { navigateTo, waitForPageLoad, gotoWithRetry } from "./helpers";
 
 test.describe("Monitoring", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/");
+    await gotoWithRetry(page);
     await page.locator("nav button").filter({ hasText: "Monitoring" }).waitFor({ state: "visible" });
     await navigateTo(page, "Monitoring");
     await waitForPageLoad(page);

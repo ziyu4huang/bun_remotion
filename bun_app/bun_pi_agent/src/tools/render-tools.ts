@@ -12,18 +12,19 @@ import type { AgentTool, AgentToolResult } from "@mariozechner/pi-agent-core";
 import { resolve, basename, join } from "node:path";
 import { existsSync, statSync, readdirSync } from "node:fs";
 import { spawn } from "node:child_process";
+import { details } from "./result-types.js";
 
 const REPO_ROOT = resolve(import.meta.dir, "../../../..");
 const PROJ_DIR = resolve(REPO_ROOT, "bun_remotion_proj");
 
 // --- Helpers ---
 
-function textResult(text: string, details?: unknown): AgentToolResult<unknown> {
-  return { content: [{ type: "text" as const, text }], details: details ?? {} };
+function textResult(text: string, d: ReturnType<typeof details>): AgentToolResult<unknown> {
+  return { content: [{ type: "text" as const, text }], details: d };
 }
 
-function errorResult(msg: string): AgentToolResult<unknown> {
-  return { content: [{ type: "text" as const, text: "Error: " + msg }], details: { error: msg } };
+function errorResult(msg: string, tool: string): AgentToolResult<unknown> {
+  return { content: [{ type: "text" as const, text: "Error: " + msg }], details: details(tool, false, { error: msg }) };
 }
 
 function deriveCompositionId(episodeDirName: string): string {
@@ -80,7 +81,7 @@ export function createRenderEpisodeTool(): AgentTool<typeof episodeSchema> {
     execute: async (params) => {
       const episodePath = findEpisodePath(params.episodeId);
       if (!episodePath) {
-        return errorResult("Episode not found: " + params.episodeId + ". Searched in " + PROJ_DIR);
+        return errorResult("Episode not found: " + params.episodeId + ". Searched in " + PROJ_DIR, "render_episode");
       }
 
       const dirName = basename(episodePath);
@@ -110,7 +111,8 @@ export function createRenderEpisodeTool(): AgentTool<typeof episodeSchema> {
         if (result.exitCode !== 0) {
           return errorResult(
             "Render failed (exit code " + result.exitCode + ") after " + durationSec + "s.\n" +
-            "stderr: " + result.stderr.slice(-500)
+            "stderr: " + result.stderr.slice(-500),
+            "render_episode"
           );
         }
 
@@ -126,14 +128,14 @@ export function createRenderEpisodeTool(): AgentTool<typeof episodeSchema> {
           "  Status: " + (outputExists ? "OK" : "WARNING: output file not found"),
         ];
 
-        return textResult(lines.join("\n"), {
+        return textResult(lines.join("\n"), details("render_episode", true, {
+          episode: dirName,
           outputPath,
-          durationMs: Date.now() - start,
-          fileSize,
-          exitCode: result.exitCode,
-        });
+          fileSizeKb: Math.round(fileSize / 1024),
+          durationSec: parseFloat(durationSec),
+        }));
       } catch (err) {
-        return errorResult("Render error: " + (err instanceof Error ? err.message : String(err)));
+        return errorResult("Render error: " + (err instanceof Error ? err.message : String(err)), "render_episode");
       }
     },
   };
@@ -149,7 +151,7 @@ export function createRenderStatusTool(): AgentTool<typeof statusSchema> {
     execute: async (params) => {
       const episodePath = findEpisodePath(params.episodeId);
       if (!episodePath) {
-        return errorResult("Episode not found: " + params.episodeId);
+        return errorResult("Episode not found: " + params.episodeId, "render_status");
       }
 
       const dirName = basename(episodePath);
@@ -178,20 +180,22 @@ export function createRenderStatusTool(): AgentTool<typeof statusSchema> {
             "  Source newer: " + (sourceNewer ? "YES: render may be stale" : "no"),
           ];
 
-          return textResult(lines.join("\n"), {
+          return textResult(lines.join("\n"), details("render_status", true, {
+            episode: dirName,
             hasRender: true,
+            isStale: sourceNewer,
+            fileSizeKb: Math.round(stat.size / 1024),
             outputPath,
-            fileSize: stat.size,
             modifiedAt: stat.mtime.toISOString(),
-            sourceNewer,
-          });
+          }));
         }
       }
 
-      return textResult("No render output found for " + dirName + ".\nExpected: out/" + dirName + ".mp4", {
+      return textResult("No render output found for " + dirName + ".\nExpected: out/" + dirName + ".mp4", details("render_status", true, {
+        episode: dirName,
         hasRender: false,
-        episodeId: params.episodeId,
-      });
+        isStale: false,
+      }));
     },
   };
 }
@@ -206,7 +210,7 @@ export function createRenderListTool(): AgentTool<typeof listSchema> {
     execute: async (params) => {
       const seriesDir = resolve(PROJ_DIR, params.seriesId);
       if (!existsSync(seriesDir)) {
-        return errorResult("Series directory not found: " + seriesDir);
+        return errorResult("Series directory not found: " + seriesDir, "render_list");
       }
 
       const episodes: Array<{ id: string; hasRender: boolean; sizeMb?: string; modified?: string; stale?: boolean }> = [];
@@ -242,11 +246,11 @@ export function createRenderListTool(): AgentTool<typeof listSchema> {
           }
         }
       } catch (err) {
-        return errorResult("Failed to scan series: " + (err instanceof Error ? err.message : String(err)));
+        return errorResult("Failed to scan series: " + (err instanceof Error ? err.message : String(err)), "render_list");
       }
 
       if (episodes.length === 0) {
-        return textResult("No episodes found in " + params.seriesId, { episodes: [] });
+        return textResult("No episodes found in " + params.seriesId, details("render_list", true, { episodes: [] as unknown[] }));
       }
 
       const rendered = episodes.filter((e) => e.hasRender);
@@ -266,13 +270,13 @@ export function createRenderListTool(): AgentTool<typeof listSchema> {
         }
       }
 
-      return textResult(lines.join("\n"), {
+      return textResult(lines.join("\n"), details("render_list", true, {
         total: episodes.length,
         rendered: rendered.length,
         notRendered: notRendered.length,
         stale: stale.length,
         episodes,
-      });
+      }));
     },
   };
 }

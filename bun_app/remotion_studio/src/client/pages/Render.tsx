@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { api } from "../api";
-import { PageHeader, LoadingSpinner, EmptyState } from "../components";
+import { PageHeader, LoadingSpinner, EmptyState, Button } from "../components";
 import { toast } from "../components/ToastContainer";
 import type { Project, RenderStatus, Job, JobProgress } from "../../shared/types";
 import { useTheme } from "../theme";
@@ -85,21 +85,13 @@ export function Render() {
           ))}
         </select>
 
-        <button
+        <Button
+          variant="primary"
           onClick={handleRender}
           disabled={!selectedEpisode || !!job}
-          style={{
-            padding: "6px 16px",
-            borderRadius: theme.radii.lg,
-            border: "none",
-            background: selectedEpisode && !job ? theme.colors.violet : theme.colors.border.medium,
-            color: theme.colors.bg.page,
-            cursor: selectedEpisode && !job ? "pointer" : "not-allowed",
-            fontSize: theme.font.sizes.md,
-          }}
         >
           {t.render.renderMp4}
-        </button>
+        </Button>
       </div>
 
       {!selectedEpisode && (

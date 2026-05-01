@@ -13,15 +13,16 @@ import { resolve, basename } from "node:path";
 import { existsSync, readdirSync, statSync } from "node:fs";
 import { scaffold } from "../../../episodeforge/src/scaffold";
 import { SERIES_REGISTRY } from "../../../episodeforge/src/series-config";
+import { details } from "./result-types.js";
 
 // ─── Helpers ───
 
-function textResult(text: string, details?: unknown): AgentToolResult<unknown> {
-  return { content: [{ type: "text" as const, text }], details: details ?? {} };
+function textResult(text: string, d: ReturnType<typeof details>): AgentToolResult<unknown> {
+  return { content: [{ type: "text" as const, text }], details: d };
 }
 
-function errorResult(msg: string): AgentToolResult<unknown> {
-  return { content: [{ type: "text" as const, text: `Error: ${msg}` }], details: { error: msg } };
+function errorResult(msg: string, tool: string): AgentToolResult<unknown> {
+  return { content: [{ type: "text" as const, text: `Error: ${msg}` }], details: details(tool, false, { error: msg }) };
 }
 
 // ─── Tool Schemas ───
@@ -59,8 +60,7 @@ export function createScaffoldTool(): AgentTool<typeof scaffoldSchema> {
         });
 
         if (!result.success) {
-          return errorResult(`Scaffold failed: ${result.errors.join("; ")}`);
-        }
+          return errorResult(`Scaffold failed: ${result.errors.join("; ")}`, "sc_scaffold");        }
 
         const lines = [
           `Scaffolded ${result.filesWritten} files for ${params.series}`,
@@ -74,9 +74,15 @@ export function createScaffoldTool(): AgentTool<typeof scaffoldSchema> {
           lines.push(`  Warnings: ${result.errors.join(", ")}`);
         }
 
-        return textResult(lines.join("\n"), result);
+        return textResult(lines.join("\n"), details("sc_scaffold", true, {
+          series: params.series,
+          episode: result.naming.episodeDir,
+          filesCreated: (result as any).filesWritten ? [`${(result as any).filesWritten} files`] : [],
+          dryRun: params.dryRun ?? false,
+          ...(result as unknown as Record<string, unknown>),
+        }));
       } catch (err) {
-        return errorResult(err instanceof Error ? err.message : String(err));
+        return errorResult(err instanceof Error ? err.message : String(err), "sc_scaffold");
       }
     },
   };
@@ -97,7 +103,7 @@ export function createSeriesListTool(): AgentTool<typeof episodeListSchema> {
         return `  ${s.id}: ${s.displayName} [${cat}, ${ch}${standalone}, ${s.defaultContentScenes} scenes]`;
       });
 
-      return textResult(`Available series (${entries.length}):\n${lines.join("\n")}`, {
+      return textResult(`Available series (${entries.length}):\n${lines.join("\n")}`, details("sc_series_list", true, {
         series: entries.map((s) => ({
           id: s.id,
           displayName: s.displayName,
@@ -106,7 +112,7 @@ export function createSeriesListTool(): AgentTool<typeof episodeListSchema> {
           standalone: s.standalone ?? false,
           defaultContentScenes: s.defaultContentScenes,
         })),
-      });
+      }));
     },
   };
 }
@@ -120,7 +126,7 @@ export function createEpisodeListTool(): AgentTool<typeof episodeListSchema> {
     execute: async (params) => {
       const seriesDir = resolve(params.seriesDir);
       if (!existsSync(seriesDir)) {
-        return errorResult(`Series directory not found: ${seriesDir}`);
+        return errorResult(`Series directory not found: ${seriesDir}`, "sc_episode_list");
       }
 
       const skipDirs = new Set(["shared", "assets", "out", "storygraph_out", "fixture", "node_modules", ".git"]);
@@ -135,23 +141,23 @@ export function createEpisodeListTool(): AgentTool<typeof episodeListSchema> {
           episodes.push({ name: entry.name, path: epPath, hasPlan });
         }
       } catch (err) {
-        return errorResult(`Failed to scan directory: ${err instanceof Error ? err.message : String(err)}`);
+        return errorResult(`Failed to scan directory: ${err instanceof Error ? err.message : String(err)}`, "sc_episode_list");
       }
 
       episodes.sort((a, b) => a.name.localeCompare(b.name));
 
       if (episodes.length === 0) {
-        return textResult(`No episodes found in ${seriesDir}`, { episodes: [], seriesDir });
+        return textResult(`No episodes found in ${seriesDir}`, details("sc_episode_list", true, { episodes: [] as unknown[], seriesDir }));
       }
 
       const lines = episodes.map((ep) =>
         `  ${ep.name} ${ep.hasPlan ? "[has PLAN.md]" : "[no PLAN.md]"}`
       );
 
-      return textResult(`Episodes in ${basename(seriesDir)} (${episodes.length}):\n${lines.join("\n")}`, {
+      return textResult(`Episodes in ${basename(seriesDir)} (${episodes.length}):\n${lines.join("\n")}`, details("sc_episode_list", true, {
         episodes,
         seriesDir,
-      });
+      }));
     },
   };
 }

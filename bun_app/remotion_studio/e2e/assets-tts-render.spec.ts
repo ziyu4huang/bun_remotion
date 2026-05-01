@@ -1,9 +1,9 @@
-import { test, expect } from "@playwright/test";
-import { navigateTo, waitForPageLoad } from "./helpers";
+import { test, expect } from "./fixtures";
+import { navigateTo, waitForPageLoad, gotoWithRetry } from "./helpers";
 
 test.describe("Assets Page", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/");
+    await gotoWithRetry(page);
     await page.locator("nav button").filter({ hasText: "Assets" }).waitFor({ state: "visible" });
     await navigateTo(page, "Assets");
     await waitForPageLoad(page);
@@ -19,7 +19,7 @@ test.describe("Assets Page", () => {
 
 test.describe("TTS Page", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/");
+    await gotoWithRetry(page);
     await page.locator("nav button").filter({ hasText: "TTS" }).waitFor({ state: "visible" });
     await navigateTo(page, "TTS");
     await waitForPageLoad(page);
@@ -43,7 +43,7 @@ test.describe("TTS Page", () => {
 
 test.describe("Render Page", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/");
+    await gotoWithRetry(page);
     await page.locator("nav button").filter({ hasText: "Render" }).waitFor({ state: "visible" });
     await navigateTo(page, "Render");
     await waitForPageLoad(page);

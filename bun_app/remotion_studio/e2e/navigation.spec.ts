@@ -1,9 +1,9 @@
-import { test, expect } from "@playwright/test";
-import { navigateTo, NAV_LABELS } from "./helpers";
+import { test, expect } from "./fixtures";
+import { navigateTo, NAV_LABELS, gotoWithRetry } from "./helpers";
 
 test.describe("Navigation", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/");
+    await gotoWithRetry(page);
     await page.locator("nav button").filter({ hasText: "Dashboard" }).waitFor({ state: "visible" });
   });
 

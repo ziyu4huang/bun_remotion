@@ -1,10 +1,9 @@
-import { test, expect } from "@playwright/test";
-import { navigateTo, waitForPageLoad } from "./helpers";
+import { test, expect } from "./fixtures";
+import { navigateTo, waitForPageLoad, gotoWithRetry } from "./helpers";
 
 test.describe("Workflows Page", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/");
-    await page.locator("nav button").filter({ hasText: "Workflows" }).waitFor({ state: "visible" });
+    await gotoWithRetry(page);
     await navigateTo(page, "Workflows");
     await waitForPageLoad(page);
   });
@@ -26,8 +25,7 @@ test.describe("Workflows Page", () => {
 
 test.describe("Image Gen Page", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/");
-    await page.locator("nav button").filter({ hasText: "Image" }).waitFor({ state: "visible" });
+    await gotoWithRetry(page);
     await navigateTo(page, "Image");
     await waitForPageLoad(page);
   });

@@ -2,7 +2,9 @@ import type { Page } from "@playwright/test";
 
 /** Click a sidebar nav button by its label text. */
 export async function navigateTo(page: Page, label: string) {
-  await page.locator("nav button", { hasText: label }).click();
+  const btn = page.locator("nav button", { hasText: label });
+  await btn.waitFor({ state: "visible", timeout: 10_000 });
+  await btn.click();
   await page.waitForTimeout(300);
 }
 
@@ -44,8 +46,9 @@ export async function isAgentBridgeAvailable(page: Page): Promise<boolean> {
   return data.ok === true;
 }
 
-/** All 13 nav labels matching App.tsx NAV array. */
+/** All nav labels matching App.tsx NAV array (plus Settings). */
 export const NAV_LABELS = [
+  "Wizard",
   "Dashboard",
   "Monitoring",
   "Progress",
@@ -61,6 +64,7 @@ export const NAV_LABELS = [
   "Render",
   "Image",
   "Workflows",
+  "Settings",
 ] as const;
 
 /** Intercept an API route and return an error response. */
@@ -85,4 +89,25 @@ export async function delayApiRoute(page: Page, path: string, delayMs: number) {
 /** Wait for a toast notification of a given type to appear. */
 export async function waitForToast(page: Page, type: "success" | "error" | "info", timeout = 5000) {
   return page.locator(`[data-toast-type="${type}"]`).first().waitFor({ timeout });
+}
+
+/** page.goto with retry — handles Vite server degradation during long suites. */
+export async function gotoWithRetry(page: Page, url = "/", retries = 3) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      await page.goto(url, { timeout: 15_000, waitUntil: "domcontentloaded" });
+      return;
+    } catch (e) {
+      if (i === retries - 1) throw e;
+      // Longer backoff for later retries — server may need time to recover
+      await new Promise((r) => setTimeout(r, 3_000 * (i + 1)));
+    }
+  }
+}
+
+/** Prevent Wizard auto-redirect for first-time visitors. Call AFTER page.goto. */
+export async function dismissWizard(page: Page) {
+  await page.evaluate(() => {
+    try { localStorage.setItem("remotion_studio_wizard_seen", "1"); } catch {}
+  });
 }

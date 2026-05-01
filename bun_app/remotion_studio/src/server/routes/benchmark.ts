@@ -3,6 +3,7 @@ import { resolve } from "node:path";
 import { existsSync, readFileSync, readdirSync, copyFileSync, statSync } from "node:fs";
 import { runPipeline, runCheck, runScore } from "../../../../storygraph/src/pipeline-api";
 import { createJob } from "../middleware/job-queue";
+import { bridge } from "../agent-bridge";
 import type { ApiResponse, Job, BenchmarkResult, BaselineInfo, RegressionSeriesStatus } from "../../shared/types";
 
 const router = new Hono();
@@ -80,7 +81,7 @@ router.post("/run", async (c) => {
       progress(5, "Starting agent benchmark...");
       let lastPct = 5;
 
-      const agentResult = await runAgentTask(
+      const agentResult = await bridge.runTask(
         "sg-benchmark-runner",
         `Run full benchmark on series "${body.seriesId}" with mode "${mode}" and threshold ${threshold}. Follow the complete benchmark workflow: pipeline → check → regression → score → report.`,
         {

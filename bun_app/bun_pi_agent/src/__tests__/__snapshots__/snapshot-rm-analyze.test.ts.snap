@@ -1,0 +1,19 @@
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+
+exports[`snapshot: rm_analyze on weapon-forger-ch1-ep1 returns stable JSON structure: rm_analyze data keys 1`] = `
+[
+  "analysisDimensions",
+  "category",
+  "characterStats",
+  "effectDistribution",
+  "emotionDistribution",
+  "episode",
+  "issues",
+  "scenes",
+  "scores",
+  "source",
+  "totalFrames",
+  "totalSeconds",
+  "voiceMap",
+]
+`;

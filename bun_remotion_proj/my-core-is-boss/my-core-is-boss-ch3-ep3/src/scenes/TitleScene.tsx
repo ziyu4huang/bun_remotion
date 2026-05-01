@@ -3,22 +3,15 @@ import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, Easing } fr
 import { maShanZheng, notoSansTC } from "../../../assets/characters";
 import { SystemNotification } from "../../../assets/components/SystemOverlay";
 
-// TODO: Customize title text, gradient colors, and series subtitle
-const SERIES_TITLE = "我的核心是大佬";
-const SERIES_SUBTITLE = ""; // e.g. "系統誤會流喜劇"
-const EPISODE_LABEL = "第3章 第3集";
-
 export const TitleScene: React.FC = () => {
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
 
-  // Flash at the start
   const flashOpacity = interpolate(frame, [5, 12, 22], [0, 0.7, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
 
-  // Title scale-in with spring overshoot
   const titleScale = interpolate(frame, [10, 40], [2.5, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
@@ -30,7 +23,6 @@ export const TitleScene: React.FC = () => {
     extrapolateRight: "clamp",
   });
 
-  // Subtitle slides in after title
   const subtitleY = interpolate(frame, [30, 50], [30, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
@@ -41,26 +33,22 @@ export const TitleScene: React.FC = () => {
     extrapolateRight: "clamp",
   });
 
-  // Chapter/episode info
   const chapterOpacity = interpolate(frame, [50, 60], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
 
-  // Fade out at the end
   const fadeOut = interpolate(frame, [durationInFrames - 20, durationInFrames], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
 
-  // Decorative line
   const lineWidth = interpolate(frame, [15, 45], [0, 600], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.out(Easing.cubic),
   });
 
-  // Ambient pulse glow
   const glowPulse = interpolate(frame % 120, [0, 60, 120], [0.12, 0.2, 0.12], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
@@ -69,11 +57,10 @@ export const TitleScene: React.FC = () => {
   return (
     <AbsoluteFill
       style={{
-        background: "linear-gradient(135deg, #0a0a2e 0%, #0a1a3e 50%, #1a0a2e 100%)",
+        background: "linear-gradient(135deg, #0a0a2e 0%, #1a0a0a 50%, #2a0a1e 100%)",
         opacity: fadeOut,
       }}
     >
-      {/* Background glow with pulse */}
       <div style={{
         position: "absolute",
         top: "30%",
@@ -86,7 +73,6 @@ export const TitleScene: React.FC = () => {
         filter: "blur(40px)",
       }} />
 
-      {/* Flash effect */}
       <div style={{
         position: "absolute",
         inset: 0,
@@ -94,16 +80,14 @@ export const TitleScene: React.FC = () => {
         opacity: flashOpacity,
       }} />
 
-      {/* System stinger notification */}
       {frame >= 35 && frame <= 95 && (
         <SystemNotification
-          text={`新集數已解鎖：第3章第3集`}
-          type="info"
+          text="Boss 戰開始：噬天蛟 — 警告：仇恨機制異常"
+          type="danger"
           delay={35}
         />
       )}
 
-      {/* Main title */}
       <div style={{
         position: "absolute",
         top: "25%",
@@ -120,42 +104,37 @@ export const TitleScene: React.FC = () => {
           textShadow: "0 0 40px rgba(239, 68, 68, 0.6), 0 4px 20px rgba(0,0,0,0.5)",
           letterSpacing: "0.15em",
         }}>
-          {SERIES_TITLE}
+          我的核心是大佬
         </div>
 
-        {/* Decorative line */}
         <div style={{
           width: lineWidth,
           height: 3,
-          background: "linear-gradient(90deg, transparent, #EF4444, #A78BFA, transparent)",
+          background: "linear-gradient(90deg, transparent, #EF4444, #F97316, transparent)",
           margin: "20px auto 0",
           borderRadius: 2,
         }} />
       </div>
 
-      {/* Subtitle */}
-      {SERIES_SUBTITLE && (
+      <div style={{
+        position: "absolute",
+        top: "52%",
+        left: "50%",
+        transform: `translateX(-50%) translateY(${subtitleY}px)`,
+        opacity: subtitleOpacity,
+        textAlign: "center",
+        fontFamily: notoSansTC,
+      }}>
         <div style={{
-          position: "absolute",
-          top: "52%",
-          left: "50%",
-          transform: `translateX(-50%) translateY(${subtitleY}px)`,
-          opacity: subtitleOpacity,
-          textAlign: "center",
-          fontFamily: notoSansTC,
+          fontSize: 48,
+          color: "#94A3B8",
+          fontWeight: 500,
+          letterSpacing: "0.2em",
         }}>
-          <div style={{
-            fontSize: 48,
-            color: "#94A3B8",
-            fontWeight: 500,
-            letterSpacing: "0.2em",
-          }}>
-            {SERIES_SUBTITLE}
-          </div>
+          系統誤會流喜劇
         </div>
-      )}
+      </div>
 
-      {/* Episode info */}
       <div style={{
         position: "absolute",
         bottom: "20%",
@@ -172,8 +151,16 @@ export const TitleScene: React.FC = () => {
           letterSpacing: "0.15em",
           textShadow: "0 0 20px rgba(239, 68, 68, 0.4)",
         }}>
-          {/* TODO: Update episode label */}
-          {EPISODE_LABEL}
+          第三章 — 秘境速通
+        </div>
+        <div style={{
+          fontSize: 28,
+          color: "#F97316",
+          fontWeight: 500,
+          marginTop: 12,
+          letterSpacing: "0.1em",
+        }}>
+          第三集：秘境 BOSS
         </div>
       </div>
     </AbsoluteFill>

@@ -9,10 +9,21 @@ Create, update, or review PLAN.md and TODO.md for a bun_app.
 
 ## When to Use
 
-- User asks to "reflect", "plan", "retrospective", "review architecture"
+- User asks to "reflect", "plan", "retrospective", "review architecture", "next", "NEXT"
 - After completing a significant feature or fix
-- When an existing app lacks PLAN.md or TODO.md
+- When an existing app lacks PLAN.md, TODO.md, or NEXT.md
 - Before starting new development work
+- After reaching a version milestone
+
+## The PLAN/TODO/NEXT Triad
+
+| File | Purpose | When to Update |
+|------|---------|---------------|
+| `PLAN.md` | Architecture & current state | Module changes, dependency changes, architecture decisions |
+| `TODO.md` | Tasks & history | Task completion, new issues, development history |
+| `NEXT.md` | Forward-looking iteration plan | Version milestones, retrospectives, planning next work |
+
+All three files cross-link each other. Keep them in sync — when you complete a TODO task that's listed in NEXT.md, update both.
 
 ## Creating PLAN.md for an existing app
 
@@ -142,8 +153,79 @@ Create, update, or review PLAN.md and TODO.md for a bun_app.
 - [x] ...
 ```
 
+## Creating NEXT.md
+
+NEXT.md is the forward-looking iteration plan. Create/update it after retrospectives, version milestones, or when the user asks "what's next?".
+
+### NEXT.md Template
+
+```markdown
+# <name> — NEXT Iteration
+
+> **Cross-linked docs:**
+> - Code PLAN: `bun_app/<name>/PLAN.md`
+> - Code TODO: `bun_app/<name>/TODO.md`
+> - Code NEXT: `bun_app/<name>/NEXT.md` — **(this file)**
+
+> **Version:** v0.X.0 → v0.Y.0 target
+> **Date:** YYYY-MM-DD
+> **Theme:** <one-line theme>
+
+---
+
+## Reflection from v0.X.0
+
+| What | Assessment |
+|------|-----------|
+| <feature> | Clean / Needs work / Blocked |
+| ... | ... |
+
+**Key lesson:** <single most important takeaway>
+
+---
+
+## v0.Y.0 Goals
+
+### Goal 1: <title> (P0)
+
+**Current state:** <what exists now>
+**Target state:** <what we want>
+**Estimated effort:** N files (<list>)
+
+### Goal 2: <title> (P1)
+
+...
+
+---
+
+## Task Dependency Graph
+
+```
+Goal 1 ──┐
+         ├──► v0.Y.0 release
+Goal 2 ──┘
+```
+
+---
+
+## Success Criteria for v0.Y.0
+
+- [ ] <criterion 1>
+- [ ] Smoke tests: N/N pass, 0 console errors
+- [ ] Unit tests: N+ pass, 0 fail
+```
+
+### NEXT.md Content Rules
+
+1. **Reflection first** — what went well, what went wrong, key lesson
+2. **Goals are scoped** — each goal has current state, target state, estimated effort
+3. **Dependencies are explicit** — what blocks what
+4. **Success criteria are testable** — each criterion is a checkbox
+5. **Version targets are realistic** — one P0 goal per iteration is plenty
+
 ## Success Criteria
 
 - PLAN.md exists with: Current State, Architecture diagram, Module Reference table, Dependencies, Configuration
 - TODO.md exists with: Status header, Known Issues, P0/P1/P2 tasks, Development History with baseline entry
+- NEXT.md exists with: Version target, reflection, prioritized goals with effort estimates, dependency graph, success criteria
 - Module Reference table matches actual source files (no missing or phantom entries)

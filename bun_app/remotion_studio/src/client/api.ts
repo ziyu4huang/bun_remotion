@@ -1,4 +1,4 @@
-import type { ApiResponse, Job, JobProgress, Project, AssetSummary, SeriesAssets, TTSStatus, RenderStatus, WorkflowTemplate, WorkflowResult, MonitoringOverview, SeriesHealth, SeriesQualitySnapshot, RegressionAlert, ScoreHistoryPoint, ImageStatus, ImageGenerateRequest, CharacterProfile, BenchmarkResult, BaselineInfo, AgentInfo, AgentStreamEvent, AgentTaskResult, TaskTree, TaskNode, EpisodeProgress, EpisodeProgressSummary, BatchRequest, BatchResult } from "../shared/types";
+import type { ApiResponse, Job, JobProgress, Project, AssetSummary, SeriesAssets, TTSStatus, RenderStatus, WorkflowTemplate, WorkflowResult, MonitoringOverview, SeriesHealth, SeriesQualitySnapshot, RegressionAlert, ScoreHistoryPoint, ImageStatus, ImageGenerateRequest, CharacterProfile, BenchmarkResult, BaselineInfo, AgentInfo, AgentStreamEvent, AgentTaskResult, AgentSession, TaskTree, TaskNode, EpisodeProgress, EpisodeProgressSummary, BatchRequest, BatchResult } from "../shared/types";
 
 const BASE = "/api";
 
@@ -12,6 +12,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<ApiResponse
 
 export const api = {
   health: () => request<{ status: string; timestamp: string }>("/health"),
+  getVersion: () => request<{ version: string }>("/version"),
 
   // Jobs
   listJobs: (status?: string) => request<Job[]>(`/jobs${status ? `?status=${status}` : ""}`),
@@ -167,8 +168,35 @@ export const api = {
     /** List available sub-agents */
     listAgents: () => request<AgentInfo[]>("/agent/agents"),
     /** Start an agent task (returns job ID for polling) */
-    startTask: (agentName: string, prompt: string) =>
-      request<Job<AgentTaskResult>>("/agent/tasks", { method: "POST", body: JSON.stringify({ agentName, prompt }) }),
+    startTask: (agentName: string, prompt: string, model?: string) =>
+      request<Job<AgentTaskResult>>("/agent/tasks", { method: "POST", body: JSON.stringify({ agentName, prompt, model }) }),
+    /** List project files available for agent context */
+    listFiles: (seriesId?: string) =>
+      request<{ series?: Array<{ id: string; path: string }>; seriesId?: string; files?: Array<{ path: string; name: string; size: number; episode?: string }> }>(
+        `/agent/files${seriesId ? `?seriesId=${encodeURIComponent(seriesId)}` : ""}`
+      ),
+    /** Read a file's content for attachment */
+    readFile: (path: string) =>
+      request<{ path: string; name: string; size: number; content: string }>(
+        `/agent/files/content?path=${encodeURIComponent(path)}`
+      ),
+    /** List sessions for an agent */
+    listSessions: (agentName: string) =>
+      request<Array<{ sessionId: string; updatedAt: number; messageCount: number }>>(
+        `/agent/sessions/${encodeURIComponent(agentName)}`
+      ),
+    /** Load a session */
+    getSession: (agentName: string, sessionId: string) =>
+      request<AgentSession>(`/agent/sessions/${encodeURIComponent(agentName)}/${encodeURIComponent(sessionId)}`),
+    /** Save or migrate a session */
+    saveSession: (agentName: string, sessionId: string, messages: Array<{ role: "user" | "assistant"; content: string }>, modelOverride?: string) =>
+      request<{ sessionId: string }>(`/agent/sessions/${encodeURIComponent(agentName)}/${encodeURIComponent(sessionId)}`, {
+        method: "PUT",
+        body: JSON.stringify({ messages, modelOverride }),
+      }),
+    /** Delete a session */
+    deleteSession: (agentName: string, sessionId: string) =>
+      request<{ deleted: boolean }>(`/agent/sessions/${encodeURIComponent(agentName)}/${encodeURIComponent(sessionId)}`, { method: "DELETE" }),
     /** Stream agent chat via POST-based SSE. Returns abort function. */
     streamChat(
       agentName: string,
@@ -176,6 +204,7 @@ export const api = {
       onEvent: (event: AgentStreamEvent | { type: "result"; result: AgentTaskResult }) => void,
       history?: Array<{ role: "user" | "assistant"; content: string }>,
       model?: string,
+      attachments?: Array<{ path: string; name: string; content: string }>,
     ): () => void {
       const STREAM_TIMEOUT_MS = 3 * 60 * 1000; // 3 min total
       const controller = new AbortController();
@@ -187,7 +216,7 @@ export const api = {
           const fetchPromise = fetch(`${BASE}/agent/chat`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ agentName, prompt, history, model }),
+            body: JSON.stringify({ agentName, prompt, history, model, attachments }),
             signal: controller.signal,
           });
           const timeoutPromise = new Promise<never>((_, reject) => {

@@ -76,12 +76,12 @@ export function ToastContainer() {
           return (
             <div key={t.id} data-toast-type={t.type} style={{
               display: "flex", alignItems: "center", gap: 8,
-              padding: "10px 14px", borderRadius: 6,
+              padding: "10px 14px", borderRadius: theme.radii.md,
               background: c.bg, color: c.color,
               borderLeft: `3px solid ${c.border}`,
               boxShadow: theme.shadows.lg,
               animation: "toast-slide-in 0.25s ease-out",
-              fontSize: 14,
+              fontSize: theme.font.sizes.sm,
             }}>
               <span style={{ flex: 1 }}>{t.message}</span>
               <button

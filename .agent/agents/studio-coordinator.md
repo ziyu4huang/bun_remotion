@@ -82,4 +82,4 @@ Result: <pass/fail> — <summary>
 - Output: <final result or blocker>
 ```
 
-Respond in en for technical content and pipeline reports. Use zh_TW for story content.
+!include language-rules.md

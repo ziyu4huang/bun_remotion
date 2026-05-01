@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { api } from "../api";
 import type { MonitoringOverview, SeriesHealth, ActivityEntry } from "../../shared/types";
-import { PageHeader, StatusBadge, LoadingSpinner, EmptyState, SkeletonCard, SkeletonRow, AgentResultPanel } from "../components";
+import { PageHeader, StatusBadge, LoadingSpinner, EmptyState, SkeletonCard, SkeletonRow, AgentResultPanel, Button, Card } from "../components";
 import { useAgentTask } from "../hooks/useAgentTask";
 import { useTheme, type Theme } from "../theme";
 import { useI18n } from "../i18n";
@@ -48,16 +48,16 @@ export function Monitoring() {
       </div>
 
       {/* Ask advisor */}
-      <div style={{ marginBottom: theme.spacing.xl, padding: theme.spacing.lg, background: theme.colors.bg.muted, borderRadius: theme.radii.xl }}>
+      <Card variant="default" padding="md" style={{ marginBottom: theme.spacing.xl }}>
         <div style={{ display: "flex", flexWrap: "wrap", gap: theme.spacing.sm }}>
-          <AgentBtn label="What should I work on next?" prompt="Review the current state of all series. What's blocking production? Which series need attention? Give a prioritized action list." onClick={handleAskAgent} theme={theme} variant="primary" />
-          <AgentBtn label="Analyze production bottlenecks" prompt="Analyze the production pipeline. Which steps are slowest? Which series have the lowest completion rates? Suggest ways to unblock." onClick={handleAskAgent} theme={theme} />
-          <AgentBtn label="Quality summary" prompt="Summarize the quality state across all series. Which are improving, declining, or stable? What's the biggest quality risk?" onClick={handleAskAgent} theme={theme} />
+          <Button variant="primary" onClick={() => handleAskAgent("Review the current state of all series. What's blocking production? Which series need attention? Give a prioritized action list.")}>What should I work on next?</Button>
+          <Button variant="secondary" onClick={() => handleAskAgent("Analyze the production pipeline. Which steps are slowest? Which series have the lowest completion rates? Suggest ways to unblock.")}>Analyze production bottlenecks</Button>
+          <Button variant="secondary" onClick={() => handleAskAgent("Summarize the quality state across all series. Which are improving, declining, or stable? What's the biggest quality risk?")}>Quality summary</Button>
         </div>
         {agentTask.status !== "idle" && (
           <AgentResultPanel task={agentTask} theme={theme} />
         )}
-      </div>
+      </Card>
 
       {/* Series Health Table */}
       <section style={{ marginBottom: theme.spacing.xxxl }}>
@@ -65,6 +65,7 @@ export function Monitoring() {
           <h3 style={{ margin: 0 }}>{t.monitoring.seriesHealth}</h3>
           <TrendLegend theme={theme} />
         </div>
+        <div style={{ overflowX: "auto" }}>
         <table style={{ borderCollapse: "collapse", width: "100%" }}>
           <thead>
             <tr>
@@ -95,6 +96,7 @@ export function Monitoring() {
             ))}
           </tbody>
         </table>
+        </div>
       </section>
 
       {/* Recent Activity */}
@@ -103,6 +105,7 @@ export function Monitoring() {
         {overview.recentActivity.length === 0 ? (
           <EmptyState icon="📋" title={t.monitoring.noActivity} description={t.monitoring.noActivityDesc} />
         ) : (
+          <div style={{ overflowX: "auto" }}>
           <table style={{ borderCollapse: "collapse", width: "100%" }}>
             <thead>
               <tr>
@@ -118,6 +121,7 @@ export function Monitoring() {
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </section>
     </div>
@@ -127,15 +131,10 @@ export function Monitoring() {
 function SummaryCard({ label, value }: { label: string; value: string | number }) {
   const theme = useTheme();
   return (
-    <div style={{
-      padding: `${theme.spacing.md}px ${theme.spacing.xl}px`,
-      borderRadius: theme.radii.xl,
-      background: theme.colors.bg.muted,
-      minWidth: 100,
-    }}>
+    <Card variant="default" padding="md" style={{ minWidth: 100 }}>
       <div style={{ fontSize: theme.font.sizes.sm, color: theme.colors.text.tertiary, marginBottom: theme.spacing.xs }}>{label}</div>
       <div style={{ fontSize: theme.font.sizes.xl, fontWeight: theme.font.weights.semibold }}>{value}</div>
-    </div>
+    </Card>
   );
 }
 
@@ -204,15 +203,3 @@ function TrendLegend({ theme }: { theme: ReturnType<typeof useTheme> }) {
   );
 }
 
-function AgentBtn({ label, prompt, onClick, theme, variant }: {
-  label: string; prompt: string; onClick: (p: string) => void; theme: Theme; variant?: "primary";
-}) {
-  const bg = variant === "primary" ? theme.colors.primary : theme.colors.bg.page;
-  const fg = variant ? theme.colors.bg.page : theme.colors.text.primary;
-  const border = variant ? "none" : `1px solid ${theme.colors.border.medium}`;
-  return (
-    <button onClick={() => onClick(prompt)} style={{ padding: `${theme.spacing.sm}px ${theme.spacing.md}px`, border, borderRadius: theme.radii.lg, background: bg, color: fg, cursor: "pointer", fontSize: theme.font.sizes.base, fontWeight: variant ? theme.font.weights.semibold : theme.font.weights.normal }}>
-      {label}
-    </button>
-  );
-}

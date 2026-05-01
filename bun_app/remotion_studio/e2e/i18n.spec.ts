@@ -1,8 +1,9 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures";
+import { gotoWithRetry } from "./helpers";
 
 test.describe("i18n Language Toggle", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/");
+    await gotoWithRetry(page);
     // Reset to English first
     const enBtn = page.locator("button", { hasText: /^中$|En/ }).first();
     if (await enBtn.isVisible().catch(() => false)) {
@@ -52,7 +53,7 @@ test.describe("i18n Language Toggle", () => {
 
   test("language persists after navigation", async ({ page }) => {
     // Switch to Chinese
-    const zhBtn = page.locator("button", { hasText: "中" });
+    const zhBtn = page.locator("button", { hasText: "中" }).first();
     await zhBtn.click();
     await page.waitForTimeout(300);
 
@@ -61,7 +62,7 @@ test.describe("i18n Language Toggle", () => {
     await page.waitForTimeout(300);
 
     // Should still be in Chinese (button shows "En")
-    const enBtn = page.locator("button", { hasText: "En" });
+    const enBtn = page.locator("button", { hasText: "En" }).first();
     await expect(enBtn).toBeVisible();
   });
 });

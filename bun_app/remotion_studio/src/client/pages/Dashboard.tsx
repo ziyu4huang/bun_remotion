@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "../api";
-import { PageHeader, StatusBadge, LoadingSpinner, EmptyState, SkeletonCard, SkeletonRow, AgentResultPanel } from "../components";
+import { PageHeader, StatusBadge, LoadingSpinner, EmptyState, SkeletonCard, SkeletonRow, AgentResultPanel, Card, Button } from "../components";
 import { toast } from "../components/ToastContainer";
 import { TaskTreeView } from "../components/TaskTreeNode";
 import { useAgentTask } from "../hooks/useAgentTask";
@@ -22,7 +22,9 @@ export function Dashboard() {
   const [expandedJobs, setExpandedJobs] = useState<Set<string>>(new Set());
   const [showHistory, setShowHistory] = useState(false);
   const [series, setSeries] = useState<Project[]>([]);
-  const { task: agentTask, start: handleAskAgent } = useAgentTask("studio-advisor");
+  const [version, setVersion] = useState<string>("");
+  const { task: agentTask, start: handleAskAgent } = useAgentTask("studio-advisor", { mode: "stream" });
+  const { task: testTask, start: handleTestReview } = useAgentTask("test-reviewer", { mode: "stream" });
 
   useEffect(() => {
     api.health().then((r) => {
@@ -41,6 +43,9 @@ export function Dashboard() {
     });
     api.listProjects().then((r) => {
       if (r.ok && r.data) setSeries(r.data);
+    });
+    api.getVersion().then((r) => {
+      if (r.ok && r.data) setVersion(r.data.version);
     });
   }, []);
 
@@ -176,33 +181,23 @@ export function Dashboard() {
     <div>
       <PageHeader title={t.dashboard.title} description={t.dashboard.description} />
 
-      {/* Server Status */}
+      {/* System Status */}
       <section style={{ marginBottom: theme.spacing.xxl }}>
-        <h3 style={{ margin: `0 0 ${theme.spacing.sm}px`, fontSize: theme.font.sizes.lg, fontWeight: theme.font.weights.semibold }}>{t.dashboard.serverStatus}</h3>
-        {health !== null ? (
-          <StatusBadge status={health} />
-        ) : (
-          <span style={{ color: theme.colors.text.muted }}>{t.dashboard.checking}</span>
-        )}
+        <SystemStatus health={health} activeJobs={counts.running} theme={theme} t={t} />
       </section>
 
       {/* What's Next */}
       <WhatsNext />
 
       {/* Ask advisor */}
-      <div style={{ marginBottom: theme.spacing.xxl, padding: theme.spacing.lg, background: theme.colors.bg.muted, borderRadius: theme.radii.xl }}>
+      <Card variant="default" padding="md" style={{ marginBottom: theme.spacing.xxl }}>
         <div style={{
           display: "flex", alignItems: "center", gap: theme.spacing.sm, marginBottom: theme.spacing.md,
           fontSize: theme.font.sizes.sm, fontWeight: theme.font.weights.semibold, color: theme.colors.text.primary,
         }}>
           {t.dashboard.agentAdvisor}
           {agentTask.bridgeDown && (
-            <span style={{
-              padding: "2px 8px", borderRadius: theme.radii.full, fontSize: theme.font.sizes.xs,
-              background: theme.colors.warningLight, color: theme.colors.warningDark,
-            }}>
-              {t.dashboard.agentOffline}
-            </span>
+            <StatusBadge status="warn" label={t.dashboard.agentOffline} />
           )}
         </div>
         <div style={{ display: "flex", flexWrap: "wrap", gap: theme.spacing.sm }}>
@@ -231,7 +226,40 @@ export function Dashboard() {
         {agentTask.status !== "idle" && (
           <AgentResultPanel task={agentTask} theme={theme} />
         )}
-      </div>
+      </Card>
+
+      {/* Test Review */}
+      <Card variant="default" padding="md" style={{ marginBottom: theme.spacing.xl }}>
+        <div style={{
+          display: "flex", alignItems: "center", gap: theme.spacing.sm, marginBottom: theme.spacing.md,
+          fontSize: theme.font.sizes.sm, fontWeight: theme.font.weights.semibold, color: theme.colors.text.primary,
+        }}>
+          {t.dashboard.testReview}
+          {testTask.bridgeDown && (
+            <StatusBadge status="warn" label={t.dashboard.agentOffline} />
+          )}
+        </div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: theme.spacing.sm }}>
+          <DashboardAgentBtn
+            label={t.dashboard.runTests}
+            prompt="Run bun test across all apps (bun_app/remotion_studio, bun_app/bun_pi_agent, bun_app/storygraph, bun_app/remotion_types). Capture the full output. Summarize: total tests, pass/fail/skip by app, any failures with root cause analysis. If all pass, confirm with metrics."
+            onClick={handleTestReview} theme={theme} variant="primary"
+          />
+          <DashboardAgentBtn
+            label="Analyze failures"
+            prompt="Find and read the most recent test results across bun_app/. Look for .last-run.json, test-results/, or run bun test to get fresh results. Identify all failures, group by root cause, and suggest specific fixes with file paths and line numbers."
+            onClick={handleTestReview} theme={theme}
+          />
+          <DashboardAgentBtn
+            label="Flaky test check"
+            prompt="Run bun test twice across all apps in bun_app/. Compare the results — any test that passes in one run but fails in another is flaky. List all flaky tests with their failure patterns and suggest stabilization fixes."
+            onClick={handleTestReview} theme={theme}
+          />
+        </div>
+        {testTask.status !== "idle" && (
+          <AgentResultPanel task={testTask} theme={theme} />
+        )}
+      </Card>
 
       {/* Job Queue */}
       <section style={{ marginBottom: theme.spacing.xxl }}>
@@ -239,24 +267,13 @@ export function Dashboard() {
           <h3 style={{ margin: 0, fontSize: theme.font.sizes.lg, fontWeight: theme.font.weights.semibold }}>{t.dashboard.jobQueue}</h3>
           <div style={{ display: "flex", gap: theme.spacing.sm }}>
             {hasCompleted && (
-              <button onClick={handleClearCompleted} style={{
-                padding: "6px 12px", borderRadius: theme.radii.lg,
-                border: `1px solid ${theme.colors.border.default}`, background: theme.colors.bg.surface,
-                cursor: "pointer", fontSize: theme.font.sizes.sm, color: theme.colors.text.secondary,
-              }}>
+              <Button variant="outline" size="sm" onClick={handleClearCompleted}>
                 {t.dashboard.clearCompleted}
-              </button>
+              </Button>
             )}
-            <button onClick={runDemo} disabled={streamProgress !== null} style={{
-              padding: "6px 16px", borderRadius: theme.radii.lg,
-              border: "none",
-              background: streamProgress !== null ? theme.colors.border.medium : theme.colors.primary,
-              color: theme.colors.bg.page,
-              cursor: streamProgress !== null ? "default" : "pointer",
-              fontSize: theme.font.sizes.base, fontWeight: theme.font.weights.medium,
-            }}>
+            <Button variant="primary" size="md" onClick={runDemo} disabled={streamProgress !== null}>
               {streamProgress !== null ? t.dashboard.running(streamProgress) : t.dashboard.runDemoJob}
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -321,22 +338,14 @@ export function Dashboard() {
                   <div style={{ display: "flex", alignItems: "center", gap: theme.spacing.sm }}>
                     <StatusBadge status={j.status} label={j.status === "running" ? `${j.progress}%` : j.status} />
                     {j.status === "running" && (
-                      <button onClick={() => handleCancel(j.id)} style={{
-                        fontSize: theme.font.sizes.xs, padding: "2px 8px", borderRadius: theme.radii.sm,
-                        border: `1px solid ${theme.colors.error}`, color: theme.colors.error, background: "transparent",
-                        cursor: "pointer",
-                      }}>
+                      <Button variant="danger" size="sm" onClick={() => handleCancel(j.id)}>
                         {t.dashboard.cancel}
-                      </button>
+                      </Button>
                     )}
                     {(j.status === "completed" || j.status === "failed") && (
-                      <button onClick={() => handleDelete(j.id)} style={{
-                        fontSize: theme.font.sizes.xs, padding: "2px 8px", borderRadius: theme.radii.sm,
-                        border: `1px solid ${theme.colors.border.default}`, color: theme.colors.text.muted, background: "transparent",
-                        cursor: "pointer",
-                      }}>
+                      <Button variant="ghost" size="sm" onClick={() => handleDelete(j.id)}>
                         {t.dashboard.delete}
-                      </button>
+                      </Button>
                     )}
                   </div>
                 </div>
@@ -394,18 +403,9 @@ export function Dashboard() {
 
                 {/* Refresh button for running workflow jobs */}
                 {isWorkflow && j.status === "running" && (
-                  <button onClick={() => refreshTree(j.id)} style={{
-                    marginTop: theme.spacing.xs,
-                    fontSize: theme.font.sizes.sm,
-                    padding: "2px 10px",
-                    borderRadius: theme.radii.md,
-                    border: `1px solid ${theme.colors.border.medium}`,
-                    background: "transparent",
-                    cursor: "pointer",
-                    color: theme.colors.text.secondary,
-                  }}>
+                  <Button variant="outline" size="sm" onClick={() => refreshTree(j.id)} style={{ marginTop: theme.spacing.xs }}>
                     {t.dashboard.refresh}
-                  </button>
+                  </Button>
                 )}
               </div>
             );
@@ -457,21 +457,22 @@ export function Dashboard() {
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: theme.spacing.sm }}>
                   <StatusBadge status={j.status} />
-                  <button onClick={async () => {
+                  <Button variant="ghost" size="sm" onClick={async () => {
                     await api.deleteJob(j.id);
                     setHistory((prev) => prev?.filter((h) => h.id !== j.id) ?? null);
-                  }} style={{
-                    fontSize: theme.font.sizes.xs, padding: "2px 6px",
-                    borderRadius: theme.radii.sm, border: `1px solid ${theme.colors.border.default}`,
-                    color: theme.colors.text.muted, background: "transparent", cursor: "pointer",
                   }}>
                     {t.dashboard.delete}
-                  </button>
+                  </Button>
                 </div>
               </div>
             );
           })}
         </section>
+      )}
+      {version && (
+        <div style={{ marginTop: theme.spacing.xl, padding: `${theme.spacing.sm}px 0`, borderTop: `1px solid ${theme.colors.border.light}`, color: theme.colors.text.muted, fontSize: theme.font.sizes.xs }}>
+          Remotion Studio v{version}
+        </div>
       )}
     </div>
   );
@@ -565,13 +566,7 @@ function WhatsNext() {
             .sort((a, b) => b[1] - a[1])
             .slice(0, 4)
             .map(([step, count]) => (
-              <span key={step} style={{
-                padding: "2px 10px", borderRadius: theme.radii.full,
-                background: theme.colors.bg.muted, fontSize: theme.font.sizes.xs,
-                color: theme.colors.text.secondary,
-              }}>
-                {t.dashboard.steps[step as keyof typeof t.dashboard.steps] ?? step}: {count}
-              </span>
+              <StatusBadge key={step} status="pending" label={`${t.dashboard.steps[step as keyof typeof t.dashboard.steps] ?? step}: ${count}`} />
             ))}
         </div>
       </div>
@@ -579,15 +574,56 @@ function WhatsNext() {
   );
 }
 
+function SystemStatus({ health, activeJobs, theme, t }: {
+  health: string | null; activeJobs: number; theme: Theme; t: ReturnType<typeof useI18n>["t"];
+}) {
+  const isDown = health === null;
+  const isBusy = activeJobs >= 3;
+  const statusColor = isDown ? theme.colors.error
+    : isBusy ? theme.colors.warning
+    : theme.colors.success;
+  const statusText = isDown ? (t.jobs?.systemOffline ?? "Server unreachable")
+    : isBusy ? (t.jobs?.systemBusy?.(activeJobs) ?? `Queue busy (${activeJobs} jobs)`)
+    : (t.jobs?.systemHealthy ?? "All systems running");
+
+  return (
+    <div style={{
+      display: "flex",
+      alignItems: "center",
+      gap: 10,
+      padding: `${theme.spacing.md}px ${theme.spacing.lg}px`,
+      borderRadius: theme.radii.xl,
+      border: `1px solid ${theme.colors.border.light}`,
+      background: theme.colors.bg.muted,
+    }}>
+      <div style={{
+        width: 12,
+        height: 12,
+        borderRadius: theme.radii.full,
+        background: statusColor,
+        boxShadow: isDown ? "none" : `0 0 6px ${statusColor}`,
+        animation: isBusy ? "pulse 2s infinite" : "none",
+      }} />
+      <span style={{
+        fontSize: theme.font.sizes.base,
+        fontWeight: theme.font.weights.medium,
+        color: statusColor,
+      }}>
+        {statusText}
+      </span>
+      <span style={{ marginLeft: "auto", fontSize: theme.font.sizes.sm, color: theme.colors.text.muted }}>
+        {activeJobs > 0 ? `${activeJobs} active` : "Idle"}
+      </span>
+    </div>
+  );
+}
+
 function DashboardAgentBtn({ label, prompt, onClick, theme, variant }: {
   label: string; prompt: string; onClick: (p: string) => void; theme: Theme; variant?: "primary";
 }) {
-  const bg = variant === "primary" ? theme.colors.primary : theme.colors.bg.page;
-  const fg = variant ? theme.colors.bg.page : theme.colors.text.primary;
-  const border = variant ? "none" : `1px solid ${theme.colors.border.medium}`;
   return (
-    <button onClick={() => onClick(prompt)} style={{ padding: `${theme.spacing.sm}px ${theme.spacing.md}px`, border, borderRadius: theme.radii.lg, background: bg, color: fg, cursor: "pointer", fontSize: theme.font.sizes.base, fontWeight: variant ? theme.font.weights.semibold : theme.font.weights.normal }}>
+    <Button variant={variant === "primary" ? "ai" : "outline"} size="md" onClick={() => onClick(prompt)}>
       {label}
-    </button>
+    </Button>
   );
 }

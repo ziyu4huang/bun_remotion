@@ -5,7 +5,7 @@ import { runPipeline, runCheck, runScore } from "../../../../storygraph/src/pipe
 import { generateTTS } from "../../../../bun_tts/src/tts-pipeline";
 import { generateImageBatch } from "../../../../bun_image/src/image-pipeline";
 import { renderVideo } from "./remotion-renderer";
-import { runAgentTask } from "../agent-bridge.js";
+import { bridge } from "../agent-bridge.js";
 import { executeTaskTree, type StepExecutor } from "./dag-executor";
 import { TaskStore } from "./task-store";
 import type { AgentTaskResult } from "../../shared/types";
@@ -737,7 +737,7 @@ async function runAgentStep(
   progress(5, `Delegating to ${agentName}...`);
 
   let lastPct = 5;
-  const agentResult = await runAgentTask(agentName, prompt, {
+  const agentResult = await bridge.runTask(agentName, prompt, {
     onEvent(event) {
       if (event.type === "turn_end") {
         lastPct = Math.min(80, lastPct + 15);

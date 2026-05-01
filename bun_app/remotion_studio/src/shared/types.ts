@@ -459,7 +459,9 @@ export type AgentStreamEvent =
   | { type: "tool_start"; toolName: string; toolCallId: string; args: unknown }
   | { type: "tool_end"; toolName: string; toolCallId: string; result: unknown; isError: boolean }
   | { type: "turn_end" }
-  | { type: "done"; turnCount: number; toolCallCount: number }
+  | { type: "job_id"; jobId: string }
+  | { type: "job_update"; jobId: string; progress: number; status: JobStatus }
+  | { type: "done"; turnCount: number; toolCallCount: number; jobId?: string }
   | { type: "error"; message: string };
 
 export interface AgentTaskResult {
@@ -469,6 +471,19 @@ export interface AgentTaskResult {
   toolCallCount: number;
   toolCalls: Array<{ name: string; args: unknown; result: unknown; isError: boolean }>;
   durationMs: number;
+  /** Job ID in remotion_studio's job queue (set when agent chat creates a tracking job) */
+  jobId?: string;
+}
+
+// ── Agent Session Persistence ──
+
+export interface AgentSession {
+  agentName: string;
+  sessionId: string;
+  messages: AgentChatMessage[];
+  updatedAt: number;
+  createdAt: number;
+  modelOverride?: string;
 }
 
 // ── Batch Operations ──

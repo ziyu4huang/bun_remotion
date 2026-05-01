@@ -22,8 +22,9 @@ import { agentRoutes } from "./routes/agent";
 import { episodeProgressRoutes } from "./routes/episode-progress";
 import { batchRoutes } from "./routes/batch";
 import type { ApiResponse, Job } from "../shared/types";
-import { existsSync } from "node:fs";
-import { resolve } from "node:path";
+import { existsSync, readFileSync } from "node:fs";
+import { resolve, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const app = new Hono();
 
@@ -40,6 +41,18 @@ app.onError((err, c) => {
 
 app.get("/api/health", (c) =>
   c.json({ ok: true, data: { status: "ok", timestamp: new Date().toISOString() } }),
+);
+
+// ── Version ──
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+let PKG_VERSION = "0.0.0";
+try {
+  const pkg = JSON.parse(readFileSync(resolve(__dirname, "../../package.json"), "utf-8"));
+  PKG_VERSION = pkg.version ?? "0.0.0";
+} catch {}
+app.get("/api/version", (c) =>
+  c.json({ ok: true, data: { version: PKG_VERSION } }),
 );
 
 // ── Jobs ──

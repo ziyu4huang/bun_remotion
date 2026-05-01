@@ -30,6 +30,8 @@ export const zh_TW: Translations = {
     tts: "語音合成",
     render: "渲染",
     image: "圖片生成",
+    settings: "設定",
+    wizard: "精靈",
   },
 
   // Dashboard
@@ -82,6 +84,8 @@ export const zh_TW: Translations = {
     healthCheck: "故事健康檢查",
     contentGaps: "尋找內容缺口",
     qualityAudit: "品質審核",
+    testReview: "測試審查",
+    runTests: "執行所有測試",
   },
 
   // Monitoring
@@ -104,8 +108,8 @@ export const zh_TW: Translations = {
   pipelineProgress: {
     title: "管線進度",
     description: "追蹤集數在製作管線中的進度",
-    emptyTitle: "找不到集數",
-    emptyDesc: "請先建立一集以開始。",
+    emptyTitle: "管線中還沒有集數",
+    emptyDesc: "建立集數後，進度會出現在這裡。前往「專案」頁面開始。",
     summary: {
       totalEpisodes: "總集數",
       completed: "已完成",
@@ -149,8 +153,8 @@ export const zh_TW: Translations = {
   kanban: {
     title: "看板",
     description: "集數管線狀態一覽",
-    emptyTitle: "找不到集數",
-    emptyDesc: "請先建立一集以開始。",
+    emptyTitle: "製作看板是空的",
+    emptyDesc: "集數會在這裡的管線階段間移動。建立第一集來看看看板的運作。",
     all: "全部",
     refresh: "重新整理",
     waiting: "等待中",
@@ -386,7 +390,7 @@ export const zh_TW: Translations = {
     bridgeHint: "請確認 PI_API_KEY 已設定且 bun_pi_agent 可匯入。",
     recoveryTitle: "恢復步驟",
     recoverySteps: [
-      "確認 API 金鑰已設定：ZAI_API_KEY（用於 GLM）或 DEEPSEEK_API_KEY",
+      "確認 API 金鑰已設定：Z_AI_API_KEY（用於 GLM）或 DEEPSEEK_API_KEY",
       "驗證 bun_pi_agent 依賴項：bun install",
       "查看伺服器日誌以了解詳細錯誤訊息",
       "修復 API 金鑰後重新啟動 remotion_studio 伺服器",
@@ -500,6 +504,72 @@ export const zh_TW: Translations = {
     title: "發生錯誤",
     message: "發生未預期的錯誤。",
     reload: "重新載入頁面",
+  },
+
+  // Settings
+  settings: {
+    title: "設定",
+    description: "全域 API 供應商與模型偏好設定",
+    defaultModel: "預設模型",
+    defaultModelDesc: "設定 AI 代理對話的預設模型。每個對話仍可在聊天中個別覆寫。",
+    saved: "已儲存！",
+    apiStatus: "API 狀態",
+    currentProvider: "目前供應商",
+    selectedModel: "選定模型",
+    apiKeys: "API 金鑰",
+    configuredInEnv: "透過環境變數設定",
+    envVars: "所需的環境變數",
+  },
+
+  // Pipeline Wizard
+  wizard: {
+    title: "管線精靈",
+    description: "逐步引導影片製作管線的每個階段",
+    allSeries: "全部系列",
+    emptyTitle: "準備好製作第一支影片了嗎？",
+    emptyDesc: "先在故事編輯器寫好故事大綱，再建立一集。這個精靈會帶你走完每個步驟。",
+    totalEpisodes: "總集數",
+    completed: "已完成",
+    avgCompletion: "平均完成度",
+    productionPipeline: "製作管線",
+    statusDone: "完成",
+    statusPartial: "進行中",
+    statusCurrent: "下一步",
+    statusPending: "等待中",
+    gopage: "前往",
+    seriesBreakdown: "各系列進度",
+    seriesCol: "系列",
+    progressCol: "進度",
+    welcomeTitle: "歡迎使用 Remotion Studio",
+    welcomeDesc: "按照下面的製作管線來建立您的第一支影片。每個步驟都建立在前一步之上 — 從上到下依序完成。點擊任何步驟即可前往對應頁面。",
+    dontShowAgain: "不再顯示",
+    startPipeline: "開始吧！",
+    startStep: "開始",
+    helpTooltip: "這個步驟做什麼？",
+    aiAssistant: "詢問 AI 助手",
+    aiAssistantTip: "開啟 Agent Chat 取得當前步驟的指引",
+    stepHelp: {
+      scaffold: "從故事大綱生成集數結構 — 場景、片段和音軌槽位",
+      pipeline: "從故事腳本提取知識圖譜，用於視覺化元數據",
+      check: "驗證故事圖譜的完整性和結構品質",
+      score: "AI 評估故事品質、節奏和連貫性",
+      image: "使用 AI 生成場景圖片（Gemini/Imagen）",
+      tts: "將旁白腳本轉換為語音音訊",
+      render: "將所有素材合成最終 MP4 影片（1920x1080, 30fps）",
+    },
+    breakdownMobile: "點擊系列名稱查看各步驟進度",
+    replayGuide: "指引",
+    nextAction: (step: string) => `下一步：點擊「${step}」的「開始」按鈕`,
+  },
+
+  // Global jobs panel
+  jobs: {
+    globalTitle: "工作",
+    active: (n: number) => `${n} 個進行中`,
+    recent: "最近",
+    systemHealthy: "系統正常運行",
+    systemBusy: (n: number) => `佇列忙碌（${n} 個工作）`,
+    systemOffline: "伺服器無法連線",
   },
 
   // Shared / common

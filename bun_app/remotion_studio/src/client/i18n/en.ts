@@ -28,6 +28,8 @@ export const en = {
     tts: "TTS",
     render: "Render",
     image: "Image",
+    settings: "Settings",
+    wizard: "Wizard",
   },
 
   // Dashboard
@@ -80,6 +82,8 @@ export const en = {
     healthCheck: "Story Health Check",
     contentGaps: "Find Content Gaps",
     qualityAudit: "Quality Audit",
+    testReview: "Test Review",
+    runTests: "Run All Tests",
   },
 
   // Monitoring
@@ -102,8 +106,8 @@ export const en = {
   pipelineProgress: {
     title: "Pipeline Progress",
     description: "Track episode progress through the production pipeline",
-    emptyTitle: "No episodes found",
-    emptyDesc: "Scaffold an episode to get started.",
+    emptyTitle: "No episodes in the pipeline yet",
+    emptyDesc: "Your episode progress will appear here once you scaffold an episode. Head to Projects to get started.",
     summary: {
       totalEpisodes: "Total Episodes",
       completed: "Completed",
@@ -147,8 +151,8 @@ export const en = {
   kanban: {
     title: "Kanban Board",
     description: "Episode pipeline status at a glance",
-    emptyTitle: "No episodes found",
-    emptyDesc: "Scaffold an episode to get started.",
+    emptyTitle: "Your production board is empty",
+    emptyDesc: "Episodes will move through pipeline stages here. Scaffold your first episode to see the board come alive.",
     all: "All",
     refresh: "Refresh",
     waiting: "Waiting",
@@ -386,7 +390,7 @@ export const en = {
     bridgeHint: "Check that PI_API_KEY is set and bun_pi_agent is importable.",
     recoveryTitle: "Recovery Steps",
     recoverySteps: [
-      "Check API keys are set: ZAI_API_KEY (for GLM) or DEEPSEEK_API_KEY",
+      "Check API keys are set: Z_AI_API_KEY (for GLM) or DEEPSEEK_API_KEY",
       "Verify bun_pi_agent dependencies: bun install",
       "Check server logs for detailed error messages",
       "Restart remotion_studio server after fixing API keys",
@@ -500,6 +504,72 @@ export const en = {
     title: "Something went wrong",
     message: "An unexpected error occurred.",
     reload: "Reload Page",
+  },
+
+  // Settings
+  settings: {
+    title: "Settings",
+    description: "Global configuration for API providers and model preferences",
+    defaultModel: "Default Model",
+    defaultModelDesc: "Sets the default AI model used for agent conversations. Per-conversation overrides are still available in each chat.",
+    saved: "Saved!",
+    apiStatus: "API Status",
+    currentProvider: "Current Provider",
+    selectedModel: "Selected Model",
+    apiKeys: "API Keys",
+    configuredInEnv: "Configured via environment variables",
+    envVars: "Required Environment Variables",
+  },
+
+  // Pipeline Wizard
+  wizard: {
+    title: "Pipeline Wizard",
+    description: "Step-by-step guided walkthrough of the video production pipeline",
+    allSeries: "All Series",
+    emptyTitle: "Ready to create your first video?",
+    emptyDesc: "Start by writing a story plan in the Story Editor, then scaffold an episode. This wizard will guide you through each step.",
+    totalEpisodes: "Total Episodes",
+    completed: "Completed",
+    avgCompletion: "Avg Completion",
+    productionPipeline: "Production Pipeline",
+    statusDone: "Complete",
+    statusPartial: "In progress",
+    statusCurrent: "Next step",
+    statusPending: "Pending",
+    gopage: "Go",
+    seriesBreakdown: "Per-Series Breakdown",
+    seriesCol: "Series",
+    progressCol: "Progress",
+    welcomeTitle: "Welcome to Remotion Studio",
+    welcomeDesc: "Follow the production pipeline below to create your first video. Each step builds on the previous one — start from the top and work your way down. Click any step to jump to the right page.",
+    dontShowAgain: "Don't show this again",
+    startPipeline: "Got it, let's go!",
+    startStep: "Start",
+    helpTooltip: "What does this step do?",
+    aiAssistant: "Ask AI for help",
+    aiAssistantTip: "Open Agent Chat for guidance on the current step",
+    stepHelp: {
+      scaffold: "Generate episode structure from story plan — scenes, clips, and audio slots",
+      pipeline: "Extract knowledge graph from story script for visual metadata",
+      check: "Validate story graph completeness and structural quality",
+      score: "AI evaluates story quality, pacing, and coherence",
+      image: "Generate scene images using AI (Gemini/Imagen)",
+      tts: "Convert narration script to speech audio per episode",
+      render: "Compose all assets into final MP4 video (1920x1080, 30fps)",
+    },
+    breakdownMobile: "Tap a series to see per-step progress",
+    replayGuide: "Guide",
+    nextAction: (step: string) => `Next: click "Start" on ${step} to begin`,
+  },
+
+  // Global jobs panel
+  jobs: {
+    globalTitle: "Jobs",
+    active: (n: number) => `${n} active`,
+    recent: "Recent",
+    systemHealthy: "All systems running",
+    systemBusy: (n: number) => `Queue busy (${n} jobs)`,
+    systemOffline: "Server unreachable",
   },
 
   // Shared / common

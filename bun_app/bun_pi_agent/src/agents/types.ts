@@ -6,5 +6,6 @@ export interface AgentDefinition {
   model?: string;         // provider/model override (e.g. "zai/glm-5")
   skills?: string[];      // skill names to load; omit = all skills
   prompt: string;         // body of the markdown file (agent-specific system prompt)
+  shared?: string[];      // list of !include'd shared section names (for debugging)
   filePath: string;       // source file for debugging
 }

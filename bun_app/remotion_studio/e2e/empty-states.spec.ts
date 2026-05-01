@@ -1,7 +1,11 @@
-import { test, expect } from "@playwright/test";
-import { navigateTo, waitForPageLoad } from "./helpers";
+import { test, expect } from "./fixtures";
+import { navigateTo, waitForPageLoad, gotoWithRetry } from "./helpers";
 
 test.describe("Empty States", () => {
+  test.afterEach(async ({ page }) => {
+    await page.unrouteAll();
+  });
+
   test("PipelineProgress shows empty state when no episodes", async ({ page }) => {
     await page.route("**/api/episode-progress**", (route) =>
       route.fulfill({
@@ -16,14 +20,10 @@ test.describe("Empty States", () => {
         }),
       }),
     );
-    await page.goto("/");
+    await gotoWithRetry(page);
     await navigateTo(page, "Progress");
     await waitForPageLoad(page);
 
-    // Should show empty state or zero counts
-    const zeroText = page.getByText(/0 episode|0 集|No episodes|找不到集數/i);
-    const summaryVisible = await zeroText.isVisible().catch(() => false);
-    // Page should render without crash
     await expect(page.getByRole("heading", { name: /Progress|進度/i })).toBeVisible();
   });
 
@@ -35,11 +35,10 @@ test.describe("Empty States", () => {
         body: JSON.stringify({ ok: true, data: [] }),
       }),
     );
-    await page.goto("/");
+    await gotoWithRetry(page);
     await navigateTo(page, "Projects");
     await waitForPageLoad(page);
 
-    // Page should render without crash even with empty data
     await expect(page.getByRole("heading", { name: /Projects|專案/i })).toBeVisible();
   });
 
@@ -48,14 +47,13 @@ test.describe("Empty States", () => {
       route.fulfill({
         status: 200,
         contentType: "application/json",
-        body: JSON.stringify({ ok: true, data: { series: [] } }),
+        body: JSON.stringify({ ok: true, data: [] }),
       }),
     );
-    await page.goto("/");
+    await gotoWithRetry(page);
     await navigateTo(page, "Assets");
     await waitForPageLoad(page);
 
-    // Should show empty state or prompt
     await expect(page.getByRole("heading", { name: /Assets|素材/i })).toBeVisible();
   });
 
@@ -73,11 +71,10 @@ test.describe("Empty States", () => {
         }),
       }),
     );
-    await page.goto("/");
+    await gotoWithRetry(page);
     await navigateTo(page, "Kanban");
     await waitForPageLoad(page);
 
-    // Should show empty state
     await expect(page.getByRole("heading", { name: /Kanban|看板/i })).toBeVisible();
   });
 
@@ -89,11 +86,10 @@ test.describe("Empty States", () => {
         body: JSON.stringify({ ok: true, data: [{ seriesId: "test", name: "Test", category: "tech_explainer", episodes: [] }] }),
       }),
     );
-    await page.goto("/");
+    await gotoWithRetry(page);
     await navigateTo(page, "TTS");
     await waitForPageLoad(page);
 
-    // Should show select prompt
     await expect(page.getByRole("heading", { name: /TTS|語音/i })).toBeVisible();
   });
 });

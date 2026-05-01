@@ -2,6 +2,7 @@ import { resolve } from "node:path";
 import type { AgentDefinition } from "../../../bun_pi_agent/src/agents/types.js";
 import type { AgentEvent } from "../../../bun_pi_agent/src/agent.js";
 import type { AgentInfo, AgentTaskResult, AgentStreamEvent } from "../shared/types.js";
+import type { AgentProvider, RunTaskOptions, AgentAttachment } from "./agent-interface.js";
 
 // Lazy imports — bun_pi_agent depends on pi-ai/pi-agent-core which need API keys.
 // Importing at module scope would fail if no key is configured.
@@ -19,143 +20,148 @@ async function ensureLoaded() {
   _createAgentFromDef = factory.createAgentFromDef;
 }
 
-/** List available agent definitions from .agent/agents/ */
-export async function listAvailableAgents(workDir?: string): Promise<AgentInfo[]> {
-  await ensureLoaded();
-  const defs = _discoverAgents!(workDir || REPO_ROOT);
-  return defs.map(defToInfo);
+/** Inject attachment file contents into the prompt as context. */
+function buildPromptWithAttachments(prompt: string, attachments?: AgentAttachment[]): string {
+  if (!attachments || attachments.length === 0) return prompt;
+  const ctx = attachments
+    .map((a) => `\n--- File: ${a.name} (${a.path}) ---\n${a.content}\n--- End of ${a.name} ---`)
+    .join("\n");
+  return `${prompt}\n\n[Attached file contents for context — use these when answering:]\n${ctx}`;
 }
 
-/** Check if the agent bridge is functional (bun_pi_agent importable + API key available) */
-export async function isBridgeAvailable(): Promise<{ ok: boolean; error?: string }> {
-  try {
-    await ensureLoaded();
-    return { ok: true };
-  } catch (e: any) {
-    return { ok: false, error: e.message };
-  }
-}
-
-/** Run an agent task, collecting events into a structured result */
-export async function runAgentTask(
-  agentName: string,
-  prompt: string,
-  options?: {
-    workDir?: string;
-    /** Prior conversation history to pass as initialMessages for multi-turn context */
-    history?: Array<{ role: "user" | "assistant"; content: string }>;
-    /** Override the agent definition's model (e.g. "deepseek/deepseek-v4-pro") */
-    model?: string;
-    onEvent?: (event: AgentStreamEvent) => void;
-  },
-): Promise<AgentTaskResult> {
-  await ensureLoaded();
-
-  const workDir = options?.workDir || REPO_ROOT;
-  const defs = _discoverAgents!(workDir);
-  const def = defs.find((d) => d.name === agentName);
-  if (!def) {
-    throw new Error(`Unknown agent: "${agentName}". Available: ${defs.map((d) => d.name).join(", ") || "(none)"}`);
-  }
-
-  const agent = _createAgentFromDef!(def, options?.history, options?.model);
-  const startTime = Date.now();
-
-  let response = "";
-  let turnCount = 0;
-  let toolCallCount = 0;
-  const toolCalls: AgentTaskResult["toolCalls"] = [];
-  const onEvent = options?.onEvent;
-
-  agent.subscribe((event: AgentEvent) => {
+/**
+ * Default AgentProvider — runs agents in-process via bun_pi_agent.
+ * Implements the AgentProvider interface for decoupled access.
+ */
+export const bridge: AgentProvider = {
+  async isAvailable() {
     try {
-      switch (event.type) {
-        case "turn_end":
-          turnCount++;
-          onEvent?.({ type: "turn_end" });
-          break;
-        case "message_update": {
-          const delta = (event as any).assistantMessageEvent?.delta;
-          if (typeof delta === "string" && delta) {
-            response += delta;
-            onEvent?.({ type: "text", delta });
-          }
-          break;
-        }
-        case "message_end": {
-          if (!response) {
-            const content = event.message?.content;
-            if (typeof content === "string" && content) {
-              response = content;
-            } else if (Array.isArray(content)) {
-              response = content
-                .filter((b: any) => b.type === "text" && typeof b.text === "string")
-                .map((b: any) => b.text)
-                .join("");
-            }
-          }
-          break;
-        }
-        case "tool_execution_start":
-          toolCallCount++;
-          onEvent?.({
-            type: "tool_start",
-            toolName: event.toolName,
-            toolCallId: event.toolCallId,
-            args: event.args,
-          });
-          break;
-        case "tool_execution_end":
-          toolCalls.push({
-            name: event.toolName,
-            args: undefined,
-            result: event.result,
-            isError: event.isError,
-          });
-          onEvent?.({
-            type: "tool_end",
-            toolName: event.toolName,
-            toolCallId: event.toolCallId,
-            result: event.result,
-            isError: event.isError,
-          });
-          break;
-      }
-    } catch (err) {
-      console.error("[agent-bridge] Error in subscribe callback:", err);
+      await ensureLoaded();
+      return { ok: true };
+    } catch (e: any) {
+      return { ok: false, error: e.message };
     }
-  });
+  },
 
-  try {
-    // Timeout wrapper — agent.prompt() can hang if the LLM API is unresponsive
-    const AGENT_TIMEOUT_MS = 3 * 60 * 1000; // 3 minutes
-    await Promise.race([
-      agent.prompt(prompt),
-      new Promise<never>((_, reject) =>
-        setTimeout(() => {
-          agent.abort();
-          reject(new Error("Agent timed out after 3 minutes. The LLM API may be slow or unresponsive."));
-        }, AGENT_TIMEOUT_MS)
-      ),
-    ]);
-  } catch (err) {
-    const errMsg = err instanceof Error ? err.message : String(err);
-    onEvent?.({ type: "error", message: errMsg });
-    throw err;
-  }
+  async listAgents(workDir?: string): Promise<AgentInfo[]> {
+    await ensureLoaded();
+    const defs = _discoverAgents!(workDir || REPO_ROOT);
+    return defs.map(defToInfo);
+  },
 
-  const durationMs = Date.now() - startTime;
-  onEvent?.({ type: "done", turnCount, toolCallCount });
+  async runTask(
+    agentName: string,
+    prompt: string,
+    options?: RunTaskOptions,
+  ): Promise<AgentTaskResult> {
+    await ensureLoaded();
 
-  return {
-    agentName: def.name,
-    response,
-    turnCount,
-    toolCallCount,
-    toolCalls,
-    durationMs,
-  };
-}
+    const workDir = options?.workDir || REPO_ROOT;
+    const defs = _discoverAgents!(workDir);
+    const def = defs.find((d) => d.name === agentName);
+    if (!def) {
+      throw new Error(`Unknown agent: "${agentName}". Available: ${defs.map((d) => d.name).join(", ") || "(none)"}`);
+    }
+
+    const effectivePrompt = buildPromptWithAttachments(prompt, options?.attachments);
+    const agent = _createAgentFromDef!(def, options?.history, options?.model);
+    const startTime = Date.now();
+
+    let response = "";
+    let turnCount = 0;
+    let toolCallCount = 0;
+    const toolCalls: AgentTaskResult["toolCalls"] = [];
+    const onEvent = options?.onEvent;
+
+    agent.subscribe((event: AgentEvent) => {
+      try {
+        switch (event.type) {
+          case "turn_end":
+            turnCount++;
+            onEvent?.({ type: "turn_end" });
+            break;
+          case "message_update": {
+            const delta = (event as any).assistantMessageEvent?.delta;
+            if (typeof delta === "string" && delta) {
+              response += delta;
+              onEvent?.({ type: "text", delta });
+            }
+            break;
+          }
+          case "message_end": {
+            if (!response) {
+              const content = event.message?.content;
+              if (typeof content === "string" && content) {
+                response = content;
+              } else if (Array.isArray(content)) {
+                response = content
+                  .filter((b: any) => b.type === "text" && typeof b.text === "string")
+                  .map((b: any) => b.text)
+                  .join("");
+              }
+            }
+            break;
+          }
+          case "tool_execution_start":
+            toolCallCount++;
+            onEvent?.({
+              type: "tool_start",
+              toolName: event.toolName,
+              toolCallId: event.toolCallId,
+              args: event.args,
+            });
+            break;
+          case "tool_execution_end":
+            toolCalls.push({
+              name: event.toolName,
+              args: undefined,
+              result: event.result,
+              isError: event.isError,
+            });
+            onEvent?.({
+              type: "tool_end",
+              toolName: event.toolName,
+              toolCallId: event.toolCallId,
+              result: event.result,
+              isError: event.isError,
+            });
+            break;
+        }
+      } catch (err) {
+        console.error("[agent-bridge] Error in subscribe callback:", err);
+      }
+    });
+
+    try {
+      const AGENT_TIMEOUT_MS = 3 * 60 * 1000;
+      await Promise.race([
+        agent.prompt(effectivePrompt),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => {
+            agent.abort();
+            reject(new Error("Agent timed out after 3 minutes. The LLM API may be slow or unresponsive."));
+          }, AGENT_TIMEOUT_MS)
+        ),
+      ]);
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      onEvent?.({ type: "error", message: errMsg });
+      throw err;
+    }
+
+    const durationMs = Date.now() - startTime;
+    onEvent?.({ type: "done", turnCount, toolCallCount });
+
+    return {
+      agentName: def.name,
+      response,
+      turnCount,
+      toolCallCount,
+      toolCalls,
+      durationMs,
+    };
+  },
+};
 
 function defToInfo(def: AgentDefinition): AgentInfo {
   return {

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { api } from "../api";
-import { PageHeader, LoadingSpinner, AdvisorPanelBase, type ChatMessage, loadHistory, saveHistory } from "../components";
+import { PageHeader, LoadingSpinner, Button, Card, type ChatMessage, loadHistory, saveHistory } from "../components";
+import { AdvisorPanelBase } from "../components/AdvisorPanelBase";
 import { useTheme } from "../theme";
 import { useI18n } from "../i18n";
 import type { Project, ImageStatus, Job, JobProgress, CharacterProfile } from "../../shared/types";
@@ -168,20 +169,13 @@ export function ImageGen() {
     <div style={{ display: "flex", gap: theme.spacing.xl }}>
       <div style={{ flex: 1 }}>
       <PageHeader title={t.imageGen.title} description={t.imageGen.description}>
-        <button
+        <Button
+          variant="outline"
+          size="sm"
           onClick={() => setShowAdvisor(!showAdvisor)}
-          style={{
-            padding: `${theme.spacing.xs}px ${theme.spacing.md}px`,
-            background: showAdvisor ? theme.colors.primaryDark : theme.colors.primaryLight,
-            color: showAdvisor ? theme.colors.bg.page : theme.colors.primaryDark,
-            border: `1px solid ${theme.colors.primaryDark}`,
-            borderRadius: theme.radii.md,
-            cursor: "pointer",
-            fontSize: theme.font.sizes.sm,
-          }}
         >
           {showAdvisor ? t.imageGen.hideAdvisor : t.imageGen.askAdvisor}
-        </button>
+        </Button>
       </PageHeader>
 
       <div style={{
@@ -226,38 +220,31 @@ export function ImageGen() {
         <label style={{ display: "block", marginBottom: theme.spacing.xs, fontWeight: theme.font.weights.semibold }}>{t.imageGen.assetType}</label>
         <div style={{ display: "flex", gap: theme.spacing.sm }}>
           {(["character", "background"] as const).map((k) => (
-            <button
+            <Button
               key={k}
+              variant="outline"
+              size="sm"
               onClick={() => {
                 setKind(k);
                 setAspectRatio(k === "character" ? "1:1" : "16:9");
               }}
-              style={{
-                padding: "6px 14px",
-                borderRadius: theme.radii.lg,
-                border: kind === k ? `2px solid ${theme.colors.primary}` : `1px solid ${theme.colors.border.medium}`,
-                background: kind === k ? theme.colors.primaryLight : theme.colors.bg.page,
-                cursor: "pointer",
-              }}
             >
               {k === "character" ? t.imageGen.character : t.imageGen.background}
-            </button>
+            </Button>
           ))}
         </div>
       </div>
 
       {/* Design Brief (collapsible, character only) */}
       {kind === "character" && (
-        <div style={{ marginBottom: theme.spacing.lg, border: `1px solid ${theme.colors.border.default}`, borderRadius: theme.radii.lg }}>
-          <button onClick={() => setShowBrief(!showBrief)}
-            style={{
-              width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center",
-              padding: "10px 14px", border: "none", background: theme.colors.bg.muted,
-              borderRadius: theme.radii.lg, cursor: "pointer", fontSize: theme.font.sizes.sm,
-            }}>
+        <Card variant="outline" padding="none" style={{ marginBottom: theme.spacing.lg }}>
+          <Button onClick={() => setShowBrief(!showBrief)}
+            variant="ghost"
+            size="sm"
+            style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", background: theme.colors.bg.muted }}>
             <span style={{ fontWeight: theme.font.weights.medium }}>{t.imageGen.designBrief} — {t.imageGen.designBriefDesc}</span>
             <span>{showBrief ? "▲" : "▼"}</span>
-          </button>
+          </Button>
           {showBrief && (
             <div style={{ padding: 14, display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px 16px" }}>
               <BriefField label="Name" value={brief.name} onChange={(v) => setBrief({ ...brief, name: v })} theme={theme} />
@@ -273,21 +260,19 @@ export function ImageGen() {
                 <BriefField label="Extra details" value={brief.extra} onChange={(v) => setBrief({ ...brief, extra: v })} theme={theme} placeholder="Any additional details..." />
               </div>
               <div style={{ gridColumn: "1 / -1", display: "flex", gap: 8, alignItems: "center" }}>
-                <button onClick={handleApplyBrief}
-                  style={{
-                    padding: "6px 16px", borderRadius: theme.radii.md,
-                    border: `1px solid ${theme.colors.primary}`, background: theme.colors.primary,
-                    color: "#fff", cursor: "pointer", fontSize: theme.font.sizes.sm,
-                  }}>
+                <Button onClick={handleApplyBrief}
+                  variant="primary"
+                  size="sm"
+                >
                   Apply to Prompt
-                </button>
+                </Button>
                 <span style={{ fontSize: theme.font.sizes.xs, color: theme.colors.text.muted }}>
                   Generated: {briefToPrompt(brief) || "(empty)"}
                 </span>
               </div>
             </div>
           )}
-        </div>
+        </Card>
       )}
 
       {/* Character selector (only when kind=character and profiles loaded) */}
@@ -315,20 +300,14 @@ export function ImageGen() {
           <label style={{ display: "block", marginBottom: theme.spacing.xs, fontWeight: theme.font.weights.semibold, fontSize: theme.font.sizes.base }}>{t.imageGen.facing}</label>
           <div style={{ display: "flex", gap: theme.spacing.sm }}>
             {(["LEFT", "RIGHT"] as const).map((dir) => (
-              <button
+              <Button
                 key={dir}
+                variant="outline"
+                size="sm"
                 onClick={() => setFacing(dir)}
-                style={{
-                  padding: `${theme.spacing.xs}px ${theme.spacing.md}px`,
-                  borderRadius: theme.radii.lg,
-                  border: facing === dir ? `2px solid ${theme.colors.primary}` : `1px solid ${theme.colors.border.medium}`,
-                  background: facing === dir ? theme.colors.primaryLight : theme.colors.bg.page,
-                  cursor: "pointer",
-                  fontSize: theme.font.sizes.base,
-                }}
               >
                 {dir === "LEFT" ? t.imageGen.left : t.imageGen.right}
-              </button>
+              </Button>
             ))}
           </div>
         </div>
@@ -342,20 +321,18 @@ export function ImageGen() {
           </label>
           <div style={{ display: "flex", gap: theme.spacing.sm, flexWrap: "wrap" }}>
             {selectedChar.variants.map((v) => (
-              <button
+              <Button
                 key={v.file}
+                variant="ghost"
+                size="sm"
                 onClick={() => handleVariantClick(v.prompt)}
                 title={v.prompt}
                 style={{
                   width: 64,
                   height: 64,
-                  borderRadius: theme.radii.lg,
-                  border: `1px solid ${theme.colors.border.medium}`,
                   overflow: "hidden",
-                  cursor: "pointer",
                   position: "relative",
                   padding: 0,
-                  background: theme.colors.bg.muted,
                 }}
               >
                 <img
@@ -376,7 +353,7 @@ export function ImageGen() {
                 }}>
                   {v.emotion ?? v.type}
                 </span>
-              </button>
+              </Button>
             ))}
           </div>
         </div>
@@ -432,21 +409,13 @@ export function ImageGen() {
       </div>
 
       {/* Generate button */}
-      <button
+      <Button
+        variant="primary"
         onClick={handleGenerate}
         disabled={!selectedSeries || !prompt || !filename || !!job}
-        style={{
-          padding: "10px 24px",
-          borderRadius: theme.radii.xl,
-          border: "none",
-          background: (!selectedSeries || !prompt || !filename || !!job) ? theme.colors.border.medium : theme.colors.primary,
-          color: theme.colors.bg.page,
-          fontWeight: theme.font.weights.semibold,
-          cursor: (!selectedSeries || !prompt || !filename || !!job) ? "not-allowed" : "pointer",
-        }}
       >
         {t.imageGen.generate}{selectedChar ? ` (${selectedChar.name})` : ""}
-      </button>
+      </Button>
 
       {/* Progress */}
       {job && (

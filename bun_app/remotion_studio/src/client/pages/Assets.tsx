@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { api } from "../api";
-import { PageHeader, LoadingSpinner, EmptyState, SkeletonCard } from "../components";
+import { PageHeader, LoadingSpinner, EmptyState, SkeletonCard, Button, InputField } from "../components";
 import type { AssetSummary, SeriesAssets, Asset } from "../../shared/types";
 import { useTheme, type Theme } from "../theme";
 import { useI18n } from "../i18n";
@@ -37,17 +37,7 @@ export function Assets() {
     else setAssets(null);
   }, [selected, loadAssets]);
 
-  if (loading) return (
-    <div>
-      <PageHeader title={t.assets.title} description={t.assets.description} />
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: theme.spacing.md }}>
-        {Array.from({ length: 6 }, (_, i) => (
-          <SkeletonCard key={i} rows={0} showHeader={false} imageHeight={120} />
-        ))}
-      </div>
-    </div>
-  );
-
+  // All hooks must be called before any conditional return
   const currentList: Asset[] = assets
     ? tab === "characters" ? assets.characters
       : tab === "backgrounds" ? assets.backgrounds
@@ -77,6 +67,17 @@ export function Assets() {
     { id: "audio", label: t.assets.audio, count: assets.audio.length },
   ] : [];
 
+  if (loading) return (
+    <div>
+      <PageHeader title={t.assets.title} description={t.assets.description} />
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: theme.spacing.md }}>
+        {Array.from({ length: 6 }, (_, i) => (
+          <SkeletonCard key={i} rows={0} showHeader={false} imageHeight={120} />
+        ))}
+      </div>
+    </div>
+  );
+
   return (
     <div>
       <PageHeader title={t.assets.title} description={t.assets.description} />
@@ -95,17 +96,11 @@ export function Assets() {
           ))}
         </select>
         {assets && (
-          <input
-            type="text"
+          <InputField
             placeholder={t.assets.searchPlaceholder(tab)}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            style={{
-              padding: "6px 12px", borderRadius: theme.radii.lg,
-              border: `1px solid ${theme.colors.border.default}`,
-              background: theme.colors.bg.surface, fontSize: theme.font.sizes.sm,
-              width: 200, outline: "none",
-            }}
+            style={{ width: 200 }}
           />
         )}
       </div>
@@ -114,20 +109,15 @@ export function Assets() {
         <>
           <div style={{ display: "flex", gap: theme.spacing.xs, marginBottom: theme.spacing.lg }}>
             {tabs.map((t) => (
-              <button
+              <Button
                 key={t.id}
+                variant="outline"
+                size="sm"
                 onClick={() => { setTab(t.id); setSearch(""); }}
-                style={{
-                  padding: "6px 14px",
-                  border: `1px solid ${theme.colors.border.medium}`,
-                  background: tab === t.id ? theme.colors.primaryLight : theme.colors.bg.page,
-                  borderRadius: theme.radii.lg,
-                  cursor: "pointer",
-                  fontSize: theme.font.sizes.base,
-                }}
+                style={tab === t.id ? { background: theme.colors.primaryLight } : undefined}
               >
                 {t.label} ({t.count})
-              </button>
+              </Button>
             ))}
             {search.trim() && (
               <span style={{ fontSize: theme.font.sizes.sm, color: theme.colors.text.muted, alignSelf: "center", marginLeft: 8 }}>
@@ -222,7 +212,7 @@ export function Assets() {
             <div style={{ marginTop: theme.spacing.sm, fontSize: theme.font.sizes.base, color: theme.colors.text.secondary }}>
               {preview.name} ({preview.format}, {formatSize(preview.size)})
             </div>
-            <button onClick={() => setPreview(null)} style={{ marginTop: theme.spacing.sm, padding: `${theme.spacing.xs}px ${theme.spacing.md}px`, borderRadius: theme.radii.md, border: `1px solid ${theme.colors.border.medium}`, cursor: "pointer" }}>{t.assets.close}</button>
+            <Button onClick={() => setPreview(null)} variant="outline" size="sm" style={{ marginTop: theme.spacing.sm }}>{t.assets.close}</Button>
           </div>
         </div>
       )}

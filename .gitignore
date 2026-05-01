@@ -29,3 +29,15 @@ tmp/
 /*.png
 /*.jpeg
 /*.jpg
+# Playwright test results (runtime artifacts)
+test-results/
+**/test-results/
+# Server runtime data (regenerated on start)
+bun_app/remotion_studio/data/jobs.json
+bun_app/remotion_studio/data/task-trees.json
+bun_app/remotion_studio/data/agent-sessions.json
+bun_app/remotion_studio/data/automation-rules.json
+bun_app/remotion_studio/data/schedules.json
+bun_app/remotion_studio/data/webhook-secrets.json
+# Scheduled tasks lock
+.claude/scheduled_tasks.lock

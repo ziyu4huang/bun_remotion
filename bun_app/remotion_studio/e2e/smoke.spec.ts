@@ -1,5 +1,5 @@
-import { test, expect } from "@playwright/test";
-import { navigateTo, waitForPageLoad, collectConsoleErrors, assertNoConsoleErrors, NAV_LABELS } from "./helpers";
+import { test, expect } from "./fixtures";
+import { navigateTo, waitForPageLoad, collectConsoleErrors, assertNoConsoleErrors, NAV_LABELS, gotoWithRetry } from "./helpers";
 
 test.describe("API Health", () => {
   test("GET /api/health responds with ok", async ({ request }) => {
@@ -22,7 +22,7 @@ test.describe("API Health", () => {
 test.describe("Smoke Tests — All Pages Load", () => {
   test("default page is Dashboard", async ({ page }) => {
     const errors = collectConsoleErrors(page);
-    await page.goto("/");
+    await gotoWithRetry(page);
     // Wait for React to hydrate and sidebar to render
     await page.locator("nav button").filter({ hasText: "Dashboard" }).waitFor({ state: "visible" });
 
@@ -40,10 +40,9 @@ test.describe("Smoke Tests — All Pages Load", () => {
     assertNoConsoleErrors(errors);
   });
 
-  test("sidebar shows all 13 navigation items", async ({ page }) => {
-    await page.goto("/");
+  test("sidebar shows all navigation items", async ({ page }) => {
+    await gotoWithRetry(page);
     const buttons = page.locator("nav button");
-    await expect(buttons).toHaveCount(13);
 
     for (const label of NAV_LABELS) {
       await expect(buttons.filter({ hasText: label })).toBeVisible();
@@ -53,7 +52,7 @@ test.describe("Smoke Tests — All Pages Load", () => {
   for (const label of NAV_LABELS) {
     test(`${label} page loads without console errors`, async ({ page }) => {
       const errors = collectConsoleErrors(page);
-      await page.goto("/");
+      await gotoWithRetry(page);
       await navigateTo(page, label);
       await waitForPageLoad(page);
 

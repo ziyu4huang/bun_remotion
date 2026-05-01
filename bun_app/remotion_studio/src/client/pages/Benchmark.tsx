@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { api } from "../api";
-import { PageHeader, LoadingSpinner, StatusBadge, AgentResultPanel } from "../components";
+import { PageHeader, LoadingSpinner, StatusBadge, AgentResultPanel, Button } from "../components";
 import { useAgentTask } from "../hooks/useAgentTask";
 import { useTheme, type Theme } from "../theme";
 import { useI18n } from "../i18n";
@@ -14,6 +14,18 @@ export function Benchmark() {
   const [loading, setLoading] = useState(true);
   const { task: agentTask, start: handleAskAgent } = useAgentTask("sg-benchmark-runner");
   const [selected, setSelected] = useState<string>("");
+
+  useEffect(() => {
+    (async () => {
+      const [projRes, blRes] = await Promise.all([
+        api.listProjects(),
+        api.benchmark.listBaselines(),
+      ]);
+      if (projRes.data) setProjects(projRes.data);
+      if (blRes.data) setBaselines(blRes.data);
+      setLoading(false);
+    })().catch(() => setLoading(false));
+  }, []);
 
   if (loading) return <LoadingSpinner text={t.benchmark.loading} />;
 
@@ -129,28 +141,16 @@ function AgentPromptButton({ label, prompt, onClick, theme, variant }: {
   theme: Theme;
   variant?: "primary" | "warning";
 }) {
-  const bg = variant === "warning" ? theme.colors.warning
-    : variant === "primary" ? theme.colors.primary
-    : theme.colors.bg.page;
-  const fg = variant ? theme.colors.bg.page : theme.colors.text.primary;
-  const border = variant ? "none" : `1px solid ${theme.colors.border.medium}`;
+  const btnVariant = variant ? "ai" : "outline";
 
   return (
-    <button
+    <Button
+      variant={btnVariant}
+      size="sm"
       onClick={() => onClick(prompt)}
-      style={{
-        padding: `${theme.spacing.sm}px ${theme.spacing.md}px`,
-        border,
-        borderRadius: theme.radii.lg,
-        background: bg,
-        color: fg,
-        cursor: "pointer",
-        fontSize: theme.font.sizes.base,
-        fontWeight: variant ? theme.font.weights.semibold : theme.font.weights.normal,
-      }}
     >
       {label}
-    </button>
+    </Button>
   );
 }
 

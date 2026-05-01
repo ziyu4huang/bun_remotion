@@ -1,16 +1,16 @@
-import { test, expect } from "@playwright/test";
-import { navigateTo, waitForPageLoad } from "./helpers";
+import { test, expect } from "./fixtures";
+import { navigateTo, waitForPageLoad, gotoWithRetry } from "./helpers";
 
 test.describe("Quality", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/");
+    await gotoWithRetry(page);
     await page.locator("nav button").filter({ hasText: "Quality" }).waitFor({ state: "visible" });
     await navigateTo(page, "Quality");
     await waitForPageLoad(page);
   });
 
   test("page shows quality heading", async ({ page }) => {
-    const heading = page.getByRole("heading", { name: /Quality/i });
+    const heading = page.getByRole("heading", { name: /Quality/i }).first();
     await expect(heading).toBeVisible();
   });
 

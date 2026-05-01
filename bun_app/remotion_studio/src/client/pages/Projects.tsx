@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { api } from "../api";
 import { useI18n } from "../i18n";
-import { type ChatMessage, type ToolCallDisplay, loadHistory, saveHistory, clearHistory, ToolCallCard, UserBubble, ThinkingIndicator, TurnSeparator, MarkdownText, AdvisorPanelBase, PageHeader, LoadingSpinner, StatusBadge, SkeletonRow } from "../components";
+import { type ChatMessage, type ToolCallDisplay, loadHistory, saveHistory, clearHistory, ToolCallCard, UserBubble, ThinkingIndicator, TurnSeparator, MarkdownText, PageHeader, LoadingSpinner, StatusBadge, SkeletonRow, Button, Card, InputField } from "../components";
+import { AdvisorPanelBase } from "../components/AdvisorPanelBase";
 import { toast } from "../components/ToastContainer";
 import { useTheme, scoreColor } from "../theme";
 import type { AgentInfo, AgentStreamEvent, AgentTaskResult, Project, Episode, Job, WorkflowResult, WorkflowStepStatus } from "../../shared/types";
@@ -40,6 +41,7 @@ export function Projects() {
   if (loading) return (
     <div>
       <PageHeader title={t.projects.title} description={t.projects.description} />
+      <div style={{ overflowX: "auto" }}>
       <table style={{ width: "100%", borderCollapse: "collapse", fontSize: theme.font.sizes.md }}>
         <thead>
           <tr style={{ borderBottom: `2px solid ${theme.colors.border.default}`, textAlign: "left" }}>
@@ -64,6 +66,7 @@ export function Projects() {
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 
@@ -100,12 +103,11 @@ export function Projects() {
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: theme.spacing.xl }}>
         <PageHeader title={`${t.projects.title} (${projects.length})`} description={t.projects.description} />
-        <button
+        <Button
           onClick={() => goToScaffold()}
-          style={{ padding: `${theme.spacing.sm}px ${theme.spacing.lg}px`, background: theme.colors.primary, color: theme.colors.bg.page, border: "none", borderRadius: theme.radii.lg, cursor: "pointer" }}
         >
           {t.projects.newEpisode}
-        </button>
+        </Button>
       </div>
       <ProjectTable projects={projects} onSelect={(id) => { setSelectedId(id); setView("detail"); }} />
     </div>
@@ -116,6 +118,7 @@ function ProjectTable({ projects, onSelect }: { projects: Project[]; onSelect: (
   const theme = useTheme();
   const { t } = useI18n();
   return (
+    <div style={{ overflowX: "auto" }}>
     <table style={{ width: "100%", borderCollapse: "collapse", fontSize: theme.font.sizes.md }}>
       <thead>
         <tr style={{ borderBottom: `2px solid ${theme.colors.border.default}`, textAlign: "left" }}>
@@ -152,6 +155,7 @@ function ProjectTable({ projects, onSelect }: { projects: Project[]; onSelect: (
         ))}
       </tbody>
     </table>
+    </div>
   );
 }
 
@@ -228,22 +232,24 @@ function ProjectDetail({ project, onBack, onNewEpisode }: { project: Project; on
     <div style={{ display: "flex", gap: theme.spacing.lg }}>
       <div style={{ flex: 1 }}>
         <div style={{ display: "flex", alignItems: "center", gap: theme.spacing.md, marginBottom: theme.spacing.lg }}>
-          <button onClick={onBack} style={{ border: "none", background: "none", cursor: "pointer", color: theme.colors.primary, padding: 0, fontSize: theme.font.sizes.md }}>
+          <Button onClick={onBack} variant="ghost" size="sm" style={{ padding: 0, fontSize: theme.font.sizes.md }}>
             &larr; {t.common.back}
-          </button>
+          </Button>
           <PageHeader title={project.name} description={project.category} />
-          <button
+          <Button
             onClick={onNewEpisode}
-            style={{ marginLeft: "auto", padding: `${theme.spacing.xs}px ${theme.spacing.md}px`, background: theme.colors.primary, color: theme.colors.bg.page, border: "none", borderRadius: theme.radii.md, cursor: "pointer", fontSize: theme.font.sizes.sm }}
+            size="sm"
+            style={{ marginLeft: "auto" }}
           >
             {t.projects.newEpisode}
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() => setShowAdvisor(!showAdvisor)}
-            style={{ padding: `${theme.spacing.xs}px ${theme.spacing.md}px`, background: showAdvisor ? theme.colors.purple : theme.colors.purpleLight, color: showAdvisor ? theme.colors.bg.page : theme.colors.purple, border: `1px solid ${theme.colors.purple}`, borderRadius: theme.radii.md, cursor: "pointer", fontSize: theme.font.sizes.sm }}
+            variant="ai"
+            size="sm"
           >
             {showAdvisor ? t.projects.hide : "Ask Advisor"}
-          </button>
+          </Button>
         </div>
         <div style={{ display: "flex", gap: theme.spacing.lg, marginBottom: theme.spacing.xl, color: theme.colors.text.tertiary, fontSize: theme.font.sizes.md }}>
           <span>{t.projects.category}: <b>{CATEGORY_LABELS[project.category] ?? project.category}</b></span>
@@ -256,6 +262,7 @@ function ProjectDetail({ project, onBack, onNewEpisode }: { project: Project; on
           <div style={{ color: theme.colors.text.muted, fontStyle: "italic" }}>{t.projects.noEpisodes}</div>
         ) : (
           <>
+            <div style={{ overflowX: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: theme.font.sizes.md }}>
               <thead>
                 <tr style={{ borderBottom: `2px solid ${theme.colors.border.default}`, textAlign: "left" }}>
@@ -285,29 +292,32 @@ function ProjectDetail({ project, onBack, onNewEpisode }: { project: Project; on
                       <td style={{ padding: `${theme.spacing.sm}px ${theme.spacing.md}px` }}><ScoreBadge score={ep.gateScore} /></td>
                       <td style={{ padding: `${theme.spacing.sm}px ${theme.spacing.md}px` }}>
                         {isBuilding ? (
-                          <button
+                          <Button
+                            variant="secondary"
+                            size="sm"
                             onClick={() => setExpandedEp(isExpanded ? null : ep.id)}
-                            style={{ padding: `${theme.spacing.xs}px ${theme.spacing.sm + 2}px`, background: theme.colors.warning, color: theme.colors.bg.page, border: "none", borderRadius: theme.radii.md, cursor: "pointer", fontSize: theme.font.sizes.sm }}
                           >
                             {isExpanded ? t.projects.hide : t.projects.view}
-                          </button>
+                          </Button>
                         ) : build?.status === "completed" ? (
                           <span style={{ color: theme.colors.success, fontSize: theme.font.sizes.sm }}>
                             {t.projects.done}
-                            <button
+                            <Button
+                              variant="outline"
+                              size="sm"
                               onClick={() => setExpandedEp(isExpanded ? null : ep.id)}
-                              style={{ marginLeft: 6, padding: `${theme.spacing.xs - 2}px ${theme.spacing.xs}px`, background: "none", border: `1px solid ${theme.colors.success}`, borderRadius: theme.radii.sm, cursor: "pointer", fontSize: theme.font.sizes.sm, color: theme.colors.success }}
+                              style={{ marginLeft: 6, borderColor: theme.colors.success, color: theme.colors.success }}
                             >
                               {isExpanded ? t.projects.hide : t.projects.view}
-                            </button>
+                            </Button>
                           </span>
                         ) : (
-                          <button
+                          <Button
+                            size="sm"
                             onClick={() => handleBuild(ep.id)}
-                            style={{ padding: `${theme.spacing.xs}px ${theme.spacing.sm + 2}px`, background: theme.colors.primary, color: theme.colors.bg.page, border: "none", borderRadius: theme.radii.md, cursor: "pointer", fontSize: theme.font.sizes.sm }}
                           >
                             {t.projects.build}
-                          </button>
+                          </Button>
                         )}
                       </td>
                     </tr>
@@ -315,6 +325,7 @@ function ProjectDetail({ project, onBack, onNewEpisode }: { project: Project; on
                 })}
               </tbody>
             </table>
+            </div>
             {expandedEp && builds.has(expandedEp) && (
               <BuildPanel
                 key={builds.get(expandedEp)!.jobId}
@@ -335,7 +346,7 @@ function BuildPanel({ build, onRetry }: { build: BuildState; onRetry: () => void
   const theme = useTheme();
   const { t } = useI18n();
   return (
-    <div style={{ marginTop: theme.spacing.lg, padding: theme.spacing.lg, background: theme.colors.bg.surface, border: `1px solid ${theme.colors.border.default}`, borderRadius: theme.radii.xl }}>
+    <Card variant="surface" padding="lg" style={{ marginTop: theme.spacing.lg }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: theme.spacing.md }}>
         <h3 style={{ margin: 0, fontSize: theme.font.sizes.lg }}>Build Progress</h3>
         <span style={{ fontSize: theme.font.sizes.sm, color: build.status === "running" ? theme.colors.warning : build.status === "completed" ? theme.colors.success : theme.colors.error, fontWeight: theme.font.weights.semibold }}>
@@ -366,12 +377,12 @@ function BuildPanel({ build, onRetry }: { build: BuildState; onRetry: () => void
           <div style={{ color: theme.colors.error, fontSize: theme.font.sizes.base, marginBottom: theme.spacing.sm }}>
             {build.error ?? build.steps.find((s) => s.status === "failed")?.error ?? "Unknown error"}
           </div>
-          <button
+          <Button
             onClick={onRetry}
-            style={{ padding: `${theme.spacing.xs + 2}px ${theme.spacing.md + 2}px`, background: theme.colors.primary, color: theme.colors.bg.page, border: "none", borderRadius: theme.radii.md, cursor: "pointer", fontSize: theme.font.sizes.base }}
+            size="sm"
           >
             {t.projects.retry}
-          </button>
+          </Button>
         </div>
       )}
       {build.status === "completed" && (
@@ -379,7 +390,7 @@ function BuildPanel({ build, onRetry }: { build: BuildState; onRetry: () => void
           {t.projects.done} — {build.steps.length} steps completed successfully.
         </div>
       )}
-    </div>
+    </Card>
   );
 }
 
@@ -467,9 +478,9 @@ function ScaffoldEpisode({ onBack, onCreated, projects, initialSeries }: { onBac
 
   return (
     <div>
-      <button onClick={onBack} style={{ border: "none", background: "none", cursor: "pointer", color: theme.colors.primary, marginBottom: theme.spacing.lg, padding: 0, fontSize: theme.font.sizes.md }}>
+      <Button onClick={onBack} variant="ghost" style={{ marginBottom: theme.spacing.lg, padding: 0, fontSize: theme.font.sizes.md }}>
         &larr; {t.projects.backToList}
-      </button>
+      </Button>
       <PageHeader title={t.projects.scaffoldTitle} description={t.projects.scaffoldDesc} />
 
       <div style={{ display: "flex", flexDirection: "column", gap: theme.spacing.md, maxWidth: 400 }}>
@@ -490,15 +501,12 @@ function ScaffoldEpisode({ onBack, onCreated, projects, initialSeries }: { onBac
           </select>
         </label>
         {isCustom && (
-          <label style={{ fontSize: theme.font.sizes.md }}>
-            {t.projects.newSeriesId}
-            <input
-              value={customSeries}
-              onChange={(e) => setCustomSeries(e.target.value)}
-              placeholder={t.projects.newSeriesPlaceholder}
-              style={{ display: "block", width: "100%", padding: `${theme.spacing.sm}px ${theme.spacing.md}px`, marginTop: theme.spacing.xs, border: `1px solid ${theme.colors.border.medium}`, borderRadius: theme.radii.lg, fontSize: theme.font.sizes.md }}
-            />
-          </label>
+          <InputField
+            label={t.projects.newSeriesId}
+            value={customSeries}
+            onChange={(e) => setCustomSeries(e.target.value)}
+            placeholder={t.projects.newSeriesPlaceholder}
+          />
         )}
         {selectedProject && (
           <div style={{ fontSize: theme.font.sizes.sm, color: theme.colors.text.tertiary, background: theme.colors.bg.muted, padding: `${theme.spacing.xs + 2}px ${theme.spacing.sm + 2}px`, borderRadius: theme.radii.md }}>
@@ -507,39 +515,32 @@ function ScaffoldEpisode({ onBack, onCreated, projects, initialSeries }: { onBac
           </div>
         )}
         <div style={{ display: "flex", gap: theme.spacing.md }}>
-          <label style={{ flex: 1, fontSize: theme.font.sizes.md }}>
-            {t.projects.chapter}
-            <input
-              type="number"
-              min={1}
-              value={chapter}
-              onChange={(e) => setChapter(e.target.value)}
-              placeholder="1"
-              style={{ display: "block", width: "100%", padding: `${theme.spacing.sm}px ${theme.spacing.md}px`, marginTop: theme.spacing.xs, border: `1px solid ${theme.colors.border.medium}`, borderRadius: theme.radii.lg, fontSize: theme.font.sizes.md }}
-            />
-          </label>
-          <label style={{ flex: 1, fontSize: theme.font.sizes.md }}>
-            {t.projects.episodeLabel}
-            <input
-              type="number"
-              min={1}
-              value={episode}
-              onChange={(e) => setEpisode(e.target.value)}
-              placeholder="1"
-              style={{ display: "block", width: "100%", padding: `${theme.spacing.sm}px ${theme.spacing.md}px`, marginTop: theme.spacing.xs, border: `1px solid ${theme.colors.border.medium}`, borderRadius: theme.radii.lg, fontSize: theme.font.sizes.md }}
-            />
-          </label>
-        </div>
-        <label style={{ fontSize: theme.font.sizes.md }}>
-          {t.projects.scenes}
-          <input
+          <InputField
+            label={t.projects.chapter}
             type="number"
-            value={scenes}
-            onChange={(e) => setScenes(e.target.value)}
-            placeholder="7"
-            style={{ display: "block", width: "100%", padding: `${theme.spacing.sm}px ${theme.spacing.md}px`, marginTop: theme.spacing.xs, border: `1px solid ${theme.colors.border.medium}`, borderRadius: theme.radii.lg, fontSize: theme.font.sizes.md }}
+            min={1}
+            value={chapter}
+            onChange={(e) => setChapter(e.target.value)}
+            placeholder="1"
+            style={{ flex: 1 }}
           />
-        </label>
+          <InputField
+            label={t.projects.episodeLabel}
+            type="number"
+            min={1}
+            value={episode}
+            onChange={(e) => setEpisode(e.target.value)}
+            placeholder="1"
+            style={{ flex: 1 }}
+          />
+        </div>
+        <InputField
+          label={t.projects.scenes}
+          type="number"
+          value={scenes}
+          onChange={(e) => setScenes(e.target.value)}
+          placeholder="7"
+        />
         <label style={{ fontSize: theme.font.sizes.md, display: "flex", alignItems: "center", gap: theme.spacing.sm }}>
           <input type="checkbox" checked={dryRun} onChange={(e) => setDryRun(e.target.checked)} />
           {t.projects.dryRun}
@@ -548,7 +549,7 @@ function ScaffoldEpisode({ onBack, onCreated, projects, initialSeries }: { onBac
         {error && <div style={{ color: theme.colors.error, fontSize: theme.font.sizes.md, padding: `${theme.spacing.sm}px ${theme.spacing.md}px`, background: theme.colors.errorLight, borderRadius: theme.radii.lg }}>{error}</div>}
 
         {job && (
-          <div style={{ padding: theme.spacing.md, background: theme.colors.bg.muted, borderRadius: theme.radii.lg, fontSize: theme.font.sizes.md }}>
+          <Card variant="default" padding="md" style={{ fontSize: theme.font.sizes.md }}>
             <div>Status: <b>{job.status}</b></div>
             {job.status === "running" && (
               <div style={{ marginTop: theme.spacing.sm }}>
@@ -561,25 +562,16 @@ function ScaffoldEpisode({ onBack, onCreated, projects, initialSeries }: { onBac
               <ScaffoldResultPreview result={job.result as ScaffoldResultData} dryRun={dryRun} />
             )}
             {job.status === "failed" && <div style={{ color: theme.colors.error, marginTop: theme.spacing.xs }}>{job.error}</div>}
-          </div>
+          </Card>
         )}
 
-        <button
+        <Button
           onClick={handleSubmit}
           disabled={!resolvedSeries || !episode || job?.status === "running"}
-          style={{
-            padding: `${theme.spacing.sm + 2}px ${theme.spacing.xl}px`,
-            background: resolvedSeries && episode ? theme.colors.primary : theme.colors.border.medium,
-            color: theme.colors.bg.page,
-            border: "none",
-            borderRadius: theme.radii.lg,
-            cursor: resolvedSeries && episode ? "pointer" : "default",
-            fontSize: theme.font.sizes.md,
-            fontWeight: theme.font.weights.semibold,
-          }}
+          size="lg"
         >
           {dryRun ? t.projects.previewScaffold : t.projects.scaffoldEpisode}
-        </button>
+        </Button>
       </div>
     </div>
   );
@@ -611,7 +603,7 @@ function ScaffoldResultPreview({ result, dryRun }: { result: ScaffoldResultData;
       <div style={{ color: theme.colors.success, fontWeight: theme.font.weights.semibold, marginBottom: theme.spacing.sm }}>
         {dryRun ? "Preview — no files written" : "Scaffold complete!"}
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "120px 1fr", gap: `${theme.spacing.xs}px ${theme.spacing.md}px`, background: theme.colors.bg.page, padding: 10, borderRadius: theme.radii.lg, border: `1px solid ${theme.colors.border.default}` }}>
+      <Card variant="surface" padding="sm" style={{ display: "grid", gridTemplateColumns: "120px 1fr", gap: `${theme.spacing.xs}px ${theme.spacing.md}px` }}>
         <span style={{ color: theme.colors.text.tertiary }}>Directory</span>
         <span style={{ fontFamily: theme.font.mono }}>{n.dirName}</span>
         <span style={{ color: theme.colors.text.tertiary }}>Package</span>
@@ -622,7 +614,7 @@ function ScaffoldResultPreview({ result, dryRun }: { result: ScaffoldResultData;
         <span>{n.numScenes} scenes, {n.numTransitions} transitions</span>
         <span style={{ color: theme.colors.text.tertiary }}>Files</span>
         <span>{dryRun ? `${result.filesWritten} would be created` : `${result.filesWritten} written`}</span>
-      </div>
+      </Card>
       {result.skipped.length > 0 && (
         <div style={{ marginTop: 6, color: theme.colors.warning, fontSize: theme.font.sizes.sm }}>
           Skipped: {result.skipped.join(", ")}
@@ -684,19 +676,20 @@ function ReviewChecklist({ episodes, theme }: { episodes: Episode[]; theme: Retu
   const allOk = rows.every((r) => r.ok);
 
   return (
-    <div style={{ marginTop: theme.spacing.xl, border: `1px solid ${allOk ? theme.colors.successLight : theme.colors.border.default}`, borderRadius: theme.radii.lg, overflow: "hidden" }}>
-      <button onClick={() => setOpen(!open)}
+    <Card variant="outline" padding="none" style={{ marginTop: theme.spacing.xl, overflow: "hidden", borderColor: allOk ? theme.colors.successLight : undefined }}>
+      <Button onClick={() => setOpen(!open)}
+        variant="ghost"
         style={{
           width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center",
-          padding: "10px 14px", border: "none",
+          padding: "10px 14px",
           background: allOk ? theme.colors.successLight : theme.colors.bg.muted,
-          cursor: "pointer", fontSize: theme.font.sizes.sm,
+          fontSize: theme.font.sizes.sm,
         }}>
         <span style={{ fontWeight: theme.font.weights.medium }}>
           {allOk ? `${t.projects.done}` : t.projects.reviewChecklist} ({total} episodes)
         </span>
         <span>{open ? "▲" : "▼"}</span>
-      </button>
+      </Button>
       {open && (
         <div style={{ padding: 14 }}>
           {rows.map((r) => (
@@ -717,6 +710,6 @@ function ReviewChecklist({ episodes, theme }: { episodes: Episode[]; theme: Retu
           ))}
         </div>
       )}
-    </div>
+    </Card>
   );
 }

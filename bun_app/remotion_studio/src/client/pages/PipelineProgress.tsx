@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { api } from "../api";
 import { useTheme } from "../theme";
 import { useI18n } from "../i18n";
-import { PageHeader, StatusBadge, EmptyState, SkeletonCard } from "../components";
+import { PageHeader, StatusBadge, EmptyState, SkeletonCard, Button } from "../components";
 import type { EpisodeProgress, EpisodeProgressSummary, EpisodeStepProgress, BatchRequest, Job, BatchResult } from "../../shared/types";
 import { toast } from "../components/ToastContainer";
 
@@ -44,7 +44,7 @@ export function PipelineProgress() {
     return (
       <div style={{ padding: 24 }}>
         <PageHeader title={t.pipelineProgress.title} description={t.pipelineProgress.description} />
-        <EmptyState title={t.pipelineProgress.emptyTitle} description={t.pipelineProgress.emptyDesc} />
+        <EmptyState icon="📋" title={t.pipelineProgress.emptyTitle} description={t.pipelineProgress.emptyDesc} />
       </div>
     );
   }
@@ -167,55 +167,31 @@ export function PipelineProgress() {
       {/* Filter tabs + batch actions */}
       <div style={{ display: "flex", gap: 8, marginBottom: 16, alignItems: "center", flexWrap: "wrap" }}>
         {(["all", "incomplete", "complete"] as const).map((f) => (
-          <button key={f} onClick={() => setFilter(f)}
-            style={{
-              padding: "6px 14px", borderRadius: theme.radii.md,
-              border: `1px solid ${filter === f ? theme.colors.primary : theme.colors.border.default}`,
-              background: filter === f ? theme.colors.primaryLight : "transparent",
-              color: filter === f ? theme.colors.primaryDark : theme.colors.text.secondary,
-              cursor: "pointer", fontSize: theme.font.sizes.sm,
-            }}>
+          <Button key={f} variant="outline" size="sm" onClick={() => setFilter(f)}>
             {f === "all" ? `${t.pipelineProgress.filter.all} (${episodes.length})`
               : f === "complete" ? `${t.pipelineProgress.filter.complete} (${summary.completedEpisodes})`
               : `${t.pipelineProgress.filter.incomplete} (${episodes.length - summary.completedEpisodes})`}
-          </button>
+          </Button>
         ))}
-        <button onClick={selectAll} style={{
-          padding: "6px 12px", borderRadius: theme.radii.md,
-          border: `1px solid ${theme.colors.border.default}`, background: "transparent",
-          cursor: "pointer", color: theme.colors.text.secondary, fontSize: theme.font.sizes.sm,
-        }}>
+        <Button onClick={selectAll} variant="ghost" size="sm">
           {selected.size === filtered.length ? t.pipelineProgress.selection.deselectAll : t.pipelineProgress.selection.selectAll}
-        </button>
+        </Button>
         {hasSelection && (
           <>
-            <button onClick={() => handleBatch("tts")} disabled={isBatching}
-              style={{
-                marginLeft: "auto", padding: "6px 14px", borderRadius: theme.radii.md,
-                border: `1px solid ${theme.colors.primary}`, background: theme.colors.primary,
-                color: "#fff", cursor: isBatching ? "wait" : "pointer", fontSize: theme.font.sizes.sm,
-                opacity: isBatching ? 0.6 : 1,
-              }}>
+            <Button onClick={() => handleBatch("tts")} disabled={isBatching}
+              variant="primary" size="sm" style={{ marginLeft: "auto" }}>
               {batchRunning === "tts" ? t.pipelineProgress.batch.runningTts : `${t.pipelineProgress.batch.tts} ${selected.size}`}
-            </button>
-            <button onClick={() => handleBatch("render")} disabled={isBatching}
-              style={{
-                padding: "6px 14px", borderRadius: theme.radii.md,
-                border: `1px solid ${theme.colors.success}`, background: theme.colors.success,
-                color: "#fff", cursor: isBatching ? "wait" : "pointer", fontSize: theme.font.sizes.sm,
-                opacity: isBatching ? 0.6 : 1,
-              }}>
+            </Button>
+            <Button onClick={() => handleBatch("render")} disabled={isBatching}
+              variant="primary" size="sm">
               {batchRunning === "render" ? t.pipelineProgress.batch.rendering : `${t.pipelineProgress.batch.render} ${selected.size}`}
-            </button>
+            </Button>
           </>
         )}
-        <button onClick={load} disabled={isBatching} style={{
-          marginLeft: hasSelection ? 8 : "auto", padding: "6px 12px", borderRadius: theme.radii.md,
-          border: `1px solid ${theme.colors.border.default}`, background: "transparent",
-          cursor: "pointer", color: theme.colors.text.secondary, fontSize: theme.font.sizes.sm,
-        }}>
+        <Button onClick={load} disabled={isBatching} variant="ghost" size="sm"
+          style={{ marginLeft: hasSelection ? 8 : "auto" }}>
           {t.pipelineProgress.refresh}
-        </button>
+        </Button>
       </div>
 
       {/* Per-series tables */}
@@ -254,6 +230,7 @@ export function PipelineProgress() {
             </div>
 
             {!collapsed && (
+              <div style={{ overflowX: "auto" }}>
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: theme.font.sizes.sm }}>
                 <thead>
                   <tr style={{ borderBottom: `1px solid ${theme.colors.border.default}` }}>
@@ -303,6 +280,7 @@ export function PipelineProgress() {
                   ))}
                 </tbody>
               </table>
+              </div>
             )}
           </div>
         );

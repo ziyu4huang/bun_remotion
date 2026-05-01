@@ -55,7 +55,7 @@ describe("rm_analyze", () => {
   test("returns error for non-existent directory", async () => {
     const result = await tool.execute("1", { episodeDir: "/nonexistent/path" });
     expect(result.content[0].text).toContain("Error:");
-    expect(result.details).toHaveProperty("error");
+    expect(result.details.data).toHaveProperty("error");
   });
 
   test("analyzes weapon-forger-ch1-ep1", async () => {
@@ -74,16 +74,16 @@ describe("rm_analyze", () => {
     expect(text).toContain("Character Interactions");
 
     // Check details
-    expect(result.details).toHaveProperty("scenes");
-    expect(result.details).toHaveProperty("characterStats");
-    expect(result.details).toHaveProperty("totalFrames");
-    expect(result.details).toHaveProperty("totalSeconds");
-    expect(result.details).toHaveProperty("source");
+    expect(result.details.data).toHaveProperty("scenes");
+    expect(result.details.data).toHaveProperty("characterStats");
+    expect(result.details.data).toHaveProperty("totalFrames");
+    expect(result.details.data).toHaveProperty("totalSeconds");
+    expect(result.details.data).toHaveProperty("source");
   });
 
   test("detects characters from dialog", async () => {
     const result = await tool.execute("1", { episodeDir: WEAPON_FORGER_EP1 });
-    const stats = result.details.characterStats as Record<string, unknown>;
+    const stats = result.details.data.characterStats as Record<string, unknown>;
 
     // weapon-forger ch1ep1 has zhoumo and examiner
     expect(Object.keys(stats)).toContain("zhoumo");
@@ -92,7 +92,7 @@ describe("rm_analyze", () => {
 
   test("source parameter forces src-only parsing", async () => {
     const result = await tool.execute("1", { episodeDir: WEAPON_FORGER_EP1, source: "src" });
-    expect(result.details.source).toBe("src");
+    expect(result.details.data.source).toBe("src");
   });
 
   test("reads voice manifest", async () => {
@@ -100,7 +100,7 @@ describe("rm_analyze", () => {
     const text = result.content[0].text;
 
     // voice-manifest.json has voice assignments
-    if (result.details.voiceMap && Object.keys(result.details.voiceMap as Record<string, unknown>).length > 0) {
+    if (result.details.data.voiceMap && Object.keys(result.details.data.voiceMap as Record<string, unknown>).length > 0) {
       expect(text).toContain("Voice Assignments:");
     }
   });
@@ -124,14 +124,14 @@ describe("rm_suggest", () => {
     expect(text).toContain("episodes");
 
     // Check details
-    expect(result.details).toHaveProperty("suggestions");
-    expect(result.details).toHaveProperty("episodeCount");
-    expect(result.details).toHaveProperty("storyDebtCount");
+    expect(result.details.data).toHaveProperty("suggestions");
+    expect(result.details.data).toHaveProperty("episodeCount");
+    expect(result.details.data).toHaveProperty("storyDebtCount");
   });
 
   test("focus parameter filters suggestions", async () => {
     const result = await tool.execute("1", { seriesDir: WEAPON_FORGER, focus: "pacing" });
-    const suggestions = result.details.suggestions as Array<{ category: string }>;
+    const suggestions = result.details.data.suggestions as Array<{ category: string }>;
 
     // All suggestions should be pacing-related (or empty)
     for (const s of suggestions) {
@@ -164,22 +164,22 @@ describe("rm_lint", () => {
     expect(text).toContain("rules checked");
 
     // Check details
-    expect(result.details).toHaveProperty("rulesChecked");
-    expect(result.details).toHaveProperty("totalIssues");
-    expect(result.details).toHaveProperty("errors");
-    expect(result.details).toHaveProperty("warnings");
+    expect(result.details.data).toHaveProperty("rulesChecked");
+    expect(result.details.data).toHaveProperty("totalIssues");
+    expect(result.details.data).toHaveProperty("errors");
+    expect(result.details.data).toHaveProperty("warnings");
   });
 
   test("runs specific rules only", async () => {
     const result = await tool.execute("1", { episodeDir: WEAPON_FORGER_EP1, rules: "naming" });
-    const rulesChecked = result.details.rulesChecked as string[];
+    const rulesChecked = result.details.data.rulesChecked as string[];
 
     expect(rulesChecked).toEqual(["naming"]);
   });
 
   test("detects legacy imports in ch1ep1", async () => {
     const result = await tool.execute("1", { episodeDir: WEAPON_FORGER_EP1, rules: "imports" });
-    const issues = result.details.issues as Array<{ rule: string; message: string }>;
+    const issues = result.details.data.issues as Array<{ rule: string; message: string }>;
 
     // ch1ep1 uses legacy imports from ../../../assets/components/
     const importIssues = issues.filter(i => i.rule === "imports");
@@ -189,7 +189,7 @@ describe("rm_lint", () => {
 
   test("strict mode promotes warnings to errors", async () => {
     const result = await tool.execute("1", { episodeDir: WEAPON_FORGER_EP1, strict: true });
-    const details = result.details as { errors: number; warnings: number };
+    const details = result.details.data as { errors: number; warnings: number };
 
     // In strict mode, all issues should be errors
     expect(details.warnings).toBe(0);

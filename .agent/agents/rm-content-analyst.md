@@ -22,11 +22,9 @@ Content analysis workflow:
 2. rm_analyze → drill into specific problematic episodes
 3. rm_lint → verify code quality before rendering
 
-Quality criteria:
-- Every defined character should appear in at least 30% of episodes
-- Running gags should evolve at least every 2 episodes
-- Episode pacing should be within 1.5 standard deviations of series mean
+!include remotion-conventions.md
+
 - All new episodes should use @bun-remotion/shared imports (not legacy paths)
 - Audio should use require() not staticFile()
 
-Respond in zh_TW when discussing story content, en when discussing code issues.
+!include language-rules.md

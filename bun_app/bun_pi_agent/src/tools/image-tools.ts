@@ -12,18 +12,19 @@ import type { AgentTool, AgentToolResult } from "@mariozechner/pi-agent-core";
 import { resolve, join, basename } from "node:path";
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { generateImageBatch, buildCharacterPrompt, buildBackgroundPrompt } from "bun_image";
+import { details } from "./result-types.js";
 
 const REPO_ROOT = resolve(import.meta.dir, "../../../..");
 const PROJ_DIR = resolve(REPO_ROOT, "bun_remotion_proj");
 
 // ─── Helpers ───
 
-function textResult(text: string, details?: unknown): AgentToolResult<unknown> {
-  return { content: [{ type: "text" as const, text }], details: details ?? {} };
+function textResult(text: string, d: ReturnType<typeof details>): AgentToolResult<unknown> {
+  return { content: [{ type: "text" as const, text }], details: d };
 }
 
-function errorResult(msg: string): AgentToolResult<unknown> {
-  return { content: [{ type: "text" as const, text: `Error: ${msg}` }], details: { error: msg } };
+function errorResult(msg: string, tool: string): AgentToolResult<unknown> {
+  return { content: [{ type: "text" as const, text: `Error: ${msg}` }], details: details(tool, false, { error: msg }) };
 }
 
 function findSeriesDir(seriesId: string): string | null {
@@ -70,11 +71,11 @@ export function createImageGenerateTool(): AgentTool<typeof generateSchema> {
     execute: async (params) => {
       const seriesDir = findSeriesDir(params.seriesId);
       if (!seriesDir) {
-        return errorResult(`Series not found: ${params.seriesId}. Searched in ${PROJ_DIR}`);
+        return errorResult(`Series not found: ${params.seriesId}. Searched in ${PROJ_DIR}`, "image_generate");
       }
 
       if (!params.images.length) {
-        return errorResult("images array is empty — nothing to generate.");
+        return errorResult("images array is empty — nothing to generate.", "image_generate");
       }
 
       // Enhance prompts for character images if facing specified
@@ -121,9 +122,19 @@ export function createImageGenerateTool(): AgentTool<typeof generateSchema> {
           lines.push(`  WARNING: ${result.failed} image(s) failed to generate.`);
         }
 
-        return textResult(lines.join("\n"), result);
+        const files = result.results
+          .map((r: any) => r.localPath ? basename(r.localPath) : "")
+          .filter(Boolean);
+        return textResult(lines.join("\n"), details("image_generate", true, {
+          seriesId: params.seriesId,
+          requested: params.images.length,
+          generated: result.generated,
+          failed: result.failed,
+          skipped: result.skipped,
+          files,
+        }));
       } catch (err) {
-        return errorResult(err instanceof Error ? err.message : String(err));
+        return errorResult(err instanceof Error ? err.message : String(err), "image_generate");
       }
     },
   };
@@ -140,7 +151,7 @@ export function createImageStatusTool(): AgentTool<typeof statusSchema> {
     execute: async (params) => {
       const seriesDir = findSeriesDir(params.seriesId);
       if (!seriesDir) {
-        return errorResult(`Series not found: ${params.seriesId}`);
+        return errorResult(`Series not found: ${params.seriesId}`, "image_status");
       }
 
       const charDir = resolve(seriesDir, "assets", "characters");
@@ -189,12 +200,12 @@ export function createImageStatusTool(): AgentTool<typeof statusSchema> {
         }
       }
 
-      return textResult(lines.join("\n"), {
+      return textResult(lines.join("\n"), details("image_status", true, {
         characterCount: charFiles.length,
         backgroundCount: bgFiles.length,
         manifestCount: manifestFiles.length,
         unpairedCount: unpaired.length,
-      });
+      }));
     },
   };
 }
@@ -210,12 +221,12 @@ export function createImageCharactersTool(): AgentTool<typeof charactersSchema> 
     execute: async (params) => {
       const seriesDir = findSeriesDir(params.seriesId);
       if (!seriesDir) {
-        return errorResult(`Series not found: ${params.seriesId}`);
+        return errorResult(`Series not found: ${params.seriesId}`, "image_characters");
       }
 
       const profiles = buildCharacterProfiles(seriesDir);
       if (profiles.length === 0) {
-        return textResult(`No character profiles found for ${params.seriesId}.`, { characters: [] });
+        return textResult(`No character profiles found for ${params.seriesId}.`, details("image_characters", true, { characters: [] as unknown[] }));
       }
 
       const lines = [`Character profiles for ${params.seriesId} (${profiles.length} characters)`];
@@ -239,7 +250,7 @@ export function createImageCharactersTool(): AgentTool<typeof charactersSchema> 
         }
       }
 
-      return textResult(lines.join("\n"), { characters: profiles });
+      return textResult(lines.join("\n"), details("image_characters", true, { characters: profiles }));
     },
   };
 }

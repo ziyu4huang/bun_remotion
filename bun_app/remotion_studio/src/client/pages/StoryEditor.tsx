@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { PageHeader, StatusBadge, SectionEditor, AdvisorPanelBase, type ChatMessage, loadHistory, saveHistory } from "../components";
+import { Button, PageHeader, StatusBadge, SectionEditor, type ChatMessage, loadHistory, saveHistory } from "../components";
+import { AdvisorPanelBase } from "../components/AdvisorPanelBase";
 import { useTheme } from "../theme";
 import { useI18n } from "../i18n";
 
@@ -150,40 +151,27 @@ export function StoryEditor() {
           ))}
         </select>
         <ViewToggle mode={viewMode} onChange={setViewMode} />
-        <button
+        <Button
+          variant="outline"
+          size="sm"
           onClick={() => setShowAdvisor(!showAdvisor)}
-          style={{
-            padding: `${theme.spacing.xs}px ${theme.spacing.md}px`,
-            background: showAdvisor ? theme.colors.primaryDark : theme.colors.primaryLight,
-            color: showAdvisor ? theme.colors.bg.page : theme.colors.primaryDark,
-            border: `1px solid ${theme.colors.primaryDark}`,
-            borderRadius: theme.radii.md,
-            cursor: "pointer",
-            fontSize: theme.font.sizes.sm,
-          }}
         >
           {showAdvisor ? t.storyEditor.hideAdvisor : t.storyEditor.askAdvisor}
-        </button>
+        </Button>
         <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: theme.spacing.sm, fontSize: theme.font.sizes.base, color: theme.colors.text.tertiary }}>
           {dirty && <span style={{ color: theme.colors.warning }}>{t.storyEditor.unsaved}</span>}
           {saving && <span style={{ color: theme.colors.primary }}>{t.storyEditor.saving}</span>}
           {lastSaved && !dirty && <span style={{ color: "#388e3c" }}>{t.storyEditor.saved} {lastSaved}</span>}
-          <button
+          <Button
+            variant="primary"
             onClick={handleSave}
             disabled={!dirty || saving}
-            style={{
-              padding: `6px ${theme.spacing.xl}px`,
-              borderRadius: theme.radii.lg,
-              border: `1px solid ${theme.colors.primary}`,
-              background: dirty ? theme.colors.primary : theme.colors.border.default,
-              color: dirty ? theme.colors.bg.page : theme.colors.text.muted,
-              cursor: dirty ? "pointer" : "default",
-              fontSize: theme.font.sizes.base,
-            }}
           >
             {t.storyEditor.save}
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={async () => {
               setShowRevisions(!showRevisions);
               if (!showRevisions && selectedId) {
@@ -192,16 +180,9 @@ export function StoryEditor() {
                 if (data.ok) setRevisions(data.data);
               }
             }}
-            style={{
-              padding: `6px ${theme.spacing.md}px`,
-              borderRadius: theme.radii.lg,
-              border: `1px solid ${theme.colors.border.default}`,
-              background: "transparent", cursor: "pointer",
-              fontSize: theme.font.sizes.sm, color: theme.colors.text.secondary,
-            }}
           >
             {showRevisions ? t.storyEditor.hideHistory : t.storyEditor.history}
-          </button>
+          </Button>
         </div>
       </PageHeader>
 
@@ -241,14 +222,12 @@ export function StoryEditor() {
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
                   <span style={{ fontWeight: theme.font.weights.medium, fontSize: theme.font.sizes.sm }}>{t.storyEditor.viewing} {viewingRev}</span>
                   <div style={{ display: "flex", gap: 6 }}>
-                    <button onClick={() => { setEditContent(revContent); setDirty(true); }}
-                      style={{ padding: "4px 10px", borderRadius: theme.radii.md, border: `1px solid ${theme.colors.primary}`, background: theme.colors.primary, color: "#fff", cursor: "pointer", fontSize: theme.font.sizes.xs }}>
+                    <Button variant="primary" size="sm" onClick={() => { setEditContent(revContent); setDirty(true); }}>
                       {t.storyEditor.restore}
-                    </button>
-                    <button onClick={() => { setViewingRev(null); setRevContent(null); }}
-                      style={{ padding: "4px 10px", borderRadius: theme.radii.md, border: `1px solid ${theme.colors.border.default}`, background: "transparent", cursor: "pointer", fontSize: theme.font.sizes.xs }}>
+                    </Button>
+                    <Button variant="ghost" size="sm" onClick={() => { setViewingRev(null); setRevContent(null); }}>
                       {t.storyEditor.close}
-                    </button>
+                    </Button>
                   </div>
                 </div>
                 <pre style={{ fontSize: theme.font.sizes.xs, maxHeight: 200, overflowY: "auto", whiteSpace: "pre-wrap", margin: 0 }}>
@@ -260,22 +239,19 @@ export function StoryEditor() {
               <div style={{ color: theme.colors.text.muted, fontSize: theme.font.sizes.sm }}>{t.storyEditor.noRevisions}</div>
             ) : (
               revisions.map((rev) => (
-                <button key={rev.id} onClick={async () => {
+                <Button key={rev.id} variant="ghost" size="sm" onClick={async () => {
                   const res = await fetch(`/api/plans/${selectedId}/revisions/${rev.id}`);
                   const data = await res.json();
                   if (data.ok) { setViewingRev(rev.id); setRevContent(data.data); }
                 }} style={{
                   display: "block", width: "100%", textAlign: "left",
-                  padding: "6px 10px", marginBottom: 4, borderRadius: theme.radii.md,
-                  border: `1px solid ${viewingRev === rev.id ? theme.colors.primary : theme.colors.border.light}`,
-                  background: viewingRev === rev.id ? theme.colors.primaryLight : "transparent",
-                  cursor: "pointer", fontSize: theme.font.sizes.sm,
+                  marginBottom: 4,
                 }}>
                   <span style={{ color: theme.colors.text.secondary }}>{rev.id.replace(/-/g, (m, o) => o < 10 ? "-" : o === 10 ? " " : o < 19 ? ":" : "")}</span>
                   <span style={{ marginLeft: 8, color: theme.colors.text.tertiary, fontSize: theme.font.sizes.xs }}>
                     {Math.round(rev.size / 1024)}KB
                   </span>
-                </button>
+                </Button>
               ))
             )}
           </div>
@@ -312,20 +288,17 @@ function ViewToggle({ mode, onChange }: { mode: ViewMode; onChange: (m: ViewMode
   return (
     <div style={{ display: "flex", gap: 0, border: `1px solid ${theme.colors.border.medium}`, borderRadius: theme.radii.lg, overflow: "hidden" }}>
       {tabs.map((t) => (
-        <button
+        <Button
           key={t.id}
+          variant="outline"
+          size="sm"
           onClick={() => onChange(t.id)}
           style={{
-            padding: `6px 14px`,
-            border: "none",
-            background: mode === t.id ? theme.colors.primaryLight : theme.colors.bg.page,
-            cursor: "pointer",
-            fontSize: theme.font.sizes.base,
             borderRight: `1px solid ${theme.colors.border.medium}`,
           }}
         >
           {t.label}
-        </button>
+        </Button>
       ))}
     </div>
   );

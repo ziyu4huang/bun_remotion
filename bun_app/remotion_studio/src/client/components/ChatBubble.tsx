@@ -1,5 +1,7 @@
 import type { ChatMessage } from "./ChatTypes";
 import { ToolCallCard } from "./ToolCallCard";
+import { PipelineToolCard, getPipelineOp } from "./PipelineToolCard";
+import { JobStatusCard } from "./JobStatusCard";
 import { useTheme } from "../theme";
 
 export function UserBubble({ msg }: { msg: ChatMessage }) {
@@ -23,11 +25,23 @@ export function UserBubble({ msg }: { msg: ChatMessage }) {
 
 export function AssistantBubble({ msg, agentName, children }: { msg: ChatMessage; agentName: string; children?: React.ReactNode }) {
   const theme = useTheme();
+
+  const pipelineTools = (msg.toolCalls ?? []).filter((tc) => getPipelineOp(tc.name).op !== "other");
+  const otherTools = (msg.toolCalls ?? []).filter((tc) => getPipelineOp(tc.name).op === "other");
+
   return (
     <div style={{ marginBottom: 16 }}>
-      {msg.toolCalls && msg.toolCalls.length > 0 && (
+      {pipelineTools.length > 0 && (
         <div style={{ marginBottom: 8 }}>
-          {msg.toolCalls.map((tc, i) => (
+          {pipelineTools.map((tc, i) => (
+            <PipelineToolCard key={`pipeline-${i}`} tc={tc} />
+          ))}
+        </div>
+      )}
+
+      {otherTools.length > 0 && (
+        <div style={{ marginBottom: 8 }}>
+          {otherTools.map((tc, i) => (
             <ToolCallCard key={i} tc={tc} />
           ))}
         </div>
@@ -45,6 +59,12 @@ export function AssistantBubble({ msg, agentName, children }: { msg: ChatMessage
       }}>
         {children ?? (msg.content || " ")}
       </div>
+
+      {msg.meta?.jobId && (
+        <div style={{ marginTop: 4 }}>
+          <JobStatusCard jobId={msg.meta.jobId} live={false} />
+        </div>
+      )}
 
       {msg.meta && (
         <div style={{ fontSize: 11, color: theme.colors.text.faint, marginTop: 4, marginLeft: 4 }}>

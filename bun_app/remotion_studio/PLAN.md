@@ -6,51 +6,108 @@
 > `bun_app/remotion_studio/PLAN.md` — **(this file)** | `.claude/skills/develop_bun_app/SKILL.md`
 > `bun_app/remotion_studio/TODO.md` — Tasks + history | `.claude/skills/develop_bun_app/operations/`
 
-## Current State (v0.13.0)
+## Current State (v0.32.0)
 
-**Focus: AI agent integration + interactive E2E UX.**
+**Focus: Responsive tables, toast alignment, error boundary. 9 tables wrapped for mobile.**
 
-**Working:**
-- 15 pages, 20+ components, 50+ API functions
+**Working (v0.32.0):**
+- **Button component** — 6 variants, 3 sizes. All 17 pages + ErrorBoundary migrated
+- **Card component** — 4 variants. 9 pages + ErrorBoundary migrated
+- **StatusBadge** — 8 variants. Used in 10+ pages. All inline badges consolidated
+- **InputField component** — styled input with label + error. 5 pages
+- **Toast** — Uses theme tokens (radii, font sizes, colors, shadows)
+- **Responsive tables** — 9 tables across 4 pages have horizontal scroll on mobile
+- 316 remotion_studio tests, 0 fail, 21/21 smoke pass
+
+**Continuing from v0.26.0):**
+- **Structured Tool Results** — Typed `ToolResultDetails` discriminated union for all 25 tools across 6 groups. Runtime validation with `validateResult()`. Per-tool typed data interfaces.
+- **Agent Consistency** — Dashboard agent buttons now use SSE streaming (`mode: "stream"`) instead of polling. Real-time streaming text with markdown rendering in `AgentResultPanel`. Streaming cursor indicator during response.
+- **E2E Reliability** — Playwright config now uses `webServer` with built client (no Vite dev server). Eliminates resource exhaustion causing late-suite failures.
+- **New E2E test** — `agent-streaming-parity.spec.ts` validates `/chat` SSE and `/tasks` endpoints return consistent shapes.
+- 305 remotion_studio tests pass, 582 bun_pi_agent tests pass, 0 fail
+
+**Continuing from v0.22.0:**
+- **Global Jobs Panel** — Floating badge with active job count, expandable mini-panel with live SSE progress bars, cancel buttons, mobile bottom sheet
+- **Command Palette** — Cmd+K/Ctrl+K opens searchable overlay for all 17 pages, keyboard nav, mobile touch-friendly
+- **System Status** — Green/yellow/red dashboard indicator with status text and active job count
+- **AI Accent Colour** — `#7c3aed` purple applied to all AI-triggering buttons (Storygraph, ImageGen, Benchmark, Dashboard agents, Advisor panels, AgentChat send)
+- **17 pages** total, 305 remotion_studio tests pass, 526 bun_pi_agent tests pass, 21/21 smoke pass
+
+**Continuing from v0.19.0:**
+- Multi-turn advisor panels, agent prompt templates, structured tool context
+- MockToolRegistry testing framework, async session store, agent bridge interface
+
+**Continuing from v0.18.0:**
+- **First-time onboarding** — Auto-redirect to Wizard for new visitors
+- **Start Step buttons** — Current step shows prominent "Start" button
+- **Mobile responsive** — Wizard stepper adapts to mobile
+
+**Focus: First-time onboarding, Start Step buttons, mobile responsive polish.**
+
+**Working (v0.18.0):**
+- **First-time onboarding** — Auto-redirect to Wizard page for first-time visitors (localStorage flag). Welcome banner with "Don't show again" checkbox. Smoke tests use `addInitScript` to skip redirect.
+- **Start Step buttons** — Current next step in Wizard shows prominent "Start" button. Other steps show "Go" badge.
+- **Mobile responsive** — Wizard stepper adapts to mobile (smaller icons, truncated labels). Overview cards stack vertically. SeriesBreakdown hidden on mobile. File picker modals use `min(520px, 90vw)`.
+- **17 pages** total, 299 unit tests pass, 21/21 smoke pass
+
+**Continuing from v0.17.0:**
+- **Pipeline Wizard page** — 17th page with 8-step visual stepper, series selector, per-step status, per-series breakdown table.
+- **Advisor file attachment** — `useFilePicker` hook shared between AgentChat + AdvisorPanelBase.
+
+**Continuing from v0.16.0:**
+- **Agent context persistence** — Server-side session storage in `data/agent-sessions.json`. `SessionStore` service with CRUD. 4 API endpoints (`GET/PUT/DELETE /api/agent/sessions/:agentName/:sessionId` + `GET /sessions/:agentName`). Client auto-migrates localStorage history to server. `AgentChat` loads from server first, saves after streaming. `AdvisorPanelBase` also persists to server.
+- **Agent→Job Bridge** (v0.15.0) — `POST /chat` creates tracking Job visible in Dashboard, SSE emits `job_id` + `job_update` events with live progress, `JobStatusCard` renders inline during chat streaming and in completed `AssistantBubble` messages
+- **E2E modernization** (v0.15.0) — 13 tests updated. Full E2E: 129/141 pass
+- **299 unit tests pass, 0 fail; 20/20 smoke pass, 0 console errors**
+
+**Next:**
+- E2E flaky test fixup — route interception cleanup, locale isolation, conditional agent bridge tests
+
+**Working (new in v0.14.0):**
+- **16 pages** (added Settings), 22+ components, 50+ API functions
+- **PipelineToolCard** — 25 agent tool names mapped to 10 pipeline op types with icons, status badges, parsed metrics
+- **Agent file attachment** — file picker modal (series browse + attach/detach), server-side path traversal protection, 200KB limit, extension whitelist
+- **Global Settings page** — default model/API provider selector (Agent/GLM/DeepSeek), persisted to localStorage, used by all advisor panels and AgentChat
+- **Agent advisor improvements** — `studio-advisor` prompt strengthened (MUST call tools before advice, structured zh_TW output), global model now propagates to `useAgentTask` hook and `AdvisorPanelBase`
+- **JobStatusCard** — inline job status with progress bar + live polling (now wired to agent→job bridge)
+
+**Playwright validation (2026-04-29 sweep):**
+- Smoke tests: 20/20 pass, 0 console errors across all 16 pages
+- Full E2E: 116 pass, 25 pre-existing failures (outdated Benchmark/FormInteraction tests don't match refactored agent-only UI)
+- Bugs fixed during sweep: Assets React hooks #310, Benchmark infinite loading, unicode escapes in JSX
+
+**Continuing from v0.13.0:**
 - Full pipeline: scaffold → [image ‖ pipeline → check → score] → TTS → render (7 steps, DAG parallel)
 - DAG workflow engine with task tree visualization + AbortSignal cancellation
-- JobStore persistence (survives restart, 7-day TTL, interrupted job recovery)
-- Agent bridge (SSE chat) with multi-agent support
-- Agent capability cards: description, tools/skills badges, model info shown on agent select
-- Conversation starters: per-agent prompt suggestions when chat is empty
-- Advisor panels on 6 pages: Storygraph, Projects, StoryEditor, Workflows, ImageGen, TTS
-- Story plan editor with auto-save + quality hints + revision history
-- Real-time job progress streaming
-- Dark/light theme, responsive mobile layout
-- All 15 pages verified via Playwright E2E (0 console errors)
-- TaskStore persists DAG trees to `data/task-trees.json`
-- API namespace: `pipeline.*`, consistent `TTS` casing
-- Pipeline progress table: per-episode 7-step status with series grouping
-- Job history panel: configurable retention (JOB_TTL_DAYS), collapsible Dashboard section
-- Batch operations: multi-episode TTS/render from PipelineProgress page
-- Episode Kanban board: visual pipeline-stage columns with series filter
-- Asset library search: substring search with highlight across characters/backgrounds/audio
-- Dashboard "What's Next": guided pipeline suggestion based on episode progress
-- Help text: info panels on TTS, Render, ImageGen; trend legend on Monitoring; AgentChat description
-- Character design brief: structured form auto-generates image prompts
-- Quality inline hints: Story Editor shows missing sections, incomplete characters
-- Review checklist: per-series episode readiness summary in Projects
-- Dialog preview: test TTS for a single scene from TTS page
-- Plan revision history: auto-snapshot on save, restore from revision panel
-- Structured section editor: table-based editing for Characters/Episode Guide/Running Gags, text editing for prose sections
-- Chinese (zh_TW) localization: full i18n system with language toggle in sidebar, 180+ translatable strings, persisted locale in localStorage
-- 23 E2E spec files covering all pages, i18n, empty states, error scenarios, loading states, batch operations
-- **Cross-app:** Imports storygraph pipeline-api.ts (runPipeline, runCheck, runScore), plan-parser.ts (parsePlan, splitSections). Reads storygraph_out/ for quality/monitoring/benchmark data.
-
-**Bugs fixed (2026-04-27):**
-- `theme/context.ts` had JSX in `.ts` file → renamed to `.tsx`
-- `Dashboard.tsx:229` emoji `\u{1F4CB}` rendered as raw text → fixed to JSX expression
-- Jobs lost on restart → JobStore persistence added
-- Workflow routes used sequential execution → DAG auto-selected
-- `CreateProject` misleading name → renamed to `ScaffoldEpisode`
+- JobStore persistence, TaskStore, agent bridge (SSE), advisor panels, i18n (zh_TW), theme
+- Pipeline progress, Kanban, batch ops, asset search, revision history, section editor
 
 **Known issues (unfixed):**
 - No onboarding/help tour for new users
+
+---
+
+## 0. Retrospective (2026-04-29)
+
+### What Went Well
+- PipelineToolCard + file attachment + Settings page were implemented cleanly and all 20 smoke tests pass
+- Playwright validation caught 3 real bugs that unit tests missed (React hooks #310, Benchmark infinite loading, esbuild unicode rejection)
+- Agent advisor prompts and model propagation now unified — one global setting feeds all advisor panels
+
+### What Went Wrong / Root Causes
+| Issue | Root Cause | Prevention |
+|-------|-----------|------------|
+| Build broken (unicode escapes in JSX) | `\u{1F4CE}` works in JS strings but esbuild rejects it in JSX | Added to skill: Step 4b mandatory rebuild + smoke test |
+| Assets page crash (React #310) | `useMemo` called after `if (loading) return` — hooks order violation | Added to skill: check all hooks before any early return |
+| Benchmark page stuck loading | `setLoading(false)` never called — missing `useEffect` | Discovered by Playwright: page renders error boundary |
+| 25 E2E tests fail | Tests written for old Benchmark UI (form controls, mode selector) — UI refactored to agent-only buttons | Tests must be updated when UI is refactored |
+| Agent advisors "useless" | Global model not passed to `useAgentTask`/`AdvisorPanelBase`; `studio-advisor` prompt didn't require tool calls | Model propagation + stronger system prompts |
+| `bunx vite` resolves to latest global Vite | Bun's `bunx` fetches latest, not project version | Always use `bun run --cwd ... build` for project Vite |
+
+### Process Changes Applied
+- **Skill `develop.md` Step 4b**: mandatory rebuild + restart server + Playwright smoke for any client change
+- **Memory files**: `feedback_validation.md`, `feedback_jsx_unicode.md`, `feedback_bunx.md`
+- **Validation rhythm**: unit tests → Vite build → restart server → Playwright smoke → report
 
 ---
 
@@ -107,7 +164,7 @@ Server starts → JobStore loads from data/jobs.json
 | **Schedules** | Yes | `data/schedules.json` | YES |
 | **Automation Rules** | Yes | `data/automation-rules.json` | YES |
 | **Webhook Secrets** | Yes | `data/webhook-secrets.json` | YES |
-| **Agent Chat History** | Yes | localStorage (browser) | YES |
+| **Agent Chat History** | Yes | `data/agent-sessions.json` + localStorage | YES (server-side, migrated from localStorage) |
 
 ### JobStore (persisted, mirrors TaskStore pattern)
 
@@ -199,6 +256,7 @@ The workflow route (`routes/workflows.ts`) checks `TEMPLATE_DEPS[templateId]`. I
 ```
 Sidebar
 ├── Overview
+│   ├── Wizard          — Guided pipeline stepper (new users)
 │   ├── Dashboard       — Server health + job queue
 │   ├── Monitoring      — Series health cards + trends
 │   ├── Progress        — Per-episode pipeline status table
@@ -626,35 +684,44 @@ Render Video (Render)
 
 | File | Exports | Lines | Status |
 |------|---------|-------|--------|
-| `App.tsx` | `App`, `NAV_SECTIONS`, `PageRouter` | 229 | Stable |
+| `App.tsx` | `App`, `NAV_SECTIONS`, `PageRouter` | ~290 | Updated (v0.22.0) — GlobalJobsPanel + CommandPalette + Cmd+K |
 | `index.tsx` | Entry point | 12 | Stable |
-| `api.ts` | `api` (50+ methods) | 222 | Needs namespace cleanup |
-| `pages/Dashboard.tsx` | `Dashboard` | ~420 | Updated (v0.12.1) — story-health agent prompts |
-| `pages/Projects.tsx` | `Projects`, `ProjectTable`, `ProjectDetail`, `CreateProject`, `BuildPanel`, `AdvisorPanel`, `ScoreBadge` | 654 | Naming issues |
-| `pages/Workflows.tsx` | `Workflows` | 404 | Stable |
-| `pages/StoryEditor.tsx` | `StoryEditor`, `SectionsView`, `MarkdownEditor`, `MarkdownPreview` | 382 | Structure tab (v0.10.0) |
-| `pages/Storygraph.tsx` | `Storygraph`, `HelpTip` | 260 | Gold standard |
-| `pages/Quality.tsx` | `Quality` | 454 | Stable |
-| `pages/Benchmark.tsx` | `Benchmark` | 275 | Stable |
-| `pages/AgentChat.tsx` | `AgentChat` | 343 | Missing description |
-| `pages/Assets.tsx` | `Assets` | 220 | Search + highlight (v0.5.0) |
-| `pages/TTS.tsx` | `TTS` | 162 | Needs engine docs |
-| `pages/Render.tsx` | `Render` | 153 | Needs settings |
-| `pages/ImageGen.tsx` | `ImageGen` | 339 | Needs prompt guide |
-| `pages/Monitoring.tsx` | `Monitoring` | 169 | Needs legend |
-| `pages/PipelineProgress.tsx` | `PipelineProgress` | ~280 | Batch ops UI (v0.4.0) |
-| `pages/EpisodeKanban.tsx` | `EpisodeKanban` | ~170 | New (v0.5.0) |
-| `components/index.ts` | Re-exports | ~30 | Stable |
-| `components/AdvisorPanelBase.tsx` | `AdvisorPanelBase` | ~200 | Stable |
+| `api.ts` | `api` (55+ methods) | 271 | Updated (v0.16.0) — session API methods |
+| `pages/Dashboard.tsx` | `Dashboard`, `SystemStatus`, `DashboardAgentBtn` | ~470 | Updated (v0.28.0) — Button migration (10 buttons) |
+| `pages/Projects.tsx` | `Projects`, `ProjectTable`, `ProjectDetail`, `CreateProject`, `BuildPanel`, `AdvisorPanel`, `ScoreBadge` | 654 | Updated (v0.28.0) — Button migration (9+ buttons) |
+| `pages/Workflows.tsx` | `Workflows` | 404 | Updated (v0.28.0) — Button migration (5 buttons) |
+| `pages/StoryEditor.tsx` | `StoryEditor`, `SectionsView`, `MarkdownEditor`, `MarkdownPreview` | 382 | Updated (v0.28.0) — Button migration (7 buttons) |
+| `pages/Storygraph.tsx` | `Storygraph`, `HelpTip` | 260 | Updated (v0.29.0) — Card migration (1 card) |
+| `pages/Quality.tsx` | `Quality` | 454 | Updated (v0.29.0) — Card migration (4 cards) |
+| `pages/Benchmark.tsx` | `Benchmark` | 275 | Updated (v0.28.0) — Button migration (1 button) |
+| `pages/PipelineWizard.tsx` | `PipelineWizard` | ~540 | Updated (v0.30.0) — StatusBadge migration (1 badge) |
+| `pages/AgentChat.tsx` | `AgentChat`, `AgentDirectory` | ~830 | Updated (v0.29.0) — Card migration (1 card) |
+| `pages/Assets.tsx` | `Assets` | 220 | Updated (v0.28.0) — Button migration (4 buttons) |
+| `pages/TTS.tsx` | `TTS` | 162 | Updated (v0.29.0) — Card migration (1 card) |
+| `pages/Render.tsx` | `Render` | 153 | Updated (v0.28.0) — Button migration (1 button) |
+| `pages/ImageGen.tsx` | `ImageGen` | 339 | Updated (v0.28.0) — Button migration (7 buttons) |
+| `pages/Settings.tsx` | `Settings`, `loadGlobalModel`, `saveGlobalModel` | ~130 | Updated (v0.27.0) — Card migration |
+| `pages/Monitoring.tsx` | `Monitoring` | 169 | Updated (v0.29.0) — Card migration (2 cards) |
+| `pages/PipelineProgress.tsx` | `PipelineProgress` | ~280 | Updated (v0.28.0) — Button migration (5 buttons) |
+| `pages/EpisodeKanban.tsx` | `EpisodeKanban` | ~170 | Updated (v0.30.0) — StatusBadge migration (1 badge) |
+| `components/index.ts` | Re-exports (Button, Card, InputField, etc.) | ~30 | Updated (v0.28.0) — Button exported to all 17 pages |
+| `components/Button.tsx` | `Button`, `ButtonProps` | ~60 | New (v0.27.0) — 6 variants, 3 sizes |
+| `components/AdvisorPanelBase.tsx` | `AdvisorPanelBase` | ~380 | Updated (v0.17.0) — file attachment UI + modal |
 | `components/ChatBubble.tsx` | `ChatBubble`, `UserBubble` | ~80 | Stable |
 | `components/ToolCallCard.tsx` | `ToolCallCard` | ~60 | Stable |
+| `components/PipelineToolCard.tsx` | `PipelineToolCard`, `getPipelineOp`, `PipelineToolInfo` | ~145 | New (v0.13.1) |
+| `components/JobStatusCard.tsx` | `JobStatusCard` | ~100 | New (v0.13.1) |
 | `components/TaskTreeNode.tsx` | `TaskTreeNode`, `TaskTreeView` | ~150 | Stable |
 | `components/MarkdownText.tsx` | `MarkdownText` | ~40 | Stable |
 | `components/ThinkingIndicator.tsx` | `ThinkingIndicator` | ~20 | Stable |
 | `components/SectionEditor.tsx` | `SectionEditor`, `TableSectionEditor`, `TextSectionEditor` | ~220 | New (v0.10.0) |
 | `utils/markdown-table.ts` | `parseMarkdownTable`, `serializeMarkdownTable`, `replaceSectionInMarkdown` | ~70 | New (v0.10.0) |
 | `hooks/useAgentTask.ts` | `useAgentTask` | ~170 | Updated (v0.12.1) — ref-based bridge status, 30s re-check |
-| `theme/` | `ThemeProvider`, `useTheme`, `scoreColor` | ~200 | Stable |
+| `hooks/useFilePicker.ts` | `useFilePicker` | ~80 | New (v0.17.0) |
+| `hooks/useJobStream.ts` | `useJobStream` | ~80 | New (v0.22.0) — shared job SSE subscription |
+| `components/GlobalJobsPanel.tsx` | `GlobalJobsPanel` | ~210 | New (v0.22.0) — floating badge + mini panel |
+| `components/CommandPalette.tsx` | `CommandPalette`, `PaletteItem` | ~170 | New (v0.22.0) — Cmd+K searchable palette |
+| `theme/` | `ThemeProvider`, `useTheme`, `scoreColor` | ~270 | Updated (v0.22.0) — aiAccent colour tokens |
 
 ### Server (`src/server/`)
 
@@ -686,7 +753,8 @@ Render Video (Render)
 
 | File | Exports | Lines | Status |
 |------|---------|-------|--------|
-| `job-store.ts` | `JobStore` class (set, get, list, delete, markInterrupted) | 108 | New (v0.2.0) |
+| `job-store.ts` | `JobStore` class (set, get, list, delete, markInterrupted) | 108 | Stable |
+| `session-store.ts` | `SessionStore` class (save, load, listSessions, deleteSession) | ~100 | New (v0.16.0) |
 | `task-store.ts` | `TaskStore` class (createTree, addNode, updateNode, getTree) | 209 | Stable |
 | `workflow-engine.ts` | `runWorkflow`, `runWorkflowDAG`, `TEMPLATE_DEPS`, step builders | 915 | Updated (v0.2.0) |
 | `dag-executor.ts` | `executeTaskTree`, `StepExecutor` | 138 | Stable |

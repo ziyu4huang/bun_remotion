@@ -91,7 +91,7 @@ describe("sg_regression", () => {
     expect(parsed).toHaveProperty("exitCode");
     expect([0, 1]).toContain(parsed.exitCode);
     // details should also have exitCode
-    expect((result.details as any).exitCode).toBe(parsed.exitCode);
+    expect((result.details.data as any).exitCode).toBe(parsed.exitCode);
   });
 
   test("ci mode on non-existent dir returns JSON error", async () => {

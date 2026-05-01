@@ -1,6 +1,8 @@
 import { readFileSync, readdirSync, existsSync, statSync } from "fs";
-import { resolve, join } from "path";
+import { resolve, join, dirname } from "path";
 import type { AgentDefinition } from "./types.js";
+
+const includeCache = new Map<string, string>();
 
 /**
  * Parse an agent definition from a markdown file with YAML frontmatter.
@@ -14,6 +16,7 @@ import type { AgentDefinition } from "./types.js";
  *   skills: storygraph-benchmark
  *   ---
  *   Agent-specific system prompt body...
+ *   !include shared-section-name.md
  */
 export function parseAgentDef(filePath: string): AgentDefinition {
   const content = readFileSync(filePath, "utf-8");
@@ -45,15 +48,70 @@ export function parseAgentDef(filePath: string): AgentDefinition {
     ? fields.skills.split(",").map((s: string) => s.trim()).filter(Boolean)
     : undefined;
 
+  // Resolve !include directives in the body
+  const agentDir = dirname(filePath);
+  const sharedDir = resolve(agentDir, "../shared");
+  const { resolvedBody, sharedSections } = resolveIncludes(body.trim(), sharedDir, 0);
+
   return {
     name,
     description,
     tools: tools?.length ? tools : undefined,
     model: fields.model || undefined,
     skills: skills?.length ? skills : undefined,
-    prompt: body.trim(),
+    prompt: resolvedBody,
+    shared: sharedSections.length ? sharedSections : undefined,
     filePath,
   };
+}
+
+/**
+ * Resolve !include directives in agent prompt body.
+ * Lines matching `!include <filename>.md` are replaced with the contents of
+ * `.agent/shared/<filename>.md`.
+ */
+function resolveIncludes(
+  body: string,
+  sharedDir: string,
+  depth: number,
+): { resolvedBody: string; sharedSections: string[] } {
+  if (depth > 5) throw new Error("!include nesting depth exceeded (max 5)");
+
+  const sharedSections: string[] = [];
+  const lines = body.split("\n");
+  const resolved: string[] = [];
+
+  for (const line of lines) {
+    const match = line.match(/^!include\s+(\S+)\s*$/);
+    if (match) {
+      const filename = match[1];
+      const sharedPath = join(sharedDir, filename);
+
+      if (!existsSync(sharedPath)) {
+        throw new Error(`!include file not found: ${filename} (resolved to ${sharedPath})`);
+      }
+
+      const sectionContent = readSharedFile(sharedPath);
+      sharedSections.push(filename.replace(/\.md$/, ""));
+
+      // Support nested includes
+      const { resolvedBody: nested } = resolveIncludes(sectionContent, sharedDir, depth + 1);
+      resolved.push(nested);
+    } else {
+      resolved.push(line);
+    }
+  }
+
+  return { resolvedBody: resolved.join("\n"), sharedSections };
+}
+
+function readSharedFile(path: string): string {
+  const cached = includeCache.get(path);
+  if (cached !== undefined) return cached;
+
+  const content = readFileSync(path, "utf-8").trim();
+  includeCache.set(path, content);
+  return content;
 }
 
 /** Simple YAML-like frontmatter parser (key: value pairs, no nesting) */
@@ -100,4 +158,9 @@ export function discoverAgents(workDir: string): AgentDefinition[] {
   }
 
   return agents;
+}
+
+/** Clear the shared section file cache (for testing) */
+export function clearIncludeCache(): void {
+  includeCache.clear();
 }

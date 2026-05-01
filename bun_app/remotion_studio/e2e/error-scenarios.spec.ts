@@ -1,9 +1,13 @@
-import { test, expect } from "@playwright/test";
-import { navigateTo, forceApiError } from "./helpers";
+import { test, expect } from "./fixtures";
+import { navigateTo, forceApiError, gotoWithRetry } from "./helpers";
 
 test.describe("Error Scenarios", () => {
+  test.afterEach(async ({ page }) => {
+    await page.unrouteAll();
+  });
+
   test("Dashboard handles jobs API failure gracefully", async ({ page }) => {
-    await page.goto("/");
+    await gotoWithRetry(page);
     await forceApiError(page, "jobs");
     await navigateTo(page, "Dashboard");
     await page.waitForTimeout(1000);
@@ -11,7 +15,7 @@ test.describe("Error Scenarios", () => {
   });
 
   test("Dashboard handles health API failure gracefully", async ({ page }) => {
-    await page.goto("/");
+    await gotoWithRetry(page);
     await forceApiError(page, "health");
     await navigateTo(page, "Dashboard");
     await page.waitForTimeout(1000);
@@ -19,7 +23,7 @@ test.describe("Error Scenarios", () => {
   });
 
   test("Projects page handles API failure gracefully", async ({ page }) => {
-    await page.goto("/");
+    await gotoWithRetry(page);
     await forceApiError(page, "projects");
     await navigateTo(page, "Projects");
     await page.waitForTimeout(1000);
@@ -27,7 +31,7 @@ test.describe("Error Scenarios", () => {
   });
 
   test("Storygraph handles pipeline failure gracefully", async ({ page }) => {
-    await page.goto("/");
+    await gotoWithRetry(page);
     await forceApiError(page, "pipeline");
     await navigateTo(page, "Storygraph");
     await page.waitForTimeout(1000);
@@ -35,7 +39,7 @@ test.describe("Error Scenarios", () => {
   });
 
   test("Benchmark handles failure gracefully", async ({ page }) => {
-    await page.goto("/");
+    await gotoWithRetry(page);
     await forceApiError(page, "benchmark");
     await navigateTo(page, "Benchmark");
     await page.waitForTimeout(1000);
@@ -43,7 +47,7 @@ test.describe("Error Scenarios", () => {
   });
 
   test("TTS page handles API failure gracefully", async ({ page }) => {
-    await page.goto("/");
+    await gotoWithRetry(page);
     await forceApiError(page, "tts");
     await navigateTo(page, "TTS");
     await page.waitForTimeout(1000);
@@ -51,7 +55,7 @@ test.describe("Error Scenarios", () => {
   });
 
   test("Render page handles API failure gracefully", async ({ page }) => {
-    await page.goto("/");
+    await gotoWithRetry(page);
     await forceApiError(page, "render");
     await navigateTo(page, "Render");
     await page.waitForTimeout(1000);
@@ -59,7 +63,7 @@ test.describe("Error Scenarios", () => {
   });
 
   test("ImageGen page handles API failure gracefully", async ({ page }) => {
-    await page.goto("/");
+    await gotoWithRetry(page);
     await forceApiError(page, "image");
     await forceApiError(page, "projects");
     await navigateTo(page, "Image");
@@ -68,7 +72,7 @@ test.describe("Error Scenarios", () => {
   });
 
   test("Workflows page handles API failure gracefully", async ({ page }) => {
-    await page.goto("/");
+    await gotoWithRetry(page);
     await forceApiError(page, "workflows");
     await navigateTo(page, "Workflows");
     await page.waitForTimeout(1000);
@@ -76,7 +80,7 @@ test.describe("Error Scenarios", () => {
   });
 
   test("PipelineProgress handles API failure gracefully", async ({ page }) => {
-    await page.goto("/");
+    await gotoWithRetry(page);
     await forceApiError(page, "episode-progress");
     await navigateTo(page, "Progress");
     await page.waitForTimeout(1000);
@@ -84,7 +88,7 @@ test.describe("Error Scenarios", () => {
   });
 
   test("Monitoring handles API failure gracefully", async ({ page }) => {
-    await page.goto("/");
+    await gotoWithRetry(page);
     await forceApiError(page, "monitoring");
     await navigateTo(page, "Monitoring");
     await page.waitForTimeout(1000);
@@ -92,7 +96,7 @@ test.describe("Error Scenarios", () => {
   });
 
   test("Agent Chat handles bridge unavailable gracefully", async ({ page }) => {
-    await page.goto("/");
+    await gotoWithRetry(page);
     await forceApiError(page, "agent/status");
     await navigateTo(page, "Agent Chat");
     await page.waitForTimeout(1000);
@@ -103,7 +107,7 @@ test.describe("Error Scenarios", () => {
   });
 
   test("Error boundary catches render errors", async ({ page }) => {
-    await page.goto("/");
+    await gotoWithRetry(page);
     await navigateTo(page, "Dashboard");
     await page.waitForTimeout(500);
     const crashed = await page.evaluate(() => {

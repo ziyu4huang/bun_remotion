@@ -1,29 +1,48 @@
 import { useTheme } from "../theme";
+import { MarkdownText } from "./MarkdownText";
 import type { AgentTaskState } from "../hooks/useAgentTask";
 
 /**
- * Shared display for agent task results, loading, and errors.
+ * Shared display for agent task results, streaming text, and errors.
  * Used by Dashboard, Monitoring, Benchmark, Quality pages.
  */
 export function AgentResultPanel({ task, theme }: { task: AgentTaskState; theme: ReturnType<typeof useTheme> }) {
   if (task.status === "idle") return null;
 
+  const contentStyle = {
+    fontSize: theme.font.sizes.base,
+    lineHeight: 1.6,
+    padding: theme.spacing.md,
+    background: theme.colors.bg.page,
+    borderRadius: theme.radii.lg,
+    maxHeight: 480,
+    overflowY: "auto" as const,
+  };
+
   return (
     <div style={{ marginTop: theme.spacing.md }}>
       {task.status === "starting" && (
-        <div style={{ fontStyle: "italic", color: theme.colors.text.tertiary }}>Starting agent...</div>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, color: theme.colors.text.tertiary }}>
+          <span style={{ animation: "pulse 1.5s infinite", display: "inline-block" }}>●</span>
+          <span style={{ fontStyle: "italic" }}>Starting agent...</span>
+        </div>
       )}
-      {task.status === "running" && (
-        <div style={{ fontStyle: "italic", color: theme.colors.text.tertiary }}>Agent analyzing...</div>
+      {task.status === "running" && task.streamingText && (
+        <div style={contentStyle}>
+          <MarkdownText text={task.streamingText} />
+          <span style={{ display: "inline-block", animation: "pulse 1s infinite", color: theme.colors.aiAccent, marginLeft: 2 }}>▌</span>
+        </div>
+      )}
+      {task.status === "running" && !task.streamingText && (
+        <div style={{ display: "flex", alignItems: "center", gap: 8, color: theme.colors.text.tertiary }}>
+          <span style={{ animation: "pulse 1.5s infinite", display: "inline-block" }}>●</span>
+          <span style={{ fontStyle: "italic" }}>Agent analyzing...</span>
+        </div>
       )}
       {task.status === "done" && task.result && (
-        <pre style={{
-          whiteSpace: "pre-wrap", fontSize: theme.font.sizes.base, lineHeight: 1.5,
-          margin: 0, fontFamily: "inherit", padding: theme.spacing.md,
-          background: theme.colors.bg.page, borderRadius: theme.radii.lg,
-        }}>
-          {task.result}
-        </pre>
+        <div style={contentStyle}>
+          <MarkdownText text={task.result} />
+        </div>
       )}
       {task.status === "error" && task.result && (
         <div style={{

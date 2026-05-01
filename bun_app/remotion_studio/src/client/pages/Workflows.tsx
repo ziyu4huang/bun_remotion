@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { api } from "../api";
-import { PageHeader, StatusBadge, LoadingSpinner, EmptyState, SkeletonRow, AdvisorPanelBase, type ChatMessage, loadHistory, saveHistory } from "../components";
+import { PageHeader, StatusBadge, LoadingSpinner, EmptyState, SkeletonRow, Button, Card, InputField, type ChatMessage, loadHistory, saveHistory } from "../components";
+import { AdvisorPanelBase } from "../components/AdvisorPanelBase";
 import { toast } from "../components/ToastContainer";
 import { TaskTreeView } from "../components/TaskTreeNode";
 import { useTheme } from "../theme";
@@ -155,20 +156,13 @@ export function Workflows() {
     <div style={{ display: "flex", gap: theme.spacing.xl }}>
       <div style={{ flex: 1 }}>
       <PageHeader title={t.workflows.title} description={t.workflows.description}>
-        <button
+        <Button
+          variant="outline"
+          size="sm"
           onClick={() => setShowAdvisor(!showAdvisor)}
-          style={{
-            padding: `${theme.spacing.xs}px ${theme.spacing.md}px`,
-            background: showAdvisor ? theme.colors.primaryDark : theme.colors.primaryLight,
-            color: showAdvisor ? theme.colors.bg.page : theme.colors.primaryDark,
-            border: `1px solid ${theme.colors.primaryDark}`,
-            borderRadius: theme.radii.md,
-            cursor: "pointer",
-            fontSize: theme.font.sizes.sm,
-          }}
         >
           {showAdvisor ? t.workflows.hideAdvisor : t.workflows.askAdvisor}
-        </button>
+        </Button>
       </PageHeader>
 
       {/* Template selector */}
@@ -187,11 +181,11 @@ export function Workflows() {
       </div>
 
       {template && (
-        <div style={{ marginBottom: theme.spacing.lg, padding: theme.spacing.md, background: theme.colors.bg.muted, borderRadius: theme.radii.xl }}>
+        <Card variant="default" padding="md" style={{ marginBottom: theme.spacing.lg }}>
           <div style={{ fontSize: theme.font.sizes.base, color: theme.colors.text.secondary }}>
             {t.workflows.steps}: {template.steps.map((s) => s.label).join(" → ")}
           </div>
-        </div>
+        </Card>
       )}
 
       {/* Config form */}
@@ -218,18 +212,18 @@ export function Workflows() {
             <>
               <div>
                 <label style={{ fontSize: theme.font.sizes.base, color: theme.colors.text.secondary, display: "block", marginBottom: theme.spacing.xs }}>{t.workflows.chapter}</label>
-                <input
+                <InputField
                   type="number" min={1} value={chapter}
                   onChange={(e) => setChapter(e.target.value)}
-                  style={{ padding: `6px ${theme.spacing.md}px`, borderRadius: theme.radii.lg, fontSize: theme.font.sizes.md, width: 80 }}
+                  style={{ width: 80 }}
                 />
               </div>
               <div>
                 <label style={{ fontSize: theme.font.sizes.base, color: theme.colors.text.secondary, display: "block", marginBottom: theme.spacing.xs }}>{t.workflows.episode}</label>
-                <input
+                <InputField
                   type="number" min={1} value={episode}
                   onChange={(e) => setEpisode(e.target.value)}
-                  style={{ padding: `6px ${theme.spacing.md}px`, borderRadius: theme.radii.lg, fontSize: theme.font.sizes.md, width: 80 }}
+                  style={{ width: 80 }}
                 />
               </div>
             </>
@@ -294,12 +288,13 @@ export function Workflows() {
           <div style={{ marginBottom: theme.spacing.lg }}>
             <div style={{ display: "flex", alignItems: "center", gap: theme.spacing.sm, marginBottom: theme.spacing.sm }}>
               <span style={{ fontSize: theme.font.sizes.base, color: theme.colors.text.secondary, fontWeight: theme.font.weights.semibold }}>{t.workflows.images} ({imageItems.length})</span>
-              <button
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => setImageItems([...imageItems, { filename: "", prompt: "" }])}
-                style={{ padding: `2px ${theme.spacing.sm}px`, borderRadius: theme.radii.md, border: `1px solid ${theme.colors.border.medium}`, background: theme.colors.bg.page, fontSize: theme.font.sizes.base, cursor: "pointer" }}
               >
                 {t.workflows.add}
-              </button>
+              </Button>
             </div>
             {imageItems.map((item, idx) => (
               <div key={idx} style={{ display: "flex", gap: theme.spacing.xs, marginBottom: theme.spacing.xs, alignItems: "center" }}>
@@ -323,32 +318,25 @@ export function Workflows() {
                   }}
                   style={{ padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`, borderRadius: theme.radii.md, border: `1px solid ${theme.colors.border.medium}`, fontSize: theme.font.sizes.base, flex: 1 }}
                 />
-                <button
+                <Button
+                  variant="danger"
+                  size="sm"
                   onClick={() => setImageItems(imageItems.filter((_, i) => i !== idx))}
-                  style={{ padding: `2px ${theme.spacing.sm}px`, borderRadius: theme.radii.md, border: `1px solid #e5e7eb`, background: "#fee2e2", color: "#991b1b", fontSize: theme.font.sizes.xs, cursor: "pointer" }}
                 >
                   x
-                </button>
+                </Button>
               </div>
             ))}
           </div>
         )}
 
-          <button
+          <Button
+            variant="primary"
             onClick={handleTrigger}
             disabled={!canTrigger || !!job}
-            style={{
-              padding: `6px ${theme.spacing.xl}px`,
-              borderRadius: theme.radii.lg,
-              border: "none",
-              background: canTrigger && !job ? "#059669" : theme.colors.border.medium,
-              color: theme.colors.bg.page,
-              cursor: canTrigger && !job ? "pointer" : "not-allowed",
-              fontSize: theme.font.sizes.md,
-            }}
           >
             {t.workflows.runWorkflow}
-          </button>
+          </Button>
         </div>
       )}
 
@@ -370,20 +358,21 @@ export function Workflows() {
           <div style={{ display: "flex", alignItems: "center", gap: theme.spacing.sm, marginBottom: theme.spacing.sm }}>
             <h3 style={{ fontSize: theme.font.sizes.md, margin: 0 }}>{t.workflows.taskTree}</h3>
             {job?.status === "running" && (
-              <button
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => job && loadTree(job.id)}
-                style={{ fontSize: theme.font.sizes.sm, padding: `2px ${theme.spacing.sm}px`, borderRadius: theme.radii.sm, border: `1px solid ${theme.colors.border.medium}`, background: "transparent", cursor: "pointer" }}
               >
                 {t.workflows.refresh}
-              </button>
+              </Button>
             )}
           </div>
-          <div style={{ border: `1px solid ${theme.colors.border.default}`, borderRadius: theme.radii.xl, padding: theme.spacing.sm, background: theme.colors.bg.surface }}>
+          <Card variant="surface" padding="sm">
             <TaskTreeView
               tree={tree}
               onRetry={job ? handleRetryNode : undefined}
             />
-          </div>
+          </Card>
         </div>
       )}
 

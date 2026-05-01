@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { api } from "../api";
-import { PageHeader, LoadingSpinner, EmptyState, AdvisorPanelBase, type ChatMessage, loadHistory, saveHistory } from "../components";
+import { PageHeader, LoadingSpinner, EmptyState, Button, Card, InputField, type ChatMessage, loadHistory, saveHistory } from "../components";
+import { AdvisorPanelBase } from "../components/AdvisorPanelBase";
 import { toast } from "../components/ToastContainer";
 import type { Project, TTSStatus, Job, JobProgress } from "../../shared/types";
 import { useTheme } from "../theme";
@@ -68,20 +69,13 @@ export function TTS() {
     <div style={{ display: "flex", gap: theme.spacing.xl }}>
       <div style={{ flex: 1 }}>
       <PageHeader title={t.tts.title} description={t.tts.description}>
-        <button
+        <Button
+          variant="outline"
+          size="sm"
           onClick={() => setShowAdvisor(!showAdvisor)}
-          style={{
-            padding: `${theme.spacing.xs}px ${theme.spacing.md}px`,
-            background: showAdvisor ? theme.colors.primaryDark : theme.colors.primaryLight,
-            color: showAdvisor ? theme.colors.bg.page : theme.colors.primaryDark,
-            border: `1px solid ${theme.colors.primaryDark}`,
-            borderRadius: theme.radii.md,
-            cursor: "pointer",
-            fontSize: theme.font.sizes.sm,
-          }}
         >
           {showAdvisor ? t.tts.hideAdvisor : t.tts.askAdvisor}
-        </button>
+        </Button>
       </PageHeader>
 
       <InfoPanel theme={theme}>
@@ -100,21 +94,13 @@ export function TTS() {
           ))}
         </select>
 
-        <button
+        <Button
+          variant="primary"
           onClick={handleGenerate}
           disabled={!selectedEpisode || !status?.hasNarration || !!job}
-          style={{
-            padding: "6px 16px",
-            borderRadius: theme.radii.lg,
-            border: "none",
-            background: selectedEpisode && status?.hasNarration && !job ? theme.colors.blue : theme.colors.border.medium,
-            color: theme.colors.bg.page,
-            cursor: selectedEpisode && status?.hasNarration && !job ? "pointer" : "not-allowed",
-            fontSize: theme.font.sizes.md,
-          }}
         >
           {t.tts.generateTts}
-        </button>
+        </Button>
       </div>
 
       {!selectedEpisode && (
@@ -171,26 +157,23 @@ export function TTS() {
 
       {/* Scene Preview */}
       {status?.hasNarration && (
-        <div style={{
+        <Card variant="outline" padding="none" style={{
           marginTop: theme.spacing.xl,
-          border: `1px solid ${theme.colors.border.default}`, borderRadius: theme.radii.lg,
           overflow: "hidden",
         }}>
           <div style={{ padding: "10px 14px", background: theme.colors.bg.muted, fontWeight: theme.font.weights.medium, fontSize: theme.font.sizes.sm }}>
             Scene Preview — test TTS for a single scene
           </div>
           <div style={{ padding: 14, display: "flex", gap: theme.spacing.sm, alignItems: "center" }}>
-            <input
+            <InputField
+              placeholder={t.tts.sceneNamePlaceholder}
               value={previewScene}
               onChange={(e) => setPreviewScene(e.target.value)}
-              placeholder={t.tts.sceneNamePlaceholder}
-              style={{
-                padding: "4px 10px", borderRadius: theme.radii.md,
-                border: `1px solid ${theme.colors.border.medium}`, width: 200,
-                fontSize: theme.font.sizes.sm,
-              }}
+              style={{ width: 200 }}
             />
-            <button
+            <Button
+              variant="primary"
+              size="sm"
               onClick={async () => {
                 if (!selectedEpisode || !previewScene) return;
                 const res = await api.generateTTS(selectedEpisode, { scene: previewScene });
@@ -208,18 +191,11 @@ export function TTS() {
                 }
               }}
               disabled={!previewScene || !!previewJob || !!job}
-              style={{
-                padding: "4px 14px", borderRadius: theme.radii.md,
-                border: `1px solid ${theme.colors.blue}`,
-                background: previewScene && !previewJob && !job ? theme.colors.blue : theme.colors.border.medium,
-                color: "#fff", cursor: previewScene && !previewJob && !job ? "pointer" : "not-allowed",
-                fontSize: theme.font.sizes.sm,
-              }}
             >
               {previewJob ? t.tts.previewing(previewJob.progress) : t.tts.previewScene}
-            </button>
+            </Button>
           </div>
-        </div>
+        </Card>
       )}
       </div>
       {showAdvisor && (

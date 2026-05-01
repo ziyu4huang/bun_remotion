@@ -6,6 +6,7 @@ import { createAllTools, createToolsByNames } from "./tool-registry.js";
 import { getDeepSeekModel, getDeepSeekApiKey, isDeepSeekModel } from "../models/deepseek.js";
 import type { AgentDefinition } from "./types.js";
 import type { Model } from "@mariozechner/pi-ai";
+import type { MockToolRegistry } from "./mock-registry.js";
 
 const BASE_SYSTEM_PROMPT = `You are a coding assistant. You can read, write, edit, and search files, list directories, and execute bash commands.
 
@@ -97,6 +98,49 @@ export function createAgentFromDef(
     getApiKey: () => apiKey,
   });
 }
+
+/**
+ * Create an Agent from an AgentDefinition using mock tools for testing.
+ * The agent has the real system prompt and model, but tools are deterministic.
+ */
+export function createAgentFromDefWithMocks(
+  def: AgentDefinition,
+  mockRegistry: MockToolRegistry,
+  modelOverride?: string,
+): Agent {
+  const config = getConfig();
+
+  const modelString = modelOverride || def.model || `${config.modelProvider}/${config.modelName}`;
+  const [provider, ...nameParts] = modelString.split("/");
+  const modelName = nameParts.join("/");
+
+  let model: Model<any>;
+  let apiKey: string | undefined;
+
+  if (provider === "deepseek") {
+    model = getDeepSeekModel(modelName || "deepseek-v4-pro");
+    apiKey = getDeepSeekApiKey();
+  } else {
+    apiKey = getEnvApiKey(provider as any) || "mock-api-key";
+    model = getModel(provider as any, modelName as any);
+  }
+
+  const toolNames = (def.tools && def.tools.length > 0) ? def.tools : Object.keys(STANDARD_TOOL_NAMES);
+  const tools = mockRegistry.createMockTools(toolNames);
+
+  const { skills } = loadAgentSkills();
+  const skillsSection = getSkillsPromptSection(skills);
+  let systemPrompt = BASE_SYSTEM_PROMPT;
+  if (def.prompt) systemPrompt += "\n\n" + def.prompt;
+  systemPrompt += skillsSection;
+
+  const initialState: any = { systemPrompt, model, tools };
+  return new Agent({ initialState, getApiKey: () => apiKey });
+}
+
+const STANDARD_TOOL_NAMES: Record<string, true> = {
+  Read: true, Write: true, Bash: true, Grep: true, Find: true, Ls: true, Edit: true,
+};
 
 /**
  * Create default agent (no definition — backward compatible).
