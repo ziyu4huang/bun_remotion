@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { api } from "../api";
-import { PageHeader, LoadingSpinner, EmptyState, Button, Card, InputField, type ChatMessage, loadHistory, saveHistory } from "../components";
+import { PageHeader, LoadingSpinner, EmptyState, Button, Card, InputField, type ChatMessage, loadHistory, saveHistory, VoiceManager } from "../components";
 import { AdvisorPanelBase } from "../components/AdvisorPanelBase";
 import { toast } from "../components/ToastContainer";
 import type { Project, TTSStatus, Job, JobProgress } from "../../shared/types";
@@ -197,6 +197,8 @@ export function TTS() {
           </div>
         </Card>
       )}
+
+      <VoiceManager projects={projects} />
       </div>
       {showAdvisor && (
         <AdvisorPanelBase

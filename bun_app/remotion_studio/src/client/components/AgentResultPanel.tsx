@@ -29,7 +29,7 @@ export function AgentResultPanel({ task, theme }: { task: AgentTaskState; theme:
       )}
       {task.status === "running" && task.streamingText && (
         <div style={contentStyle}>
-          <MarkdownText text={task.streamingText} />
+          <MarkdownText content={task.streamingText} />
           <span style={{ display: "inline-block", animation: "pulse 1s infinite", color: theme.colors.aiAccent, marginLeft: 2 }}>▌</span>
         </div>
       )}
@@ -41,7 +41,7 @@ export function AgentResultPanel({ task, theme }: { task: AgentTaskState; theme:
       )}
       {task.status === "done" && task.result && (
         <div style={contentStyle}>
-          <MarkdownText text={task.result} />
+          <MarkdownText content={task.result} />
         </div>
       )}
       {task.status === "error" && task.result && (

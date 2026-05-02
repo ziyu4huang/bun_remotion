@@ -34,6 +34,8 @@ type ChatRequestBody = {
   prompt?: string;
   history?: Array<{ role: "user" | "assistant"; content: string }>;
   model?: string;
+  apiKey?: string;
+  envKey?: string;
   attachments?: Array<{ path: string; name: string; content: string }>;
 };
 
@@ -151,6 +153,8 @@ agentRoutes.post("/chat", async (c) => {
       const result = await provider.runTask(body.agentName!, body.prompt, {
         history: body.history,
         model: body.model,
+        apiKey: body.apiKey,
+        envKey: body.envKey,
         attachments,
         onEvent(event) {
           if (aborted) return;
@@ -228,6 +232,8 @@ agentRoutes.post("/tasks", async (c) => {
     const result = await provider.runTask(body.agentName!, body.prompt, {
       history: body.history,
       model: body.model,
+      apiKey: body.apiKey,
+      envKey: body.envKey,
       attachments,
       onEvent(event) {
         if (event.type === "turn_end") {

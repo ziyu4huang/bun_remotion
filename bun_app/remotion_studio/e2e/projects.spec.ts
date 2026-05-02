@@ -26,7 +26,7 @@ test.describe("Projects", () => {
   });
 
   test("+ New Episode button exists", async ({ page }) => {
-    await expect(page.getByRole("button", { name: "+ New Episode" })).toBeVisible();
+    await expect(page.getByRole("button", { name: /New Episode/i })).toBeVisible();
   });
 
   test("clicking project row opens detail view", async ({ page }) => {
@@ -35,7 +35,7 @@ test.describe("Projects", () => {
     await firstRow.click();
 
     // Should show back button and project name
-    await expect(page.getByText("← Back")).toBeVisible();
+    await expect(page.getByRole("button", { name: /Back/i }).first()).toBeVisible();
     await expect(page.getByText(projectName!)).toBeVisible();
 
     // Should show category and episodes metadata
@@ -47,10 +47,10 @@ test.describe("Projects", () => {
     // Navigate into detail
     const firstRow = page.locator("table").first().locator("tbody tr").first();
     await firstRow.click();
-    await expect(page.getByText("← Back")).toBeVisible();
+    await expect(page.getByRole("button", { name: /Back/i }).first()).toBeVisible();
 
     // Click back
-    await page.getByText("← Back").click();
+    await page.getByRole("button", { name: /Back/i }).first().click();
 
     // Should see project list table again
     const table = page.locator("table").first();
@@ -106,7 +106,7 @@ test.describe("Projects", () => {
   });
 
   test("+ New Episode opens create form", async ({ page }) => {
-    await page.getByRole("button", { name: "+ New Episode" }).click();
+    await page.getByRole("button", { name: /New Episode/i }).click();
 
     // Should show back button
     await expect(page.getByText(/Back/i)).toBeVisible();
@@ -117,7 +117,7 @@ test.describe("Projects", () => {
   });
 
   test("back from create form returns to project list", async ({ page }) => {
-    await page.getByRole("button", { name: "+ New Episode" }).click();
+    await page.getByRole("button", { name: /New Episode/i }).click();
     await expect(page.getByText(/Back/i)).toBeVisible();
 
     await page.getByText(/Back/i).click();

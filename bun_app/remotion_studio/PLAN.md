@@ -6,18 +6,65 @@
 > `bun_app/remotion_studio/PLAN.md` — **(this file)** | `.claude/skills/develop_bun_app/SKILL.md`
 > `bun_app/remotion_studio/TODO.md` — Tasks + history | `.claude/skills/develop_bun_app/operations/`
 
-## Current State (v0.32.0)
+## Current State (v0.48.0)
 
-**Focus: Responsive tables, toast alignment, error boundary. 9 tables wrapped for mobile.**
+**Focus: E2E Test Modernization + Server-Side Config.**
 
-**Working (v0.32.0):**
-- **Button component** — 6 variants, 3 sizes. All 17 pages + ErrorBoundary migrated
-- **Card component** — 4 variants. 9 pages + ErrorBoundary migrated
-- **StatusBadge** — 8 variants. Used in 10+ pages. All inline badges consolidated
-- **InputField component** — styled input with label + error. 5 pages
-- **Toast** — Uses theme tokens (radii, font sizes, colors, shadows)
-- **Responsive tables** — 9 tables across 4 pages have horizontal scroll on mobile
-- 316 remotion_studio tests, 0 fail, 21/21 smoke pass
+**Working (v0.48.0):**
+- **E2E test modernization** — Locale forced to "en" in all tests, top-5 stalest specs updated, VoiceManager + CommandPalette E2E added (29 specs total)
+- **Server-side config** — `ConfigStore` persists API keys + default model to `data/config.json`. Agent bridge uses server keys as fallback.
+- **useJobStream hook tests** — 7 tests covering fetch, cancel, delete, refresh, error handling
+- 523 remotion_studio tests, 0 fail, 437KB bundle (31 chunks)
+
+**Working (v0.45.0):**
+- **Default locale changed to zh_TW** — detectLocale() returns "zh_TW" instead of "en"
+- **Settings page redesign** — language preference dropdown, LLM API key input with masked display, all strings i18n'd
+- **Persistent API key** — saved to localStorage, sent with agent requests, server uses as override for Z_AI_API_KEY env var
+- 431 remotion_studio tests, 0 fail, 437KB bundle (31 chunks)
+
+**Working (v0.44.0):**
+- **Client-side pure logic tests** — 6 new test files, 66 tests covering briefToPrompt, getPipelineOp, findCurrentStep, scoreColor, parseEpisodeId, ChatHistory
+- **Workflow engine tests** — 21 new tests covering TEMPLATE_DEPS, buildTaskTree DAG construction, stepProgress, template consistency
+- 431 remotion_studio tests, 0 fail, 431KB bundle (31 chunks)
+- **First client-side unit tests** — previously all 344 tests were server-side only
+
+**Working (v0.42.0):**
+- **Cross-App Integration Tests** — 20 tests verifying storygraph↔remotion_studio cross-app calls (pipeline status, suggest, health, plan parser)
+- 344 remotion_studio tests, 0 fail, 429KB bundle (31 chunks)
+
+**Working (v0.41.0):**
+- **Quality split** — 480 → 227 lines. Extracted QualityAskAgent (73), QualityDimensions (69), QualityDetail (175) into separate components
+- **ImageGen split** — 470 → 272 lines. Extracted ImageDesignBrief (111), ImageVariantGallery (52) into separate components
+- 324 remotion_studio tests, 0 fail, 429KB bundle (31 chunks)
+
+**Working (v0.39.0):**
+- **Voice Discovery** — `GET /api/tts/voices` lists 10 voices across MLX (2) and Gemini (8) engines with gender, language, and description metadata
+- **Voice Assignment** — VoiceManager component on TTS page: character cards with voice dropdowns, save to `characters.ts` via `PUT /api/tts/characters/:seriesId/voice`
+- **Voice Preview** — `POST /api/tts/preview-voice` generates short audio sample, cached in `data/voice-previews/`
+
+**v0.38.0 — Agent Bug Fixes + E2E Reliability:**
+- 6 bugs fixed (SSE event mismatch, MarkdownText prop, stream abort, advisor flash, tour overlay, heading restore)
+- 159/161 E2E pass
+
+**v0.37.0 — Dashboard + AdvisorPanelBase Split:**
+- **Dashboard** — 629 → 481 lines. Extracted `DashboardAgentBtn` (9), `SystemStatus` (52), `WhatsNext` (75).
+- **AdvisorPanelBase** — 433 → 320 lines. Extracted `AdvisorPanelHeader` (43). Reused `FilePickerModal` from ChatInput.
+- **FilePickerModal** — Now shared between ChatInput and AdvisorPanelBase (previously duplicated ~54 lines in each).
+- 316 remotion_studio tests, 0 fail, 423KB bundle (31 chunks)
+
+**v0.34.0 — Mobile E2E + Keyboard Navigation:**
+- **Mobile E2E** — 7 tests at 375px viewport (hamburger, tables, wizard, palette, console errors)
+- **Keyboard navigation** — Escape closes sidebar, nav buttons tabIndex + Enter/Space, Command Palette focus trap
+
+**v0.33.0 — Accessibility + Bundle Health:**
+- **Accessibility** — `role="alert"` on InputField errors + ToastContainer, `role="status"` on StatusBadge, `type="button"` on Button
+- **Bundle health** — Post-build size check (`bundle-check.ts`), 600KB limit, sorted chunk list
+- **Gitignore** — Runtime data files (jobs.json, sessions, etc.) excluded + test-results/
+
+**v0.32.0 — Responsive Tables + Toast + Error Boundary:**
+- 9 tables across 4 pages have horizontal scroll on mobile
+- Toast uses theme tokens (radii, font sizes, colors, shadows)
+- ErrorBoundary uses Button + Card components
 
 **Continuing from v0.26.0):**
 - **Structured Tool Results** — Typed `ToolResultDetails` discriminated union for all 25 tools across 6 groups. Runtime validation with `validateResult()`. Per-tool typed data interfaces.
@@ -83,7 +130,7 @@
 - Pipeline progress, Kanban, batch ops, asset search, revision history, section editor
 
 **Known issues (unfixed):**
-- No onboarding/help tour for new users
+- (none currently)
 
 ---
 
@@ -603,51 +650,51 @@ Render Video (Render)
 
 ##### A. Writing & Content Creation (創作)
 
-| Need | Priority | Description |
-|------|----------|-------------|
-| **Script/Outline Editor** | P0 | Structured editor for dialog, scene descriptions, stage directions. Current Story Editor is a raw markdown textarea — authors need per-scene, per-character editing. |
-| **Character Voice Manager** | P0 | UI to assign voices, test them, adjust pitch/speed. Current TTS page just shows mapping, no edit capability. |
-| **Dialog Preview** | P1 | Play back dialog with assigned voices BEFORE full TTS generation. "Test line" button. |
-| **Scene Reorder** | P1 | Drag-and-drop scene ordering within an episode. |
-| **Story Arc Tracker** | P1 | Visual timeline of arcs across chapters. Story Editor shows arcs as text only. |
-| **Chinese Input Support** | P0 | zh_TW labels, tooltips, placeholder text. Currently all English. |
+| Need | Priority | Status | Description |
+|------|----------|--------|-------------|
+| **Script/Outline Editor** | P0 | **Done v0.10.0** | SectionEditor with table-based editing for Characters, Episode Guide, Running Gags; text editing for prose sections |
+| **Character Voice Manager** | P0 | **Done v0.39.0** | VoiceManager component: series selector, character cards, voice dropdowns, preview, save to characters.ts |
+| **Dialog Preview** | P1 | **Done v0.8.0** | TTS page "Scene Preview" panel — generate TTS for a single scene |
+| **Scene Reorder** | P1 | Deferred | Drag-and-drop scene ordering within an episode. |
+| **Story Arc Tracker** | P1 | Open | Visual timeline of arcs across chapters. Story Editor shows arcs as text only. |
+| **Chinese Input Support** | P0 | **Done v0.11.0** | zh_TW labels, tooltips, placeholder text via i18n system |
 
 ##### B. Visual Asset Management (視覺資產)
 
-| Need | Priority | Description |
-|------|----------|-------------|
-| **Character Design Brief** | P1 | Structured form for character appearance (hair, eyes, outfit, accessories) → auto-generates image prompt. |
-| **Style Guide per Series** | P1 | Define art style (anime/watercolor/chibi/etc) once, apply to all image generation. |
-| **Expression Sheet** | P2 | Generate character in multiple expressions (happy, angry, sad, surprised). |
-| **Background Variants** | P2 | Same location at different times of day. |
-| **Asset Library Search** | P1 | Search/filter across all series assets. Current Assets page has no search. |
+| Need | Priority | Status | Description |
+|------|----------|--------|-------------|
+| **Character Design Brief** | P1 | **Done v0.7.0** | Structured form for character appearance → auto-generates image prompt |
+| **Style Guide per Series** | P1 | Open | Define art style once, apply to all image generation. |
+| **Expression Sheet** | P2 | Open | Generate character in multiple expressions. |
+| **Background Variants** | P2 | Open | Same location at different times of day. |
+| **Asset Library Search** | P1 | **Done v0.5.0** | Substring search with highlight on Assets page |
 
 ##### C. Production Workflow (製作流程)
 
-| Need | Priority | Description |
-|------|----------|-------------|
-| **Guided Pipeline Walkthrough** | P0 | Step-by-step wizard: "You've written the plan → Next: scaffold episode → Next: generate images..." Current workflow requires knowing the full pipeline. |
-| **Episode Status Dashboard** | P0 | Kanban-style view: Writing → Scaffolded → KG'd → TTS'd → Rendered → Published. Current Project Detail is a flat table. |
-| **Batch Operations** | P1 | "Generate TTS for all episodes in chapter 3" or "Render all pending episodes". Currently one-by-one. |
-| **Template Library** | P1 | Pre-built episode templates by category (narrative_drama, galgame_vn, etc). Current Workflows has templates but they're pipeline-only, not content templates. |
-| **Revision History** | P2 | Track plan/story changes over time. Current Story Editor has no version history. |
+| Need | Priority | Status | Description |
+|------|----------|--------|-------------|
+| **Guided Pipeline Walkthrough** | P0 | **Done v0.17.0** | Pipeline Wizard page with 8-step visual stepper, series selector, per-step status |
+| **Episode Status Dashboard** | P0 | **Done v0.5.0** | Episode Kanban page with 7 pipeline-stage columns |
+| **Batch Operations** | P1 | **Done v0.4.0** | `POST /api/batch` — multi-episode TTS/render with episode filter |
+| **Template Library** | P1 | Partial | Workflows has pipeline templates but not content templates by category |
+| **Revision History** | P2 | **Done v0.9.0** | Plan revision snapshots with restore |
 
 ##### D. Quality & Review (品質審核)
 
-| Need | Priority | Description |
-|------|----------|-------------|
-| **Inline Quality Hints** | P1 | Show quality suggestions while editing (like Grammarly). Currently quality is a separate page. |
-| **Video Preview Before Render** | P1 | Low-res preview of episode composition. Currently must render full MP4. |
-| **Review Checklist** | P1 | Per-episode checklist: "Dialog complete? Characters consistent? Audio synced?" |
-| **Cross-episode Continuity Check** | P2 | Detect inconsistencies (character names, voice changes, plot holes). |
+| Need | Priority | Status | Description |
+|------|----------|--------|-------------|
+| **Inline Quality Hints** | P1 | **Done v0.7.0** | QualityHints panel detects missing characters, voices, episodes, arcs |
+| **Video Preview Before Render** | P1 | Deferred | Requires Remotion still rendering infrastructure |
+| **Review Checklist** | P1 | **Done v0.7.0** | Per-series episode readiness checklist on Projects page |
+| **Cross-episode Continuity Check** | P2 | Open | Detect inconsistencies across episodes |
 
 ##### E. Collaboration & Publishing (協作與發布)
 
-| Need | Priority | Description |
-|------|----------|-------------|
-| **Export to Platforms** | P2 | One-click export to YouTube, Bilibili, TikTok formats. |
-| **Series Overview Page** | P1 | Public-facing series summary with episode list. |
-| **Progress Sharing** | P2 | "Chapter 3 is 60% complete" status for stakeholders. |
+| Need | Priority | Status | Description |
+|------|----------|--------|-------------|
+| **Export to Platforms** | P2 | Deferred | Per-platform FFmpeg pipeline for YouTube, Bilibili, TikTok |
+| **Series Overview Page** | P1 | Open | Public-facing series summary with episode list. |
+| **Progress Sharing** | P2 | Open | "Chapter 3 is 60% complete" status for stakeholders. |
 
 ---
 
@@ -658,7 +705,7 @@ Render Video (Render)
 │                    Browser (React)                       │
 │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌─────────┐ │
 │  │ Pages    │  │Components│  │  api.ts  │  │ Theme   │ │
-│  │ (13)     │→ │ (20+)    │→ │ (50+ fn) │→ │Provider │ │
+│  │ (21)     │→ │ (49+)    │→ │ (60+ fn) │→ │Provider │ │
 │  └──────────┘  └──────────┘  └────┬─────┘  └─────────┘ │
 │                                    │ fetch/SSE            │
 └────────────────────────────────────┼──────────────────────┘
@@ -686,42 +733,87 @@ Render Video (Render)
 |------|---------|-------|--------|
 | `App.tsx` | `App`, `NAV_SECTIONS`, `PageRouter` | ~290 | Updated (v0.22.0) — GlobalJobsPanel + CommandPalette + Cmd+K |
 | `index.tsx` | Entry point | 12 | Stable |
-| `api.ts` | `api` (55+ methods) | 271 | Updated (v0.16.0) — session API methods |
-| `pages/Dashboard.tsx` | `Dashboard`, `SystemStatus`, `DashboardAgentBtn` | ~470 | Updated (v0.28.0) — Button migration (10 buttons) |
-| `pages/Projects.tsx` | `Projects`, `ProjectTable`, `ProjectDetail`, `CreateProject`, `BuildPanel`, `AdvisorPanel`, `ScoreBadge` | 654 | Updated (v0.28.0) — Button migration (9+ buttons) |
-| `pages/Workflows.tsx` | `Workflows` | 404 | Updated (v0.28.0) — Button migration (5 buttons) |
-| `pages/StoryEditor.tsx` | `StoryEditor`, `SectionsView`, `MarkdownEditor`, `MarkdownPreview` | 382 | Updated (v0.28.0) — Button migration (7 buttons) |
-| `pages/Storygraph.tsx` | `Storygraph`, `HelpTip` | 260 | Updated (v0.29.0) — Card migration (1 card) |
-| `pages/Quality.tsx` | `Quality` | 454 | Updated (v0.29.0) — Card migration (4 cards) |
-| `pages/Benchmark.tsx` | `Benchmark` | 275 | Updated (v0.28.0) — Button migration (1 button) |
-| `pages/PipelineWizard.tsx` | `PipelineWizard` | ~540 | Updated (v0.30.0) — StatusBadge migration (1 badge) |
-| `pages/AgentChat.tsx` | `AgentChat`, `AgentDirectory` | ~830 | Updated (v0.29.0) — Card migration (1 card) |
-| `pages/Assets.tsx` | `Assets` | 220 | Updated (v0.28.0) — Button migration (4 buttons) |
-| `pages/TTS.tsx` | `TTS` | 162 | Updated (v0.29.0) — Card migration (1 card) |
-| `pages/Render.tsx` | `Render` | 153 | Updated (v0.28.0) — Button migration (1 button) |
-| `pages/ImageGen.tsx` | `ImageGen` | 339 | Updated (v0.28.0) — Button migration (7 buttons) |
-| `pages/Settings.tsx` | `Settings`, `loadGlobalModel`, `saveGlobalModel` | ~130 | Updated (v0.27.0) — Card migration |
-| `pages/Monitoring.tsx` | `Monitoring` | 169 | Updated (v0.29.0) — Card migration (2 cards) |
-| `pages/PipelineProgress.tsx` | `PipelineProgress` | ~280 | Updated (v0.28.0) — Button migration (5 buttons) |
-| `pages/EpisodeKanban.tsx` | `EpisodeKanban` | ~170 | Updated (v0.30.0) — StatusBadge migration (1 badge) |
-| `components/index.ts` | Re-exports (Button, Card, InputField, etc.) | ~30 | Updated (v0.28.0) — Button exported to all 17 pages |
+| `api.ts` | `api` (58+ methods) | ~285 | Updated (v0.39.0) — voice API methods |
+| `pages/Dashboard.tsx` | `Dashboard` | 281 | Updated (v0.46.0) — extracted JobListSection, JobHistorySection, DashboardHelpers |
+| `pages/Projects.tsx` | `Projects`, `ProjectTable`, `ProjectDetail`, `ScoreBadge`, `AdvisorPanel` | 348 | Updated (v0.36.0) — split BuildPanel, ReviewChecklist, ScaffoldEpisode |
+| `pages/Workflows.tsx` | `Workflows` | 309 | Updated (v0.42.0) — extracted WorkflowImageEditor, WorkflowStepProgress |
+| `pages/StoryEditor.tsx` | `StoryEditor`, `ViewToggle`, `MarkdownEditor`, `MarkdownPreview` | 318 | Updated (v0.40.0) — split Sections/Revision/Hints into components |
+| `pages/Storygraph.tsx` | `Storygraph` | 147 | Updated (v0.43.0) — extracted StorygraphActionPanel, StorygraphStatusDisplay |
+| `pages/Quality.tsx` | `Quality` | 227 | Updated (v0.41.0) — extracted QualityAskAgent, QualityDimensions, QualityDetail |
+| `pages/Benchmark.tsx` | `Benchmark` | 163 | Updated (v0.28.0) — Button migration (1 button) |
+| `pages/PipelineWizard.tsx` | `PipelineWizard` | 339 | Updated (v0.36.0) — split into 4 wizard components |
+| `pages/AgentChat.tsx` | `AgentChat` | 332 | Updated (v0.46.0) — extracted ChatErrorState, ChatMessageArea |
+| `pages/Assets.tsx` | `Assets` | 242 | Updated (v0.28.0) — Button migration (4 buttons) |
+| `pages/TTS.tsx` | `TTS` | 247 | Updated (v0.39.0) — VoiceManager integration |
+| `pages/Render.tsx` | `Render` | 156 | Updated (v0.28.0) — Button migration (1 button) |
+| `pages/ImageGen.tsx` | `ImageGen` | 272 | Updated (v0.41.0) — extracted ImageDesignBrief, ImageVariantGallery |
+| `pages/Settings.tsx` | `Settings`, `loadGlobalModel`, `saveGlobalModel`, `loadApiKey`, `saveApiKey` | 215 | Updated (v0.45.0) — language pref + API key config |
+| `pages/Monitoring.tsx` | `Monitoring` | 205 | Updated (v0.29.0) — Card migration (2 cards) |
+| `pages/PipelineProgress.tsx` | `PipelineProgress` | 216 | Updated (v0.43.0) — extracted ProgressFilterBar, ProgressEpisodeTable, ProgressStepOverview |
+| `pages/EpisodeKanban.tsx` | `EpisodeKanban` | 190 | Updated (v0.30.0) — StatusBadge migration (1 badge) |
+| `components/index.ts` | Re-exports (Button, Card, InputField, etc.) | ~42 | Updated (v0.39.0) — VoiceManager exported |
 | `components/Button.tsx` | `Button`, `ButtonProps` | ~60 | New (v0.27.0) — 6 variants, 3 sizes |
-| `components/AdvisorPanelBase.tsx` | `AdvisorPanelBase` | ~380 | Updated (v0.17.0) — file attachment UI + modal |
+| `components/AdvisorPanelBase.tsx` | `AdvisorPanelBase` | 330 | Updated (v0.37.0) — extracted AdvisorPanelHeader + reuses FilePickerModal |
 | `components/ChatBubble.tsx` | `ChatBubble`, `UserBubble` | ~80 | Stable |
 | `components/ToolCallCard.tsx` | `ToolCallCard` | ~60 | Stable |
-| `components/PipelineToolCard.tsx` | `PipelineToolCard`, `getPipelineOp`, `PipelineToolInfo` | ~145 | New (v0.13.1) |
+| `components/PipelineToolCard.tsx` | `PipelineToolCard`, `getPipelineOp`, `PipelineToolInfo` | 194 | New (v0.13.1) |
 | `components/JobStatusCard.tsx` | `JobStatusCard` | ~100 | New (v0.13.1) |
-| `components/TaskTreeNode.tsx` | `TaskTreeNode`, `TaskTreeView` | ~150 | Stable |
-| `components/MarkdownText.tsx` | `MarkdownText` | ~40 | Stable |
+| `components/TaskTreeNode.tsx` | `TaskTreeNode`, `TaskTreeView` | 105 | Stable |
+| `components/MarkdownText.tsx` | `MarkdownText` | 132 | Stable |
 | `components/ThinkingIndicator.tsx` | `ThinkingIndicator` | ~20 | Stable |
-| `components/SectionEditor.tsx` | `SectionEditor`, `TableSectionEditor`, `TextSectionEditor` | ~220 | New (v0.10.0) |
+| `components/SectionEditor.tsx` | `SectionEditor`, `TableSectionEditor`, `TextSectionEditor` | 265 | New (v0.10.0) |
 | `utils/markdown-table.ts` | `parseMarkdownTable`, `serializeMarkdownTable`, `replaceSectionInMarkdown` | ~70 | New (v0.10.0) |
 | `hooks/useAgentTask.ts` | `useAgentTask` | ~170 | Updated (v0.12.1) — ref-based bridge status, 30s re-check |
 | `hooks/useFilePicker.ts` | `useFilePicker` | ~80 | New (v0.17.0) |
 | `hooks/useJobStream.ts` | `useJobStream` | ~80 | New (v0.22.0) — shared job SSE subscription |
+| `components/WizardStepper.tsx` | `WizardStepper` | 241 | New (v0.36.0) — step stepper + skip-to-step dropdown |
+| `components/WizardOverviewCards.tsx` | `WizardOverviewCards`, `WizardProgressBar` | 48 | New (v0.36.0) — overview cards |
+| `components/WizardSeriesBreakdown.tsx` | `WizardSeriesBreakdown` | 208 | New (v0.36.0) — desktop+mobile breakdown |
+| `components/WizardTypes.ts` | `STEPS`, `findCurrentStep`, `SeriesProgress` | 52 | New (v0.36.0) — shared wizard types + utilities |
+| `components/AgentDirectory.tsx` | `AgentDirectory`, `AgentCapabilityCard`, `CONVERSATION_STARTERS` | 141 | New (v0.36.0) — agent selector grid |
+| `components/ChatInput.tsx` | `ChatInput`, `FilePickerModal` | 236 | New (v0.36.0) — chat input bar + file picker |
+| `components/BuildPanel.tsx` | `BuildPanel`, `BuildState` | 66 | New (v0.36.0) — build progress display |
+| `components/ReviewChecklist.tsx` | `ReviewChecklist` | 69 | New (v0.36.0) — episode readiness checklist |
+| `components/ScaffoldEpisode.tsx` | `ScaffoldEpisode`, `CATEGORY_LABELS` | 256 | New (v0.36.0) — episode scaffold form |
+| `components/OnboardingTour.tsx` | `OnboardingTour`, `useOnboardingTour` | 159 | New (v0.36.0) — 5-step guided tour |
+| `components/DashboardAgentBtn.tsx` | `DashboardAgentBtn` | 9 | New (v0.37.0) — agent trigger button wrapper |
+| `components/SystemStatus.tsx` | `SystemStatus` | 52 | New (v0.37.0) — green/yellow/red status indicator |
+| `components/WhatsNext.tsx` | `WhatsNext` | 75 | New (v0.37.0) — most common next step panel |
+| `components/AdvisorPanelHeader.tsx` | `AdvisorPanelHeader` | 43 | New (v0.37.0) — advisor title bar with new/clear |
 | `components/GlobalJobsPanel.tsx` | `GlobalJobsPanel` | ~210 | New (v0.22.0) — floating badge + mini panel |
-| `components/CommandPalette.tsx` | `CommandPalette`, `PaletteItem` | ~170 | New (v0.22.0) — Cmd+K searchable palette |
+| `components/CommandPalette.tsx` | `CommandPalette`, `PaletteItem` | 181 | New (v0.22.0) — Cmd+K searchable palette |
+| `components/VoiceManager.tsx` | `VoiceManager` | 180 | New (v0.39.0) — voice assignment + preview |
+| `components/StoryEditorHints.tsx` | `StoryEditorHints` | 82 | New (v0.40.0) — quality hints panel |
+| `components/StoryEditorSections.tsx` | `StoryEditorSections`, `SectionCard` | 157 | New (v0.40.0) — parsed section cards view |
+| `components/StoryEditorRevision.tsx` | `StoryEditorRevision` | 75 | New (v0.40.0) — revision history panel |
+| `components/QualityAskAgent.tsx` | `QualityAskAgent` | 73 | New (v0.41.0) — quality agent prompt section |
+| `components/QualityDimensions.tsx` | `QualityDimensions` | 69 | New (v0.41.0) — AI quality dimensions + breakdown |
+| `components/QualityDetail.tsx` | `QualityDetail` | 175 | New (v0.41.0) — per-series detail view with scores, history, checks |
+| `components/ImageDesignBrief.tsx` | `ImageDesignBrief`, `DesignBrief`, `briefToPrompt` | 111 | New (v0.41.0) — character design brief form |
+| `components/ImageVariantGallery.tsx` | `ImageVariantGallery` | 52 | New (v0.41.0) — character variant image grid |
+| `components/WorkflowImageEditor.tsx` | `WorkflowImageEditor` | 73 | New (v0.42.0) — image list add/edit/remove |
+| `components/WorkflowStepProgress.tsx` | `WorkflowStepProgress` | 91 | New (v0.42.0) — workflow progress + task tree + step list |
+| `components/ProgressFilterBar.tsx` | `ProgressFilterBar` | 69 | New (v0.43.0) — filter tabs + batch action buttons |
+| `components/ProgressEpisodeTable.tsx` | `ProgressEpisodeTable`, `ProgressStepOverview` | 198 | New (v0.43.0) — per-series tables + step completion overview |
+| `components/StorygraphActionPanel.tsx` | `StorygraphActionPanel` | 96 | New (v0.43.0) — series/mode selector + action buttons with HelpTip |
+| `components/StorygraphStatusDisplay.tsx` | `StorygraphStatusDisplay` | 91 | New (v0.43.0) — job status card + status table |
+| `components/ChatErrorState.tsx` | `ChatErrorState` | 39 | New (v0.46.0) — bridge error display with recovery steps |
+| `components/ChatMessageArea.tsx` | `ChatMessageArea` | 106 | New (v0.46.0) — message rendering + tools + job status + thinking |
+| `components/JobListSection.tsx` | `JobListSection` | 179 | New (v0.46.0) — filter tabs + job cards with progress/expand/cancel |
+| `components/JobHistorySection.tsx` | `JobHistorySection` | 70 | New (v0.46.0) — collapsible job history with per-job delete |
+| `components/DashboardHelpers.ts` | `relativeTime`, `formatDuration`, `treeSummary` | 24 | New (v0.46.0) — shared Dashboard time/format helpers |
 | `theme/` | `ThemeProvider`, `useTheme`, `scoreColor` | ~270 | Updated (v0.22.0) — aiAccent colour tokens |
+| `__tests__/design-brief.test.ts` | 17 tests | ~110 | New (v0.44.0) — briefToPrompt edge cases |
+| `__tests__/pipeline-ops.test.ts` | 14 tests | ~95 | New (v0.44.0) — getPipelineOp tool mapping |
+| `__tests__/wizard-utils.test.ts` | 9 tests | ~80 | New (v0.44.0) — findCurrentStep logic |
+| `__tests__/theme-utils.test.ts` | 10 tests | ~55 | New (v0.44.0) — scoreColor boundaries |
+| `__tests__/api-utils.test.ts` | 10 tests | ~60 | New (v0.44.0) — parseEpisodeId formats |
+| `__tests__/chat-history.test.ts` | 16 tests | ~105 | New (v0.44.0) — ChatHistory localStorage |
+| `__tests__/components/Button.test.tsx` | 17 tests | ~100 | New (v0.46.0) — Button variants, sizes, click, disabled |
+| `__tests__/components/Card.test.tsx` | 13 tests | ~85 | New (v0.46.0) — Card variants, padding, children |
+| `__tests__/components/InputField.test.tsx` | 13 tests | ~90 | New (v0.46.0) — InputField label, error, onChange |
+| `__tests__/components/StatusBadge.test.tsx` | 14 tests | ~80 | New (v0.46.0) — StatusBadge statuses, role, styles |
+| `__tests__/hooks/useAgentTask.test.tsx` | 8 tests | ~105 | New (v0.46.0) — useAgentTask bridge, start, reset, stream |
 
 ### Server (`src/server/`)
 
@@ -734,13 +826,14 @@ Render Video (Render)
 | `pipeline` | `/api/pipeline` | Status, run, check, score, graph-html |
 | `quality` | `/api/quality` | Get, compare, regression, history |
 | `assets` | `/api/assets` | List, get, file serving |
-| `tts` | `/api/tts` | Status, generate |
+| `tts` | `/api/tts` | Status, generate, voices, characters, preview-voice |
 | `render` | `/api/render` | Status, trigger, preview |
 | `workflows` | `/api/workflows` | Templates, trigger, retry, tree |
 | `agent` | `/api/agent` | Status, agents, chat (SSE), tasks |
 | `monitoring` | `/api/monitoring` | Overview, series health |
 | `episode-progress` | `/api/episode-progress` | Per-episode pipeline status |
 | `batch` | `/api/batch` | Multi-episode TTS/render operations |
+| `config` | `/api/config` | GET config, POST api-keys, POST default-model |
 | `benchmark` | `/api/benchmark` | Run, check, regression, baselines |
 | `plans` | `/api/plans` | Get, get raw, put raw |
 | `image` | `/api/image` | Status, characters, generate |
@@ -756,8 +849,14 @@ Render Video (Render)
 | `job-store.ts` | `JobStore` class (set, get, list, delete, markInterrupted) | 108 | Stable |
 | `session-store.ts` | `SessionStore` class (save, load, listSessions, deleteSession) | ~100 | New (v0.16.0) |
 | `task-store.ts` | `TaskStore` class (createTree, addNode, updateNode, getTree) | 209 | Stable |
-| `workflow-engine.ts` | `runWorkflow`, `runWorkflowDAG`, `TEMPLATE_DEPS`, step builders | 915 | Updated (v0.2.0) |
+| `workflow-engine.ts` | `runWorkflow`, `runWorkflowDAG`, `retryWorkflow`, re-exports | 303 | Refactored (v0.47.0) |
+| `workflow/templates.ts` | `WORKFLOW_TEMPLATES`, `TEMPLATE_DEPS`, `STEP_AGENT_MAP`, `WorkflowTriggerOptions`, `stepProgress` | 138 | New (v0.47.0) |
+| `workflow/task-tree-builder.ts` | `buildTaskTree`, `buildLinearTree` | 99 | New (v0.47.0) |
+| `workflow/step-executors.ts` | `runStep` (direct + agent), `buildStepPrompt`, input resolvers | 400 | New (v0.47.0) |
 | `dag-executor.ts` | `executeTaskTree`, `StepExecutor` | 138 | Stable |
+| `voice-registry.ts` | `listVoices` | ~55 | New (v0.39.0) — 10 voices across MLX + Gemini |
+| `character-profiles.ts` | `getCharacterProfiles`, `updateCharacterVoice` | ~185 | Updated (v0.39.0) — voice write support |
+| `config-store.ts` | `ConfigStore` class, `configStore` singleton | 102 | New (v0.48.0) — server-side config persistence |
 
 ### Middleware (`src/server/middleware/`)
 
@@ -787,7 +886,7 @@ Render Video (Render)
 
 | Var | Default | Purpose |
 |-----|---------|---------|
-| `PORT` | `3210` | Server port |
+| `PORT` | `5173` | Server port |
 | `RENDER_DIR` | `./renders` | Rendered video output |
 | `ASSETS_DIR` | `./assets` | Static assets |
 
@@ -799,22 +898,22 @@ Render Video (Render)
 10. ~~Add image step to full-pipeline~~ (Done v0.3.0)
 11. ~~Cancel workflow~~ (Done v0.3.0)
 12. ~~API namespace cleanup~~ (Done v0.3.0)
-13. Episode Kanban board (status pipeline view)
-14. Batch operations (multi-episode TTS, render)
-15. Character design brief → auto-prompt
-16. Quality inline hints
-17. Asset library search
+13. ~~Episode Kanban board~~ (Done v0.5.0)
+14. ~~Batch operations~~ (Done v0.4.0)
+15. ~~Character design brief~~ (Done v0.7.0)
+16. ~~Quality inline hints~~ (Done v0.7.0)
+17. ~~Asset library search~~ (Done v0.5.0)
 
-### P1 — Author Productivity
-6. Episode Kanban board (status pipeline view)
-7. Batch operations (multi-episode TTS, render)
-8. Character design brief → auto-prompt
-9. Quality inline hints
-10. Asset library search
+### P1 — Author Productivity (all done)
+6. ~~Episode Kanban board~~ (Done v0.5.0)
+7. ~~Batch operations~~ (Done v0.4.0)
+8. ~~Character design brief~~ (Done v0.7.0)
+9. ~~Quality inline hints~~ (Done v0.7.0)
+10. ~~Asset library search~~ (Done v0.5.0)
 
 ### P2 — Polish
-11. API namespace cleanup (`pipeline.*`)
-12. Video preview before render
-13. Revision history for plans
-14. Export to platform formats
+11. ~~API namespace cleanup~~ (Done v0.3.0)
+12. Video preview before render (deferred — requires Remotion still infrastructure)
+13. ~~Revision history for plans~~ (Done v0.9.0)
+14. Export to platform formats (deferred — per-platform FFmpeg pipeline)
 15. Expression sheet generation

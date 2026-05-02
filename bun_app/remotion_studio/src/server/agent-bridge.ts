@@ -3,6 +3,7 @@ import type { AgentDefinition } from "../../../bun_pi_agent/src/agents/types.js"
 import type { AgentEvent } from "../../../bun_pi_agent/src/agent.js";
 import type { AgentInfo, AgentTaskResult, AgentStreamEvent } from "../shared/types.js";
 import type { AgentProvider, RunTaskOptions, AgentAttachment } from "./agent-interface.js";
+import { configStore } from "./services/config-store.js";
 
 // Lazy imports — bun_pi_agent depends on pi-ai/pi-agent-core which need API keys.
 // Importing at module scope would fail if no key is configured.
@@ -61,6 +62,16 @@ export const bridge: AgentProvider = {
     const def = defs.find((d) => d.name === agentName);
     if (!def) {
       throw new Error(`Unknown agent: "${agentName}". Available: ${defs.map((d) => d.name).join(", ") || "(none)"}`);
+    }
+
+    // If apiKey provided, temporarily set env var (factory reads from env)
+    // Fallback: use server-side config key if no client key provided
+    let prevKey: string | undefined;
+    const envKey = options?.envKey || "Z_AI_API_KEY";
+    const effectiveKey = options?.apiKey || configStore.getApiKey("glm");
+    if (effectiveKey) {
+      prevKey = process.env[envKey];
+      process.env[envKey] = effectiveKey;
     }
 
     const effectivePrompt = buildPromptWithAttachments(prompt, options?.attachments);
@@ -144,9 +155,20 @@ export const bridge: AgentProvider = {
         ),
       ]);
     } catch (err) {
+      // Restore env var before re-throwing
+      if (effectiveKey) {
+        if (prevKey !== undefined) process.env[envKey] = prevKey;
+        else delete process.env[envKey];
+      }
       const errMsg = err instanceof Error ? err.message : String(err);
       onEvent?.({ type: "error", message: errMsg });
       throw err;
+    }
+
+    // Restore env var after successful completion
+    if (effectiveKey) {
+      if (prevKey !== undefined) process.env[envKey] = prevKey;
+      else delete process.env[envKey];
     }
 
     const durationMs = Date.now() - startTime;

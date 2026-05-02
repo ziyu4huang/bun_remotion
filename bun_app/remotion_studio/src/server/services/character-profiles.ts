@@ -1,4 +1,4 @@
-import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import type { CharacterProfile, CharacterImageVariant } from "../../shared/types";
 
@@ -156,4 +156,30 @@ function parseCharactersTs(seriesId: string): Map<string, TsCharData> {
   }
 
   return map;
+}
+
+export function updateCharacterVoice(seriesId: string, characterId: string, voice: string): boolean {
+  const path = resolve(SERIES_DIR(seriesId), "assets", "characters.ts");
+  if (!existsSync(path)) return false;
+
+  const text = readFileSync(path, "utf-8");
+
+  // Match the character entry: `characterId: { ..., voice: "old", ... }`
+  const entryRegex = new RegExp(`(${characterId})\\s*:\\s*\\{([^}]*)\\}`);
+  const match = entryRegex.exec(text);
+  if (!match) return false;
+
+  const body = match[2];
+  const hasVoiceField = /voice\s*:/.test(body);
+  let newBody: string;
+
+  if (hasVoiceField) {
+    newBody = body.replace(/(voice\s*:\s*)"[^"]*"/, `$1"${voice}"`);
+  } else {
+    newBody = body.replace(/,\s*$/, "") + `,\n      voice: "${voice}",`;
+  }
+
+  const newText = text.replace(match[0], `${characterId}: {${newBody}}`);
+  writeFileSync(path, newText, "utf-8");
+  return true;
 }

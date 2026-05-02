@@ -5,96 +5,98 @@
 > - Code TODO: `bun_app/remotion_studio/TODO.md`
 > - Code NEXT: `bun_app/remotion_studio/NEXT.md` — **(this file)**
 
-> **Version:** v0.33.0 → v0.34.0 target
-> **Date:** 2026-05-01
-> **Theme:** Mobile E2E + Keyboard Navigation
+> **Version:** v0.49.0 TARGET
+> **Date:** 2026-05-02
+> **Theme:** Process Hygiene + Plan Doc Accuracy
 
 ---
 
-## Reflection from v0.33.0
+## Reflection from v0.48.0
 
 | What | Assessment |
 |------|-----------|
-| Uncommitted triage | Complete — 178 files committed, runtime data gitignored. Clean working tree. |
-| Accessibility | Complete — Button type="button", InputField role="alert", StatusBadge role="status", Toast aria-live="polite". |
-| Bundle health | Complete — Post-build check prints sorted chunks, 419KB (limit 600KB). |
-| File picker TODO | Stale — AdvisorPanelBase already has full file picker support. Marked done. |
+| E2E Modernization (Goal 1) | Clean — locale forced to "en", 5 specs updated, 2 new specs (29 total) |
+| Server-Side Config (Goal 2) | Clean — ConfigStore + route + Settings "Save to Server" + bridge fallback |
+| useJobStream Tests (Goal 3) | Clean — 7 tests covering fetch, cancel, delete, refresh, error |
+| Build + tests | Stable — 523 pass, 437KB bundle |
 
-**Key lesson:** Before adding accessibility features, check what the framework already provides. Button extends `React.ButtonHTMLAttributes` so `...rest` already passes `aria-label`, `aria-disabled`, etc. The actual gap was missing `role` attributes on non-semantic elements (`<span>`) and sensible defaults (`type="button"`).
+**Key lesson:** Forcing locale in the shared `gotoWithRetry` helper is the right fix for E2E/i18n conflicts — one-line change fixes all 27+ specs. ConfigStore shallow-copy bug taught that `{ ...DEFAULT_CONFIG }` shares nested objects — always initialize with fresh objects.
 
 ---
 
-## v0.34.0 Goals
+## Root Cause Analysis (2026-05-02)
 
-### Goal 1: Mobile responsive E2E tests (P0)
+### Issue: Stale background server + CWD corruption
 
-**Current state:** 21 smoke tests verify desktop rendering. No tests at 375px viewport.
-**Target state:** Mobile viewport E2E covering sidebar, tables, forms, and wizard.
-**Estimated effort:** 1 new spec file + helpers
+When starting the server for testing, the command `cd bun_app/remotion_studio && PORT=3210 bun run src/server/index.ts &` was used. This caused two cascading failures:
 
-**Approach:**
-1. Create `e2e/mobile-responsive.spec.ts` with `viewport: { width: 375, height: 812 }` (iPhone X)
-2. Test: sidebar hamburger opens/closes, tables scroll horizontally, wizard stacks vertically
-3. Test: command palette renders at mobile width, global jobs panel shows as bottom sheet
-4. Reuse existing `gotoWithRetry` helper
+1. **CWD persistence** — Bash tool's CWD shifted from repo root to `bun_app/remotion_studio/`. All subsequent path-relative commands (`find`, `ls`, `git status`) operated from the wrong directory, making `playwright.config.ts` appear missing when it was actually there.
 
-### Goal 2: Keyboard navigation for Command Palette + Sidebar (P1)
+2. **Stale process** — The server process ran for 3+ hours with no auto-shutdown. The `SIGTERM`/`SIGINT` handlers only fire on explicit signals. When Claude Code sessions end, background servers keep running.
 
-**Current state:** Command Palette has arrow/Enter/Escape support. Sidebar has no keyboard navigation.
-**Target state:** Tab navigates sidebar items. Escape closes sidebar. Focus trap in modals.
-**Estimated effort:** 2 files (App.tsx sidebar, CommandPalette focus management)
+3. **PLAN.md port error** — PLAN.md documents `PORT` default as `3210` but code defaults to `5173`. E2E config uses `5173`. This mismatch causes confusion about which port to use.
 
-**Approach:**
-1. Sidebar nav items get `tabIndex={0}`, Enter/Space to navigate
-2. Escape closes mobile sidebar overlay
-3. Command Palette focus trap — Tab cycles within palette, Escape closes
+### Prevention
+
+| Pattern | Fix |
+|---------|-----|
+| Never `cd` into subdirectories | Use `PORT=5173 bun run --cwd bun_app/remotion_studio src/server/index.ts` instead |
+| Stale server processes | Kill existing server on port before starting: `kill $(lsof -ti :5173) 2>/dev/null; ...` |
+| PLAN.md drift | Audit PLAN.md Configuration table against actual code defaults |
+
+---
+
+## v0.49.0 Goals
+
+### Goal 1: Fix PLAN.md + Server Startup (P0)
+
+**Current state:** PLAN.md says PORT=3210, code defaults to 5173. Server startup uses `cd` which corrupts CWD.
+**Target state:** PLAN.md matches code. Skill documents correct server startup pattern. No CWD corruption possible.
+**Estimated effort:** 3 files (PLAN.md, CLAUDE.md, skill/develop.md)
+
+### Goal 2: Server Process Management (P1)
+
+**Current state:** Servers run indefinitely. No cleanup mechanism. Multiple stale processes can accumulate.
+**Target state:** Before starting server, kill any existing process on the port. Document this in skill. Optional: PID file.
+**Estimated effort:** 2 files (skill/develop.md, memory)
+
+### Goal 3: Commit Hygiene (P1)
+
+**Current state:** 48 modified files + 41 untracked files from v0.33.0–v0.48.0 work uncommitted.
+**Target state:** All changes properly committed with accurate version history.
+**Estimated effort:** 1 commit (or 2–3 logical commits)
 
 ---
 
 ## Task Dependency Graph
 
 ```
-Goal 1 (Mobile E2E) ──────────┐
-                                 ├──► v0.34.0 release
-Goal 2 (Keyboard navigation) ─┘
+Goal 1 (PLAN.md fix) ──┐
+Goal 2 (process mgmt) ──┤──► v0.49.0 release
+Goal 3 (commit hygiene) ┘
 ```
 
-Both goals independent.
+---
+
+## Success Criteria for v0.49.0
+
+- [ ] PLAN.md Configuration table matches actual code defaults (PORT=5173)
+- [ ] Skill develop.md documents correct server startup pattern (no `cd`)
+- [ ] Memory file created for CWD + server process lesson
+- [ ] All uncommitted changes committed
+- [ ] Unit tests: 523+ pass, 0 fail
+- [ ] Build: 437KB, 31 chunks
+- [ ] Server starts cleanly on port 5173 without CWD shift
 
 ---
 
-## Success Criteria for v0.34.0
-
-- [ ] Mobile E2E spec covers sidebar, tables, wizard at 375px viewport
-- [ ] Sidebar items keyboard-navigable (Tab + Enter)
-- [ ] Escape closes mobile sidebar overlay
-- [ ] Command Palette has focus trap (Tab stays within)
-- [ ] Unit tests: 316+ pass, 0 fail
-- [ ] Smoke E2E: 21/21 pass, 0 console errors
-- [ ] Version bumped to 0.34.0
-
----
-
-## Deferred to v0.35.0+
+## Deferred to v0.50.0+
 
 | Item | Why deferred |
 |------|-------------|
-| Onboarding tour | New user walkthrough needs UX design |
-| Video preview before render | Requires Remotion still rendering infrastructure |
-| Export to platform formats | Requires per-platform FFmpeg pipeline + captions |
-| Component splitting (PipelineWizard 876 lines) | Code quality, not user-facing |
-
----
-
-## Session Summary (v0.27.0 → v0.33.0)
-
-6 versions shipped, all green (316 tests, 21/21 smoke):
-
-| Version | Theme | Key Changes |
-|---------|-------|-------------|
-| v0.28.0 | Button migration | ~60 buttons, 7 helpers removed, FAB overlap fix |
-| v0.29.0 | Card migration | ~20 cards across 9 pages |
-| v0.30.0 | Badge consolidation | 5 inline badges → StatusBadge |
-| v0.31.0 | InputField migration | 8 inputs across 4 pages |
-| v0.32.0 | Tables + polish | 9 responsive tables, toast tokens, ErrorBoundary |
-| v0.33.0 | Accessibility + cleanup | aria roles, bundle health check, gitignore, triage |
+| Story Arc Tracker (P1) | New feature — visual timeline of arcs across chapters. Requires design decisions. |
+| Scene Reorder (P1) | New feature — drag-and-drop scene ordering. Requires UI library choice. |
+| Style Guide per Series (P1) | New feature — define art style once, apply to all image generation. |
+| React component snapshot tests | Lower value than render + interaction tests |
+| App.tsx refactor (447 lines) | Not urgent — well-structured, just large due to navigation config |
+| Benchmark.ts refactor (452 lines) | Largest server route file — could extract baselines logic |

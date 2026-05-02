@@ -91,11 +91,31 @@ export async function waitForToast(page: Page, type: "success" | "error" | "info
   return page.locator(`[data-toast-type="${type}"]`).first().waitFor({ timeout });
 }
 
+/**
+ * Suppress wizard auto-redirect and onboarding tour.
+ * Must be called BEFORE the first page.goto so addInitScript runs before React.
+ */
+let _initApplied = new WeakSet<Page>();
+function ensureDismissInit(page: Page) {
+  if (_initApplied.has(page)) return;
+  _initApplied.add(page);
+  page.addInitScript("localStorage.setItem('remotion_studio_wizard_seen','1');localStorage.setItem('remotion_studio_tour_seen','1');localStorage.setItem('remotion_studio_locale','en');");
+}
+
 /** page.goto with retry — handles Vite server degradation during long suites. */
 export async function gotoWithRetry(page: Page, url = "/", retries = 3) {
+  ensureDismissInit(page);
   for (let i = 0; i < retries; i++) {
     try {
       await page.goto(url, { timeout: 15_000, waitUntil: "domcontentloaded" });
+      // Also set directly in case addInitScript didn't take effect
+      await page.evaluate(() => {
+        try {
+          localStorage.setItem("remotion_studio_wizard_seen", "1");
+          localStorage.setItem("remotion_studio_tour_seen", "1");
+          localStorage.setItem("remotion_studio_locale", "en");
+        } catch {}
+      });
       return;
     } catch (e) {
       if (i === retries - 1) throw e;
@@ -107,7 +127,5 @@ export async function gotoWithRetry(page: Page, url = "/", retries = 3) {
 
 /** Prevent Wizard auto-redirect for first-time visitors. Call AFTER page.goto. */
 export async function dismissWizard(page: Page) {
-  await page.evaluate(() => {
-    try { localStorage.setItem("remotion_studio_wizard_seen", "1"); } catch {}
-  });
+  ensureDismissInit(page);
 }

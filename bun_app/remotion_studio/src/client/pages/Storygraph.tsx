@@ -1,22 +1,15 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { api } from "../api";
-import { type ChatMessage, loadHistory, saveHistory, PageHeader, LoadingSpinner, StatusBadge, SkeletonRow, Button, Card } from "../components";
+import { type ChatMessage, loadHistory, saveHistory, PageHeader, LoadingSpinner, SkeletonRow, Button } from "../components";
 import { AdvisorPanelBase } from "../components/AdvisorPanelBase";
+import { StorygraphActionPanel } from "../components/StorygraphActionPanel";
+import { StorygraphStatusDisplay } from "../components/StorygraphStatusDisplay";
 import { toast } from "../components/ToastContainer";
-import { useTheme, type Theme } from "../theme";
+import { useTheme } from "../theme";
 import { useI18n } from "../i18n";
 import type { Project, Job } from "../../shared/types";
 
 type Mode = "regex" | "hybrid" | "ai";
-
-function HelpTip({ text }: { text: string }) {
-  const theme = useTheme();
-  return (
-    <span title={text} style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 16, height: 16, borderRadius: "50%", background: theme.colors.border.default, color: theme.colors.text.tertiary, fontSize: theme.font.sizes.xs, cursor: "help", marginLeft: theme.spacing.xs, flexShrink: 0 }}>
-      ?
-    </span>
-  );
-}
 
 export function Storygraph() {
   const theme = useTheme();
@@ -110,114 +103,30 @@ export function Storygraph() {
         </Button>
       </PageHeader>
 
-      <div style={{ display: "flex", gap: theme.spacing.xl, marginBottom: theme.spacing.sm, alignItems: "center", flexWrap: "wrap" }}>
-        <select
-          value={selected}
-          onChange={(e) => setSelected(e.target.value)}
-          style={{ padding: `${theme.spacing.sm}px ${theme.spacing.md}px`, fontSize: theme.font.sizes.md, borderRadius: theme.radii.lg, border: `1px solid ${theme.colors.border.medium}`, minWidth: 200 }}
-        >
-          <option value="">{t.storygraph.selectSeries}</option>
-          {projects.map((p) => (
-            <option key={p.id} value={p.id}>{p.name}</option>
-          ))}
-        </select>
+      <StorygraphActionPanel
+        projects={projects} selected={selected} mode={mode}
+        isRunning={job?.status === "running"}
+        onSeriesChange={setSelected} onModeChange={setMode} onRun={handleRun}
+        labels={{
+          selectSeries: t.storygraph.selectSeries, hybrid: t.storygraph.hybrid,
+          regex: t.storygraph.regex, aiOnly: t.storygraph.aiOnly,
+          extractKg: t.storygraph.extractKg, qualityGate: t.storygraph.qualityGate,
+          aiScore: t.storygraph.aiScore,
+        }}
+        modeHelp={t.storygraph.modeHelp as Record<Mode, string>}
+        actionHelp={t.storygraph.actionHelp}
+      />
 
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <select
-            value={mode}
-            onChange={(e) => setMode(e.target.value as Mode)}
-            style={{ padding: `${theme.spacing.sm}px ${theme.spacing.md}px`, fontSize: theme.font.sizes.md, borderRadius: theme.radii.lg, border: `1px solid ${theme.colors.border.medium}` }}
-          >
-            <option value="hybrid">{t.storygraph.hybrid}</option>
-            <option value="regex">{t.storygraph.regex}</option>
-            <option value="ai">{t.storygraph.aiOnly}</option>
-          </select>
-          <HelpTip text={t.storygraph.modeHelp[mode]} />
-        </div>
-
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={() => handleRun("pipeline")}
-            disabled={!selected || job?.status === "running"}
-          >
-            {t.storygraph.extractKg}
-          </Button>
-          <HelpTip text={t.storygraph.actionHelp.pipeline} />
-        </div>
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <Button variant="secondary" size="sm" onClick={() => handleRun("check")} disabled={!selected || job?.status === "running"}>
-            {t.storygraph.qualityGate}
-          </Button>
-          <HelpTip text={t.storygraph.actionHelp.check} />
-        </div>
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <Button variant="ai" size="sm" onClick={() => handleRun("score")} disabled={!selected || job?.status === "running"}>
-            {t.storygraph.aiScore}
-          </Button>
-          <HelpTip text={t.storygraph.actionHelp.score} />
-        </div>
-      </div>
-
-      {/* Mode description */}
-      {selected && (
-        <div style={{ fontSize: theme.font.sizes.sm, color: theme.colors.text.faint, marginBottom: theme.spacing.xl, maxWidth: 700 }}>
-          Mode: <b>{mode}</b> — {t.storygraph.modeHelp[mode]}
-        </div>
-      )}
-
-      {/* Job status */}
-      {job && (
-        <Card variant="default" padding="lg" style={{ marginBottom: theme.spacing.xxl }}>
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: theme.spacing.sm }}>
-            <span>Job: <b>{job.type}</b></span>
-            <StatusBadge status={job.status} />
-          </div>
-          {job.status === "running" && (
-            <div style={{ background: theme.colors.border.default, borderRadius: theme.radii.sm, height: 8, overflow: "hidden" }}>
-              <div style={{ background: theme.colors.primary, height: "100%", width: `${progress}%`, transition: "width 0.3s" }} />
-            </div>
-          )}
-          {job.status === "failed" && <div style={{ color: theme.colors.error, fontSize: theme.font.sizes.md, marginTop: theme.spacing.xs }}>{job.error}</div>}
-        </Card>
-      )}
-
-      {/* Status table */}
-      <h3 style={{ marginBottom: theme.spacing.md }}>{t.storygraph.kgStatus}</h3>
-      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: theme.font.sizes.md }}>
-        <thead>
-          <tr style={{ borderBottom: `2px solid ${theme.colors.border.default}`, textAlign: "left" }}>
-            <th style={{ padding: `${theme.spacing.sm}px ${theme.spacing.md}px` }}>{t.storygraph.series}</th>
-            <th style={{ padding: `${theme.spacing.sm}px ${theme.spacing.md}px` }}>{t.storygraph.gate}</th>
-            <th style={{ padding: `${theme.spacing.sm}px ${theme.spacing.md}px` }}>{t.storygraph.blended}</th>
-            <th style={{ padding: `${theme.spacing.sm}px ${theme.spacing.md}px` }}>{t.storygraph.nodes}</th>
-            <th style={{ padding: `${theme.spacing.sm}px ${theme.spacing.md}px` }}>{t.storygraph.edges}</th>
-            <th style={{ padding: `${theme.spacing.sm}px ${theme.spacing.md}px` }}>{t.storygraph.html}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {projects.map((p) => {
-            const s = statuses[p.id];
-            return (
-              <tr key={p.id} style={{ borderBottom: `1px solid ${theme.colors.border.light}`, background: selected === p.id ? theme.colors.primaryLight : "" }}>
-                <td style={{ padding: `${theme.spacing.sm}px ${theme.spacing.md}px`, fontWeight: theme.font.weights.medium }}>{p.name}</td>
-                <td style={{ padding: `${theme.spacing.sm}px ${theme.spacing.md}px` }}>{s?.gateScore !== undefined ? `${s.gateScore}/100` : "—"}</td>
-                <td style={{ padding: `${theme.spacing.sm}px ${theme.spacing.md}px` }}>{s?.blendedScore !== undefined ? `${(s.blendedScore as number * 100).toFixed(1)}%` : "—"}</td>
-                <td style={{ padding: `${theme.spacing.sm}px ${theme.spacing.md}px` }}>{(s?.nodeCount as number) ?? "—"}</td>
-                <td style={{ padding: `${theme.spacing.sm}px ${theme.spacing.md}px` }}>{(s?.edgeCount as number) ?? "—"}</td>
-                <td style={{ padding: `${theme.spacing.sm}px ${theme.spacing.md}px` }}>
-                  {s?.hasHTML ? (
-                    <a href={`/api/pipeline/graph-html/${p.id}`} target="_blank" rel="noopener" style={{ color: theme.colors.primary, textDecoration: "none", fontWeight: theme.font.weights.medium }}>
-                      {t.storygraph.viewGraph}
-                    </a>
-                  ) : "—"}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+      <StorygraphStatusDisplay
+        job={job} progress={progress}
+        projects={projects} statuses={statuses} selected={selected}
+        labels={{
+          series: t.storygraph.series, gate: t.storygraph.gate,
+          blended: t.storygraph.blended, nodes: t.storygraph.nodes,
+          edges: t.storygraph.edges, html: t.storygraph.html,
+          viewGraph: t.storygraph.viewGraph, kgStatus: t.storygraph.kgStatus,
+        }}
+      />
     </div>
     {showAdvisor && (
       <AdvisorPanelBase

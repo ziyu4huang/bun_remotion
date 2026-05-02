@@ -25,6 +25,8 @@ Read relevant files before working on matching topics. Files are self-contained.
 ## Testing / Verification
 - no-playwright-visual-verify — Don't use Playwright + image analysis to verify Remotion layout — trust math, let user verify
 - no-duplicate-tool-runs — Don't re-run long commands (render, build) that already completed — check output instead
+- e2e-efficiency — Run only affected E2E specs during dev; full suite (18min) only once at end, in background
+- onboarding-tour-e2e-blocker — Full-page overlays MUST check navigator.webdriver to skip in Playwright; addInitScript is unreliable
 
 ## Tooling / Workflow
 - skill-creation — Skill structure: v2 load-on-demand (SKILL.md + engines/ + platforms/ + env-check.md)

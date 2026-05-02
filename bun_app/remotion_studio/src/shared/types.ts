@@ -131,6 +131,15 @@ export interface TTSStatus {
   voiceMap?: Record<string, string>;
 }
 
+export interface VoiceInfo {
+  id: string;
+  name: string;
+  gender: "male" | "female";
+  engine: "mlx" | "gemini";
+  language: string;
+  description?: string;
+}
+
 // ── Render ──
 
 export interface RenderStatus {

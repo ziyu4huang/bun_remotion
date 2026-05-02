@@ -2,11 +2,11 @@ import { useState, useEffect, useCallback } from "react";
 import { api } from "../api";
 import { useTheme } from "../theme";
 import { useI18n } from "../i18n";
-import { PageHeader, StatusBadge, EmptyState, SkeletonCard, Button } from "../components";
+import { PageHeader, EmptyState, SkeletonCard } from "../components";
+import { ProgressFilterBar } from "../components/ProgressFilterBar";
+import { ProgressEpisodeTable, ProgressStepOverview } from "../components/ProgressEpisodeTable";
 import type { EpisodeProgress, EpisodeProgressSummary, EpisodeStepProgress, BatchRequest, Job, BatchResult } from "../../shared/types";
 import { toast } from "../components/ToastContainer";
-
-const STEP_KEYS: (keyof EpisodeStepProgress)[] = ["scaffold", "pipeline", "check", "score", "image", "tts", "render"];
 
 export function PipelineProgress() {
   const theme = useTheme();
@@ -147,7 +147,6 @@ export function PipelineProgress() {
     poll();
   };
 
-  const hasSelection = selected.size > 0;
   const isBatching = batchRunning !== null;
 
   return (
@@ -159,165 +158,44 @@ export function PipelineProgress() {
         <SummaryCard label={t.pipelineProgress.summary.totalEpisodes} value={summary.totalEpisodes} color={theme.colors.primary} theme={theme} />
         <SummaryCard label={t.pipelineProgress.summary.completed} value={summary.completedEpisodes} color={theme.colors.success} theme={theme} />
         <SummaryCard label={t.pipelineProgress.summary.avgCompletion} value={`${Math.round(summary.avgCompletion * 100)}%`} color={theme.colors.warning} theme={theme} />
-        {hasSelection && (
+        {selected.size > 0 && (
           <SummaryCard label={t.pipelineProgress.summary.selected} value={selected.size} color={theme.colors.info} theme={theme} />
         )}
       </div>
 
-      {/* Filter tabs + batch actions */}
-      <div style={{ display: "flex", gap: 8, marginBottom: 16, alignItems: "center", flexWrap: "wrap" }}>
-        {(["all", "incomplete", "complete"] as const).map((f) => (
-          <Button key={f} variant="outline" size="sm" onClick={() => setFilter(f)}>
-            {f === "all" ? `${t.pipelineProgress.filter.all} (${episodes.length})`
-              : f === "complete" ? `${t.pipelineProgress.filter.complete} (${summary.completedEpisodes})`
-              : `${t.pipelineProgress.filter.incomplete} (${episodes.length - summary.completedEpisodes})`}
-          </Button>
-        ))}
-        <Button onClick={selectAll} variant="ghost" size="sm">
-          {selected.size === filtered.length ? t.pipelineProgress.selection.deselectAll : t.pipelineProgress.selection.selectAll}
-        </Button>
-        {hasSelection && (
-          <>
-            <Button onClick={() => handleBatch("tts")} disabled={isBatching}
-              variant="primary" size="sm" style={{ marginLeft: "auto" }}>
-              {batchRunning === "tts" ? t.pipelineProgress.batch.runningTts : `${t.pipelineProgress.batch.tts} ${selected.size}`}
-            </Button>
-            <Button onClick={() => handleBatch("render")} disabled={isBatching}
-              variant="primary" size="sm">
-              {batchRunning === "render" ? t.pipelineProgress.batch.rendering : `${t.pipelineProgress.batch.render} ${selected.size}`}
-            </Button>
-          </>
-        )}
-        <Button onClick={load} disabled={isBatching} variant="ghost" size="sm"
-          style={{ marginLeft: hasSelection ? 8 : "auto" }}>
-          {t.pipelineProgress.refresh}
-        </Button>
-      </div>
+      <ProgressFilterBar
+        filter={filter} onFilterChange={setFilter}
+        totalCount={episodes.length} completeCount={summary.completedEpisodes}
+        selectedCount={selected.size} filteredCount={filtered.length}
+        isBatching={isBatching} batchRunning={batchRunning}
+        onSelectAll={selectAll} onBatchTts={() => handleBatch("tts")}
+        onBatchRender={() => handleBatch("render")} onRefresh={load}
+        labels={{
+          filterAll: t.pipelineProgress.filter.all, filterComplete: t.pipelineProgress.filter.complete,
+          filterIncomplete: t.pipelineProgress.filter.incomplete,
+          selectAll: t.pipelineProgress.selection.selectAll, deselectAll: t.pipelineProgress.selection.deselectAll,
+          tts: t.pipelineProgress.batch.tts, render: t.pipelineProgress.batch.render,
+          runningTts: t.pipelineProgress.batch.runningTts, rendering: t.pipelineProgress.batch.rendering,
+          refresh: t.pipelineProgress.refresh,
+        }}
+      />
 
-      {/* Per-series tables */}
-      {[...bySeries.entries()].map(([seriesId, eps]) => {
-        const collapsed = collapsedSeries.has(seriesId);
-        const pct = eps.reduce((s, e) => s + e.completedSteps, 0) / (eps.length * 7);
-        const seriesSelected = eps.filter((e) => selected.has(e.episodeId)).length;
-        return (
-          <div key={seriesId} style={{
-            marginBottom: 16, border: `1px solid ${theme.colors.border.default}`,
-            borderRadius: theme.radii.lg, overflow: "hidden",
-          }}>
-            <div onClick={() => toggleSeries(seriesId)}
-              style={{
-                display: "flex", alignItems: "center", gap: 8, padding: "10px 14px",
-                background: theme.colors.bg.muted, cursor: "pointer", userSelect: "none",
-              }}>
-              <span style={{ fontSize: 10 }}>{collapsed ? "▶" : "▼"}</span>
-              <input type="checkbox" checked={seriesSelected === eps.length && eps.length > 0}
-                onChange={(e) => { e.stopPropagation(); toggleSeriesSelect(seriesId, eps); }}
-                onClick={(e) => e.stopPropagation()}
-                style={{ cursor: "pointer" }} />
-              <span style={{ fontWeight: theme.font.weights.medium }}>{eps[0].seriesName}</span>
-              <span style={{ fontSize: theme.font.sizes.sm, color: theme.colors.text.muted }}>
-	                {t.pipelineProgress.episodes(eps.length)}
-              </span>
-              {seriesSelected > 0 && (
-                <span style={{ fontSize: theme.font.sizes.xs, color: theme.colors.primary }}>
-	                  {t.pipelineProgress.selectedCount(seriesSelected)}
-                </span>
-              )}
-              <ProgressBar pct={pct} color={theme.colors.primary} bg={theme.colors.bg.muted} style={{ marginLeft: "auto", width: 120 }} />
-              <span style={{ fontSize: theme.font.sizes.sm, color: theme.colors.text.muted, width: 40, textAlign: "right" }}>
-                {Math.round(pct * 100)}%
-              </span>
-            </div>
+      <ProgressEpisodeTable
+        bySeries={bySeries} collapsedSeries={collapsedSeries} selected={selected}
+        stepLabels={STEP_LABELS}
+        onToggleSeries={toggleSeries} onToggleEpisode={toggleEpisode}
+        onToggleSeriesSelect={toggleSeriesSelect}
+        seriesLabel={t.pipelineProgress.episodes}
+        selectedCountLabel={t.pipelineProgress.selectedCount}
+        episodeLabel={t.pipelineProgress.episode}
+        progressLabel={t.pipelineProgress.progress}
+        scoreLabel={t.pipelineProgress.score}
+      />
 
-            {!collapsed && (
-              <div style={{ overflowX: "auto" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: theme.font.sizes.sm }}>
-                <thead>
-                  <tr style={{ borderBottom: `1px solid ${theme.colors.border.default}` }}>
-                    <th style={thStyle(theme)}></th>
-	                    <th style={thStyle(theme)}>{t.pipelineProgress.episode}</th>
-                    {STEP_KEYS.map((k) => <th key={k} style={{ ...thStyle(theme), textAlign: "center", minWidth: 56 }}>{STEP_LABELS[k]}</th>)}
-                    <th style={{ ...thStyle(theme), textAlign: "center" }}>{t.pipelineProgress.progress}</th>
-                    <th style={{ ...thStyle(theme), textAlign: "center" }}>{t.pipelineProgress.score}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {eps.map((ep) => (
-                    <tr key={ep.episodeId} style={{
-                      borderBottom: `1px solid ${theme.colors.border.light}`,
-                      background: selected.has(ep.episodeId) ? theme.colors.primaryLight : "transparent",
-                    }}>
-                      <td style={{ padding: "6px 8px", width: 32 }}>
-                        <input type="checkbox" checked={selected.has(ep.episodeId)}
-                          onChange={() => toggleEpisode(ep.episodeId)} style={{ cursor: "pointer" }} />
-                      </td>
-                      <td style={{ padding: "6px 14px" }}>
-                        {ep.chapter != null ? `Ch${ep.chapter}-Ep${ep.episode}` : `Ep${ep.episode ?? ""}`}
-                      </td>
-                      {STEP_KEYS.map((k) => (
-                        <td key={k} style={{ padding: "6px 8px", textAlign: "center" }}>
-                          <StepCell done={ep.steps[k]} theme={theme} />
-                        </td>
-                      ))}
-                      <td style={{ padding: "6px 14px", textAlign: "center" }}>
-                        <span style={{
-                          fontSize: theme.font.sizes.sm,
-                          color: ep.completedSteps === ep.totalSteps ? theme.colors.success : theme.colors.text.secondary,
-                        }}>
-                          {ep.completedSteps}/{ep.totalSteps}
-                        </span>
-                      </td>
-                      <td style={{ padding: "6px 14px", textAlign: "center" }}>
-                        {ep.blendedScore != null ? (
-                          <StatusBadge status={ep.blendedScore >= 70 ? "pass" : ep.blendedScore >= 50 ? "warn" : "fail"} label={`${ep.blendedScore}`} />
-                        ) : ep.gateScore != null ? (
-                          <StatusBadge status={ep.gateScore >= 70 ? "pass" : ep.gateScore >= 50 ? "warn" : "fail"} label={`${ep.gateScore}`} />
-                        ) : (
-                          <span style={{ color: theme.colors.text.tertiary }}>&mdash;</span>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              </div>
-            )}
-          </div>
-        );
-      })}
-
-      {/* Step completion overview */}
-      <div style={{
-        marginTop: 24, padding: 16,
-        border: `1px solid ${theme.colors.border.default}`, borderRadius: theme.radii.lg,
-      }}>
-        <h3 style={{ margin: "0 0 12px", fontSize: theme.font.sizes.base, fontWeight: theme.font.weights.medium }}>
-          {t.pipelineProgress.stepCompletionOverview}
-        </h3>
-        <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-          {STEP_KEYS.map((k) => {
-            const info = summary.byStep[k];
-            const p = info.total > 0 ? info.done / info.total : 0;
-            return (
-              <div key={k} style={{
-                flex: "1 1 120px", padding: 10, borderRadius: theme.radii.md,
-                background: theme.colors.bg.muted, textAlign: "center",
-              }}>
-                <div style={{ fontSize: theme.font.sizes.sm, color: theme.colors.text.muted, marginBottom: 4 }}>
-                  {STEP_LABELS[k]}
-                </div>
-                <div style={{
-                  fontSize: 20, fontWeight: theme.font.weights.bold,
-                  color: p === 1 ? theme.colors.success : theme.colors.text.primary,
-                }}>
-                  {info.done}/{info.total}
-                </div>
-                <ProgressBar pct={p} color={theme.colors.primary} bg={theme.colors.bg.muted} style={{ marginTop: 6 }} />
-              </div>
-            );
-          })}
-        </div>
-      </div>
+      <ProgressStepOverview
+        summary={summary} stepLabels={STEP_LABELS}
+        title={t.pipelineProgress.stepCompletionOverview}
+      />
     </div>
   );
 }
@@ -335,36 +213,4 @@ function SummaryCard({ label, value, color, theme }: {
       <div style={{ fontSize: 24, fontWeight: theme.font.weights.bold, color }}>{value}</div>
     </div>
   );
-}
-
-function StepCell({ done, theme }: { done: boolean; theme: ReturnType<typeof useTheme> }) {
-  return (
-    <span style={{
-      display: "inline-flex", alignItems: "center", justifyContent: "center",
-      width: 28, height: 28, borderRadius: theme.radii.md,
-      background: done ? theme.colors.successLight : theme.colors.bg.muted,
-      color: done ? theme.colors.successDark : theme.colors.text.tertiary,
-      fontSize: 14, fontWeight: done ? 600 : 400,
-    }}>
-      {done ? "✓" : "—"}
-    </span>
-  );
-}
-
-function ProgressBar({ pct, color, bg, style }: { pct: number; color: string; bg: string; style?: React.CSSProperties }) {
-  return (
-    <div style={{ height: 6, borderRadius: 3, background: bg, overflow: "hidden", ...style }}>
-      <div style={{
-        height: "100%", width: `${Math.round(pct * 100)}%`, borderRadius: 3,
-        background: pct === 1 ? color : color, transition: "width 0.3s",
-      }} />
-    </div>
-  );
-}
-
-function thStyle(theme: ReturnType<typeof useTheme>): React.CSSProperties {
-  return {
-    padding: "6px 14px", textAlign: "left",
-    fontWeight: theme.font.weights.medium, color: theme.colors.text.muted,
-  };
 }

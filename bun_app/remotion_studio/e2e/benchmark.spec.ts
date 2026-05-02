@@ -13,7 +13,7 @@ test.describe("Benchmark", () => {
   });
 
   test("agent prompt section is visible", async ({ page }) => {
-    await expect(page.getByText("Ask Benchmark Agent")).toBeVisible();
+    await expect(page.getByText(/Benchmark Agent/i)).toBeVisible();
   });
 
   test("agent prompt buttons are visible", async ({ page }) => {

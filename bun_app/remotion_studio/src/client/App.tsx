@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect, useMemo, lazy, Suspense } from "react
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { ToastContainer } from "./components/ToastContainer";
 import { GlobalJobsPanel } from "./components/GlobalJobsPanel";
+import { OnboardingTour, useOnboardingTour } from "./components/OnboardingTour";
 import { type PaletteItem } from "./components/CommandPalette";
 import { useTheme, useThemeMode } from "./theme";
 import { useMediaQuery } from "./hooks/useMediaQuery";
@@ -119,6 +120,7 @@ export function App() {
   const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.mobile - 1}px)`);
   const sidebar = useSidebarState();
   const { activeJobs, recentDone, cancelJob } = useJobStream();
+  const tour = useOnboardingTour();
 
   const navigate = useCallback((p: Page) => {
     setPage(p);
@@ -383,6 +385,7 @@ export function App() {
       </main>
       <ToastContainer />
       <GlobalJobsPanel activeJobs={activeJobs} recentDone={recentDone} onCancel={cancelJob} />
+      {tour.show && <OnboardingTour onDismiss={tour.dismiss} />}
       {paletteOpen && (
         <Suspense fallback={null}>
           <CommandPalette

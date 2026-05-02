@@ -125,11 +125,11 @@ After ANY React/UI changes to `bun_app/remotion_studio/src/client/`, you MUST:
    bun run --cwd bun_app/remotion_studio build
    ```
 
-2. **Restart server** — production server serves built `dist/client/`:
+2. **Restart server** — kill stale process first, then start from repo root (NEVER `cd`):
    ```bash
-   lsof -ti:5173 | xargs kill -9 2>/dev/null
-   PORT=5173 bun run bun_app/remotion_studio/src/server/index.ts &
+   kill $(lsof -ti:5173) 2>/dev/null; PORT=5173 bun run bun_app/remotion_studio/src/server/index.ts &
    ```
+   > **WARNING:** Do NOT use `cd bun_app/remotion_studio && bun run src/server/index.ts`. The `cd` persists across ALL subsequent Bash calls, corrupting CWD and breaking all path-relative commands. Always run from repo root.
 
 3. **Run Playwright smoke** — catches React runtime errors, console errors, nav failures:
    ```bash

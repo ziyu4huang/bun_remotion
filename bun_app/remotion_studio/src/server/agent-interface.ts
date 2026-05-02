@@ -13,6 +13,8 @@ export interface RunTaskOptions {
   workDir?: string;
   history?: Array<{ role: "user" | "assistant"; content: string }>;
   model?: string;
+  apiKey?: string;
+  envKey?: string;
   attachments?: AgentAttachment[];
   onEvent?: (event: AgentStreamEvent) => void;
 }

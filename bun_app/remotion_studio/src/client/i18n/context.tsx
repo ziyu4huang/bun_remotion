@@ -21,7 +21,7 @@ function detectLocale(): Locale {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored === "zh_TW" || stored === "en") return stored;
   } catch {}
-  return "en";
+  return "zh_TW";
 }
 
 export function LocaleProvider({ children }: { children: ReactNode }) {

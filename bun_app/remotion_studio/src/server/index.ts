@@ -21,6 +21,7 @@ import { benchmarkRoutes } from "./routes/benchmark";
 import { agentRoutes } from "./routes/agent";
 import { episodeProgressRoutes } from "./routes/episode-progress";
 import { batchRoutes } from "./routes/batch";
+import { configRoutes } from "./routes/config";
 import type { ApiResponse, Job } from "../shared/types";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";
@@ -131,6 +132,7 @@ app.route("/api/benchmark", benchmarkRoutes);
 app.route("/api/agent", agentRoutes);
 app.route("/api/episode-progress", episodeProgressRoutes);
 app.route("/api/batch", batchRoutes);
+app.route("/api/config", configRoutes);
 
 // ── Serve built client (production) ──
 

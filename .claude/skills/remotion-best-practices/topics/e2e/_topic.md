@@ -96,3 +96,25 @@ expect(filtered).toEqual([]);
 await expect(element).toBeVisible();
 await expect(element).not.toHaveCSS("display", "none");
 ```
+
+## Efficiency Rules (CRITICAL)
+
+**NEVER run the full E2E suite during iterative development.** The full suite (160+ tests) takes 18+ minutes.
+
+1. **Targeted testing:** Run only affected specs: `bunx playwright test e2e/dashboard.spec.ts`
+2. **Full suite ONCE:** Run `bunx playwright test` only at the end, in background, to catch regressions
+3. **Unit tests first:** `bun test src/` (2s) catches most issues; `bun test` picks up E2E specs (use `src/` filter)
+4. **Batch rebuilds:** Don't rebuild+restart for every small change. Group fixes, rebuild once.
+
+## Full-Page Overlay Rule
+
+Any React component rendering `position: fixed; inset: 0; z-index: 9999` (tour, modal, splash) **MUST** check `navigator.webdriver` to auto-skip in Playwright:
+
+```tsx
+useEffect(() => {
+  if (navigator.webdriver) return; // Skip in automated testing
+  // ... show overlay logic
+}, []);
+```
+
+`page.addInitScript()` does NOT reliably set localStorage before React mounts — don't waste time on it. The component-level guard is the only reliable approach.

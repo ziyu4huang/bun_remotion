@@ -1,4 +1,4 @@
-import type { ApiResponse, Job, JobProgress, Project, AssetSummary, SeriesAssets, TTSStatus, RenderStatus, WorkflowTemplate, WorkflowResult, MonitoringOverview, SeriesHealth, SeriesQualitySnapshot, RegressionAlert, ScoreHistoryPoint, ImageStatus, ImageGenerateRequest, CharacterProfile, BenchmarkResult, BaselineInfo, AgentInfo, AgentStreamEvent, AgentTaskResult, AgentSession, TaskTree, TaskNode, EpisodeProgress, EpisodeProgressSummary, BatchRequest, BatchResult } from "../shared/types";
+import type { ApiResponse, Job, JobProgress, Project, AssetSummary, SeriesAssets, TTSStatus, VoiceInfo, RenderStatus, WorkflowTemplate, WorkflowResult, MonitoringOverview, SeriesHealth, SeriesQualitySnapshot, RegressionAlert, ScoreHistoryPoint, ImageStatus, ImageGenerateRequest, CharacterProfile, BenchmarkResult, BaselineInfo, AgentInfo, AgentStreamEvent, AgentTaskResult, AgentSession, TaskTree, TaskNode, EpisodeProgress, EpisodeProgressSummary, BatchRequest, BatchResult } from "../shared/types";
 
 const BASE = "/api";
 
@@ -76,8 +76,20 @@ export const api = {
 
   // TTS
   getTTSStatus: (episodeId: string) => request<TTSStatus>(`/tts/status?episodeId=${encodeURIComponent(episodeId)}`),
+  getVoices: (engine?: "mlx" | "gemini") => request<VoiceInfo[]>(`/tts/voices${engine ? `?engine=${engine}` : ""}`),
   generateTTS: (episodeId: string, opts?: { scene?: string; skipExisting?: boolean; engine?: string }) =>
     request<Job>("/tts/generate", { method: "POST", body: JSON.stringify({ episodeId, ...opts }) }),
+  getVoiceCharacters: (seriesId: string) => request<CharacterProfile[]>(`/tts/characters?seriesId=${encodeURIComponent(seriesId)}`),
+  updateCharacterVoice: (seriesId: string, characterId: string, voice: string) =>
+    request<CharacterProfile>(`/tts/characters/${encodeURIComponent(seriesId)}/voice`, {
+      method: "PUT",
+      body: JSON.stringify({ characterId, voice }),
+    }),
+  previewVoice: (voice: string, engine: "mlx" | "gemini", text?: string) =>
+    request<{ url: string }>("/tts/preview-voice", {
+      method: "POST",
+      body: JSON.stringify({ voice, engine, text }),
+    }),
 
   // Render
   getRenderStatus: (episodeId: string) => request<RenderStatus>(`/render/status?episodeId=${encodeURIComponent(episodeId)}`),
@@ -168,8 +180,8 @@ export const api = {
     /** List available sub-agents */
     listAgents: () => request<AgentInfo[]>("/agent/agents"),
     /** Start an agent task (returns job ID for polling) */
-    startTask: (agentName: string, prompt: string, model?: string) =>
-      request<Job<AgentTaskResult>>("/agent/tasks", { method: "POST", body: JSON.stringify({ agentName, prompt, model }) }),
+    startTask: (agentName: string, prompt: string, model?: string, apiKey?: string, envKey?: string) =>
+      request<Job<AgentTaskResult>>("/agent/tasks", { method: "POST", body: JSON.stringify({ agentName, prompt, model, apiKey, envKey }) }),
     /** List project files available for agent context */
     listFiles: (seriesId?: string) =>
       request<{ series?: Array<{ id: string; path: string }>; seriesId?: string; files?: Array<{ path: string; name: string; size: number; episode?: string }> }>(
@@ -205,6 +217,8 @@ export const api = {
       history?: Array<{ role: "user" | "assistant"; content: string }>,
       model?: string,
       attachments?: Array<{ path: string; name: string; content: string }>,
+      apiKey?: string,
+      envKey?: string,
     ): () => void {
       const STREAM_TIMEOUT_MS = 3 * 60 * 1000; // 3 min total
       const controller = new AbortController();
@@ -216,7 +230,7 @@ export const api = {
           const fetchPromise = fetch(`${BASE}/agent/chat`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ agentName, prompt, history, model, attachments }),
+            body: JSON.stringify({ agentName, prompt, history, model, apiKey, envKey, attachments }),
             signal: controller.signal,
           });
           const timeoutPromise = new Promise<never>((_, reject) => {
@@ -271,10 +285,20 @@ export const api = {
       };
     },
   },
+
+  /** Server-side config (masked API keys, default model). */
+  getConfig: () =>
+    request("/api/config"),
+
+  saveApiKeysToServer: (keys: { glm?: string; deepseek?: string; google?: string }) =>
+    request("/api/config/api-keys", { method: "POST", body: JSON.stringify(keys) }),
+
+  saveDefaultModelToServer: (model: string) =>
+    request("/api/config/default-model", { method: "POST", body: JSON.stringify({ model }) }),
 };
 
 /** Parse episode ID like "weapon-forger-ch1-ep3" into components. */
-function parseEpisodeId(id: string): { seriesId: string; chapter?: number; episode?: number } {
+export function parseEpisodeId(id: string): { seriesId: string; chapter?: number; episode?: number } {
   const chMatch = id.match(/-ch(\d+)-ep(\d+)$/);
   if (chMatch) {
     const suffix = `-ch${chMatch[1]}-ep${chMatch[2]}`;

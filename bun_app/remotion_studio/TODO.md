@@ -4,14 +4,12 @@
 > - Code PLAN: `bun_app/remotion_studio/PLAN.md`
 > - Code TODO: `bun_app/remotion_studio/TODO.md` — **(this file)**
 
-> **Status:** v0.35.0 — i18n AdvisorPanelBase, stale TODO cleanup. 316 tests, 0 fail. 21/21 smoke.
+> **Status:** v0.48.0 COMPLETE. 523 tests, 0 fail, 4088 expect(). 437KB, 31 chunks. 29 E2E specs.
 
 ## Known Issues
 
-### Architecture Gaps (remaining from v0.18.0)
+### Architecture Gaps (remaining)
 - No batch cancellation UI (can cancel from Dashboard)
-- Agent conversation context lost on page navigation (localStorage per-agent, not server-side)
-- Advisor panels use SSE streaming (chat endpoint) but Dashboard agent buttons use polling (tasks endpoint) — inconsistent
 
 ## P0 — Agent Architecture Redesign (v0.19.0)
 
@@ -70,11 +68,6 @@
 - **Vite dev server degradation** — After ~130 tests, Vite becomes unresponsive causing `net::ERR_ABORTED` on navigation. 3-4 tests at end of suite are affected. Root cause: resource exhaustion in long-running Vite dev server. Mitigated by `gotoWithRetry` but not fully resolved.
 - **Dashboard demo job button disappears** — After first demo job completes, the "Run Demo Job" button may become unfindable (element not found). Simplified test to verify single job completion.
 - **Toast auto-dismiss test timeout** — `waitForTimeout(7000)` exceeds 30s test timeout when combined with navigation delays. Reduced to 2s.
-
-### Architecture Gaps (remaining)
-- No batch cancellation UI (can cancel from Dashboard)
-- Agent conversation context lost on page navigation (localStorage per-agent, not server-side)
-- Advisor panels use SSE streaming (chat endpoint) but Dashboard agent buttons use polling (tasks endpoint) — inconsistent
 
 ## P0 — v0.23.0: Wizard UX Overhaul (Mobile Responsive, Help, AI Assistant, Progress Bars)
 
@@ -175,7 +168,7 @@
 ### 0-C: Mobile & Polish (deferred)
 
 - [x] **Mobile responsive E2E** — 7 tests at 375px viewport (hamburger, tables, wizard, palette, console errors).
-- [ ] **Onboarding tour** — New user walkthrough for pipeline workflow.
+- [x] **Onboarding tour** — New user walkthrough for pipeline workflow. (Done v0.36.0, E2E-fixed v0.38.0)
 
 ## Pending (deferred)
 
@@ -219,14 +212,337 @@
 - [x] Episode Kanban board: Writing → Scaffolded → KG'd → TTS'd → Rendered
 - [x] Character design brief → auto-generate image prompt
 - [x] Asset library search/filter
-- [ ] Video preview before full render (low-res)
+- [ ] Video preview before full render (low-res) — *deferred: requires Remotion still infrastructure*
 - [x] Dialog preview (test line with assigned voice)
 - [x] Revision history for story plans
-- [ ] Export to platform formats (YouTube, Bilibili, TikTok)
+- [ ] Export to platform formats (YouTube, Bilibili, TikTok) — *deferred: per-platform FFmpeg pipeline*
 - [x] Quality inline hints (Story Editor missing sections/character warnings)
 - [x] Review checklist (per-series episode readiness in Projects detail)
 
 ## Development History
+
+### 2026-05-02 — v0.48.0: E2E Test Modernization + Server-Side Config
+
+| Metric | Value |
+|--------|-------|
+| Unit tests | 523 pass, 0 fail |
+| Bundle | 437KB, 31 chunks |
+| E2E specs | 29 files (was 27) |
+| New E2E specs | 2 (voice-manager, command-palette) |
+| New server modules | 2 (config-store.ts, routes/config.ts) |
+| New test files | 2 (config-store.test.ts, useJobStream.test.tsx) |
+| Files modified | 15 (E2E specs, agent-bridge.ts, Settings.tsx, api.ts, en.ts, zh_TW.ts) |
+
+**Changes applied:**
+- `e2e/helpers.ts`: Forced locale to "en" in `gotoWithRetry` — all E2E tests now use English UI regardless of default locale
+- `e2e/form-interactions.spec.ts`: Replaced hardcoded English text with regex patterns
+- `e2e/assets-tts-render.spec.ts`: Added tab navigation, search input, VoiceManager tests
+- `e2e/build-ch3-ep2.spec.ts`: Removed hardcoded URLs, used regex for i18n-aware selectors
+- `e2e/toast-notifications.spec.ts`: Added afterEach(unrouteAll), used data-toast-type selector
+- `e2e/loading-states.spec.ts`: Improved assertions with actual loading indicator checks
+- `e2e/voice-manager.spec.ts`: New — VoiceManager visibility + series selector tests
+- `e2e/command-palette.spec.ts`: New — Cmd+K open, arrow key navigation, click-outside close
+- `e2e/benchmark.spec.ts`, `projects.spec.ts`, `quality.spec.ts`, `story-editor.spec.ts`, `workflows-tree.spec.ts`: Fixed hardcoded English selectors
+- `services/config-store.ts`: New — `ConfigStore` class with read/write `data/config.json`, masked key display, singleton export
+- `routes/config.ts`: New — `GET /api/config`, `POST /api/config/api-keys`, `POST /api/config/default-model`
+- `agent-bridge.ts`: Uses `configStore.getApiKey("glm")` as fallback when no client key provided
+- `pages/Settings.tsx`: Added "Save to Server" button for each provider key slot
+- `client/api.ts`: Added `getConfig()`, `saveApiKeysToServer()`, `saveDefaultModelToServer()`
+- `__tests__/config-store.test.ts`: New — 8 tests (defaults, read, persist, mask, corrupted, deep copy)
+- `__tests__/hooks/useJobStream.test.tsx`: New — 7 tests (fetch, cancel, delete, refresh, error)
+- `package.json`: version bumped to 0.48.0
+
+**Key lesson:** E2E tests that use hardcoded English selectors break when the default locale changes to zh_TW. The fix is to force locale in the shared `gotoWithRetry` helper, not to update every individual test. `ConfigStore` shallow-copy bug: `{ ...DEFAULT_CONFIG }` shares nested objects — mutations to one instance's `defaults.model` would leak to `DEFAULT_CONFIG` and all future instances. Fix: initialize each instance with fresh objects in the constructor.
+
+### 2026-05-02 — v0.47.0: Workflow Engine Refactor + Multi-Provider API Keys
+
+| Metric | Value |
+|--------|-------|
+| Unit tests | 508 pass, 0 fail |
+| Bundle | 437KB, 31 chunks |
+| workflow-engine.ts | 924→303 lines (orchestrator) |
+| New sub-modules | 3 (templates.ts 138, task-tree-builder.ts 99, step-executors.ts 400) |
+| Multi-provider key tests | 12 new |
+| Files modified | 10 (workflow-engine.ts, Settings.tsx, api.ts, agent-bridge.ts, agent-interface.ts, agent.ts, useAgentTask.ts, AdvisorPanelBase.tsx, AgentChat.tsx, Quality.tsx) |
+
+**Changes applied:**
+- `services/workflow/templates.ts`: New — constants, templates, deps map, options type, stepProgress
+- `services/workflow/task-tree-builder.ts`: New — buildTaskTree, buildLinearTree
+- `services/workflow/step-executors.ts`: New — runStep (direct + agent), buildStepPrompt, input resolvers
+- `services/workflow-engine.ts`: 924→303 lines. Thin orchestrator with re-exports from sub-modules.
+- `pages/Settings.tsx`: 3 per-provider API key slots (GLM, DeepSeek, Google). `loadApiKeyWithEnvKey()` convenience function. Auto-migrates old single key to GLM slot.
+- `agent-interface.ts`: Added `envKey` to `RunTaskOptions`
+- `agent-bridge.ts`: Uses `options.envKey` instead of hardcoded `Z_AI_API_KEY`
+- `routes/agent.ts`: Passes `envKey` from request body to bridge
+- `api.ts`: `startTask` and `streamChat` accept `envKey` parameter
+- `hooks/useAgentTask.ts`: Uses `loadApiKeyWithEnvKey()` for correct provider key
+- `components/AdvisorPanelBase.tsx`: Uses `loadApiKeyWithEnvKey()`
+- `pages/AgentChat.tsx`, `pages/Quality.tsx`: Uses `loadApiKeyWithEnvKey()`
+- `__tests__/multi-provider-keys.test.ts`: 12 tests — provider mapping, per-provider storage, migration
+- `package.json`: version bumped to 0.47.0
+
+**Key lesson:** Splitting a 924-line file into focused modules is a clean refactor when the module boundaries align with logical concerns (templates/data vs tree building vs step execution vs orchestration). Re-exporting from the orchestrator preserves backward compatibility without changing any import paths.
+
+### 2026-05-02 — v0.46.0: React Testing Infrastructure + Final Page Splits
+
+| Metric | Value |
+|--------|-------|
+| Unit tests | 496 pass, 0 fail |
+| Bundle | 437KB, 31 chunks |
+| New test files | 5 (4 component render + 1 hook) |
+| New tests | 65 (57 component + 8 hook) |
+| Dashboard | 482→281 lines (42% reduction) |
+| AgentChat | 490→332 lines (32% reduction) |
+| New components | 5 (ChatErrorState, ChatMessageArea, JobListSection, JobHistorySection, DashboardHelpers) |
+
+**Changes applied:**
+- `@testing-library/react`, `@testing-library/jest-dom`, `@testing-library/user-event`, `happy-dom` installed
+- `bunfig.toml`: New — preload setup file for React test environment
+- `src/client/__tests__/setup.ts`: New — happy-dom GlobalWindow + global polyfills
+- `src/client/__tests__/components/Button.test.tsx`: New — 17 tests (variants, sizes, click, disabled, styles)
+- `src/client/__tests__/components/Card.test.tsx`: New — 13 tests (variants, padding, children, attributes)
+- `src/client/__tests__/components/InputField.test.tsx`: New — 13 tests (label, error, onChange, attributes)
+- `src/client/__tests__/components/StatusBadge.test.tsx`: New — 14 tests (statuses, role, styles, case sensitivity)
+- `src/client/__tests__/hooks/useAgentTask.test.tsx`: New — 8 tests (initial state, bridge check, start, reset, stream mode)
+- `components/ChatErrorState.tsx`: New — 39 lines, bridge error display with recovery steps
+- `components/ChatMessageArea.tsx`: New — 106 lines, message rendering + tools + job status + thinking
+- `components/JobListSection.tsx`: New — 179 lines, filter tabs + job cards with progress/expand/cancel
+- `components/JobHistorySection.tsx`: New — 70 lines, collapsible history with per-job delete
+- `components/DashboardHelpers.ts`: New — 24 lines, relativeTime, formatDuration, treeSummary
+- `pages/Dashboard.tsx`: 482→281 lines. Extracted JobListSection, JobHistorySection, DashboardHelpers.
+- `pages/AgentChat.tsx`: 490→332 lines. Extracted ChatErrorState, ChatMessageArea.
+- `components/index.ts`: Added exports for all 5 new components + DashboardHelpers functions.
+- `package.json`: version bumped to 0.46.0.
+
+**Key lesson:** happy-dom v20 removed `GlobalRegistrator` — use `GlobalWindow` with manual global polyfill assignment instead. `@testing-library/react`'s `cleanup()` must be called in `afterEach()` to prevent DOM pollution between tests. `getByRole("status")` doesn't work in happy-dom for `<span role="status">` — use `container.querySelector('[role="status"]')` instead.
+
+### 2026-05-02 — v0.45.0: i18n Redesign + Persistent Config
+
+| Metric | Value |
+|--------|-------|
+| Unit tests | 431 pass, 0 fail |
+| Bundle | 437KB, 31 chunks |
+| Default locale | zh_TW (was en) |
+| New i18n keys | 15 per language (settings.language, apiKey, onboardingTour) |
+| Files modified | 10 (context.tsx, en.ts, zh_TW.ts, Settings.tsx, api.ts, agent-interface.ts, agent-bridge.ts, agent.ts, AdvisorPanelBase.tsx, useAgentTask.ts, AgentChat.tsx, Quality.tsx) |
+
+**Changes applied:**
+- `i18n/context.tsx`: Default locale changed from "en" to "zh_TW"
+- `i18n/en.ts` + `zh_TW.ts`: Added 15 new settings keys (language, apiKey*, onboardingTour, replayTour)
+- `pages/Settings.tsx`: Redesigned — language preference dropdown, LLM API key input (masked display, save/clear), i18n'd all hardcoded strings. Exported `loadApiKey`/`saveApiKey`.
+- `client/api.ts`: `streamChat` and `startTask` accept optional `apiKey` parameter, sent with agent requests
+- `server/agent-interface.ts`: Added `apiKey?: string` to `RunTaskOptions`
+- `server/agent-bridge.ts`: Temporarily sets `Z_AI_API_KEY` env var when `apiKey` provided, restores after execution
+- `server/routes/agent.ts`: `ChatRequestBody` accepts `apiKey`, passed to `provider.runTask()`
+- `components/AdvisorPanelBase.tsx`: Imports `loadApiKey`, passes to `streamChat()`
+- `hooks/useAgentTask.ts`: Imports `loadApiKey`, passes to `startTask()` and `streamChat()`
+- `pages/AgentChat.tsx`: Imports `loadApiKey`, passes to `streamChat()`
+- `pages/Quality.tsx`: Imports `loadApiKey`, passes to `startTask()`
+- `package.json`: version bumped to 0.45.0
+
+**Key lesson:** API key pass-through uses temporary env var mutation in the bridge (set before agent call, restore after). This avoids changes to bun_pi_agent's factory while ensuring the key is available when the agent creates its LLM client.
+
+### 2026-05-02 — v0.44.0: Test Coverage + Hardening
+
+| Metric | Value |
+|--------|-------|
+| Unit tests | 431 pass, 0 fail |
+| Bundle | 431KB, 31 chunks |
+| New test files | 7 (6 client-side, 1 workflow engine) |
+| New tests | 87 (66 client pure logic, 21 workflow engine) |
+
+**Changes applied:**
+- `src/client/__tests__/design-brief.test.ts`: New — 17 tests for `briefToPrompt()` (art styles, expressions, edge cases, EMPTY_BRIEF defaults)
+- `src/client/__tests__/pipeline-ops.test.ts`: New — 14 tests for `getPipelineOp()` (all 26 tool names, unknown tools, op type coverage)
+- `src/client/__tests__/wizard-utils.test.ts`: New — 9 tests for `findCurrentStep()` (empty/complete episodes, step ordering, multi-episode mode selection)
+- `src/client/__tests__/theme-utils.test.ts`: New — 10 tests for `scoreColor()` (boundaries 40%/70%, edge cases, non-100 max, zero max)
+- `src/client/__tests__/api-utils.test.ts`: New — 10 tests for `parseEpisodeId()` (ch+ep, ep-only, bare series, edge cases)
+- `src/client/__tests__/chat-history.test.ts`: New — 16 tests for ChatHistory functions (load/save/clear roundtrip, quota errors, corruption, truncation)
+- `src/__tests__/workflow-engine.test.ts`: New — 21 tests for TEMPLATE_DEPS graph, buildTaskTree DAG construction, stepProgress edge cases, template consistency
+- `src/client/api.ts`: Exported `parseEpisodeId` (was private)
+- `package.json`: version bumped to 0.44.0
+
+**Issues found during testing:**
+- `parseEpisodeId` was not exported — fixed by adding export
+- `EMPTY_BRIEF` silently includes `expression: "neutral"` and `artStyle: "anime"` — documented in tests, not a bug but a footgun
+
+**Key lesson:** Client-side pure logic functions (briefToPrompt, getPipelineOp, scoreColor, parseEpisodeId) were completely untested. Writing tests caught 2 real issues (unexported function, misleading defaults) and validated 87 function behaviors that previously relied only on E2E.
+
+### 2026-05-01 — v0.43.0: PipelineProgress Split + Storygraph Refactor
+
+| Metric | Value |
+|--------|-------|
+| Unit tests | 344 pass, 0 fail |
+| Bundle | 431KB, 31 chunks |
+| PipelineProgress | 370 → 216 lines (42% reduction) |
+| Storygraph | 238 → 147 lines (38% reduction) |
+| New components | 4 (ProgressFilterBar, ProgressEpisodeTable+StepOverview, StorygraphActionPanel, StorygraphStatusDisplay) |
+
+**Changes applied:**
+- `pages/PipelineProgress.tsx`: 370 → 216 lines. Extracted filter bar into ProgressFilterBar, episode tables + step overview into ProgressEpisodeTable + ProgressStepOverview.
+- `components/ProgressFilterBar.tsx`: New — 69 lines, filter tabs + select all + batch action buttons.
+- `components/ProgressEpisodeTable.tsx`: New — 198 lines, per-series collapsible tables + StepCell + ProgressBar + ProgressStepOverview.
+- `pages/Storygraph.tsx`: 238 → 147 lines. Extracted action panel into StorygraphActionPanel, status display into StorygraphStatusDisplay.
+- `components/StorygraphActionPanel.tsx`: New — 96 lines, series selector + mode selector + action buttons with HelpTip.
+- `components/StorygraphStatusDisplay.tsx`: New — 91 lines, job status card + status table.
+- `components/index.ts`: Added exports for all 4 new components + ProgressStepOverview.
+- `package.json`: version bumped to 0.43.0.
+
+**Key lesson:** Step completion overview shared ProgressBar with the episode table, so grouping them in the same file (ProgressEpisodeTable.tsx) was cleaner than creating a separate file. HelpTip moved from Storygraph page into StorygraphActionPanel since it's only used there.
+
+### 2026-05-01 — v0.42.0: Cross-App Integration Tests + Workflows Split
+
+| Metric | Value |
+|--------|-------|
+| Unit tests | 344 pass, 0 fail |
+| New integration tests | 20 (storygraph cross-app contracts) |
+| Workflows | 428 → 309 lines (28% reduction) |
+| New components | 2 (WorkflowImageEditor, WorkflowStepProgress) |
+| Bundle | 429KB, 31 chunks |
+
+**Changes applied:**
+- `__tests__/storygraph-integration.test.ts`: New — 20 integration tests covering storygraph↔remotion_studio cross-app integration.
+  - `getPipelineStatus`: reads real gate.json + merged-graph.json from weapon-forger fixture (5 tests)
+  - `runSuggest`: produces suggestions with valid structure, severity sorting, debt counting (5 tests)
+  - `runHealth`: builds health dimensions from real data, debt items matching (5 tests)
+  - Type contracts: verifies PipelineStatusResult, SuggestResult, HealthResult fields match remotion_studio expectations (3 tests)
+  - Plan parser: verifies plan-editor → storygraph parsePlan integration (2 tests)
+- `pages/Workflows.tsx`: 428 → 309 lines. Extracted image list editor into WorkflowImageEditor, step progress + task tree into WorkflowStepProgress.
+- `components/WorkflowImageEditor.tsx`: New — 73 lines, image list with add/edit/remove.
+- `components/WorkflowStepProgress.tsx`: New — 91 lines, workflow progress bar + task tree + flat step fallback.
+- `components/index.ts`: Added exports for both new components.
+- `package.json`: version bumped to 0.42.0.
+- Storygraph `NEXT.md`: Created — v0.41.0 plan with pipeline API contract tests + hardening.
+
+**Key lesson:** Integration tests that import across bun_app boundaries require careful path resolution — `import.meta.dir` resolves from the test file's location, not from `--cwd`. The config form section of Workflows has too many state dependencies (20+ props) to cleanly extract — better to leave it inline and focus on the display-only components.
+
+### 2026-05-01 — v0.41.0: Quality + ImageGen Split
+
+| Metric | Value |
+|--------|-------|
+| Unit tests | 324 pass, 0 fail |
+| Bundle | 429KB, 31 chunks |
+| Quality | 480 → 227 lines (53% reduction) |
+| ImageGen | 470 → 272 lines (42% reduction) |
+| New components | 5 (QualityAskAgent, QualityDimensions, QualityDetail, ImageDesignBrief, ImageVariantGallery) |
+
+**Changes applied:**
+- `pages/Quality.tsx`: 480 → 227 lines. Extracted agent prompt section into QualityAskAgent, AI dimensions + breakdown into QualityDimensions, detail view with scores/history/checks into QualityDetail. Small badges (ScoreBadge, DecisionBadge, TrendBadge) kept inline.
+- `components/QualityAskAgent.tsx`: New — 73 lines, agent prompt buttons + response display.
+- `components/QualityDimensions.tsx`: New — 69 lines, AI quality dimensions cards + quality breakdown cards + formatDimensionName helper.
+- `components/QualityDetail.tsx`: New — 175 lines, per-series detail view with score cards, score history chart, gate checks table.
+- `pages/ImageGen.tsx`: 470 → 272 lines. Extracted design brief form into ImageDesignBrief, variant gallery into ImageVariantGallery.
+- `components/ImageDesignBrief.tsx`: New — 111 lines, collapsible character design brief form with BriefField, briefToPrompt, ART_STYLES, EXPRESSIONS.
+- `components/ImageVariantGallery.tsx`: New — 52 lines, character variant image grid with click-to-use-prompt.
+- `components/index.ts`: Added exports for all 5 new components + DesignBrief type + briefToPrompt.
+- `package.json`: version bumped to 0.41.0.
+
+**Key lesson:** QualityDetail's checks table duplicated some rendering that was inline in the original — extracted into a dedicated ChecksTable sub-component for clarity. The QualityDimensions component is pure-presentational (no state), making it the simplest extraction pattern.
+
+### 2026-05-01 — v0.40.0: StoryEditor Split + PLAN.md Reconciliation
+
+| Metric | Value |
+|--------|-------|
+| Unit tests | 324 pass, 0 fail |
+| Bundle | 429KB, 31 chunks |
+| StoryEditor | 559 → 318 lines (43% reduction) |
+| New components | 3 (StoryEditorHints, StoryEditorSections, StoryEditorRevision) |
+| Stale markers fixed | PLAN.md (8 items), TODO.md (4 items) |
+
+**Changes applied:**
+- `pages/StoryEditor.tsx`: 559 → 318 lines. Extracted QualityHints, SectionsView+SectionCard, revision history into separate components. Fixed ViewToggle variable name collision (tab loop variable shadowed i18n `t`).
+- `components/StoryEditorHints.tsx`: New — 82 lines, quality hints panel (missing characters, voices, episodes, arcs, chapters).
+- `components/StoryEditorSections.tsx`: New — 157 lines, parsed section cards (Characters table, Episode Guide table, Chapters chips, Story Arcs, Running Gags).
+- `components/StoryEditorRevision.tsx`: New — 75 lines, revision history panel with view/restore.
+- `components/index.ts`: Added exports for all 3 new components.
+- `PLAN.md`: Fixed stale "unfixed" OnboardingTour marker, updated section 6 with completion status column, marked P1/P2 done items, updated architecture diagram counts.
+- `TODO.md`: Resolved stale Onboarding tour checkbox (done v0.36.0), removed duplicate Architecture Gaps section, marked deferred items explicitly.
+- `package.json`: version bumped to 0.40.0.
+
+**Key lesson:** The ViewToggle had a variable collision where `t` (loop variable for tabs) shadowed the i18n `t` — fixed by renaming to `tab`. This is a common hazard when extracting inline map callbacks.
+
+### 2026-05-01 — v0.39.0: Character Voice Manager
+
+| Metric | Value |
+|--------|-------|
+| Unit tests | 324 pass, 0 fail |
+| Smoke E2E | 21/21 pass, 0 console errors |
+| New components | 1 (VoiceManager) |
+| New services | 1 (voice-registry) |
+| New API endpoints | 4 (GET /tts/voices, GET /tts/characters, PUT /tts/characters/:id/voice, POST /tts/preview-voice) |
+| Bundle | 428KB, 31 chunks |
+
+**Changes applied:**
+- `shared/types.ts`: Added `VoiceInfo` type (id, name, gender, engine, language, description)
+- `services/voice-registry.ts`: New — 10 voices (2 MLX + 8 Gemini) with metadata
+- `services/character-profiles.ts`: Added `updateCharacterVoice()` — regex-based write to `characters.ts`
+- `routes/tts.ts`: Added 4 endpoints — voice listing, character profiles, voice assignment, preview generation with caching
+- `components/VoiceManager.tsx`: New — series selector, character cards with voice dropdowns, preview button, save button
+- `pages/TTS.tsx`: Integrated VoiceManager component (245→247 lines)
+- `api.ts`: Added `getVoices()`, `getVoiceCharacters()`, `updateCharacterVoice()`, `previewVoice()`
+- `i18n/en.ts` + `zh_TW.ts`: Added 18 voice manager keys per language
+- `components/index.ts`: Added VoiceManager export
+
+**Key lesson:** Voice assignment writes back to `characters.ts` using regex replacement — same approach as the read parser. Preview audio cached in `data/voice-previews/` to avoid regenerating samples.
+
+### 2026-05-01 — v0.38.0: Agent Bug Fixes + E2E Reliability
+
+| Metric | Value |
+|--------|-------|
+| Unit tests | 316 pass, 0 fail |
+| E2E | 159/161 pass (2 pre-existing: agent bridge unavailable) |
+| Bugs fixed | 6 (SSE event mismatch, MarkdownText prop, stream abort, advisor flash, tour overlay, heading restore) |
+| Bundle | 423KB, 31 chunks |
+
+**Bugs fixed:**
+- `hooks/useAgentTask.ts`: SSE event type mismatch — `text_delta`→`text`, `thinking_delta`→removed, `tool_call`→`tool_start`/`tool_end`, added `done` handler. Dashboard agent buttons were completely non-functional in stream mode.
+- `components/AgentResultPanel.tsx`: MarkdownText prop `text`→`content` in both streaming and final result states. Result panels crashed silently.
+- `pages/AgentChat.tsx`: Added stream abort on agent switch to prevent message leakage between agents.
+- `components/AdvisorPanelBase.tsx`: Added loading state to prevent "No agent available" flash during bridge check + agent list fetch.
+- `components/OnboardingTour.tsx`: Added `navigator.webdriver` guard to skip tour in Playwright. Tour overlay (z-index 9999) was blocking all E2E clicks.
+- `pages/Dashboard.tsx`: Restored "Server Status" heading that was lost when SystemStatus was extracted.
+- `e2e/helpers.ts`: Simplified dismiss logic; removed unreliable `addInitScript` approach.
+- `e2e/mobile-responsive.spec.ts`: Fixed sidebar visibility test — `translateX(-100%)` is "visible" to Playwright; check transform style instead.
+
+**Key lesson:** Full-page overlays (tour, modal) MUST check `navigator.webdriver` to skip in Playwright. `addInitScript` is unreliable for localStorage before React mount. Component-level guard is the only reliable approach.
+
+### 2026-05-01 — v0.37.0: Dashboard + AdvisorPanelBase Split
+
+| Metric | Value |
+|--------|-------|
+| Unit tests | 316 pass, 0 fail |
+| Dashboard | 629→481 lines (DashboardAgentBtn, SystemStatus, WhatsNext extracted) |
+| AdvisorPanelBase | 433→320 lines (AdvisorPanelHeader extracted, FilePickerModal reused) |
+| New components | 4 (DashboardAgentBtn, SystemStatus, WhatsNext, AdvisorPanelHeader) |
+| Bundle | 423KB, 31 chunks |
+
+**Changes applied:**
+- `pages/Dashboard.tsx`: 629→481 lines. Extracted `DashboardAgentBtn` (9), `SystemStatus` (52), `WhatsNext` (75).
+- `components/AdvisorPanelBase.tsx`: 433→320 lines. Extracted `AdvisorPanelHeader` (43). Reused `FilePickerModal` from ChatInput (was duplicated inline ~54 lines).
+- `components/index.ts`: Added exports for all new components.
+- `package.json`: version bumped to 0.37.0.
+
+### 2026-05-01 — v0.36.0: Component Splitting + Onboarding Tour
+
+| Metric | Value |
+|--------|-------|
+| Unit tests | 316 pass, 0 fail |
+| Pages split | 3 (PipelineWizard 876→339, AgentChat 791→479, Projects 715→348) |
+| New components | 10 (WizardStepper, WizardOverviewCards, WizardSeriesBreakdown, WizardTypes, WizardProgressBar, AgentDirectory, ChatInput, BuildPanel, ReviewChecklist, ScaffoldEpisode) |
+| New feature | OnboardingTour — 5-step overlay, localStorage persisted, Settings replay |
+| Constants extracted | CATEGORY_LABELS (moved to ScaffoldEpisode, shared) |
+| Bundle | 425KB, 31 chunks |
+
+**Changes applied:**
+- `pages/PipelineWizard.tsx`: 876→339 lines. Extracted `WizardStepper` (241), `WizardOverviewCards` (48), `WizardSeriesBreakdown` (208), `WizardTypes` (52 shared types), `WizardProgressBar` (24).
+- `pages/AgentChat.tsx`: 791→479 lines. Extracted `AgentDirectory` (141, agent grid + AgentCapabilityCard + CONVERSATION_STARTERS), `ChatInput` (236, input bar + attachment chips + FilePickerModal).
+- `pages/Projects.tsx`: 715→348 lines. Extracted `BuildPanel` (66, build progress steps), `ReviewChecklist` (69, episode readiness), `ScaffoldEpisode` (256, scaffold form + ScaffoldResultPreview + CATEGORY_LABELS).
+- `components/OnboardingTour.tsx`: New — 5-step guided tour (Welcome, Pipeline, AI, Palette, Progress) with keyboard nav, progress dots, skip/dismiss. `useOnboardingTour` hook with localStorage persistence.
+- `components/index.ts`: Added exports for all 10 new components + re-exported types.
+- `i18n/en.ts` + `i18n/zh_TW.ts`: Added `onboardingTour` section (5 steps × 2 fields = 10 keys per language).
+- `pages/Settings.tsx`: Added "Replay Tour" button that clears localStorage + reloads.
+- `App.tsx`: Integrated `useOnboardingTour` + `<OnboardingTour>` render.
+- `package.json`: version bumped to 0.36.0.
 
 ### 2026-05-01 — v0.35.0: i18n AdvisorPanelBase + Stale TODO Cleanup
 

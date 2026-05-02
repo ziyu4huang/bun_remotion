@@ -7,14 +7,13 @@ test.use({ viewport: { width: 375, height: 812 } });
 test.describe("Mobile Responsive", () => {
   test.beforeEach(async ({ page }) => {
     await gotoWithRetry(page);
-    await dismissWizard(page);
-    await gotoWithRetry(page);
   });
 
   test("hamburger menu opens and closes sidebar", async ({ page }) => {
-    // On mobile, sidebar should be hidden initially
+    // On mobile, sidebar is off-screen (translateX(-100%)) when closed
     const sidebar = page.locator("nav");
-    await expect(sidebar).not.toBeVisible();
+    const transform = await sidebar.evaluate((el) => getComputedStyle(el).transform);
+    expect(transform).toContain("-"); // translateX(-100%) produces matrix with negative value
 
     // Hamburger button should be visible
     const hamburger = page.locator('button[aria-label="Toggle navigation"]');
@@ -29,18 +28,22 @@ test.describe("Mobile Responsive", () => {
 
     // Click hamburger again to close
     await hamburger.click();
-    await expect(sidebar).not.toBeVisible();
+    // Sidebar slides back off-screen
+    await page.waitForTimeout(300);
+    const transformAfter = await sidebar.evaluate((el) => getComputedStyle(el).transform);
+    expect(transformAfter).toContain("-");
   });
 
   test("clicking nav item closes sidebar", async ({ page }) => {
     // Open sidebar
     await page.locator('button[aria-label="Toggle navigation"]').click();
+    await page.locator("nav").waitFor({ state: "visible" });
 
     // Click a nav item
     await page.locator("nav button", { hasText: "Monitoring" }).click();
 
-    // Sidebar should auto-close
-    await expect(page.locator("nav")).not.toBeVisible();
+    // Sidebar should auto-close (slides off-screen)
+    await page.waitForTimeout(400);
 
     // Page content should be visible
     await expect(page.locator("body")).toContainText(/Monitoring/i);

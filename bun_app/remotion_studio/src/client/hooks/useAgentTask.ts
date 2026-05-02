@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { api } from "../api";
 import type { AgentTaskResult } from "../../shared/types";
+import { loadApiKeyWithEnvKey } from "../pages/Settings";
 
 export interface AgentTaskState {
   status: "idle" | "starting" | "running" | "done" | "error";
@@ -119,7 +120,9 @@ export function useAgentTask(agentName: string, options?: UseAgentTaskOptions) {
 
     try {
       const globalModel = loadPerAgentModel(agentName);
-      const res = await api.agent.startTask(agentName, prompt, globalModel || undefined);
+      const { apiKey: apiKeyVal, envKey } = loadApiKeyWithEnvKey();
+      const apiKey = apiKeyVal || undefined;
+      const res = await api.agent.startTask(agentName, prompt, globalModel || undefined, apiKey, envKey);
 
       if (!res.ok || !res.data) {
         const errMsg = res.error ?? "Failed to start agent";
@@ -222,65 +225,81 @@ export function useAgentTask(agentName: string, options?: UseAgentTaskOptions) {
 
     const globalModel = loadPerAgentModel(agentName);
     let accumulated = "";
+    const tools: string[] = [];
 
     const abort = api.agent.streamChat(
       agentName,
       prompt,
       (event) => {
-        if (event.type === "text_delta") {
-          accumulated += (event as any).text ?? "";
-          setTask((prev) => ({
-            ...prev,
-            status: "running",
-            streamingText: accumulated,
-          }));
-        } else if (event.type === "thinking_delta") {
-          // Show thinking as italic prefix during streaming
-          const thinking = (event as any).thinking ?? "";
-          if (thinking && accumulated === "") {
+        switch (event.type) {
+          case "text":
+            accumulated += event.delta;
             setTask((prev) => ({
               ...prev,
               status: "running",
-              streamingText: `*Thinking...*\n\n`,
+              streamingText: accumulated,
             }));
+            break;
+
+          case "tool_start":
+            tools.push(event.toolName);
+            accumulated += `\n\`\`\`\n[${event.toolName}]\n\`\`\`\n`;
+            setTask((prev) => ({
+              ...prev,
+              status: "running",
+              streamingText: accumulated,
+            }));
+            break;
+
+          case "tool_end":
+            break;
+
+          case "done":
+            // Final completion — accumulated text already set
+            break;
+
+          case "result": {
+            const r = (event as any).result as AgentTaskResult;
+            setTask({
+              status: "done",
+              result: r.response ?? (accumulated || "No response"),
+              streamingText: null,
+              bridgeDown: false,
+              bridgeError: null,
+            });
+            abortRef.current = null;
+            break;
           }
-        } else if (event.type === "tool_call") {
-          const toolName = (event as any).name ?? "tool";
-          accumulated += `\n\`\`\`\n[${toolName}]\n\`\`\`\n`;
-          setTask((prev) => ({
-            ...prev,
-            status: "running",
-            streamingText: accumulated,
-          }));
-        } else if (event.type === "result") {
-          const result = (event as any).result as AgentTaskResult;
-          setTask({
-            status: "done",
-            result: result.response ?? (accumulated || "No response"),
-            streamingText: null,
-            bridgeDown: false,
-            bridgeError: null,
-          });
-          abortRef.current = null;
-        } else if (event.type === "error") {
-          const msg = (event as any).message ?? "Agent error";
-          const isBridgeDown = msg.includes("unavailable") || msg.includes("503");
-          if (isBridgeDown) {
-            bridgeDownRef.current = true;
-            bridgeErrorRef.current = msg;
+
+          case "error": {
+            const msg = event.message;
+            const isBridgeDown = msg.includes("unavailable") || msg.includes("503");
+            if (isBridgeDown) {
+              bridgeDownRef.current = true;
+              bridgeErrorRef.current = msg;
+            }
+            setTask({
+              status: "error",
+              result: msg,
+              streamingText: null,
+              bridgeDown: isBridgeDown,
+              bridgeError: isBridgeDown ? msg : null,
+            });
+            abortRef.current = null;
+            break;
           }
-          setTask({
-            status: "error",
-            result: msg,
-            streamingText: null,
-            bridgeDown: isBridgeDown,
-            bridgeError: isBridgeDown ? msg : null,
-          });
-          abortRef.current = null;
+
+          case "job_id":
+          case "job_update":
+          case "turn_end":
+            break;
         }
       },
       undefined, // no history for one-shot
       globalModel || undefined,
+      undefined,
+      loadApiKeyWithEnvKey().apiKey || undefined,
+      loadApiKeyWithEnvKey().envKey,
     );
 
     abortRef.current = abort;

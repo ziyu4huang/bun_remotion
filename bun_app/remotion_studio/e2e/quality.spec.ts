@@ -29,6 +29,6 @@ test.describe("Quality", () => {
     expect(text!.trim().length).toBeGreaterThan(0);
 
     // Should not show generic error
-    await expect(page.getByText("Something went wrong")).not.toBeVisible();
+    await expect(page.getByText(/Something went wrong|Error/i).first()).not.toBeVisible();
   });
 });

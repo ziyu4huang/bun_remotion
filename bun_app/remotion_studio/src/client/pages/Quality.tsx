@@ -1,11 +1,21 @@
 import { useState, useEffect, useCallback } from "react";
 import { api } from "../api";
-import { PageHeader, LoadingSpinner, EmptyState, StatusBadge, Button, Card } from "../components";
+import { PageHeader, LoadingSpinner, EmptyState, Button } from "../components";
+import { QualityAskAgent } from "../components/QualityAskAgent";
+import { QualityDimensions } from "../components/QualityDimensions";
+import { QualityDetail } from "../components/QualityDetail";
 import { useTheme, scoreColor } from "../theme";
 import { useI18n } from "../i18n";
+import { loadApiKeyWithEnvKey } from "./Settings";
 import type { Project, SeriesQualitySnapshot, RegressionAlert, ScoreHistoryPoint, AgentTaskResult } from "../../shared/types";
 
 type ViewMode = "overview" | "detail";
+
+interface AgentTaskState {
+  jobId: string;
+  status: string;
+  result: string | null;
+}
 
 export function Quality() {
   const theme = useTheme();
@@ -18,7 +28,7 @@ export function Quality() {
   const [qualityData, setQualityData] = useState<Record<string, unknown> | null>(null);
   const [history, setHistory] = useState<ScoreHistoryPoint[]>([]);
   const [loading, setLoading] = useState(true);
-  const [agentTask, setAgentTask] = useState<{ jobId: string; status: string; result: string | null } | null>(null);
+  const [agentTask, setAgentTask] = useState<AgentTaskState | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -38,14 +48,15 @@ export function Quality() {
   const handleAskAgent = async (prompt: string) => {
     setAgentTask({ jobId: "", status: "starting", result: null });
     try {
-      const res = await api.agent.startTask("sg-quality-gate", prompt);
+      const { apiKey, envKey } = loadApiKeyWithEnvKey();
+      const res = await api.agent.startTask("sg-quality-gate", prompt, undefined, apiKey || undefined, envKey);
       if (!res.ok || !res.data) {
         setAgentTask({ jobId: "", status: "error", result: res.error ?? "Failed to start agent" });
         return;
       }
       setAgentTask({ jobId: res.data.id, status: "running", result: null });
 
-      const TIMEOUT_MS = 3 * 60 * 1000; // 3 minutes
+      const TIMEOUT_MS = 3 * 60 * 1000;
       const startTime = Date.now();
       const poll = setInterval(async () => {
         if (Date.now() - startTime > TIMEOUT_MS) {
@@ -90,9 +101,7 @@ export function Quality() {
 
   const gate = qualityData?.gate as Record<string, unknown> | undefined;
   const qualityScore = qualityData?.qualityScore as Record<string, unknown> | undefined;
-  const checks = gate?.checks as Array<Record<string, unknown>> | undefined;
   const breakdown = gate?.quality_breakdown as Record<string, number | null> | undefined;
-  const blended = qualityScore?.blended as Record<string, unknown> | undefined;
   const aiData = qualityScore?.ai as Record<string, unknown> | undefined;
   const aiDimensions = aiData?.dimensions as Record<string, number> | undefined;
 
@@ -103,73 +112,15 @@ export function Quality() {
     <div>
       <PageHeader title={t.quality.title} description={t.quality.description} />
 
-      {/* Ask agent section */}
-      <Card variant="default" padding="md" style={{ marginBottom: theme.spacing.xl }}>
-        <h3 style={{ margin: `0 0 ${theme.spacing.sm}px 0` }}>Ask Quality Agent</h3>
-        <p style={{ margin: `0 0 ${theme.spacing.md}px 0`, color: theme.colors.text.secondary, fontSize: theme.font.sizes.base }}>
-          The agent analyzes quality data, explains scores, checks regressions, and suggests improvements.
-        </p>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: theme.spacing.sm }}>
-          <AgentPromptButton
-            label="How's my overall quality?"
-            prompt="Review the overall quality across all series. Highlight any regressions, low scores, or areas needing attention. Give a brief summary."
-            onClick={handleAskAgent}
-            theme={theme}
-          />
-          {hasRegressions && (
-            <AgentPromptButton
-              label={`Investigate ${regressionAlerts.length} regression(s)`}
-              prompt={`I see regression alerts for: ${regressionAlerts.map(a => `${a.seriesId} (${a.metric}: ${a.baseline} → ${a.current})`).join(", ")}. Investigate each regression — explain what changed and why, and suggest fixes.`}
-              onClick={handleAskAgent}
-              theme={theme}
-              variant="warning"
-            />
-          )}
-          {selected && (
-            <AgentPromptButton
-              label={`Analyze ${selected}`}
-              prompt={`Analyze the quality of series "${selected}" in detail. Explain the gate score, check results, AI dimensions, and any issues. Suggest specific improvements.`}
-              onClick={handleAskAgent}
-              theme={theme}
-            />
-          )}
-          {selected && (
-            <AgentPromptButton
-              label="Run full quality gate"
-              prompt={`Run a full quality gate check on series "${selected}". Check gate scores, run regression if baseline exists, and provide PASS/WARN/FAIL decision with explanations.`}
-              onClick={handleAskAgent}
-              theme={theme}
-              variant="primary"
-            />
-          )}
-        </div>
+      <QualityAskAgent
+        agentTask={agentTask}
+        hasRegressions={hasRegressions}
+        regressionCount={regressionAlerts.length}
+        regressionSummary={regressionAlerts.map(a => `${a.seriesId} (${a.metric}: ${a.baseline} → ${a.current})`).join(", ")}
+        selected={selected}
+        onAsk={handleAskAgent}
+      />
 
-        {/* Agent response */}
-        {agentTask && (
-          <div style={{ marginTop: theme.spacing.md }}>
-            {agentTask.status === "running" && (
-              <div style={{ padding: theme.spacing.md, background: theme.colors.bg.page, borderRadius: theme.radii.lg, fontStyle: "italic", color: theme.colors.text.tertiary }}>
-                Agent analyzing...
-              </div>
-            )}
-            {agentTask.status === "done" && agentTask.result && (
-              <div style={{ padding: theme.spacing.lg, background: theme.colors.successLight, borderRadius: theme.radii.xl, border: `1px solid ${theme.colors.successLight}` }}>
-                <h4 style={{ margin: `0 0 ${theme.spacing.sm}px 0` }}>{t.quality.qualityGateReport}</h4>
-                <pre style={{ whiteSpace: "pre-wrap", fontSize: theme.font.sizes.base, lineHeight: 1.5, margin: 0, fontFamily: "inherit" }}>
-                  {agentTask.result}
-                </pre>
-              </div>
-            )}
-            {agentTask.status === "error" && agentTask.result && (
-              <div style={{ padding: theme.spacing.md, background: theme.colors.errorLight, borderRadius: theme.radii.lg, color: theme.colors.error }}>
-                {agentTask.result}
-              </div>
-            )}
-          </div>
-        )}
-      </Card>
-
-      {/* Regression alerts banner */}
       {hasRegressions && (
         <div style={{ padding: `${theme.spacing.md}px ${theme.spacing.lg}px`, background: theme.colors.warningLight, border: `1px solid ${theme.colors.warning}`, borderRadius: theme.radii.xl, marginBottom: theme.spacing.lg }}>
           <strong style={{ color: theme.colors.warningDark }}>{t.quality.regressionAlerts}</strong>
@@ -183,17 +134,8 @@ export function Quality() {
 
       {/* View toggle */}
       <div style={{ marginBottom: theme.spacing.lg }}>
-        <Button
-          variant={view === "overview" ? "primary" : "outline"}
-          size="sm"
-          onClick={() => { setView("overview"); setSelected(""); }}
-          style={{ marginRight: theme.spacing.sm }}
-        >{t.quality.crossSeries}</Button>
-        <Button
-          variant={view === "detail" ? "primary" : "outline"}
-          size="sm"
-          onClick={() => setView("detail")}
-        >{t.quality.perSeries}</Button>
+        <Button variant={view === "overview" ? "primary" : "outline"} size="sm" onClick={() => { setView("overview"); setSelected(""); }} style={{ marginRight: theme.spacing.sm }}>{t.quality.crossSeries}</Button>
+        <Button variant={view === "detail" ? "primary" : "outline"} size="sm" onClick={() => setView("detail")}>{t.quality.perSeries}</Button>
       </div>
 
       {/* Cross-series comparison */}
@@ -204,52 +146,32 @@ export function Quality() {
             <EmptyState icon="📊" title={t.quality.noPipelineData} description={t.quality.noPipelineDataDesc} />
           ) : (
             <div style={{ overflowX: "auto" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: theme.font.sizes.base }}>
-              <thead>
-                <tr style={{ borderBottom: `2px solid ${theme.colors.border.default}`, textAlign: "left" }}>
-                  <th style={{ padding: `${theme.spacing.xs + 2}px ${theme.spacing.sm + 2}px` }}>Series</th>
-                  <th style={{ padding: `${theme.spacing.xs + 2}px ${theme.spacing.sm + 2}px` }}>Gate</th>
-                  <th style={{ padding: `${theme.spacing.xs + 2}px ${theme.spacing.sm + 2}px` }}>Blended</th>
-                  <th style={{ padding: `${theme.spacing.xs + 2}px ${theme.spacing.sm + 2}px` }}>Decision</th>
-                  <th style={{ padding: `${theme.spacing.xs + 2}px ${theme.spacing.sm + 2}px` }}>Trend</th>
-                  <th style={{ padding: `${theme.spacing.xs + 2}px ${theme.spacing.sm + 2}px` }}>Nodes</th>
-                  <th style={{ padding: `${theme.spacing.xs + 2}px ${theme.spacing.sm + 2}px` }}>Edges</th>
-                  <th style={{ padding: `${theme.spacing.xs + 2}px ${theme.spacing.sm + 2}px` }}>Comm.</th>
-                  <th style={{ padding: `${theme.spacing.xs + 2}px ${theme.spacing.sm + 2}px` }}>AI Score</th>
-                  <th style={{ padding: `${theme.spacing.xs + 2}px ${theme.spacing.sm + 2}px` }}>Mode</th>
-                  <th style={{ padding: `${theme.spacing.xs + 2}px ${theme.spacing.sm + 2}px` }}>Genre</th>
-                </tr>
-              </thead>
-              <tbody>
-                {comparison.map((s) => (
-                  <tr
-                    key={s.seriesId}
-                    style={{ borderBottom: `1px solid ${theme.colors.border.light}`, cursor: "pointer" }}
-                    onClick={() => { setSelected(s.seriesId); setView("detail"); }}
-                  >
-                    <td style={{ padding: `${theme.spacing.xs + 2}px ${theme.spacing.sm + 2}px`, fontWeight: theme.font.weights.medium }}>{s.seriesId}</td>
-                    <td style={{ padding: `${theme.spacing.xs + 2}px ${theme.spacing.sm + 2}px` }}>
-                      <ScoreBadge value={s.gateScore} max={100} />
-                    </td>
-                    <td style={{ padding: `${theme.spacing.xs + 2}px ${theme.spacing.sm + 2}px` }}>
-                      <ScoreBadge value={s.blendedScore} max={100} suffix="%" />
-                    </td>
-                    <td style={{ padding: `${theme.spacing.xs + 2}px ${theme.spacing.sm + 2}px` }}>
-                      <DecisionBadge decision={s.decision} />
-                    </td>
-                    <td style={{ padding: `${theme.spacing.xs + 2}px ${theme.spacing.sm + 2}px` }}>
-                      <TrendBadge trend={s.trend} delta={s.scoreDelta} />
-                    </td>
-                    <td style={{ padding: `${theme.spacing.xs + 2}px ${theme.spacing.sm + 2}px` }}>{s.nodeCount}</td>
-                    <td style={{ padding: `${theme.spacing.xs + 2}px ${theme.spacing.sm + 2}px` }}>{s.edgeCount}</td>
-                    <td style={{ padding: `${theme.spacing.xs + 2}px ${theme.spacing.sm + 2}px` }}>{s.communityCount}</td>
-                    <td style={{ padding: `${theme.spacing.xs + 2}px ${theme.spacing.sm + 2}px` }}>{s.aiOverall ?? "—"}</td>
-                    <td style={{ padding: `${theme.spacing.xs + 2}px ${theme.spacing.sm + 2}px`, fontSize: theme.font.sizes.sm }}>{s.generatorMode ?? "—"}</td>
-                    <td style={{ padding: `${theme.spacing.xs + 2}px ${theme.spacing.sm + 2}px`, fontSize: theme.font.sizes.sm }}>{s.genre ?? "—"}</td>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: theme.font.sizes.base }}>
+                <thead>
+                  <tr style={{ borderBottom: `2px solid ${theme.colors.border.default}`, textAlign: "left" }}>
+                    {["Series", "Gate", "Blended", "Decision", "Trend", "Nodes", "Edges", "Comm.", "AI Score", "Mode", "Genre"].map((h) => (
+                      <th key={h} style={{ padding: `${theme.spacing.xs + 2}px ${theme.spacing.sm + 2}px` }}>{h}</th>
+                    ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {comparison.map((s) => (
+                    <tr key={s.seriesId} style={{ borderBottom: `1px solid ${theme.colors.border.light}`, cursor: "pointer" }} onClick={() => { setSelected(s.seriesId); setView("detail"); }}>
+                      <td style={{ padding: `${theme.spacing.xs + 2}px ${theme.spacing.sm + 2}px`, fontWeight: theme.font.weights.medium }}>{s.seriesId}</td>
+                      <td style={{ padding: `${theme.spacing.xs + 2}px ${theme.spacing.sm + 2}px` }}><ScoreBadge value={s.gateScore} max={100} /></td>
+                      <td style={{ padding: `${theme.spacing.xs + 2}px ${theme.spacing.sm + 2}px` }}><ScoreBadge value={s.blendedScore} max={100} suffix="%" /></td>
+                      <td style={{ padding: `${theme.spacing.xs + 2}px ${theme.spacing.sm + 2}px` }}><DecisionBadge decision={s.decision} /></td>
+                      <td style={{ padding: `${theme.spacing.xs + 2}px ${theme.spacing.sm + 2}px` }}><TrendBadge trend={s.trend} delta={s.scoreDelta} /></td>
+                      <td style={{ padding: `${theme.spacing.xs + 2}px ${theme.spacing.sm + 2}px` }}>{s.nodeCount}</td>
+                      <td style={{ padding: `${theme.spacing.xs + 2}px ${theme.spacing.sm + 2}px` }}>{s.edgeCount}</td>
+                      <td style={{ padding: `${theme.spacing.xs + 2}px ${theme.spacing.sm + 2}px` }}>{s.communityCount}</td>
+                      <td style={{ padding: `${theme.spacing.xs + 2}px ${theme.spacing.sm + 2}px` }}>{s.aiOverall ?? "—"}</td>
+                      <td style={{ padding: `${theme.spacing.xs + 2}px ${theme.spacing.sm + 2}px`, fontSize: theme.font.sizes.sm }}>{s.generatorMode ?? "—"}</td>
+                      <td style={{ padding: `${theme.spacing.xs + 2}px ${theme.spacing.sm + 2}px`, fontSize: theme.font.sizes.sm }}>{s.genre ?? "—"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
         </div>
@@ -258,180 +180,24 @@ export function Quality() {
       {/* Per-series detail */}
       {view === "detail" && (
         <div>
-          <select
-            value={selected}
-            onChange={(e) => setSelected(e.target.value)}
-            style={{ padding: `${theme.spacing.sm}px ${theme.spacing.md}px`, fontSize: theme.font.sizes.md, borderRadius: theme.radii.lg, border: `1px solid ${theme.colors.border.medium}`, minWidth: 200, marginBottom: theme.spacing.xl }}
-          >
-            <option value="">{t.quality.selectSeries}</option>
-            {projects.map((p) => (
-              <option key={p.id} value={p.id}>{p.name}</option>
-            ))}
-          </select>
-
-          {!selected && <EmptyState icon="📋" title={t.quality.selectSeries} description={t.quality.selectSeriesDesc} />}
-
-          {qualityData && (
-            <div>
-              {/* Score summary */}
-              <div style={{ display: "flex", gap: theme.spacing.lg, marginBottom: theme.spacing.xxl }}>
-                <ScoreCard label="Gate Score" value={gate?.score as number} max={100} />
-                <ScoreCard label="Blended" value={blended ? Math.round((blended.overall as number) * 1000) / 10 : undefined} max={100} suffix="%" />
-                <ScoreCard label="Decision" value={gate?.decision as string} />
-                <ScoreCard label="AI Overall" value={aiData?.overall as number} max={10} />
-              </div>
-
-              {/* Score history */}
-              {history.length > 0 && (
-                <div style={{ marginBottom: theme.spacing.xxl }}>
-                  <h3 style={{ marginBottom: theme.spacing.sm }}>{t.quality.scoreHistory}</h3>
-                  <div style={{ display: "flex", gap: 2, alignItems: "flex-end", height: 80 }}>
-                    {history.map((h) => (
-                      <div key={h.date} style={{ display: "flex", flexDirection: "column", alignItems: "center", flex: 1 }}>
-                        <div
-                          style={{
-                            width: "100%",
-                            maxWidth: 40,
-                            height: `${Math.max(h.gateScore, 2)}%`,
-                            background: scoreColor(h.gateScore, 100, theme),
-                            borderRadius: "2px 2px 0 0",
-                            minHeight: 2,
-                          }}
-                          title={`Gate: ${h.gateScore}${h.blendedScore != null ? ` / Blended: ${h.blendedScore}%` : ""}`}
-                        />
-                        <div style={{ fontSize: theme.font.sizes.xs - 1, color: theme.colors.text.muted, marginTop: 2 }}>
-                          {h.date.slice(4, 6)}/{h.date.slice(6, 8)}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <div style={{ fontSize: theme.font.sizes.sm, color: theme.colors.text.tertiary, marginTop: theme.spacing.xs }}>
-                    {history.map((h) => (
-                      <span key={h.date} style={{ marginRight: theme.spacing.md }}>
-                        {h.date.slice(0, 4)}-{h.date.slice(4, 6)}-{h.date.slice(6, 8)}: Gate {h.gateScore}
-                        {h.blendedScore != null ? ` / Blended ${h.blendedScore}%` : ""}
-                        {h.aiOverall != null ? ` / AI ${h.aiOverall}` : ""}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* AI dimensions */}
-              {aiDimensions && (
-                <div style={{ marginBottom: theme.spacing.xxl }}>
-                  <h3 style={{ marginBottom: theme.spacing.sm }}>{t.quality.aiQualityDimensions}</h3>
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: theme.spacing.sm }}>
-                    {Object.entries(aiDimensions).map(([key, value]) => (
-                      <Card key={key} variant="default" padding="sm">
-                        <div style={{ fontSize: theme.font.sizes.sm, color: theme.colors.text.tertiary }}>{formatDimensionName(key)}</div>
-                        <div style={{ display: "flex", alignItems: "center", gap: theme.spacing.sm }}>
-                          <div style={{ fontSize: theme.font.sizes.xl, fontWeight: theme.font.weights.semibold, color: scoreColor(value, 10, theme) }}>
-                            {value}
-                          </div>
-                          <div style={{ flex: 1, height: 4, background: theme.colors.border.default, borderRadius: 2 }}>
-                            <div style={{ width: `${value * 10}%`, height: "100%", background: scoreColor(value, 10, theme), borderRadius: 2 }} />
-                          </div>
-                        </div>
-                      </Card>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Quality breakdown */}
-              {breakdown && (
-                <div style={{ marginBottom: theme.spacing.xxl }}>
-                  <h3 style={{ marginBottom: theme.spacing.sm }}>{t.quality.qualityBreakdown}</h3>
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: theme.spacing.sm }}>
-                    {Object.entries(breakdown).map(([key, value]) => (
-                      <Card key={key} variant="default" padding="sm">
-                        <div style={{ fontSize: theme.font.sizes.sm, color: theme.colors.text.tertiary }}>{formatDimensionName(key)}</div>
-                        <div style={{ fontSize: theme.font.sizes.xl, fontWeight: theme.font.weights.semibold, color: value == null ? theme.colors.text.muted : scoreColor(value * 100, 100, theme) }}>
-                          {value == null ? "N/A" : `${(value * 100).toFixed(0)}%`}
-                        </div>
-                      </Card>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Checks table */}
-              {checks && checks.length > 0 && (
-                <div>
-                  <h3 style={{ marginBottom: theme.spacing.sm }}>{t.quality.gateChecks} ({checks.length})</h3>
-                  <div style={{ overflowX: "auto" }}>
-                  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: theme.font.sizes.base }}>
-                    <thead>
-                      <tr style={{ borderBottom: `2px solid ${theme.colors.border.default}`, textAlign: "left" }}>
-                        <th style={{ padding: `${theme.spacing.xs + 2}px ${theme.spacing.sm + 2}px` }}>{t.quality.check}</th>
-                        <th style={{ padding: `${theme.spacing.xs + 2}px ${theme.spacing.sm + 2}px` }}>{t.quality.status}</th>
-                        <th style={{ padding: `${theme.spacing.xs + 2}px ${theme.spacing.sm + 2}px` }}>{t.quality.impact}</th>
-                        <th style={{ padding: `${theme.spacing.xs + 2}px ${theme.spacing.sm + 2}px` }}>{t.quality.fixSuggestion}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {checks.map((c, i) => (
-                        <tr key={i} style={{ borderBottom: `1px solid ${theme.colors.border.light}` }}>
-                          <td style={{ padding: `${theme.spacing.xs + 2}px ${theme.spacing.sm + 2}px` }}>{c.name as string}</td>
-                          <td style={{ padding: `${theme.spacing.xs + 2}px ${theme.spacing.sm + 2}px` }}>
-                            <StatusBadge status={c.status as string} />
-                          </td>
-                          <td style={{ padding: `${theme.spacing.xs + 2}px ${theme.spacing.sm + 2}px` }}>{(c.score_impact as number) > 0 ? `-${c.score_impact}` : "—"}</td>
-                          <td style={{ padding: `${theme.spacing.xs + 2}px ${theme.spacing.sm + 2}px`, fontSize: theme.font.sizes.sm, color: theme.colors.text.tertiary, maxWidth: 300 }}>
-                            {(c.fix_suggestion_zhTW as string) || "—"}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {selected && !qualityData && (
-            <EmptyState icon="🔍" title={t.quality.noPipelineData} description={t.quality.noPipelineDataDetail} />
-          )}
+          <QualityDetail
+            selected={selected}
+            projects={projects}
+            qualityData={qualityData}
+            history={history}
+            onSelect={setSelected}
+            scoreHistoryLabel={t.quality.scoreHistory}
+            gateChecksLabel={t.quality.gateChecks}
+            selectSeriesLabel={t.quality.selectSeries}
+            selectSeriesDesc={t.quality.selectSeriesDesc}
+            noDataIcon="🔍"
+            noDataTitle={t.quality.noPipelineData}
+            noDataDesc={t.quality.noPipelineDataDetail}
+          />
+          {qualityData && <QualityDimensions aiDimensions={aiDimensions} breakdown={breakdown} />}
         </div>
       )}
     </div>
-  );
-}
-
-// ── Components ──
-
-function AgentPromptButton({ label, prompt, onClick, theme, variant }: {
-  label: string;
-  prompt: string;
-  onClick: (prompt: string) => void;
-  theme: ReturnType<typeof useTheme>;
-  variant?: "primary" | "warning";
-}) {
-  const btnVariant = variant ? "primary" : "outline";
-
-  return (
-    <Button
-      variant={btnVariant}
-      size="sm"
-      onClick={() => onClick(prompt)}
-    >
-      {label}
-    </Button>
-  );
-}
-
-function ScoreCard({ label, value, max, suffix }: { label: string; value?: number | string; max?: number; suffix?: string }) {
-  const theme = useTheme();
-  const display = value === undefined ? "—" : typeof value === "number" ? (suffix ? `${value}${suffix}` : `${value}/${max}`) : value;
-  const color = typeof value === "number" && max ? scoreColor(value, max, theme) : theme.colors.text.primary;
-
-  return (
-    <Card variant="default" padding="md" style={{ minWidth: 120, textAlign: "center" }}>
-      <div style={{ fontSize: theme.font.sizes.sm, color: theme.colors.text.tertiary, marginBottom: theme.spacing.xs }}>{label}</div>
-      <div style={{ fontSize: theme.font.sizes.xxl, fontWeight: theme.font.weights.bold, color }}>{display}</div>
-    </Card>
   );
 }
 
@@ -460,21 +226,4 @@ function TrendBadge({ trend, delta }: { trend: string; delta: number | null }) {
       {icons[trend] || "?"} {delta != null ? (delta > 0 ? `+${delta}` : `${delta}`) : ""}
     </span>
   );
-}
-
-function formatDimensionName(key: string): string {
-  const names: Record<string, string> = {
-    entity_accuracy: "Entity Accuracy",
-    relationship_correctness: "Relationship Correctness",
-    completeness: "Completeness",
-    cross_episode_coherence: "Cross-Episode Coherence",
-    actionability: "Actionability",
-    consistency: "Consistency",
-    arc_structure: "Arc Structure",
-    pacing: "Pacing",
-    character_growth: "Character Growth",
-    thematic_coherence: "Thematic Coherence",
-    gag_evolution: "Gag Evolution",
-  };
-  return names[key] || key.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }

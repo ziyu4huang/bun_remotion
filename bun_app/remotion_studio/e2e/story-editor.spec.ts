@@ -25,6 +25,6 @@ test.describe("Story Editor", () => {
   test("content renders without errors", async ({ page }) => {
     const main = page.locator("main");
     await expect(main).toBeVisible();
-    await expect(page.getByText("Something went wrong")).not.toBeVisible();
+    await expect(page.getByText(/Something went wrong|Error/i).first()).not.toBeVisible();
   });
 });

@@ -1,5 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Button, PageHeader, StatusBadge, SectionEditor, type ChatMessage, loadHistory, saveHistory } from "../components";
+import { Button, PageHeader, SectionEditor, type ChatMessage } from "../components";
+import { StoryEditorHints } from "../components/StoryEditorHints";
+import { StoryEditorSections } from "../components/StoryEditorSections";
+import { StoryEditorRevision } from "../components/StoryEditorRevision";
 import { AdvisorPanelBase } from "../components/AdvisorPanelBase";
 import { useTheme } from "../theme";
 import { useI18n } from "../i18n";
@@ -125,7 +128,6 @@ export function StoryEditor() {
       if (res.ok) {
         setLastSaved(new Date().toLocaleTimeString());
         setDirty(false);
-        // Refresh parsed data
         const refresh = await fetch(`/api/plans/${selectedId}`);
         const refreshRes = await refresh.json();
         if (refreshRes.ok && refreshRes.data) setPlanData(refreshRes.data);
@@ -188,8 +190,8 @@ export function StoryEditor() {
 
       {planData && viewMode === "sections" && (
         <>
-          <QualityHints data={planData} />
-          <SectionsView data={planData} />
+          <StoryEditorHints data={planData} />
+          <StoryEditorSections data={planData} />
         </>
       )}
       {planData && viewMode === "structure" && (
@@ -206,56 +208,16 @@ export function StoryEditor() {
         <MarkdownPreview raw={editContent} />
       )}
 
-      {/* Revision History */}
       {showRevisions && (
-        <div style={{
-          marginTop: theme.spacing.lg,
-          border: `1px solid ${theme.colors.border.default}`, borderRadius: theme.radii.lg,
-          overflow: "hidden",
-        }}>
-          <div style={{ padding: "10px 14px", background: theme.colors.bg.muted, fontWeight: theme.font.weights.medium, fontSize: theme.font.sizes.sm }}>
-            {t.storyEditor.revisionHistory} ({revisions.length})
-          </div>
-          <div style={{ padding: 14, maxHeight: 400, overflowY: "auto" }}>
-            {viewingRev && revContent !== null && (
-              <div style={{ marginBottom: 14, padding: 10, border: `1px solid ${theme.colors.info}33`, borderRadius: theme.radii.md, background: `${theme.colors.info}08` }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                  <span style={{ fontWeight: theme.font.weights.medium, fontSize: theme.font.sizes.sm }}>{t.storyEditor.viewing} {viewingRev}</span>
-                  <div style={{ display: "flex", gap: 6 }}>
-                    <Button variant="primary" size="sm" onClick={() => { setEditContent(revContent); setDirty(true); }}>
-                      {t.storyEditor.restore}
-                    </Button>
-                    <Button variant="ghost" size="sm" onClick={() => { setViewingRev(null); setRevContent(null); }}>
-                      {t.storyEditor.close}
-                    </Button>
-                  </div>
-                </div>
-                <pre style={{ fontSize: theme.font.sizes.xs, maxHeight: 200, overflowY: "auto", whiteSpace: "pre-wrap", margin: 0 }}>
-                  {revContent.slice(0, 2000)}{revContent.length > 2000 ? "..." : ""}
-                </pre>
-              </div>
-            )}
-            {revisions.length === 0 ? (
-              <div style={{ color: theme.colors.text.muted, fontSize: theme.font.sizes.sm }}>{t.storyEditor.noRevisions}</div>
-            ) : (
-              revisions.map((rev) => (
-                <Button key={rev.id} variant="ghost" size="sm" onClick={async () => {
-                  const res = await fetch(`/api/plans/${selectedId}/revisions/${rev.id}`);
-                  const data = await res.json();
-                  if (data.ok) { setViewingRev(rev.id); setRevContent(data.data); }
-                }} style={{
-                  display: "block", width: "100%", textAlign: "left",
-                  marginBottom: 4,
-                }}>
-                  <span style={{ color: theme.colors.text.secondary }}>{rev.id.replace(/-/g, (m, o) => o < 10 ? "-" : o === 10 ? " " : o < 19 ? ":" : "")}</span>
-                  <span style={{ marginLeft: 8, color: theme.colors.text.tertiary, fontSize: theme.font.sizes.xs }}>
-                    {Math.round(rev.size / 1024)}KB
-                  </span>
-                </Button>
-              ))
-            )}
-          </div>
-        </div>
+        <StoryEditorRevision
+          revisions={revisions}
+          selectedId={selectedId}
+          viewingRev={viewingRev}
+          revContent={revContent}
+          onViewRev={(id, content) => { setViewingRev(id); setRevContent(content); }}
+          onRestore={(content) => { setEditContent(content); setDirty(true); }}
+          onCloseRev={() => { setViewingRev(null); setRevContent(null); }}
+        />
       )}
       </div>
       {showAdvisor && (
@@ -287,204 +249,19 @@ function ViewToggle({ mode, onChange }: { mode: ViewMode; onChange: (m: ViewMode
   ];
   return (
     <div style={{ display: "flex", gap: 0, border: `1px solid ${theme.colors.border.medium}`, borderRadius: theme.radii.lg, overflow: "hidden" }}>
-      {tabs.map((t) => (
+      {tabs.map((tab) => (
         <Button
-          key={t.id}
-          variant="outline"
+          key={tab.id}
+          variant={mode === tab.id ? "primary" : "outline"}
           size="sm"
-          onClick={() => onChange(t.id)}
+          onClick={() => onChange(tab.id)}
           style={{
             borderRight: `1px solid ${theme.colors.border.medium}`,
           }}
         >
-          {t.label}
+          {tab.label}
         </Button>
       ))}
-    </div>
-  );
-}
-
-function QualityHints({ data }: { data: PlanData }) {
-  const theme = useTheme();
-  const { t } = useI18n();
-  const hints: { icon: string; msg: string; level: "warn" | "info" }[] = [];
-  const { parsed } = data;
-
-  if (!parsed.characters || parsed.characters.length === 0) {
-    hints.push({ icon: "!", msg: "No characters defined. Add a ## Characters section with id, name, voice, gender columns.", level: "warn" });
-  } else {
-    const missingVoice = parsed.characters.filter((c) => !c.voice);
-    if (missingVoice.length > 0) {
-      hints.push({ icon: "!", msg: `${missingVoice.length} character(s) missing voice assignment: ${missingVoice.map((c) => c.name).join(", ")}`, level: "warn" });
-    }
-    const missingColor = parsed.characters.filter((c) => !c.color);
-    if (missingColor.length > 0) {
-      hints.push({ icon: "i", msg: `${missingColor.length} character(s) missing color: ${missingColor.map((c) => c.name).join(", ")}`, level: "info" });
-    }
-  }
-
-  if (!parsed.episodeGuide || parsed.episodeGuide.length === 0) {
-    hints.push({ icon: "!", msg: "No episode guide defined. Add a ## Episode Guide section.", level: "warn" });
-  } else {
-    const pending = parsed.episodeGuide.filter((e) => e.status === "pending" || e.status === "planned");
-    if (pending.length > 0) {
-      hints.push({ icon: "i", msg: `${pending.length} episode(s) still pending/planned`, level: "info" });
-    }
-  }
-
-  if (!parsed.storyArcs || parsed.storyArcs.length === 0) {
-    hints.push({ icon: "i", msg: "No story arcs defined. Consider adding a ## Story Arcs section for continuity tracking.", level: "info" });
-  }
-
-  if (parsed.chapters.length === 0) {
-    hints.push({ icon: "!", msg: "No chapters detected. Ensure episode IDs follow the pattern: series-chN-epM.", level: "warn" });
-  }
-
-  if (hints.length === 0) return null;
-
-  return (
-    <div style={{
-      marginBottom: theme.spacing.lg,
-      border: `1px solid ${theme.colors.warningLight}`, borderRadius: theme.radii.lg,
-      overflow: "hidden",
-    }}>
-      <div style={{ padding: "8px 14px", background: theme.colors.warningLight, fontWeight: theme.font.weights.medium, fontSize: theme.font.sizes.sm }}>
-        {t.storyEditor.qualityHints} ({hints.length})
-      </div>
-      <div style={{ padding: "8px 14px" }}>
-        {hints.map((h, i) => (
-          <div key={i} style={{
-            display: "flex", gap: 8, alignItems: "flex-start",
-            marginBottom: i < hints.length - 1 ? 6 : 0,
-            fontSize: theme.font.sizes.sm, color: theme.colors.text.secondary,
-          }}>
-            <span style={{
-              flexShrink: 0, width: 18, height: 18, borderRadius: "50%",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              background: h.level === "warn" ? theme.colors.warningLight : theme.colors.info + "22",
-              color: h.level === "warn" ? theme.colors.warningDark : theme.colors.info,
-              fontSize: 11, fontWeight: 700,
-            }}>
-              {h.icon}
-            </span>
-            {h.msg}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function SectionsView({ data }: { data: PlanData }) {
-  const theme = useTheme();
-  const { t } = useI18n();
-  const { parsed } = data;
-  return (
-    <div style={{ display: "grid", gap: theme.spacing.xl }}>
-      {parsed.characters && parsed.characters.length > 0 && (
-        <SectionCard title={`${t.storyEditor.characters} (${parsed.characters.length})`}>
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: theme.font.sizes.base }}>
-            <thead>
-              <tr>
-                <th style={thStyle(theme)}>ID</th>
-                <th style={thStyle(theme)}>Name</th>
-                <th style={thStyle(theme)}>Voice</th>
-                <th style={thStyle(theme)}>Gender</th>
-                <th style={thStyle(theme)}>Color</th>
-              </tr>
-            </thead>
-            <tbody>
-              {parsed.characters.map((c) => (
-                <tr key={c.id}>
-                  <td style={tdStyle(theme)}>{c.id}</td>
-                  <td style={tdStyle(theme)}>{c.name}</td>
-                  <td style={tdStyle(theme)}>{c.voice}</td>
-                  <td style={tdStyle(theme)}>{c.gender}</td>
-                  <td style={tdStyle(theme)}>{c.color ?? "—"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </SectionCard>
-      )}
-
-      {parsed.episodeGuide && parsed.episodeGuide.length > 0 && (
-        <SectionCard title={`${t.storyEditor.episodeGuide} (${parsed.episodeGuide.length})`}>
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: theme.font.sizes.base }}>
-            <thead>
-              <tr>
-                <th style={thStyle(theme)}>ID</th>
-                <th style={thStyle(theme)}>Title</th>
-                <th style={thStyle(theme)}>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {parsed.episodeGuide.map((ep) => (
-                <tr key={ep.id}>
-                  <td style={tdStyle(theme)}><code>{ep.id}</code></td>
-                  <td style={tdStyle(theme)}>{ep.title}</td>
-                  <td style={tdStyle(theme)}><StatusBadge status={ep.status} /></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </SectionCard>
-      )}
-
-      {parsed.chapters.length > 0 && (
-        <SectionCard title={`${t.storyEditor.chapters} (${parsed.chapters.length})`}>
-          <div style={{ display: "flex", gap: theme.spacing.md, flexWrap: "wrap" }}>
-            {parsed.chapters.map((ch) => (
-              <div
-                key={ch.chapter}
-                style={{
-                  padding: `10px ${theme.spacing.xl}px`,
-                  borderRadius: theme.radii.xl,
-                  background: ch.status === "complete" ? theme.colors.successLight : ch.status === "in_progress" ? theme.colors.warningLight : theme.colors.bg.muted,
-                  border: `1px solid ${theme.colors.border.medium}`,
-                  minWidth: 140,
-                }}
-              >
-                <div style={{ fontWeight: theme.font.weights.semibold }}>Chapter {ch.chapter}</div>
-                <div style={{ fontSize: theme.font.sizes.sm, color: theme.colors.text.tertiary }}>
-                  {ch.completedCount}/{ch.episodeCount} done
-                </div>
-              </div>
-            ))}
-          </div>
-        </SectionCard>
-      )}
-
-      {parsed.storyArcs && parsed.storyArcs.length > 0 && (
-        <SectionCard title={`${t.storyEditor.storyArcs} (${parsed.storyArcs.length})`}>
-          {parsed.storyArcs.map((arc) => (
-            <div key={arc.chapter} style={{ marginBottom: theme.spacing.sm, padding: `${theme.spacing.sm}px ${theme.spacing.md}px`, background: theme.colors.bg.muted, borderRadius: theme.radii.lg }}>
-              <strong>Chapter {arc.chapter}: {arc.title}</strong>
-              {arc.theme && <span style={{ marginLeft: theme.spacing.sm, color: theme.colors.text.tertiary, fontSize: theme.font.sizes.base }}>({arc.theme})</span>}
-            </div>
-          ))}
-        </SectionCard>
-      )}
-
-      {parsed.runningGags && (
-        <SectionCard title={`${t.storyEditor.runningGags} (${parsed.runningGags.gagTypes.length})`}>
-          <div style={{ fontSize: theme.font.sizes.base, color: theme.colors.text.tertiary }}>
-            {parsed.runningGags.gagTypes.join(", ")}
-          </div>
-        </SectionCard>
-      )}
-    </div>
-  );
-}
-
-function SectionCard({ title, children }: { title: string; children: React.ReactNode }) {
-  const theme = useTheme();
-  return (
-    <div style={{ border: `1px solid ${theme.colors.border.default}`, borderRadius: theme.radii.xl, overflow: "hidden" }}>
-      <div style={{ padding: `10px ${theme.spacing.xl}px`, background: theme.colors.bg.surface, borderBottom: `1px solid ${theme.colors.border.default}`, fontWeight: theme.font.weights.semibold, fontSize: theme.font.sizes.md }}>
-        {title}
-      </div>
-      <div style={{ padding: theme.spacing.xl }}>{children}</div>
     </div>
   );
 }
@@ -538,22 +315,4 @@ function MarkdownPreview({ raw }: { raw: string }) {
       })}
     </div>
   );
-}
-
-function thStyle(theme: ReturnType<typeof useTheme>): React.CSSProperties {
-  return {
-    textAlign: "left",
-    padding: `${theme.spacing.sm}px ${theme.spacing.md}px`,
-    borderBottom: `2px solid ${theme.colors.border.default}`,
-    fontWeight: theme.font.weights.semibold,
-    fontSize: theme.font.sizes.base,
-  };
-}
-
-function tdStyle(theme: ReturnType<typeof useTheme>): React.CSSProperties {
-  return {
-    padding: `6px ${theme.spacing.md}px`,
-    borderBottom: `1px solid ${theme.colors.border.light}`,
-    fontSize: theme.font.sizes.base,
-  };
 }

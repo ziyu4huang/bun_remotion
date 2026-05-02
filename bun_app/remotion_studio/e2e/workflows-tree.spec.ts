@@ -11,7 +11,7 @@ test.describe("Workflows Page", () => {
   test("page renders with template selector", async ({ page }) => {
     const main = page.locator("main");
     await expect(main).toBeVisible();
-    const heading = page.getByRole("heading", { name: "Workflows" });
+    const heading = page.getByRole("heading", { name: /Workflows/i });
     await expect(heading).toBeVisible();
     const select = page.locator("select").first();
     await expect(select).toBeVisible();
@@ -31,7 +31,7 @@ test.describe("Workflows Page", () => {
     if (!firstOption) return; // No templates loaded (API unavailable)
     await select.selectOption(firstOption);
     // Should show step info
-    const stepInfo = page.getByText("Steps:");
+    const stepInfo = page.getByText(/Steps/i);
     await expect(stepInfo).toBeVisible({ timeout: 2000 });
   });
 
@@ -72,7 +72,7 @@ test.describe("Workflows Tree View", () => {
     await expect(main).toBeVisible();
 
     // Tree heading only appears when tree data exists
-    const treeHeading = page.getByText("Task Tree");
+    const treeHeading = page.getByText(/Task Tree/i);
     const treeVisible = await treeHeading.isVisible().catch(() => false);
     // Just verify the page is stable regardless
     expect(await main.textContent()).toBeTruthy();
@@ -80,7 +80,7 @@ test.describe("Workflows Tree View", () => {
 
   test("flat step list shows when no tree is available", async ({ page }) => {
     // Without running a workflow, no step list should appear
-    const stepsHeading = page.getByText("Steps");
+    const stepsHeading = page.getByText(/Steps/i);
     const stepsVisible = await stepsHeading.isVisible().catch(() => false);
     // Steps only appear after running a workflow
     expect(typeof stepsVisible).toBe("boolean");
