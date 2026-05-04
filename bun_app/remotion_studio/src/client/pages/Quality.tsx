@@ -4,12 +4,13 @@ import { PageHeader, LoadingSpinner, EmptyState, Button } from "../components";
 import { QualityAskAgent } from "../components/QualityAskAgent";
 import { QualityDimensions } from "../components/QualityDimensions";
 import { QualityDetail } from "../components/QualityDetail";
+import { ContinuityReport } from "../components/ContinuityReport";
 import { useTheme, scoreColor } from "../theme";
 import { useI18n } from "../i18n";
 import { loadApiKeyWithEnvKey } from "./Settings";
 import type { Project, SeriesQualitySnapshot, RegressionAlert, ScoreHistoryPoint, AgentTaskResult } from "../../shared/types";
 
-type ViewMode = "overview" | "detail";
+type ViewMode = "overview" | "detail" | "continuity";
 
 interface AgentTaskState {
   jobId: string;
@@ -135,18 +136,43 @@ export function Quality() {
       {/* View toggle */}
       <div style={{ marginBottom: theme.spacing.lg }}>
         <Button variant={view === "overview" ? "primary" : "outline"} size="sm" onClick={() => { setView("overview"); setSelected(""); }} style={{ marginRight: theme.spacing.sm }}>{t.quality.crossSeries}</Button>
-        <Button variant={view === "detail" ? "primary" : "outline"} size="sm" onClick={() => setView("detail")}>{t.quality.perSeries}</Button>
+        <Button variant={view === "detail" ? "primary" : "outline"} size="sm" onClick={() => setView("detail")} style={{ marginRight: theme.spacing.sm }}>{t.quality.perSeries}</Button>
+        <Button variant={view === "continuity" ? "primary" : "outline"} size="sm" onClick={() => setView("continuity")}>{t.continuity.continuityTab}</Button>
       </div>
 
       {/* Cross-series comparison */}
       {view === "overview" && (
         <div>
+          {/* KG Quality Summary Cards */}
+          {comparison.length > 0 && (
+            <div style={{ marginBottom: theme.spacing.xxl }}>
+              <h3 style={{ marginBottom: theme.spacing.md }}>{t.quality.kgQualitySummary}</h3>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: theme.spacing.md }}>
+                {comparison.map((s) => (
+                  <div key={s.seriesId} onClick={() => { setSelected(s.seriesId); setView("detail"); }} style={{ cursor: "pointer" }}>
+                  <KGQualityCard
+                    seriesId={s.seriesId}
+                    gateScore={s.gateScore}
+                    blendedScore={s.blendedScore}
+                    decision={s.decision}
+                    nodeCount={s.nodeCount}
+                    communityCount={s.communityCount}
+                    trend={s.trend}
+                    aiDimensions={s.aiDimensions}
+                    theme={theme}
+                    t={t}
+                  />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
           <h3 style={{ marginBottom: theme.spacing.sm }}>{t.quality.crossSeriesComparison}</h3>
           {comparison.length === 0 ? (
             <EmptyState icon="📊" title={t.quality.noPipelineData} description={t.quality.noPipelineDataDesc} />
           ) : (
             <div style={{ overflowX: "auto" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: theme.font.sizes.base }}>
+              <table aria-label="Quality metrics" style={{ width: "100%", borderCollapse: "collapse", fontSize: theme.font.sizes.base }}>
                 <thead>
                   <tr style={{ borderBottom: `2px solid ${theme.colors.border.default}`, textAlign: "left" }}>
                     {["Series", "Gate", "Blended", "Decision", "Trend", "Nodes", "Edges", "Comm.", "AI Score", "Mode", "Genre"].map((h) => (
@@ -197,6 +223,11 @@ export function Quality() {
           {qualityData && <QualityDimensions aiDimensions={aiDimensions} breakdown={breakdown} />}
         </div>
       )}
+
+      {/* Continuity check */}
+      {view === "continuity" && (
+        <ContinuityReport projects={projects} />
+      )}
     </div>
   );
 }
@@ -225,5 +256,96 @@ function TrendBadge({ trend, delta }: { trend: string; delta: number | null }) {
     <span style={{ color: colors[trend] || theme.colors.text.tertiary }}>
       {icons[trend] || "?"} {delta != null ? (delta > 0 ? `+${delta}` : `${delta}`) : ""}
     </span>
+  );
+}
+
+function KGQualityCard({ seriesId, gateScore, blendedScore, decision, nodeCount, communityCount, trend, aiDimensions, theme, t }: {
+  seriesId: string;
+  gateScore: number | null;
+  blendedScore: number | null;
+  decision: string | null;
+  nodeCount: number;
+  communityCount: number;
+  trend: string;
+  aiDimensions: Record<string, number> | null;
+  theme: ReturnType<typeof useTheme>;
+  t: any;
+}) {
+  const trendColors: Record<string, string> = { improving: theme.colors.success, stable: theme.colors.text.tertiary, declining: theme.colors.error, new: theme.colors.primary };
+  const trendSymbols: Record<string, string> = { improving: "↑", stable: "→", declining: "↓", new: "★" };
+  const sparkDims = ["consistency", "arc_structure", "pacing"];
+
+  return (
+    <div style={{
+      border: `1px solid ${theme.colors.border.default}`,
+      borderRadius: theme.radii.xl,
+      padding: theme.spacing.md,
+      background: theme.colors.bg.surface,
+    }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: theme.spacing.sm }}>
+        <span style={{ fontWeight: theme.font.weights.semibold, fontSize: theme.font.sizes.base }}>{seriesId}</span>
+        <span style={{ color: trendColors[trend] || theme.colors.text.tertiary, fontSize: theme.font.sizes.sm, fontWeight: theme.font.weights.medium }}>
+          {trendSymbols[trend] || "?"} {trend}
+        </span>
+      </div>
+
+      <div style={{ display: "flex", gap: theme.spacing.lg, marginBottom: theme.spacing.sm }}>
+        <div>
+          <div style={{ fontSize: theme.font.sizes.xs, color: theme.colors.text.tertiary }}>{t.quality.gateScore}</div>
+          <div style={{ fontSize: theme.font.sizes.xl, fontWeight: theme.font.weights.bold, color: gateScore != null ? scoreColor(gateScore, 100, theme) : theme.colors.text.muted }}>
+            {gateScore != null ? `${gateScore}/100` : "—"}
+          </div>
+        </div>
+        <div>
+          <div style={{ fontSize: theme.font.sizes.xs, color: theme.colors.text.tertiary }}>{t.quality.blendedScore}</div>
+          <div style={{ fontSize: theme.font.sizes.xl, fontWeight: theme.font.weights.bold, color: blendedScore != null ? scoreColor(blendedScore, 100, theme) : theme.colors.text.muted }}>
+            {blendedScore != null ? `${blendedScore}%` : "—"}
+          </div>
+        </div>
+        <div>
+          <div style={{ fontSize: theme.font.sizes.xs, color: theme.colors.text.tertiary }}>{t.quality.nodes}</div>
+          <div style={{ fontSize: theme.font.sizes.lg, fontWeight: theme.font.weights.semibold }}>{nodeCount}</div>
+        </div>
+        <div>
+          <div style={{ fontSize: theme.font.sizes.xs, color: theme.colors.text.tertiary }}>{t.quality.communities}</div>
+          <div style={{ fontSize: theme.font.sizes.lg, fontWeight: theme.font.weights.semibold }}>{communityCount}</div>
+        </div>
+      </div>
+
+      {decision && <DecisionBadge decision={decision} />}
+
+      {/* Dimension sparklines */}
+      {aiDimensions && sparkDims.some((d) => aiDimensions[d] != null) && (
+        <div style={{ marginTop: theme.spacing.sm, borderTop: `1px solid ${theme.colors.border.light}`, paddingTop: theme.spacing.sm }}>
+          <div style={{ fontSize: theme.font.sizes.xs, color: theme.colors.text.tertiary, marginBottom: 4 }}>{t.quality.sparklines}</div>
+          <div style={{ display: "flex", gap: theme.spacing.md }}>
+            {sparkDims.map((dim) => {
+              const val = aiDimensions[dim];
+              if (val == null) return null;
+              return (
+                <div key={dim} style={{ flex: 1 }}>
+                  <div style={{ fontSize: theme.font.sizes.xs - 1, color: theme.colors.text.muted }}>
+                    {dim === "consistency" ? t.quality.consistency : dim === "arc_structure" ? t.quality.arcStructure : t.quality.pacing}
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                    <SparklineBar value={val} max={10} theme={theme} />
+                    <span style={{ fontSize: theme.font.sizes.xs, color: scoreColor(val, 10, theme), fontWeight: theme.font.weights.medium }}>{val}/10</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function SparklineBar({ value, max, theme }: { value: number; max: number; theme: ReturnType<typeof useTheme> }) {
+  const pct = Math.min(100, (value / max) * 100);
+  return (
+    <div style={{ width: 50, height: 4, background: theme.colors.border.default, borderRadius: 2, overflow: "hidden" }}>
+      <div style={{ width: `${pct}%`, height: "100%", background: scoreColor(value, max, theme), borderRadius: 2 }} />
+    </div>
   );
 }

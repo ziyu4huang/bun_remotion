@@ -97,7 +97,7 @@ export function Benchmark() {
       {baselines.length === 0 ? (
         <div style={{ color: theme.colors.text.tertiary }}>No baseline data yet. Run a benchmark to establish baselines.</div>
       ) : (
-        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: theme.font.sizes.md }}>
+        <table aria-label="Benchmark baselines" style={{ width: "100%", borderCollapse: "collapse", fontSize: theme.font.sizes.md }}>
           <thead>
             <tr style={{ borderBottom: `2px solid ${theme.colors.border.default}`, textAlign: "left" }}>
               <th style={thStyle(theme)}>{t.benchmark.series}</th>

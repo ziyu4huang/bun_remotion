@@ -3,6 +3,9 @@ import { api } from "../api";
 import { PageHeader, LoadingSpinner, Button, type ChatMessage, loadHistory, saveHistory } from "../components";
 import { ImageDesignBrief, type DesignBrief, EMPTY_BRIEF, briefToPrompt } from "../components/ImageDesignBrief";
 import { ImageVariantGallery } from "../components/ImageVariantGallery";
+import { StyleGuideEditor } from "../components/StyleGuideEditor";
+import { ExpressionSheet } from "../components/ExpressionSheet";
+import { BackgroundVariantSheet } from "../components/BackgroundVariantSheet";
 import { AdvisorPanelBase } from "../components/AdvisorPanelBase";
 import { useTheme } from "../theme";
 import { useI18n } from "../i18n";
@@ -85,6 +88,14 @@ export function ImageGen() {
     }
   };
 
+  const handleApplyStyleGuide = (prefix: string) => {
+    if (!prefix) return;
+    setPrompt((prev) => {
+      const stripped = prev.replace(/^(art style: .+?, colors: .+?, mood: .+?, elements: .+?)\s*/, "");
+      return `${prefix}${stripped ? ", " + stripped : ""}`;
+    });
+  };
+
   const handleGenerate = async () => {
     if (!selectedSeries || !prompt || !filename) return;
     const res = await api.generateImages({
@@ -136,6 +147,28 @@ export function ImageGen() {
         </select>
       </div>
 
+      {/* Style Guide */}
+      {selectedSeries && (
+        <StyleGuideEditor
+          seriesId={selectedSeries}
+          onApplyPrefix={handleApplyStyleGuide}
+          labels={{
+            title: t.imageGen.styleGuideTitle,
+            description: t.imageGen.styleGuideDesc,
+            artStyle: t.imageGen.styleGuideArtStyle,
+            colorPalette: t.imageGen.styleGuideColorPalette,
+            mood: t.imageGen.styleGuideMood,
+            recurringElements: t.imageGen.styleGuideElements,
+            additionalNotes: t.imageGen.styleGuideNotes,
+            apply: t.imageGen.styleGuideApply,
+            save: t.imageGen.styleGuideSave,
+            deleteGuide: t.imageGen.styleGuideDelete,
+            noGuide: t.imageGen.styleGuideNone,
+            saved: t.imageGen.styleGuideSaved,
+          }}
+        />
+      )}
+
       {/* Status */}
       {status && (
         <div style={{ marginBottom: theme.spacing.lg, display: "flex", gap: theme.spacing.lg }}>
@@ -186,6 +219,16 @@ export function ImageGen() {
             ))}
           </div>
         </div>
+      )}
+
+      {/* Expression Sheet */}
+      {selectedChar && (
+        <ExpressionSheet
+          seriesId={selectedSeries}
+          profiles={profiles}
+          selectedCharId={selectedCharId}
+          facing={facing}
+        />
       )}
 
       {/* Variant gallery */}
@@ -242,6 +285,17 @@ export function ImageGen() {
       <Button variant="primary" onClick={handleGenerate} disabled={!selectedSeries || !prompt || !filename || !!job}>
         {t.imageGen.generate}{selectedChar ? ` (${selectedChar.name})` : ""}
       </Button>
+
+      {/* Background Variants — batch time-of-day generation */}
+      {kind === "background" && selectedSeries && (
+        <BackgroundVariantSheet
+          seriesId={selectedSeries}
+          prompt={prompt}
+          filename={filename}
+          aspectRatio={aspectRatio}
+          onDone={loadStatus}
+        />
+      )}
 
       {job && (
         <div style={{ marginTop: theme.spacing.lg }}>

@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { createJob } from "../middleware/job-queue";
+import { jobService } from "../middleware/job-service";
 import type { ApiResponse, Job, ImageStatus, CharacterProfile } from "../../shared/types";
 import { generateImageBatch, buildCharacterPrompt, buildBackgroundPrompt } from "bun_image";
 import { existsSync, readdirSync } from "node:fs";
@@ -89,7 +89,7 @@ router.post("/generate", async (c) => {
     : body.images;
   const outputDir = body.outputDir ?? resolve(seriesDir, "assets", "characters");
 
-  const job = createJob("image-generate", async (progress) => {
+  const job = jobService.create("image-generate", async (progress) => {
     const result = await generateImageBatch({
       images,
       outputDir,

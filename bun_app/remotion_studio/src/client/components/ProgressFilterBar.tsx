@@ -13,6 +13,7 @@ interface ProgressFilterBarProps {
   onSelectAll: () => void;
   onBatchTts: () => void;
   onBatchRender: () => void;
+  onCancel: () => void;
   onRefresh: () => void;
   labels: {
     filterAll: string;
@@ -24,6 +25,7 @@ interface ProgressFilterBarProps {
     render: string;
     runningTts: string;
     rendering: string;
+    cancelSelected: string;
     refresh: string;
   };
 }
@@ -31,7 +33,7 @@ interface ProgressFilterBarProps {
 export function ProgressFilterBar({
   filter, onFilterChange, totalCount, completeCount,
   selectedCount, filteredCount, isBatching, batchRunning,
-  onSelectAll, onBatchTts, onBatchRender, onRefresh, labels,
+  onSelectAll, onBatchTts, onBatchRender, onCancel, onRefresh, labels,
 }: ProgressFilterBarProps) {
   const theme = useTheme();
   const hasSelection = selectedCount > 0;
@@ -58,6 +60,12 @@ export function ProgressFilterBar({
             variant="primary" size="sm">
             {batchRunning === "render" ? labels.rendering : `${labels.render} ${selectedCount}`}
           </Button>
+          {isBatching && (
+            <Button onClick={onCancel} variant="outline" size="sm"
+              style={{ color: theme.colors.error, borderColor: theme.colors.error }}>
+              {labels.cancelSelected}
+            </Button>
+          )}
         </>
       )}
       <Button onClick={onRefresh} disabled={isBatching} variant="ghost" size="sm"

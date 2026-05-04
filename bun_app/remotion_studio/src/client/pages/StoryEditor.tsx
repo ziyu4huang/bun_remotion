@@ -3,6 +3,8 @@ import { Button, PageHeader, SectionEditor, type ChatMessage } from "../componen
 import { StoryEditorHints } from "../components/StoryEditorHints";
 import { StoryEditorSections } from "../components/StoryEditorSections";
 import { StoryEditorRevision } from "../components/StoryEditorRevision";
+import { StoryArcTracker } from "../components/StoryArcTracker";
+import { SceneReorderList } from "../components/SceneReorderList";
 import { AdvisorPanelBase } from "../components/AdvisorPanelBase";
 import { useTheme } from "../theme";
 import { useI18n } from "../i18n";
@@ -28,13 +30,13 @@ interface PlanData {
     seriesName: string;
     characters: { id: string; name: string; voice: string; gender: string; color: string | null }[] | null;
     episodeGuide: { id: string; title: string; status: string; chapter: number | null; episode: number | null }[] | null;
-    storyArcs: { chapter: number; title: string; theme: string }[] | null;
+    storyArcs: { chapter: number; title: string; theme: string; episodes: { id: string; title: string; description: string }[] }[] | null;
     runningGags: { gagTypes: string[]; episodeColumns: string[] } | null;
     chapters: { chapter: number; episodeCount: number; completedCount: number; status: string }[];
   };
 }
 
-type ViewMode = "sections" | "structure" | "edit" | "preview";
+type ViewMode = "sections" | "structure" | "edit" | "preview" | "arcs";
 
 export function StoryEditor() {
   const theme = useTheme();
@@ -49,6 +51,7 @@ export function StoryEditor() {
   const [dirty, setDirty] = useState(false);
   const [showRevisions, setShowRevisions] = useState(false);
   const [showAdvisor, setShowAdvisor] = useState(false);
+  const [reorderMode, setReorderMode] = useState(false);
   const [advisorMsgs, setAdvisorMsgs] = useState<ChatMessage[]>([]);
   const [revisions, setRevisions] = useState<{ id: string; timestamp: string; size: number }[]>([]);
   const [viewingRev, setViewingRev] = useState<string | null>(null);
@@ -190,8 +193,27 @@ export function StoryEditor() {
 
       {planData && viewMode === "sections" && (
         <>
-          <StoryEditorHints data={planData} />
-          <StoryEditorSections data={planData} />
+          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: theme.spacing.sm }}>
+            <Button
+              variant={reorderMode ? "primary" : "outline"}
+              size="sm"
+              onClick={() => setReorderMode(!reorderMode)}
+            >
+              {t.storyEditor.reorderScenes}
+            </Button>
+          </div>
+          {reorderMode ? (
+            <SceneReorderList
+              sections={planData.sections}
+              raw={editContent}
+              onReorder={(newRaw) => { setEditContent(newRaw); setDirty(true); autoSave(newRaw); }}
+            />
+          ) : (
+            <>
+              <StoryEditorHints data={planData} />
+              <StoryEditorSections data={planData} />
+            </>
+          )}
         </>
       )}
       {planData && viewMode === "structure" && (
@@ -206,6 +228,13 @@ export function StoryEditor() {
       )}
       {planData && viewMode === "preview" && (
         <MarkdownPreview raw={editContent} />
+      )}
+      {planData && viewMode === "arcs" && (
+        <StoryArcTracker
+          storyArcs={planData.parsed.storyArcs ?? []}
+          seriesId={selectedId}
+          onSwitchToEdit={() => setViewMode("edit")}
+        />
       )}
 
       {showRevisions && (
@@ -246,6 +275,7 @@ function ViewToggle({ mode, onChange }: { mode: ViewMode; onChange: (m: ViewMode
     { id: "structure", label: t.storyEditor.structure },
     { id: "edit", label: t.storyEditor.raw },
     { id: "preview", label: t.storyEditor.preview },
+    { id: "arcs", label: t.storyEditor.arcs },
   ];
   return (
     <div style={{ display: "flex", gap: 0, border: `1px solid ${theme.colors.border.medium}`, borderRadius: theme.radii.lg, overflow: "hidden" }}>

@@ -2,61 +2,91 @@
 name: generate-image
 description: >
   Use when: "generate image", "create image", "AI image", "aistudio image",
-  "gemini image", "imagen", "/generate-image", "nano banana", "image.z.ai",
-  "z.ai image".
-  Triggers on: image generation.
-metadata:
-  version: 5.0.0
+  "gemini image", "imagen", "/generate-image", "nano banana", "z.ai image",
+  "zai image", "glm-image", "mflux", "flux image", "local image".
+  Triggers on: image generation, AI Studio, gemini image gen, z.ai image gen,
+  mflux local generation, Apple Silicon image gen.
+trigger: /generate-image
+version: 6.0.0
 ---
 
 # /generate-image — AI Image Generation
 
-**Primary: image.z.ai** (GLM-Image, free). Fallback: Google AI Studio Nano Banana.
+Generate images using AI backends. Three backends, loaded on demand.
 
-## CRITICAL: Always use CDP
+## Backends
 
-Never launch Playwright-controlled Chrome for login-required sites. Google detects automation and blocks login.
+| Backend | Flag | Platform | Login | Cost |
+|---------|------|----------|-------|------|
+| **z.ai** | `zai` (default) | Any | Google OAuth | Free |
+| **AI Studio** | `aistudio` | Any | Google | Free/Paid |
+| **mflux** | `mflux` / `flux` | macOS only | None | Free (local) |
 
-Always connect to user's real Chrome via CDP:
-1. User launches: `/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222`
-2. Code uses `chromium.connectOverCDP("http://localhost:9222")`
-3. Only close our page — never close user's browser
+## Mode Detection
 
-## image.z.ai Workflow
+Detect backend from the user's request:
 
-### Via bun_app/bun_image module (recommended)
+| User says | Backend | Read |
+|-----------|---------|------|
+| "mflux", "flux", "local", "mlx" | `mflux` | `operations/mflux.md` |
+| "aistudio", "nano banana", "ai studio" | `aistudio` | `operations/aistudio.md` |
+| "zai", "z.ai" (or default) | `zai` | `operations/zai.md` |
+| "galgame", "visual novel", "character sprite" | any + `galgame` | `operations/galgame.md` |
+| "remove background", "rembg", "transparent" | post-process | `operations/background-removal.md` |
 
-```typescript
-import { generateImageBatch } from "bun_image";
-const result = await generateImageBatch({
-  images: [{ filename: "hero.png", prompt: "...", aspectRatio: "1:1" }],
-  outputDir: "/path/to/assets/characters",
-  browserConfig: { mode: "cdp" },
-});
+Read ONLY the operation file you need. Do NOT read all operation files.
+
+## Operations (Load on Demand)
+
+### zai — z.ai free web UI (default backend)
+Read `operations/zai.md` — Playwright automation for https://image.z.ai/. Free, no API credits, Google login required.
+
+### aistudio — Google AI Studio (Nano Banana)
+Read `operations/aistudio.md` — Playwright automation for AI Studio. Supports free (Flash Image) and paid (Pro, Pro 2) tiers.
+
+### mflux — Local generation (macOS Apple Silicon)
+Read `operations/mflux.md` — CLI-driven local generation via MLX. No browser, no login, no cloud. ~50s/image on M1 8G.
+
+### galgame — Visual novel character sprites
+Read `operations/galgame.md` — Prompt templates, LEFT-facing convention, naming, batch generation. Works with any backend.
+
+### background-removal — rembg post-processing
+Read `operations/background-removal.md` — Remove backgrounds from generated images using rembg. Required for transparent sprites.
+
+## Usage
+
+```
+/generate-image <prompt> [backend] [options]
 ```
 
-### Key Selectors
+**Arguments:**
+- `<prompt>` — Image description (required)
+- `zai` — z.ai free web UI (default)
+- `aistudio` — Google AI Studio (Nano Banana)
+- `mflux` / `flux` — Local mflux generation (macOS only)
+- `free` / `pro` / `pro2` — AI Studio tier selection
+- `--output <path>` — Custom output path
 
-| Element | Selector |
-|---------|----------|
-| Prompt textarea | `page.locator('textarea').first()` |
-| Aspect ratio | `page.locator('[role=combobox]').first()` then option: 1:1, 3:4, 4:3, **16:9**, 9:16, 21:9, 9:21 |
-| Resolution | `page.locator('[role=combobox]').nth(1)` — default 1K |
-| Watermark | `checkbox "去水印"` — checked by default |
-| Generate button | `page.locator('button').filter({ hasText: '开始生成' })` |
-| Generated image | `page.getByRole('img', { name: 'Generated' })` — on /create page |
-| Download URL | Regex `url=([^&]+)` on img `src`, then curl |
+**Examples:**
+```
+/generate-image a cute cat wearing a hat
+/generate-image cyberpunk cityscape aistudio pro
+/generate-image mflux fantasy landscape mountains
+/generate-image flux a cute cat wearing a wizard hat
+/generate-image anime girl character sprite zai --output assets/hero.png
+```
 
-### Rate Limiting
+## Output
 
-- Free: **~3 images per 5 minutes**
-- Error: `429` / "太火爆了"
-- **Fastest recovery: close + reopen** (`playwright-cli close` then `open --headed --persistent`)
-- Batch: generate 3 → close + reopen → generate 3 more
+- Default directories: `./output/` (zai, aistudio) or `./output/mflux/` (mflux)
+- `output/` is gitignored
+- mflux uses sequential naming: `mflux-001.png`, `mflux-002.png`, ...
+- Image format: PNG
 
-## On Demand
+## Shared Conventions
 
-| Topic | File |
-|-------|------|
-| Character sprites, transparency, prompt templates | [references/character-sprites.md](references/character-sprites.md) |
-| Legacy Google AI Studio workflow | [references/legacy-aistudio.md](references/legacy-aistudio.md) |
+- Always verify the generated image with `Read` tool and `file` command
+- Report: filename, file size, resolution, prompt used
+- If a backend fails, suggest the user try a different backend
+- Close browser when done with browser-based backends
+- `output/` is gitignored — never commit generated images

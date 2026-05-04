@@ -1,7 +1,9 @@
 import { Hono } from "hono";
-import { createJob, getJob } from "../middleware/job-queue";
+import { jobService } from "../middleware/job-service";
 import { listTemplates, getTemplate, runWorkflow, runWorkflowDAG, retryWorkflow, retryWorkflowDAG, getWorkflowTaskStore, TEMPLATE_DEPS } from "../services/workflow-engine";
 import type { WorkflowTriggerOptions } from "../services/workflow-engine";
+import { CATEGORY_TEMPLATE_MAP, CATEGORY_LABELS, getAllCategories, getTemplatesForCategory } from "../services/workflow/templates.js";
+import type { VideoCategoryId } from "../services/workflow/templates.js";
 import type { ApiResponse, Job, WorkflowResult, TaskTree, TaskNode } from "../../shared/types";
 
 const router = new Hono();
@@ -10,6 +12,16 @@ const router = new Hono();
 router.get("/", (c) => {
   const templates = listTemplates();
   return c.json<ApiResponse>({ ok: true, data: templates });
+});
+
+// GET /categories — List categories with template recommendations
+router.get("/categories", (c) => {
+  const categories = getAllCategories().map((id) => ({
+    id,
+    label: CATEGORY_LABELS[id],
+    templates: getTemplatesForCategory(id),
+  }));
+  return c.json<ApiResponse>({ ok: true, data: categories });
 });
 
 // POST /trigger — Start a workflow job
@@ -64,7 +76,7 @@ router.post("/trigger", async (c) => {
     agent: body.agent,
   };
 
-  const job = createJob("workflow", async (progress, signal) => {
+  const job = jobService.create("workflow", async (progress, signal) => {
     const useDAG = template.id in TEMPLATE_DEPS;
     const runner = useDAG ? runWorkflowDAG : runWorkflow;
     const result = await runner(template, options, progress, signal);
@@ -76,7 +88,7 @@ router.post("/trigger", async (c) => {
 
 // GET /:id — Get workflow job status
 router.get("/:id", (c) => {
-  const job = getJob(c.req.param("id"));
+  const job = jobService.get(c.req.param("id"));
   if (!job) return c.json<ApiResponse>({ ok: false, error: "Not found" }, 404);
   if (job.type !== "workflow") {
     return c.json<ApiResponse>({ ok: false, error: "Not a workflow job" }, 400);
@@ -87,7 +99,7 @@ router.get("/:id", (c) => {
 // POST /:id/retry — Retry a failed workflow from a specific step
 router.post("/:id/retry", async (c) => {
   const jobId = c.req.param("id");
-  const prevJob = getJob<WorkflowResult>(jobId);
+  const prevJob = jobService.get<WorkflowResult>(jobId);
   if (!prevJob) return c.json<ApiResponse>({ ok: false, error: "Job not found" }, 404);
   if (prevJob.type !== "workflow") {
     return c.json<ApiResponse>({ ok: false, error: "Not a workflow job" }, 400);
@@ -117,7 +129,7 @@ router.post("/:id/retry", async (c) => {
 
   const options: WorkflowTriggerOptions = (prevResult.options ?? {}) as WorkflowTriggerOptions;
 
-  const newJob = createJob("workflow", async (progress) => {
+  const newJob = jobService.create("workflow", async (progress) => {
     return retryWorkflow(template, options, prevResult, fromStep!, progress);
   });
 
@@ -128,7 +140,7 @@ router.post("/:id/retry", async (c) => {
 
 // GET /:id/tree — Get the task tree for a workflow job
 router.get("/:id/tree", (c) => {
-  const job = getJob<WorkflowResult>(c.req.param("id"));
+  const job = jobService.get<WorkflowResult>(c.req.param("id"));
   if (!job) return c.json<ApiResponse>({ ok: false, error: "Job not found" }, 404);
   if (job.type !== "workflow") return c.json<ApiResponse>({ ok: false, error: "Not a workflow job" }, 400);
 
@@ -143,7 +155,7 @@ router.get("/:id/tree", (c) => {
 
 // GET /:id/tree/:taskId — Get a single task node
 router.get("/:id/tree/:taskId", (c) => {
-  const job = getJob<WorkflowResult>(c.req.param("id"));
+  const job = jobService.get<WorkflowResult>(c.req.param("id"));
   if (!job) return c.json<ApiResponse>({ ok: false, error: "Job not found" }, 404);
 
   const treeId = job.result?.taskTreeId;
@@ -160,7 +172,7 @@ router.get("/:id/tree/:taskId", (c) => {
 router.post("/:id/tree/:taskId/retry", async (c) => {
   const jobId = c.req.param("id");
   const taskId = c.req.param("taskId");
-  const job = getJob<WorkflowResult>(jobId);
+  const job = jobService.get<WorkflowResult>(jobId);
   if (!job) return c.json<ApiResponse>({ ok: false, error: "Job not found" }, 404);
 
   const treeId = job.result?.taskTreeId;
@@ -171,7 +183,7 @@ router.post("/:id/tree/:taskId/retry", async (c) => {
 
   const options: WorkflowTriggerOptions = (job.result!.options ?? {}) as WorkflowTriggerOptions;
 
-  const newJob = createJob("workflow", async (progress) => {
+  const newJob = jobService.create("workflow", async (progress) => {
     return retryWorkflowDAG(treeId, template, options, progress);
   });
 

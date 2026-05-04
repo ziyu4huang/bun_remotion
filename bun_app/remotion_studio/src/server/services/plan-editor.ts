@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync, existsSync, readdirSync, mkdirSync } from "node:fs";
 import { resolve, join } from "node:path";
-import { parsePlan, splitSections } from "../../../../storygraph/src/scripts/plan-parser";
+import { parsePlan, splitSections } from "storygraph/plan-parser";
 
 const REPO_ROOT = resolve(import.meta.dir, "../../../../..");
 const BUN_REMOTION_DIR = join(REPO_ROOT, "bun_remotion_proj");

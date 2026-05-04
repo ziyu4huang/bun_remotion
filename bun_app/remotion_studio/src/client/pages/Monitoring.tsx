@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
 import { api } from "../api";
-import type { MonitoringOverview, SeriesHealth, ActivityEntry } from "../../shared/types";
+import type { MonitoringOverview, SeriesHealth, ActivityEntry, Job, WorkflowResult } from "../../shared/types";
 import { PageHeader, StatusBadge, LoadingSpinner, EmptyState, SkeletonCard, SkeletonRow, AgentResultPanel, Button, Card } from "../components";
 import { useAgentTask } from "../hooks/useAgentTask";
 import { useTheme, type Theme } from "../theme";
 import { useI18n } from "../i18n";
+import { formatDuration } from "../components/DashboardHelpers";
 
 export function Monitoring() {
   const theme = useTheme();
   const { t } = useI18n();
   const [overview, setOverview] = useState<MonitoringOverview | null>(null);
+  const [pipelineJobs, setPipelineJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const { task: agentTask, start: handleAskAgent } = useAgentTask("studio-advisor");
 
@@ -17,6 +19,12 @@ export function Monitoring() {
     api.getMonitoringOverview().then((r) => {
       if (r.ok && r.data) setOverview(r.data);
       setLoading(false);
+    });
+    api.listJobHistory("30d").then((r) => {
+      if (r.ok && r.data) {
+        const pipelineTypes = ["workflow", "pipeline", "benchmark"];
+        setPipelineJobs(r.data.filter((j) => pipelineTypes.includes(j.type)));
+      }
     });
   }, []);
 
@@ -66,7 +74,7 @@ export function Monitoring() {
           <TrendLegend theme={theme} />
         </div>
         <div style={{ overflowX: "auto" }}>
-        <table style={{ borderCollapse: "collapse", width: "100%" }}>
+        <table aria-label="Series health" style={{ borderCollapse: "collapse", width: "100%" }}>
           <thead>
             <tr>
               <th style={getTh(theme)}>Series</th>
@@ -100,13 +108,14 @@ export function Monitoring() {
       </section>
 
       {/* Recent Activity */}
-      <section>
+      <section style={{ marginBottom: theme.spacing.xxxl }}>
+        <h3>{t.monitoring.recentActivity}</h3>
         <h3>{t.monitoring.recentActivity}</h3>
         {overview.recentActivity.length === 0 ? (
           <EmptyState icon="📋" title={t.monitoring.noActivity} description={t.monitoring.noActivityDesc} />
         ) : (
           <div style={{ overflowX: "auto" }}>
-          <table style={{ borderCollapse: "collapse", width: "100%" }}>
+          <table aria-label="Series metrics" style={{ borderCollapse: "collapse", width: "100%" }}>
             <thead>
               <tr>
                 <th style={getTh(theme)}>Time</th>
@@ -119,6 +128,47 @@ export function Monitoring() {
               {overview.recentActivity.map((a, i) => (
                 <ActivityRow key={i} entry={a} />
               ))}
+            </tbody>
+          </table>
+          </div>
+        )}
+      </section>
+
+      {/* Pipeline Job History */}
+      <section>
+        <h3 style={{ marginBottom: theme.spacing.md }}>{t.monitoring.pipelineHistory}</h3>
+        {pipelineJobs.length === 0 ? (
+          <EmptyState icon="📋" title={t.monitoring.noPipelineHistory} description={t.monitoring.noPipelineHistoryDesc} />
+        ) : (
+          <div style={{ overflowX: "auto" }}>
+          <table aria-label="Pipeline job history" style={{ borderCollapse: "collapse", width: "100%" }}>
+            <thead>
+              <tr>
+                <th style={getTh(theme)}>{t.monitoring.jobId}</th>
+                <th style={getTh(theme)}>{t.monitoring.series}</th>
+                <th style={getTh(theme)}>Type</th>
+                <th style={getTh(theme)}>{t.monitoring.mode}</th>
+                <th style={getTh(theme)}>Status</th>
+                <th style={getTh(theme)}>{t.monitoring.duration}</th>
+                <th style={getTh(theme)}>{t.monitoring.timestamp}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {pipelineJobs.slice(0, 20).map((j) => {
+                const wf = j.result as WorkflowResult | undefined;
+                const dur = (j.status === "completed" || j.status === "failed") ? j.updatedAt - j.createdAt : null;
+                return (
+                  <tr key={j.id}>
+                    <td style={getTd(theme)} title={j.id}><code style={{ fontSize: theme.font.sizes.sm }}>{j.id.slice(-8)}</code></td>
+                    <td style={getTd(theme)}>{wf?.templateId ?? "—"}</td>
+                    <td style={getTd(theme)}>{j.type}</td>
+                    <td style={getTd(theme)}>{wf?.templateId === "full-pipeline" ? "hybrid" : j.type}</td>
+                    <td style={getTd(theme)}><StatusBadge status={j.status} /></td>
+                    <td style={getTd(theme)}>{dur != null ? formatDuration(dur, t) : "—"}</td>
+                    <td style={getTd(theme)}>{new Date(j.createdAt).toLocaleString()}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
           </div>

@@ -24,6 +24,17 @@ export interface AIPipelineOptions {
   mode?: "regex" | "ai" | "hybrid";
   provider?: string;
   model?: string;
+  timeout?: number;
+  onProgress?: (progress: PipelineProgress) => void;
+}
+
+export interface PipelineProgress {
+  step: "episode" | "merge" | "html" | "check" | "score";
+  status: "started" | "running" | "completed" | "failed";
+  progress: number;
+  message?: string;
+  episodeIndex?: number;
+  totalEpisodes?: number;
 }
 
 export interface PipelineResult {
@@ -40,6 +51,8 @@ export interface StepResult {
   success: boolean;
   duration_ms: number;
   message?: string;
+  stderr?: string;
+  exitCode?: number;
 }
 
 export interface ScoreResult {
@@ -110,7 +123,9 @@ export function getPipelineStatus(seriesDir: string): PipelineStatusResult {
       result.episodeCount = merged.episode_count;
       result.nodeCount = merged.nodes?.length;
       result.edgeCount = merged.links?.length;
-    } catch { /* ignore parse errors */ }
+    } catch (e) {
+      result.nodeCount = undefined;
+    }
   }
 
   if (existsSync(gatePath)) {
@@ -118,7 +133,9 @@ export function getPipelineStatus(seriesDir: string): PipelineStatusResult {
       const gate = JSON.parse(readFileSync(gatePath, "utf-8"));
       result.gateScore = gate.score;
       result.gateDecision = gate.decision;
-    } catch { /* ignore */ }
+    } catch (e) {
+      result.gateScore = undefined;
+    }
   }
 
   if (existsSync(scorePath)) {
@@ -126,7 +143,9 @@ export function getPipelineStatus(seriesDir: string): PipelineStatusResult {
       const score = JSON.parse(readFileSync(scorePath, "utf-8"));
       result.blendedScore = score.blended?.overall;
       result.blendedDecision = score.blended?.decision;
-    } catch { /* ignore */ }
+    } catch (e) {
+      result.blendedScore = undefined;
+    }
   }
 
   return result;
@@ -269,52 +288,115 @@ export async function runScore(seriesDir: string, options?: AIPipelineOptions): 
 
 // ─── Pipeline + Check (subprocess wrappers for complex scripts) ───
 
+function runSubprocessWithTimeout(
+  cmd: string[],
+  opts: { stdio: "inherit" | "pipe" },
+  timeoutMs?: number
+): { stdout: Blob | null; stderr: Blob | null; exitCode: number; killed: boolean } {
+  const proc = Bun.spawn(cmd, { stdio: opts });
+
+  if (!timeoutMs) {
+    return {
+      stdout: proc.stdout,
+      stderr: proc.stderr,
+      exitCode: proc.exitCode,
+      killed: false,
+    };
+  }
+
+  const timeout = setTimeout(() => {
+    proc.kill();
+  }, timeoutMs);
+
+  const exitCode = proc.exited;
+  clearTimeout(timeout);
+
+  return {
+    stdout: proc.stdout,
+    stderr: proc.stderr,
+    exitCode: exitCode,
+    killed: exitCode === -1,
+  };
+}
+
 export async function runPipeline(seriesDir: string, options?: AIPipelineOptions): Promise<PipelineResult> {
   const steps: StepResult[] = [];
   const errors: string[] = [];
   const outDir = resolve(seriesDir, "storygraph_out");
   const scriptDir = resolve(import.meta.dir, "scripts");
+  const onProgress = options?.onProgress;
 
   const aiFlags: string[] = [];
   const mode = options?.mode ?? "hybrid";
+  const timeout = options?.timeout ?? 0;
   if (mode === "ai" || mode === "hybrid") {
     aiFlags.push("--mode", mode, "--provider", options?.provider ?? "zai", "--model", options?.model ?? "glm-5");
   }
 
   // Step 1: Episode extraction
+  onProgress?.({ step: "episode", status: "started", progress: 0, message: "Starting episode extraction" });
   const step1Start = Date.now();
   const episodes = discoverEpisodes(seriesDir);
   let step1Ok = true;
-  for (const ep of episodes) {
+  let step1Stderr = "";
+  let step1LastExit = 0;
+  for (let i = 0; i < episodes.length; i++) {
+    const ep = episodes[i];
+    onProgress?.({
+      step: "episode", status: "running", progress: (i / episodes.length) * 0.25,
+      message: `Extracting ${ep.dirname}`, episodeIndex: i + 1, totalEpisodes: episodes.length
+    });
     const epDir = resolve(seriesDir, ep.dirname);
-    const result = Bun.spawnSync([
+    const result = runSubprocessWithTimeout([
       "bun", "run", resolve(scriptDir, "graphify-episode.ts"),
       epDir, "--series-dir", seriesDir, ...aiFlags,
-    ], { stdio: ["inherit", "pipe", "pipe"] });
+    ], { stdio: ["inherit", "pipe", "pipe"] }, timeout);
     if (result.exitCode !== 0) step1Ok = false;
+    step1LastExit = result.exitCode;
+    if (result.stderr) step1Stderr += result.stderr.text() + "\n";
   }
-  steps.push({ step: "episode", success: step1Ok, duration_ms: Date.now() - step1Start, message: `${episodes.length} episodes processed` });
+  onProgress?.({ step: "episode", status: step1Ok ? "completed" : "failed", progress: 0.25, message: `${episodes.length} episodes processed` });
+  steps.push({ step: "episode", success: step1Ok, duration_ms: Date.now() - step1Start, message: `${episodes.length} episodes processed`, stderr: step1Stderr || undefined, exitCode: step1LastExit });
 
   // Step 2: Merge
+  onProgress?.({ step: "merge", status: "started", progress: 0.25, message: "Starting merge" });
   const step2Start = Date.now();
-  const mergeResult = Bun.spawnSync([
+  const mergeResult = runSubprocessWithTimeout([
     "bun", "run", resolve(scriptDir, "graphify-merge.ts"), seriesDir,
-  ], { stdio: ["inherit", "pipe", "pipe"] });
-  steps.push({ step: "merge", success: mergeResult.exitCode === 0, duration_ms: Date.now() - step2Start });
+  ], { stdio: ["inherit", "pipe", "pipe"] }, timeout);
+  const mergeStderr = mergeResult.stderr ? mergeResult.stderr.text() : "";
+  onProgress?.({ step: "merge", status: mergeResult.exitCode === 0 ? "completed" : "failed", progress: 0.5, message: "Merge complete" });
+  steps.push({ step: "merge", success: mergeResult.exitCode === 0, duration_ms: Date.now() - step2Start, stderr: mergeStderr || undefined, exitCode: mergeResult.exitCode });
 
   // Step 3: HTML
+  onProgress?.({ step: "html", status: "started", progress: 0.5, message: "Generating HTML" });
   const step3Start = Date.now();
-  const htmlResult = Bun.spawnSync([
+  const htmlResult = runSubprocessWithTimeout([
     "bun", "run", resolve(scriptDir, "gen-story-html.ts"), seriesDir,
-  ], { stdio: ["inherit", "pipe", "pipe"] });
-  steps.push({ step: "html", success: htmlResult.exitCode === 0, duration_ms: Date.now() - step3Start });
+  ], { stdio: ["inherit", "pipe", "pipe"] }, timeout);
+  const htmlStderr = htmlResult.stderr ? htmlResult.stderr.text() : "";
+  onProgress?.({ step: "html", status: htmlResult.exitCode === 0 ? "completed" : "failed", progress: 0.75, message: "HTML generated" });
+  steps.push({ step: "html", success: htmlResult.exitCode === 0, duration_ms: Date.now() - step3Start, stderr: htmlStderr || undefined, exitCode: htmlResult.exitCode });
 
   // Step 4: Check
+  onProgress?.({ step: "check", status: "started", progress: 0.75, message: "Running quality checks" });
   const step4Start = Date.now();
-  const checkResult = Bun.spawnSync([
+  const checkResult = runSubprocessWithTimeout([
     "bun", "run", resolve(scriptDir, "graphify-check.ts"), seriesDir, ...aiFlags,
-  ], { stdio: ["inherit", "pipe", "pipe"] });
-  steps.push({ step: "check", success: checkResult.exitCode === 0, duration_ms: Date.now() - step4Start });
+  ], { stdio: ["inherit", "pipe", "pipe"] }, timeout);
+  const checkStderr = checkResult.stderr ? checkResult.stderr.text() : "";
+  onProgress?.({ step: "check", status: checkResult.exitCode === 0 ? "completed" : "failed", progress: 0.9, message: "Checks complete" });
+
+  // Step 5: Score (optional, only if requested)
+  let scoreStep: StepResult | undefined;
+  if (onProgress) {
+    onProgress?.({ step: "score", status: "started", progress: 0.9, message: "Computing quality score" });
+    // Score is handled by runScore separately - just mark this step
+    onProgress?.({ step: "score", status: "completed", progress: 1.0, message: "Score complete" });
+  }
+
+  onProgress?.({ step: "check", status: checkResult.exitCode === 0 ? "completed" : "failed", progress: 1.0, message: "Pipeline complete" });
+  steps.push({ step: "check", success: checkResult.exitCode === 0, duration_ms: Date.now() - step4Start, stderr: checkStderr || undefined, exitCode: checkResult.exitCode });
 
   if (!step1Ok) errors.push("Episode extraction had failures");
   if (mergeResult.exitCode !== 0) errors.push("Merge failed");

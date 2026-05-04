@@ -64,7 +64,7 @@ export function WhatsNext() {
           <strong>{t.dashboard.steps[nextStep[0] as keyof typeof t.dashboard.steps] ?? nextStep[0]}</strong> ({t.dashboard.waiting(nextStep[1])}).
           {" "}{t.dashboard.goTo} <strong>{info?.page ?? nextStep[0]}</strong> to continue.
         </div>
-        <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+        <div style={{ display: "flex", gap: 8, marginTop: 10, flexWrap: "wrap" }}>
           {(Object.entries(stepCounts) as [string, number][])
             .sort((a, b) => b[1] - a[1])
             .slice(0, 4)

@@ -4,8 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Bun Remotion Studio</title>
+    <script>
+      // Prevent white flash: apply theme background before React hydrates
+      (function() {
+        var dark = localStorage.getItem('remotion-studio-theme') === 'dark'
+          || (!localStorage.getItem('remotion-studio-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.style.backgroundColor = dark ? '#121212' : '#ffffff';
+      })();
+    </script>
   </head>
-  <body>
+  <body style="margin:0; padding:0;">
     <div id="root"></div>
     <script type="module" src="/src/client/index.tsx"></script>
   </body>

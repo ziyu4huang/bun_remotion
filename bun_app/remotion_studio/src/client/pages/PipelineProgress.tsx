@@ -149,6 +149,23 @@ export function PipelineProgress() {
 
   const isBatching = batchRunning !== null;
 
+  const handleCancel = async () => {
+    const targets = filtered.filter((e) => selected.has(e.episodeId));
+    const ids = targets.map((e) => e.episodeId);
+    try {
+      const res = await api.batch.cancel(ids);
+      if (res.data) {
+        toast(t.pipelineProgress.batch.batchCancelSuccess, "success");
+        setBatchRunning(null);
+        load();
+      } else {
+        toast(res.error ?? "Cancel failed", "error");
+      }
+    } catch {
+      toast("Cancel failed", "error");
+    }
+  };
+
   return (
     <div style={{ padding: 24, maxWidth: 1200 }}>
       <PageHeader title={t.pipelineProgress.title} description={t.pipelineProgress.description} />
@@ -169,13 +186,14 @@ export function PipelineProgress() {
         selectedCount={selected.size} filteredCount={filtered.length}
         isBatching={isBatching} batchRunning={batchRunning}
         onSelectAll={selectAll} onBatchTts={() => handleBatch("tts")}
-        onBatchRender={() => handleBatch("render")} onRefresh={load}
+        onBatchRender={() => handleBatch("render")} onCancel={handleCancel} onRefresh={load}
         labels={{
           filterAll: t.pipelineProgress.filter.all, filterComplete: t.pipelineProgress.filter.complete,
           filterIncomplete: t.pipelineProgress.filter.incomplete,
           selectAll: t.pipelineProgress.selection.selectAll, deselectAll: t.pipelineProgress.selection.deselectAll,
           tts: t.pipelineProgress.batch.tts, render: t.pipelineProgress.batch.render,
           runningTts: t.pipelineProgress.batch.runningTts, rendering: t.pipelineProgress.batch.rendering,
+          cancelSelected: t.pipelineProgress.batch.cancelSelected,
           refresh: t.pipelineProgress.refresh,
         }}
       />

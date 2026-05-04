@@ -13,8 +13,10 @@ export interface AgentConfig {
   rateLimitMax: number;   // max requests per window
   rateLimitWindowMs: number; // window in milliseconds
   agentName?: string;  // agent definition name (from --agent flag)
-  benchMaxToolCalls: number; // max tool calls per benchmark task
-  benchMaxTurns: number;    // max agent turns per benchmark task
+  maxConcurrentRuns: number;  // background queue concurrency limit
+  queueTimeoutMs: number;     // background queue task timeout
+  benchMaxToolCalls: number;  // max tool calls per benchmark task
+  benchMaxTurns: number;      // max agent turns per benchmark task
   benchMode: "regex" | "ai" | "hybrid"; // KG suite extraction mode
 }
 
@@ -44,6 +46,8 @@ export function getConfig(): AgentConfig {
     rateLimitMax: parseInt(process.env.PI_AGENT_RATE_LIMIT_MAX || "100", 10),
     rateLimitWindowMs: parseInt(process.env.PI_AGENT_RATE_LIMIT_WINDOW_MS || "60000", 10),
     agentName: process.env.PI_AGENT_NAME || undefined,
+    maxConcurrentRuns: parseInt(process.env.PI_AGENT_MAX_CONCURRENT_RUNS || "4", 10),
+    queueTimeoutMs: parseInt(process.env.PI_AGENT_QUEUE_TIMEOUT_MS || "300000", 10),
     benchMaxToolCalls: parseInt(process.env.PI_AGENT_BENCH_MAX_TOOL_CALLS || "15", 10),
     benchMaxTurns: parseInt(process.env.PI_AGENT_BENCH_MAX_TURNS || "10", 10),
     benchMode: (process.env.PI_AGENT_BENCH_MODE as "regex" | "ai" | "hybrid") || "ai",

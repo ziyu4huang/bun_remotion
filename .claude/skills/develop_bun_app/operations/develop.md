@@ -36,6 +36,12 @@ Before writing code, state concisely:
 
 If the change spans 3+ files, write the plan to the user for confirmation before proceeding.
 
+### Cross-skill handoff
+
+If the change is too large for a single develop cycle (5+ files, new page, or needs design decisions), suggest the user run `/to-prd` to formalize the spec first. After the PRD is published, `/to-issues` can break it into vertical slices for incremental development.
+
+Do NOT invoke these skills automatically — suggest them and let the user decide.
+
 ## Step 3: Implement
 
 Follow the recipe for your change type. Each recipe lists exact files to touch and the order to touch them.
@@ -144,12 +150,43 @@ After ANY React/UI changes to `bun_app/remotion_studio/src/client/`, you MUST:
 - NAV_LABELS count in `e2e/helpers.ts` — update when adding/removing nav items.
 - `bunx vite` resolves to latest global Vite — always use `bun run --cwd ... build` for project Vite.
 
-## Step 5: Update Docs
+### Step 4c: Interactive debugging with playwright-cli
 
-Update these files in order:
+For one-off UI debugging (faster than writing full test specs), use `playwright-cli`:
 
-1. **`bun_app/<name>/PLAN.md`** — Add new row to module reference table (if new file), update version line (if significant)
-2. **`bun_app/<name>/TODO.md`** — Check `[x]` on completed task, add result note. If new issue found: add to Known Issues.
+```bash
+# Chain: select element → click → evaluate JS
+bunx playwright-cli select e4 "xianxia-world (novel/xianxia)" 2>&1 | tail -1 && sleep 2 && \
+bunx playwright-cli click "button:has-text('World Graph')" 2>&1 | tail -1 && sleep 3 && \
+bunx playwright-cli --raw eval "(function(){var svg=document.querySelector('svg');return svg?'SVG nodes: '+svg.querySelectorAll('[class*=node], circle').length:'no svg'})()" 2>&1
+```
+
+| Command | Purpose |
+|---------|---------|
+| `bunx playwright-cli select <ref> "<text>"` | Select element by ref + visible text |
+| `bunx playwright-cli click "<selector>"` | Click a CSS selector |
+| `bunx playwright-cli --raw eval "<js>"` | Evaluate raw JS in the page |
+| `bunx playwright-cli snapshot` | Capture page snapshot YML |
+
+Snapshot YMLs saved to `.playwright-cli/page-<timestamp>.yml` — full DOM tree + accessibility tree. Read with `cat .playwright-cli/page-*.yml` to inspect rendering state.
+
+## Step 5: Update Docs — Per Goal, Not Batched
+
+**Update docs after EACH goal completes and passes tests — do NOT batch all doc updates until the end.**
+
+When working multiple goals from NEXT.md, after each goal passes `bun test`:
+
+1. **`bun_app/<name>/PLAN.md`** — Update module reference table (new files, changed line counts). Update "Current State" header with latest version + metrics.
+2. **`bun_app/<name>/TODO.md`** — Check `[x]` on completed task. If new issue found during implementation: add to Known Issues immediately.
+3. **`bun_app/<name>/NEXT.md`** — Check off the success criterion for this goal.
+
+After ALL goals for the version are done:
+
+4. **`bun_app/<name>/TODO.md`** — Add Development History entry with full metrics table + changes list.
+5. **`bun_app/<name>/NEXT.md`** — Mark all success criteria. Add reflection + key lesson.
+6. **`bun_app/<name>/package.json`** — Bump version.
+
+**Why per-goal?** Batching hides progress. If a later goal fails, the doc state is stale — you can't tell what actually works. Per-goal updates give an accurate snapshot at any point.
 
 ## Import Convention
 

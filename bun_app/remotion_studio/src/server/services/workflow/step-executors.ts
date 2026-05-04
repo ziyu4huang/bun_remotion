@@ -1,7 +1,7 @@
 import { resolve } from "node:path";
 import { existsSync, readdirSync, statSync } from "node:fs";
 import { scaffold } from "../../../../../episodeforge/src/scaffold";
-import { runPipeline, runCheck, runScore } from "../../../../../storygraph/src/pipeline-api";
+import { runPipeline, runCheck, runScore } from "storygraph/pipeline-api";
 import { generateTTS } from "../../../../../bun_tts/src/tts-pipeline";
 import { generateImageBatch } from "../../../../../bun_image/src/image-pipeline";
 import { renderVideo } from "../remotion-renderer";

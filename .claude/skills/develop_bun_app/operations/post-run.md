@@ -87,3 +87,18 @@ bun run --cwd bun_app/<name> test
 - PLAN.md module table matches actual source files
 - NEXT.md updated with current status and next task
 - No orphaned TODO items (tasks for code that doesn't exist)
+
+## Cross-Skill Handoff
+
+After post-run is complete, if the work corresponds to a GitHub issue:
+- Suggest `/triage` to close the issue or move it to the appropriate state
+- After a version bump (major/minor), suggest running `/to-prd` to publish a new PRD issue if needed
+
+## Cross-Skill Reference
+
+| This skill needs | Invoke | For |
+|------------------|--------|-----|
+| "formalize completed work as PRD" | `/to-prd` | Create GitHub issue PRD |
+| "close resolved issues" | `/triage` | Update GitHub issue state |
+| "find skill for X" | `/find-skills` | Discover existing skills |
+- Example: "v0.69.0 done, GitHub #4 resolved → suggest `/triage` to close #4"

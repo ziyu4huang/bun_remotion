@@ -32,6 +32,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, mode);
     document.body.setAttribute("data-theme", mode);
+    document.documentElement.style.backgroundColor = mode === "dark" ? "#121212" : "#ffffff";
   }, [mode]);
 
   const setMode = (m: ThemeMode) => setModeState(m);

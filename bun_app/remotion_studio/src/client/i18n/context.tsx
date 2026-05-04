@@ -16,12 +16,22 @@ const I18nContext = createContext<{ locale: Locale; t: Translations; setLocale: 
 
 const STORAGE_KEY = "remotion-studio-locale";
 
+export function resolveLocale(search: string | null, stored: string | null): Locale {
+  if (search) {
+    const params = new URLSearchParams(search);
+    const urlLocale = params.get("locale");
+    if (urlLocale === "en" || urlLocale === "zh_TW") return urlLocale;
+  }
+  if (stored === "en" || stored === "zh_TW") return stored;
+  return "zh_TW";
+}
+
 function detectLocale(): Locale {
   try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored === "zh_TW" || stored === "en") return stored;
-  } catch {}
-  return "zh_TW";
+    return resolveLocale(window.location.search, localStorage.getItem(STORAGE_KEY));
+  } catch {
+    return "zh_TW";
+  }
 }
 
 export function LocaleProvider({ children }: { children: ReactNode }) {

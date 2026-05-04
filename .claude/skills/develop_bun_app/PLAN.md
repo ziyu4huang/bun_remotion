@@ -10,7 +10,7 @@
 > — | `bun_app/bun_pi_agent/PLAN.md` + `TODO.md` — Second bun_app, first adopter of skill-created PLAN/TODO
 > — | `.claude/skills/remotion-best-practices/PLAN.md` + `TODO.md` — remotion_studio strategic roadmap (Web UI phases 35-39)
 
-## Current State (v1.3.0)
+## Current State (v1.7.0)
 
 **Working:**
 - 7 operation docs: scaffold, test, build, develop, status, plan, post-run
@@ -18,6 +18,7 @@
 - Validation criteria in all 6 core operations (explicit "success = X")
 - **develop op is a structured workflow** (5 steps: identify → plan → implement → test → update docs)
 - 7 change types with per-type recipes (new-module, new-route, new-cli-flag, new-config, new-tool, bugfix, refactor)
+- **Cross-skill handoffs** — /to-prd, /to-issues, /triage, /find-skills integration in SKILL.md + develop.md + plan.md + post-run.md
 - PLAN/TODO lifecycle conventions defined in SKILL.md
 - Self-gating rules documented (honor-system, not enforced)
 - Template-driven scaffold: generates package.json, tsconfig, PLAN.md, TODO.md, src/index.ts, smoke test
@@ -31,7 +32,7 @@
 |-----|------------|------------|-------|-------|
 | storygraph | ✅ mature (v0.7+) | ✅ run history | — | Reference implementation |
 | bun_pi_agent | ✅ accurate (v0.10.2) | ✅ accurate (v0.10.2) | 430 unit + 38 e2e | 32 tools, 13 agents, ACP stdio/CLI/HTTP, benchmark suite |
-| remotion_studio | ✅ v0.3.0 | ✅ v0.3.0 | 236 unit + 72 E2E | Hono + React SPA, 13 pages, DAG workflow, JobStore persistence, AbortController cancel |
+| remotion_studio | ✅ v0.53.0 | ✅ v0.53.0 | 549 unit + 29 E2E specs | Hono + React SPA, 21 pages, DAG workflow, story arc tracker, i18n, design system |
 
 ## Architecture
 
@@ -59,10 +60,14 @@ Managed bun_apps (each has own PLAN/TODO):
         PLAN.md — Agent architecture, modules, HTTP API
         TODO.md — Tasks, known issues, dev history
     bun_app/remotion_studio/
-        PLAN/TODO in .claude/skills/remotion-best-practices/
-        13 pages: Dashboard, Projects, Storygraph, Quality, Monitoring, Story Editor, Benchmark,
-                  Assets, TTS, Render, Workflows, AgentChat, ImageGen
-        DAG workflow engine with parallel execution + resume
+        PLAN.md + TODO.md + NEXT.md in bun_app/remotion_studio/
+        21 pages: Wizard, Dashboard, Monitoring, Progress, Kanban,
+                  Projects, Story Editor, Workflows,
+                  Storygraph, Quality, Benchmark,
+                  Agent Chat,
+                  Assets, TTS, Render, ImageGen, Settings
+        DAG workflow engine, i18n (en + zh_TW), design system (Button/Card/InputField/StatusBadge)
+        Story Arc Tracker with pipeline status badges
         9 sub-agents via same-process bun_pi_agent bridge
 ```
 

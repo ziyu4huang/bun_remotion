@@ -15,6 +15,15 @@ Create, update, or review PLAN.md and TODO.md for a bun_app.
 - Before starting new development work
 - After reaching a version milestone
 
+### Cross-skill handoff during planning
+
+If the plan reveals a large feature (new page, multi-module addition), suggest:
+1. `/to-prd` — to formalize the spec as a GitHub issue before coding
+2. `/to-issues` — to break the PRD into vertical-slice issues for incremental work
+3. Then use `/develop_bun_app develop` to implement each slice
+
+For closing completed issues after a version bump, suggest `/triage`.
+
 ## The PLAN/TODO/NEXT Triad
 
 | File | Purpose | When to Update |

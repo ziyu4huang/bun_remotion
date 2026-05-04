@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { scaffold } from "../../../../episodeforge/src/scaffold";
-import { createJob } from "../middleware/job-queue";
+import { jobService } from "../middleware/job-service";
 import { evaluateTrigger } from "../services/automation-rules";
 import type { ApiResponse, Job } from "../../shared/types";
 import type { ScaffoldOptions } from "../../../../episodeforge/src/scaffold";
@@ -34,7 +34,7 @@ router.post("/", async (c) => {
   };
 
   // Run scaffold as a background job
-  const job = createJob("scaffold", async (progress) => {
+  const job = jobService.create("scaffold", async (progress) => {
     progress(10, "Validating options");
     progress(30, "Computing naming");
     const result = await scaffold(options);

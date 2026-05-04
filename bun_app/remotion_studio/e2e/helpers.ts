@@ -50,6 +50,7 @@ export async function isAgentBridgeAvailable(page: Page): Promise<boolean> {
 export const NAV_LABELS = [
   "Wizard",
   "Dashboard",
+  "Series Overview",
   "Monitoring",
   "Progress",
   "Kanban",
@@ -99,21 +100,21 @@ let _initApplied = new WeakSet<Page>();
 function ensureDismissInit(page: Page) {
   if (_initApplied.has(page)) return;
   _initApplied.add(page);
-  page.addInitScript("localStorage.setItem('remotion_studio_wizard_seen','1');localStorage.setItem('remotion_studio_tour_seen','1');localStorage.setItem('remotion_studio_locale','en');");
+  page.addInitScript("localStorage.setItem('remotion_studio_wizard_seen','1');localStorage.setItem('remotion_studio_tour_seen','1');");
 }
 
 /** page.goto with retry — handles Vite server degradation during long suites. */
 export async function gotoWithRetry(page: Page, url = "/", retries = 3) {
   ensureDismissInit(page);
+  const localeUrl = url + (url.includes("?") ? "&" : "?") + "locale=en";
   for (let i = 0; i < retries; i++) {
     try {
-      await page.goto(url, { timeout: 15_000, waitUntil: "domcontentloaded" });
-      // Also set directly in case addInitScript didn't take effect
+      await page.goto(localeUrl, { timeout: 15_000, waitUntil: "domcontentloaded" });
+      // Set wizard/tour dismiss directly in case addInitScript didn't take effect
       await page.evaluate(() => {
         try {
           localStorage.setItem("remotion_studio_wizard_seen", "1");
           localStorage.setItem("remotion_studio_tour_seen", "1");
-          localStorage.setItem("remotion_studio_locale", "en");
         } catch {}
       });
       return;

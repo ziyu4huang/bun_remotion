@@ -85,7 +85,7 @@ describe("i18n", () => {
     // Test parameterized translations
     expect(en.dashboard.running(50)).toBe("Running... 50%");
     expect(en.dashboard.episodesInProgress(3)).toBe("3 episodes in progress");
-    expect(en.dashboard.cleared(5)).toBe("Cleared 5 completed jobs");
+    expect(en.dashboard.cleared(5)).toBe("Cleared 5 jobs");
     expect(en.dashboard.duration(90)).toBe("1m 30s");
     expect(en.dashboard.duration(30)).toBe("30s");
     expect(en.dashboard.treeDone(3, 7)).toBe("3/7 done");

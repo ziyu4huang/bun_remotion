@@ -9,6 +9,7 @@
     ".": "./src/index.ts",
     "./category-types": "./src/category-types.ts",
     "./scene-templates": "./src/scene-templates.ts",
+    "./storygraph-contracts": "./src/storygraph-contracts.ts",
     "./presets/*": "./src/presets/*.ts"
   },
   "scripts": {

@@ -9,9 +9,9 @@
 >
 > **Rule:** Pipeline/architecture tasks → this file. Code implementation tasks → `bun_app/storygraph/TODO.md`.
 
-> **Status:** v0.40.0 — All P0 tasks complete. 483 tests passing. Tooling gap suppression, gag fatigue detection, dimension evidence checks. Pipeline mature.
+> **Status:** v0.42.0 — Streaming progress complete. 517 tests passing.
 
-**Note:** `pipeline-api.ts` (runPipeline, runCheck, runScore, getPipelineStatus) is consumed by `remotion_studio` workflow engine (Phase 39-A1). Breaking changes to these exports require webui route/tests update.
+**Note:** `pipeline-api.ts` (runPipeline, runCheck, runScore, getPipelineStatus, runSuggest, runHealth) is consumed by `remotion_studio` workflow engine. Breaking changes to these exports require webui route/tests update.
 
 ---
 

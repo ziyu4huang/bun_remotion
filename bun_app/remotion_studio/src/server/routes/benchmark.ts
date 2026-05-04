@@ -1,65 +1,26 @@
 import { Hono } from "hono";
 import { resolve } from "node:path";
-import { existsSync, readFileSync, readdirSync, copyFileSync, statSync } from "node:fs";
-import { runPipeline, runCheck, runScore } from "../../../../storygraph/src/pipeline-api";
-import { createJob } from "../middleware/job-queue";
+import { existsSync } from "node:fs";
+import { runPipeline, runCheck, runScore } from "storygraph/pipeline-api";
+import { jobService } from "../middleware/job-service";
 import { bridge } from "../agent-bridge";
-import type { ApiResponse, Job, BenchmarkResult, BaselineInfo, RegressionSeriesStatus } from "../../shared/types";
+import {
+  PROJ_DIR,
+  readJsonSafe,
+  computeCheckDeltas,
+  readRegressionForSeries,
+  listBaselines,
+  updateBaseline,
+  listRegressionStatuses,
+} from "../services/benchmark";
+import type { ApiResponse, Job, BenchmarkResult } from "../../shared/types";
 
 const router = new Hono();
-
-const REPO_ROOT = resolve(import.meta.dir, "../../../../..");
-const PROJ_DIR = resolve(REPO_ROOT, "bun_remotion_proj");
-
-function readJsonSafe<T>(filePath: string): T | null {
-  try {
-    return JSON.parse(readFileSync(filePath, "utf-8")) as T;
-  } catch {
-    return null;
-  }
-}
 
 // ── GET /baselines ──
 
 router.get("/baselines", (c) => {
-  const dirs = readdirSync(PROJ_DIR, { withFileTypes: true })
-    .filter((d) => d.isDirectory() && !d.name.startsWith(".") && d.name !== "shared" && d.name !== "shared-fixture");
-
-  const baselines: BaselineInfo[] = [];
-
-  for (const dir of dirs) {
-    const seriesId = dir.name;
-    const outDir = resolve(PROJ_DIR, seriesId, "storygraph_out");
-    const baselinePath = resolve(outDir, "baseline-gate.json");
-    const currentGatePath = resolve(outDir, "gate.json");
-
-    const info: BaselineInfo = {
-      seriesId,
-      hasBaseline: false,
-      baselineScore: null,
-      baselineDate: null,
-      currentScore: null,
-      delta: null,
-    };
-
-    if (existsSync(baselinePath)) {
-      const baseline = readJsonSafe<{ score?: number; timestamp?: string }>(baselinePath);
-      info.hasBaseline = true;
-      info.baselineScore = baseline?.score ?? null;
-      info.baselineDate = baseline?.timestamp ?? null;
-    }
-
-    const current = readJsonSafe<{ score?: number }>(currentGatePath);
-    info.currentScore = current?.score ?? null;
-
-    if (info.baselineScore != null && info.currentScore != null) {
-      info.delta = info.currentScore - info.baselineScore;
-    }
-
-    baselines.push(info);
-  }
-
-  return c.json<ApiResponse<BaselineInfo[]>>({ ok: true, data: baselines });
+  return c.json<ApiResponse<BenchmarkResult[]>>({ ok: true, data: listBaselines() });
 });
 
 // ── POST /run ── Full benchmark: pipeline → check → regression → score
@@ -75,9 +36,9 @@ router.post("/run", async (c) => {
   const mode = body.mode ?? "hybrid";
   const threshold = body.threshold ?? 10;
 
-  // ── Agent-backed mode: delegate to sg-benchmark-runner ──
+  // ── Agent-backed mode ──
   if (body.agent) {
-    const job = createJob("benchmark-agent", async (progress) => {
+    const job = jobService.create("benchmark-agent", async (progress) => {
       progress(5, "Starting agent benchmark...");
       let lastPct = 5;
 
@@ -97,44 +58,10 @@ router.post("/run", async (c) => {
       );
 
       progress(85, "Reading artifacts...");
-
-      // Agent tools wrote artifacts to disk — read them for structured result
       const outDir = resolve(seriesDir, "storygraph_out");
-      const gatePath = resolve(outDir, "gate.json");
-      const baselinePath = resolve(outDir, "baseline-gate.json");
+      const gate = readJsonSafe<{ score?: number; decision?: string }>(resolve(outDir, "gate.json"));
+      const { regressionStatus, baselineScore, scoreDelta, checkDeltas } = readRegressionForSeries(seriesDir, threshold);
 
-      const gate = readJsonSafe<{ score?: number; decision?: string; checks?: Array<{ name: string; score_impact: number }> }>(gatePath);
-      const baseline = readJsonSafe<{ score?: number; checks?: Array<{ name: string; score_impact: number }> }>(baselinePath);
-
-      let regressionStatus: BenchmarkResult["regressionStatus"] = "NO_BASELINE";
-      let baselineScore: number | null = null;
-      let scoreDelta: number | null = null;
-      let checkDeltas: string[] | undefined;
-
-      if (gate?.score != null) {
-        if (existsSync(baselinePath) && baseline?.score != null) {
-          baselineScore = baseline.score;
-          scoreDelta = gate.score - baselineScore;
-          regressionStatus = Math.abs(scoreDelta) > threshold ? "REGRESSION" : "OK";
-
-          const baselineChecks = new Map((baseline.checks ?? []).map((ch) => [ch.name, ch.score_impact]));
-          checkDeltas = [];
-          for (const cur of (gate.checks ?? [])) {
-            const prev = baselineChecks.get(cur.name);
-            if (prev != null && cur.score_impact !== prev) {
-              const d = cur.score_impact - prev;
-              checkDeltas.push(`${cur.name}: ${prev} → ${cur.score_impact} (${d > 0 ? "+" : ""}${d})`);
-            }
-          }
-          if (checkDeltas.length === 0) checkDeltas = undefined;
-        } else {
-          regressionStatus = "NO_BASELINE";
-        }
-      } else {
-        regressionStatus = "NO_GATE";
-      }
-
-      // Try blended score
       let blendedScore: number | null = null;
       let blendedDecision: string | null = null;
       try {
@@ -144,8 +71,7 @@ router.post("/run", async (c) => {
       } catch { /* optional */ }
 
       progress(100, "Done");
-
-      const result: BenchmarkResult = {
+      return {
         seriesId: body.seriesId,
         pipelineOk: agentResult.toolCalls.every((tc) => !tc.isError),
         gateScore: gate?.score ?? 0,
@@ -157,18 +83,14 @@ router.post("/run", async (c) => {
         scoreDelta,
         checkDeltas,
         agentReport: agentResult.response,
-      };
-
-      return result;
+      } satisfies BenchmarkResult;
     });
 
     return c.json<ApiResponse<Job>>({ ok: true, data: job }, 201);
   }
 
-  // ── Direct mode: existing pipeline-api calls ──
-
-  const job = createJob("benchmark", async (progress) => {
-    // Step 1: Pipeline
+  // ── Direct mode ──
+  const job = jobService.create("benchmark", async (progress) => {
     progress(5, "Running pipeline");
     const pipelineResult = await runPipeline(seriesDir, { mode });
     if (!pipelineResult.success) {
@@ -177,47 +99,14 @@ router.post("/run", async (c) => {
     }
     progress(30, "Pipeline complete");
 
-    // Step 2: Quality check
     progress(35, "Running quality check");
     const checkResult = await runCheck(seriesDir, { mode });
     progress(60, "Check complete");
 
-    // Step 3: Regression
     progress(65, "Checking regression");
-    const outDir = resolve(seriesDir, "storygraph_out");
-    const baselinePath = resolve(outDir, "baseline-gate.json");
-    let regressionStatus: BenchmarkResult["regressionStatus"] = "NO_BASELINE";
-    let baselineScore: number | null = null;
-    let scoreDelta: number | null = null;
-    let checkDeltas: string[] | undefined;
-
-    if (existsSync(baselinePath)) {
-      const baseline = readJsonSafe<{ score?: number; checks?: Array<{ name: string; score_impact: number }> }>(baselinePath);
-      baselineScore = baseline?.score ?? null;
-
-      if (checkResult.success) {
-        scoreDelta = checkResult.gateScore - (baselineScore ?? 0);
-        regressionStatus = Math.abs(scoreDelta) > threshold ? "REGRESSION" : "OK";
-
-        const baselineChecks = new Map((baseline?.checks ?? []).map((ch) => [ch.name, ch.score_impact]));
-        checkDeltas = [];
-        for (const cur of checkResult.checks) {
-          const prev = baselineChecks.get(cur.name);
-          if (prev != null && cur.score_impact !== prev) {
-            const d = cur.score_impact - prev;
-            checkDeltas.push(`${cur.name}: ${prev} → ${cur.score_impact} (${d > 0 ? "+" : ""}${d})`);
-          }
-        }
-        if (checkDeltas.length === 0) checkDeltas = undefined;
-      }
-    } else if (!checkResult.success) {
-      regressionStatus = "NO_GATE";
-    } else {
-      regressionStatus = "NO_BASELINE";
-    }
+    const { regressionStatus, baselineScore, scoreDelta, checkDeltas } = readRegressionForSeries(seriesDir, threshold);
     progress(75, "Regression checked");
 
-    // Step 4: Quality score
     progress(80, "Running quality score");
     let blendedScore: number | null = null;
     let blendedDecision: string | null = null;
@@ -225,12 +114,11 @@ router.post("/run", async (c) => {
       const scoreResult = await runScore(seriesDir, { mode });
       blendedScore = scoreResult.blended.overall;
       blendedDecision = scoreResult.blended.decision;
-    } catch {
-      // Score is optional
-    }
+    } catch { /* optional */ }
     progress(95, "Benchmark complete");
 
-    const result: BenchmarkResult = {
+    progress(100, "Done");
+    return {
       seriesId: body.seriesId,
       pipelineOk: pipelineResult.success,
       gateScore: checkResult.gateScore,
@@ -241,10 +129,7 @@ router.post("/run", async (c) => {
       baselineScore,
       scoreDelta,
       checkDeltas,
-    };
-
-    progress(100, "Done");
-    return result;
+    } satisfies BenchmarkResult;
   });
 
   return c.json<ApiResponse<Job>>({ ok: true, data: job }, 201);
@@ -262,7 +147,7 @@ router.post("/check", async (c) => {
   const seriesDir = resolve(PROJ_DIR, body.seriesId);
   const mode = body.mode ?? "hybrid";
 
-  const job = createJob("benchmark-check", async (progress) => {
+  const job = jobService.create("benchmark-check", async (progress) => {
     progress(10, "Running quality check");
     const result = await runCheck(seriesDir, { mode });
     progress(90, "Check complete");
@@ -283,74 +168,22 @@ router.post("/regression", (c) => {
     }
 
     const seriesDir = resolve(PROJ_DIR, b.seriesId);
-    const outDir = resolve(seriesDir, "storygraph_out");
-    const baselinePath = resolve(outDir, "baseline-gate.json");
-    const currentGatePath = resolve(outDir, "gate.json");
     const threshold = b.threshold ?? 10;
-
-    if (!existsSync(baselinePath)) {
-      return c.json<ApiResponse<BenchmarkResult>>({
-        ok: true,
-        data: {
-          seriesId: b.seriesId,
-          pipelineOk: true,
-          gateScore: 0,
-          gateDecision: "UNKNOWN",
-          blendedScore: null,
-          blendedDecision: null,
-          regressionStatus: "NO_BASELINE",
-          baselineScore: null,
-          scoreDelta: null,
-        },
-      });
-    }
-
-    const baseline = readJsonSafe<{ score?: number; checks?: Array<{ name: string; score_impact: number }> }>(baselinePath);
-    const current = readJsonSafe<{ score?: number; decision?: string; checks?: Array<{ name: string; score_impact: number }> }>(currentGatePath);
-
-    if (!current?.score) {
-      return c.json<ApiResponse<BenchmarkResult>>({
-        ok: true,
-        data: {
-          seriesId: b.seriesId,
-          pipelineOk: false,
-          gateScore: 0,
-          gateDecision: "UNKNOWN",
-          blendedScore: null,
-          blendedDecision: null,
-          regressionStatus: "NO_GATE",
-          baselineScore: baseline?.score ?? null,
-          scoreDelta: null,
-        },
-      });
-    }
-
-    const scoreDelta = current.score - (baseline?.score ?? 0);
-    const regressed = Math.abs(scoreDelta) > threshold;
-
-    const baselineChecks = new Map((baseline?.checks ?? []).map((ch) => [ch.name, ch.score_impact]));
-    const checkDeltas: string[] = [];
-    for (const cur of (current?.checks ?? [])) {
-      const prev = baselineChecks.get(cur.name);
-      if (prev != null && cur.score_impact !== prev) {
-        const d = cur.score_impact - prev;
-        checkDeltas.push(`${cur.name}: ${prev} → ${cur.score_impact} (${d > 0 ? "+" : ""}${d})`);
-      }
-    }
+    const { regressionStatus, baselineScore, scoreDelta, checkDeltas } = readRegressionForSeries(seriesDir, threshold);
 
     return c.json<ApiResponse<BenchmarkResult>>({
       ok: true,
       data: {
         seriesId: b.seriesId,
         pipelineOk: true,
-        gateScore: current.score,
-        gateDecision: current.decision ?? "UNKNOWN",
+        gateScore: 0,
+        gateDecision: "UNKNOWN",
         blendedScore: null,
         blendedDecision: null,
-        regressionStatus: regressed ? "REGRESSION" : "OK",
-        baselineScore: baseline?.score ?? null,
+        regressionStatus,
+        baselineScore,
         scoreDelta,
-        checkDeltas: checkDeltas.length > 0 ? checkDeltas : undefined,
+        checkDeltas,
       },
     });
   });
@@ -360,93 +193,19 @@ router.post("/regression", (c) => {
 
 router.post("/baseline/:seriesId", (c) => {
   const seriesId = c.req.param("seriesId");
-  const outDir = resolve(PROJ_DIR, seriesId, "storygraph_out");
-  const currentGatePath = resolve(outDir, "gate.json");
-  const baselinePath = resolve(outDir, "baseline-gate.json");
-
-  if (!existsSync(currentGatePath)) {
-    return c.json<ApiResponse>({ ok: false, error: "No gate.json found — run pipeline first" }, 404);
+  try {
+    const info = updateBaseline(seriesId);
+    return c.json<ApiResponse<typeof info>>({ ok: true, data: info });
+  } catch (e: any) {
+    return c.json<ApiResponse>({ ok: false, error: e.message }, 404);
   }
-
-  const gate = readJsonSafe<{ score?: number; decision?: string; timestamp?: string }>(currentGatePath);
-  copyFileSync(currentGatePath, baselinePath);
-
-  const info: BaselineInfo = {
-    seriesId,
-    hasBaseline: true,
-    baselineScore: gate?.score ?? null,
-    baselineDate: gate?.timestamp ?? new Date().toISOString(),
-    currentScore: gate?.score ?? null,
-    delta: 0,
-  };
-
-  return c.json<ApiResponse<BaselineInfo>>({ ok: true, data: info });
 });
 
 // ── GET /regression-status ── Aggregate regression across all series
 
 router.get("/regression-status", (c) => {
   const threshold = Number(c.req.query("threshold")) || 10;
-  const dirs = readdirSync(PROJ_DIR, { withFileTypes: true })
-    .filter((d) => d.isDirectory() && !d.name.startsWith(".") && d.name !== "shared" && d.name !== "shared-fixture");
-
-  const statuses: RegressionSeriesStatus[] = [];
-
-  for (const dir of dirs) {
-    const seriesId = dir.name;
-    const outDir = resolve(PROJ_DIR, seriesId, "storygraph_out");
-    const baselinePath = resolve(outDir, "baseline-gate.json");
-    const currentGatePath = resolve(outDir, "gate.json");
-
-    const status: RegressionSeriesStatus = {
-      seriesId,
-      hasBaseline: existsSync(baselinePath),
-      baselineScore: null,
-      baselineDate: null,
-      currentScore: null,
-      scoreDelta: null,
-      regressionStatus: "NO_BASELINE",
-    };
-
-    if (status.hasBaseline) {
-      const baseline = readJsonSafe<{ score?: number; timestamp?: string; checks?: Array<{ name: string; score_impact: number }> }>(baselinePath);
-      status.baselineScore = baseline?.score ?? null;
-      status.baselineDate = baseline?.timestamp ?? null;
-    }
-
-    const current = readJsonSafe<{ score?: number; decision?: string; checks?: Array<{ name: string; score_impact: number }> }>(currentGatePath);
-    status.currentScore = current?.score ?? null;
-
-    if (!current?.score) {
-      status.regressionStatus = "NO_GATE";
-    } else if (status.hasBaseline && status.baselineScore != null) {
-      const delta = current.score - status.baselineScore;
-      status.scoreDelta = delta;
-
-      if (Math.abs(delta) > threshold) {
-        status.regressionStatus = "REGRESSION";
-      } else {
-        status.regressionStatus = "OK";
-      }
-
-      // Check-level deltas
-      const baseline = readJsonSafe<{ score?: number; checks?: Array<{ name: string; score_impact: number }> }>(baselinePath);
-      const baselineChecks = new Map((baseline?.checks ?? []).map((ch) => [ch.name, ch.score_impact]));
-      const checkDeltas: string[] = [];
-      for (const cur of (current.checks ?? [])) {
-        const prev = baselineChecks.get(cur.name);
-        if (prev != null && cur.score_impact !== prev) {
-          const d = cur.score_impact - prev;
-          checkDeltas.push(`${cur.name}: ${prev} → ${cur.score_impact} (${d > 0 ? "+" : ""}${d})`);
-        }
-      }
-      if (checkDeltas.length > 0) status.checkDeltas = checkDeltas;
-    }
-
-    statuses.push(status);
-  }
-
-  return c.json<ApiResponse<RegressionSeriesStatus[]>>({ ok: true, data: statuses });
+  return c.json<ApiResponse>({ ok: true, data: listRegressionStatuses(threshold) });
 });
 
 export const benchmarkRoutes = router;

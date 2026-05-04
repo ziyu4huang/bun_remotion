@@ -7,7 +7,7 @@ type Mode = "regex" | "hybrid" | "ai";
 function HelpTip({ text }: { text: string }) {
   const theme = useTheme();
   return (
-    <span title={text} style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 16, height: 16, borderRadius: "50%", background: theme.colors.border.default, color: theme.colors.text.tertiary, fontSize: theme.font.sizes.xs, cursor: "help", marginLeft: theme.spacing.xs, flexShrink: 0 }}>
+    <span role="img" aria-label={text} title={text} style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 16, height: 16, borderRadius: "50%", background: theme.colors.border.default, color: theme.colors.text.tertiary, fontSize: theme.font.sizes.xs, cursor: "help", marginLeft: theme.spacing.xs, flexShrink: 0 }}>
       ?
     </span>
   );
@@ -50,7 +50,7 @@ export function StorygraphActionPanel({
   return (
     <>
       <div style={{ display: "flex", gap: theme.spacing.xl, marginBottom: theme.spacing.sm, alignItems: "center", flexWrap: "wrap" }}>
-        <select value={selected} onChange={(e) => onSeriesChange(e.target.value)} style={{ ...selectStyle, minWidth: 200 }}>
+        <select value={selected} onChange={(e) => onSeriesChange(e.target.value)} aria-label={labels.selectSeries} style={{ ...selectStyle, minWidth: 200 }}>
           <option value="">{labels.selectSeries}</option>
           {projects.map((p) => (
             <option key={p.id} value={p.id}>{p.name}</option>
@@ -58,7 +58,7 @@ export function StorygraphActionPanel({
         </select>
 
         <div style={{ display: "flex", alignItems: "center" }}>
-          <select value={mode} onChange={(e) => onModeChange(e.target.value as Mode)} style={selectStyle}>
+          <select value={mode} onChange={(e) => onModeChange(e.target.value as Mode)} aria-label="Extraction mode" style={selectStyle}>
             <option value="hybrid">{labels.hybrid}</option>
             <option value="regex">{labels.regex}</option>
             <option value="ai">{labels.aiOnly}</option>

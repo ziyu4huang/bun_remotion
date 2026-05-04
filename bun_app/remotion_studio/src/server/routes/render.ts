@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { resolve, normalize } from "node:path";
 import { existsSync } from "node:fs";
 import { getRenderStatus, renderVideo } from "../services/remotion-renderer";
-import { createJob } from "../middleware/job-queue";
+import { jobService } from "../middleware/job-service";
 import type { ApiResponse, Job, RenderStatus } from "../../shared/types";
 
 const router = new Hono();
@@ -23,7 +23,7 @@ router.post("/trigger", async (c) => {
     return c.json<ApiResponse>({ ok: false, error: "episodeId is required" }, 400);
   }
 
-  const job = createJob("render", async (progress) => {
+  const job = jobService.create("render", async (progress) => {
     progress(5, "Starting render");
     const result = await renderVideo({
       episodeId: body.episodeId,

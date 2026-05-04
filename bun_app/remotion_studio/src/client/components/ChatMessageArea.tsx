@@ -4,6 +4,7 @@ import {
   MarkdownText, PipelineToolCard, getPipelineOp, JobStatusCard, Button,
 } from "../components";
 import { AgentDirectory, CONVERSATION_STARTERS } from "./AgentDirectory";
+import { getAgentDisplayName } from "../lib/agent-display.js";
 import type { AgentInfo } from "../../../shared/types";
 import type { JobStatus } from "../../../shared/types";
 import type { Theme } from "../theme";
@@ -19,24 +20,26 @@ interface ChatMessageAreaProps {
   agents: AgentInfo[];
   theme: Theme;
   t: any;
+  locale?: string;
   onSendMessage: (prompt: string) => void;
+  onSelectAgent: (agentName: string) => void;
 }
 
 export function ChatMessageArea({
   messages, activeTools, thinking, streaming, activeJobId, jobStatus,
-  selectedAgent, agents, theme, t, onSendMessage,
+  selectedAgent, agents, theme, t, locale, onSendMessage, onSelectAgent,
 }: ChatMessageAreaProps) {
   return (
     <div style={{ flex: 1, overflowY: "auto", paddingRight: theme.spacing.sm }}>
       {messages.length === 0 && !streaming && (
         <div style={{ textAlign: "center", marginTop: 40 }}>
           {!selectedAgent && agents.length > 0 ? (
-            <AgentDirectory agents={agents} onSelect={onSendMessage} theme={theme} t={t} />
+            <AgentDirectory agents={agents} onSelect={onSelectAgent} theme={theme} t={t} locale={locale} />
           ) : (
             <>
               <div style={{ color: theme.colors.text.muted, fontSize: theme.font.sizes.md, marginBottom: theme.spacing.lg }}>
                 {selectedAgent
-                  ? t.agentChat.sendMessage(selectedAgent)
+                  ? t.agentChat.sendMessage(getAgentDisplayName(selectedAgent))
                   : t.agentChat.selectAgentPrompt}
               </div>
               {selectedAgent && (

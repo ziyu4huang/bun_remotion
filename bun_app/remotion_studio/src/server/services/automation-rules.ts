@@ -13,13 +13,12 @@ export function setActionExecutor(executor: ActionExecutor | null): void {
 }
 
 function getDefaultExecutor(): ActionExecutor {
-  // Lazy import to avoid circular deps and allow test overrides
   return (templateId, options) => {
-    const { createJob } = require("../middleware/job-queue");
+    const { jobService } = require("../middleware/job-service");
     const { runWorkflow } = require("./workflow-engine");
     const template = getTemplate(templateId);
     if (!template) throw new Error(`Template not found: ${templateId}`);
-    createJob("automation", async (progress: (p: number, msg?: string) => void) => {
+    jobService.create("automation", async (progress: (p: number, msg?: string) => void) => {
       return runWorkflow(template, options, progress);
     });
   };

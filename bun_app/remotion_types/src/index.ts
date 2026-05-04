@@ -53,6 +53,39 @@ export {
   buildCompositionSpec,
 } from "./scene-templates";
 
+// Storygraph pipeline contracts
+export type {
+  PipelineMode,
+  PipelineRequest,
+  StepResult,
+  PipelineResponse,
+  CheckRequest,
+  GateCheck,
+  CheckResponse,
+  ScoreRequest,
+  BlendedScore,
+  ProgrammaticScore,
+  AIScore,
+  ScoreResponse,
+  PipelineStatusResponse,
+  SuggestionCategory,
+  SuggestionSeverity,
+  Suggestion,
+  SuggestResponse,
+  HealthStatus,
+  HealthDimension,
+  HealthResponse,
+  GateFile,
+  AIPipelineOptions,
+} from "./storygraph-contracts";
+
+export {
+  isPipelineResponse,
+  isCheckResponse,
+  isScoreResponse,
+  isGateFile,
+} from "./storygraph-contracts";
+
 // Presets
 export type { TechExplainerPreset } from "./presets/tech-explainer-presets";
 export {

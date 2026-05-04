@@ -136,3 +136,75 @@ export function stepProgress(
   const rangeSize = 100 / totalSteps;
   return Math.floor(stepIndex * rangeSize + (stepInternalProgress / 100) * rangeSize);
 }
+
+// ── Category-template recommendations ──
+
+export interface CategoryTemplateSuggestion {
+  templateId: string;
+  reason: string;
+  /** Suggested defaults to pre-fill when triggering this template for this category */
+  defaults?: Partial<WorkflowTriggerOptions>;
+}
+
+export type VideoCategoryId =
+  | "narrative_drama"
+  | "galgame_vn"
+  | "tech_explainer"
+  | "data_story"
+  | "listicle"
+  | "tutorial"
+  | "shorts_meme";
+
+export const CATEGORY_LABELS: Record<VideoCategoryId, { en: string; zh_TW: string }> = {
+  narrative_drama: { en: "Narrative Drama", zh_TW: "敘事劇情" },
+  galgame_vn: { en: "Galgame VN", zh_TW: "美少女遊戲風" },
+  tech_explainer: { en: "Tech Explainer", zh_TW: "技術講解" },
+  data_story: { en: "Data Story", zh_TW: "數據故事" },
+  listicle: { en: "Listicle", zh_TW: "盤點清單" },
+  tutorial: { en: "Tutorial", zh_TW: "教學指南" },
+  shorts_meme: { en: "Shorts / Meme", zh_TW: "短影音迷因" },
+};
+
+export const CATEGORY_TEMPLATE_MAP: Record<VideoCategoryId, CategoryTemplateSuggestion[]> = {
+  narrative_drama: [
+    { templateId: "full-pipeline", reason: "Full production with character voices, dialog, and multi-scene rendering", defaults: { mode: "hybrid", ttsEngine: "mlx" } },
+    { templateId: "scaffold-and-pipeline", reason: "Quick scaffold + KG extraction for story analysis" },
+    { templateId: "quality-gate", reason: "Check narrative consistency and character quality" },
+  ],
+  galgame_vn: [
+    { templateId: "full-pipeline", reason: "Full production with character sprites, dialog boxes, and emotional voice acting", defaults: { mode: "hybrid", ttsEngine: "gemini" } },
+    { templateId: "tts-and-render", reason: "Regenerate voice lines and re-render after dialog edits" },
+    { templateId: "image-tts-render", reason: "Update character images + voices + render" },
+  ],
+  tech_explainer: [
+    { templateId: "scaffold-and-pipeline", reason: "Scaffold explainer structure with narration script", defaults: { mode: "ai" } },
+    { templateId: "quality-gate", reason: "Verify technical accuracy and completeness" },
+    { templateId: "tts-and-render", reason: "Generate narration voice-over and render", defaults: { ttsEngine: "gemini" } },
+  ],
+  data_story: [
+    { templateId: "scaffold-and-pipeline", reason: "Scaffold data-driven story with narration", defaults: { mode: "ai" } },
+    { templateId: "quality-gate", reason: "Verify data accuracy and narrative flow" },
+    { templateId: "tts-and-render", reason: "Generate narration and render data visualizations", defaults: { ttsEngine: "gemini" } },
+  ],
+  listicle: [
+    { templateId: "image-tts-render", reason: "Generate item images, add narration, and render" },
+    { templateId: "tts-and-render", reason: "Regenerate narration for updated list items" },
+  ],
+  tutorial: [
+    { templateId: "full-pipeline", reason: "Full tutorial production with step-by-step guide and code highlighting", defaults: { mode: "ai" } },
+    { templateId: "scaffold-and-pipeline", reason: "Scaffold tutorial structure with step guide" },
+    { templateId: "tts-and-render", reason: "Regenerate narration for updated steps" },
+  ],
+  shorts_meme: [
+    { templateId: "image-tts-render", reason: "Quick image + SFX + render for short-form content" },
+    { templateId: "tts-and-render", reason: "Fast render with sound effects only" },
+  ],
+};
+
+export function getTemplatesForCategory(category: VideoCategoryId): CategoryTemplateSuggestion[] {
+  return CATEGORY_TEMPLATE_MAP[category] ?? [];
+}
+
+export function getAllCategories(): VideoCategoryId[] {
+  return Object.keys(CATEGORY_TEMPLATE_MAP) as VideoCategoryId[];
+}

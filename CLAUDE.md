@@ -1,5 +1,11 @@
 # CLAUDE.md - Project Knowledge Index
 
+## Interaction Requirements
+
+- Always respond in Traditional Chinese (zh-TW).
+- All Chain-of-Thought (reasoning process) must be in Traditional Chinese.
+- When writing content (e.g., code, documentation) to a file, use English as the primary language, unless the user explicitly requests otherwise.
+
 Knowledge base is organized in `.agent/memory/` by category. Read relevant files before working.
 
 ## Quick Reference

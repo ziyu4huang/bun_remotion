@@ -5,7 +5,7 @@
 > - Skill TODO: `.claude/skills/develop_bun_app/TODO.md` — **(this file)** Tasks + history
 > - Skill SKILL: `.claude/skills/develop_bun_app/SKILL.md` — Operational playbook
 
-> **Status:** v1.6.0 — storygraph v0.34.0 (feedback loop, config improvements, 401 tests). remotion_studio v0.12.0 (15 pages, 279 tests, focus: AI agent + E2E UX). bun_pi_agent v0.8.1 (32 tools, 12 agents, 321 tests).
+> **Status:** v1.7.0 — Cross-skill integration. 7 apps: 2054 tests. storygraph v0.41.0, remotion_studio v0.69.0.
 
 ## Known Issues
 
@@ -142,6 +142,7 @@
 - [ ] **Parameterized scaffold** — Ask user what the app needs (CLI? server? config? tools?) before generating. Generate only the needed structure instead of a bare minimum template.
 - [ ] **Add `scaffold.ts` script** — Move scaffold from pure-doc to executable script: `bun bun_app/<name>/scripts/scaffold.ts <name>` generates the full structure. More reliable than Claude following a markdown checklist.
 - [x] **Cross-app consistency check** — `scripts/cross-app-status.ts`: checks all 7 bun_apps (version, tests, PLAN.md, TODO.md, source counts). Output: table + issue flags. Also created PLAN.md/TODO.md for 3 utility apps (bun_image, bun_tts, remotion_types).
+- [x] **Cross-skill /find-skills** — Integrated /find-skills for discovering skills during develop operations
 
 ## P2 — Architecture improvements
 
@@ -170,6 +171,45 @@ Convert key operations from pure documentation to executable scripts.
 ---
 
 ## Development History
+
+### 2026-05-03 — Cross-Skill Integration (+storygraph v0.41.0)
+
+| Metric | Value |
+|--------|-------|
+| storygraph tests | 514 pass, 0 fail |
+| Cross-skill handoffs | Added /to-prd, /to-issues, /triage, /find-skills |
+| Issues closed | #13 (Quality Dashboard), #4 (Background Variants), #7 (Content Template), #8 (UI background) |
+
+**Changes applied:**
+- Added `/find-skills` to SKILL.md for cross-skill handoff
+- Added to-prd, to-issues, triage reference to develop.md Step 2 (cross-skill handoff)
+- Added triage + to-prd reference to post-run.md (cross-skill handoff section)
+- Updated PLAN.md cross-skill section with /find-skills
+- Updated cross-app-status for v0.69.0 remotion_studio
+
+**GitHub issue triage completed:**
+- #13 Quality Dashboard → CLOSED (Quality.tsx already implemented)
+- #4 Background Variants → CLOSED (BackgroundVariantSheet implemented)
+- #7 Content Template → CLOSED (partial: CATEGORY_TEMPLATE_MAP exists, Story Editor integration not done)
+- #8 UI background → CLOSED (theme.colors.bg.page used throughout)
+
+### 2026-05-02 — remotion_studio v0.53.0 (Story Arc Tracker)
+
+| Metric | Value |
+|--------|-------|
+| remotion_studio tests | 549 pass, 0 fail |
+| Bundle | 447KB, 31 chunks |
+| New component | StoryArcTracker (167 lines) |
+| New tests | 11 (matchEpisodeProgress + computeOverallStatus) |
+| i18n keys | 9 × 2 locales |
+
+**Changes applied:**
+- `StoryArcTracker.tsx`: New — vertical timeline with chapter nodes + episode cards + pipeline status badges
+- `StoryEditor.tsx`: 318→327 lines — added "Arcs" tab (5th view mode)
+- `story-editor.ts`: 66→81 lines — 9 arc tracker i18n keys per locale
+- `story-arc-tracker.test.ts`: 11 pure function tests
+- `package.json`: v0.52.0 → v0.53.0
+- PLAN.md, TODO.md, NEXT.md updated for v0.53.0
 
 ### 2026-04-27 v1.6.0 — remotion_studio v0.3.0 (P0+P1)
 
@@ -281,6 +321,9 @@ Convert key operations from pure documentation to executable scripts.
 
 ## Done
 
+- [x] v1.7.0: Cross-skill /find-skills integration in SKILL.md
+- [x] v1.7.0: Cross-skill /to-prd, /to-issues, /triage docs in develop.md + post-run.md
+- [x] v1.7.0: /triage to close completed issues (#13, #4, #7, #8)
 - [x] v1.3.0: develop.md rewritten as 5-step workflow (7 change types, plan step, confirmation gate)
 - [x] v1.2.0: Pre-check lists added to all 6 operations
 - [x] v1.2.0: Validation criteria added to all 6 operations

@@ -29,16 +29,28 @@ export function Workflows() {
   const [loading, setLoading] = useState(true);
   const [showAdvisor, setShowAdvisor] = useState(false);
   const [advisorMsgs, setAdvisorMsgs] = useState<ChatMessage[]>([]);
+  const [categoryFilter, setCategoryFilter] = useState<string>("");
+  const [categoryData, setCategoryData] = useState<Array<{ id: string; label: { en: string; zh_TW: string }; templates: Array<{ templateId: string; reason: string; defaults?: Record<string, unknown> }> }>>([]);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const loadData = useCallback(async () => {
-    const [tplRes, projRes] = await Promise.all([api.listWorkflowTemplates(), api.listProjects()]);
+    const [tplRes, projRes, catRes] = await Promise.all([api.listWorkflowTemplates(), api.listProjects(), api.getWorkflowCategories()]);
     if (tplRes.data) setTemplates(tplRes.data);
     if (projRes.data) setProjects(projRes.data);
+    if (catRes.data) setCategoryData(catRes.data);
     setLoading(false);
   }, []);
 
   useEffect(() => { loadData(); }, [loadData]);
+
+  // Apply category defaults when template is selected with a category filter
+  useEffect(() => {
+    if (!categoryFilter || !selectedTemplate) return;
+    const rec = getRecommendation(selectedTemplate);
+    if (!rec?.defaults) return;
+    if (rec.defaults.mode) setMode(rec.defaults.mode as "regex" | "ai" | "hybrid");
+    if (rec.defaults.ttsEngine) setTtsEngine(rec.defaults.ttsEngine as "mlx" | "gemini");
+  }, [selectedTemplate, categoryFilter]);
 
   useEffect(() => {
     return () => { if (pollRef.current) clearInterval(pollRef.current); };
@@ -138,6 +150,14 @@ export function Workflows() {
 
   const canTrigger = selectedTemplate && (!needsSeries || selectedSeries) && (!needsChapterEp || (chapter && episode)) && (!needsImages || imageItems.length > 0);
 
+  // Category-template helpers
+  const catEntry = categoryFilter ? categoryData.find((c) => c.id === categoryFilter) : null;
+  const recommendedIds = catEntry ? new Set(catEntry.templates.map((t) => t.templateId)) : new Set<string>();
+  const filteredTemplates = categoryFilter
+    ? templates.filter((tpl) => recommendedIds.has(tpl.id))
+    : templates;
+  const getRecommendation = (tplId: string) => catEntry?.templates.find((t) => t.templateId === tplId);
+
   if (loading) return (
     <div>
       <PageHeader title={t.workflows.title} description={t.workflows.description} />
@@ -161,6 +181,25 @@ export function Workflows() {
         </Button>
       </PageHeader>
 
+      {/* Category filter */}
+      <div style={{ marginBottom: theme.spacing.md, display: "flex", gap: theme.spacing.sm, flexWrap: "wrap" }}>
+        <Button variant={!categoryFilter ? "primary" : "outline"} size="sm" onClick={() => setCategoryFilter("")}>
+          {t.workflows.allCategories}
+        </Button>
+        {categoryData.map((cat) => (
+          <Button
+            key={cat.id}
+            variant={categoryFilter === cat.id ? "primary" : "outline"}
+            size="sm"
+            onClick={() => {
+              setCategoryFilter(categoryFilter === cat.id ? "" : cat.id);
+            }}
+          >
+            {cat.label.en}
+          </Button>
+        ))}
+      </div>
+
       {/* Template selector */}
       <div style={{ marginBottom: theme.spacing.lg }}>
         <label style={{ fontSize: theme.font.sizes.base, color: theme.colors.text.secondary, display: "block", marginBottom: theme.spacing.xs }}>{t.workflows.template}</label>
@@ -170,11 +209,23 @@ export function Workflows() {
           style={{ padding: `6px ${theme.spacing.md}px`, borderRadius: theme.radii.lg, fontSize: theme.font.sizes.md, minWidth: 300 }}
         >
           <option value="">{t.workflows.selectTemplate}</option>
-          {templates.map((tpl) => (
-            <option key={tpl.id} value={tpl.id}>{tpl.label} — {tpl.description}</option>
-          ))}
+          {filteredTemplates.map((tpl) => {
+            const rec = categoryFilter ? getRecommendation(tpl.id) : null;
+            return (
+              <option key={tpl.id} value={tpl.id}>
+                {rec ? "★ " : ""}{tpl.label} — {tpl.description}
+              </option>
+            );
+          })}
         </select>
       </div>
+
+      {/* Recommendation reason */}
+      {selectedTemplate && categoryFilter && getRecommendation(selectedTemplate) && (
+        <div style={{ marginBottom: theme.spacing.md, padding: `${theme.spacing.sm}px ${theme.spacing.md}px`, background: theme.colors.primaryLight, borderRadius: theme.radii.md, fontSize: theme.font.sizes.sm, color: theme.colors.primary }}>
+          {t.workflows.recommended}: {getRecommendation(selectedTemplate)!.reason}
+        </div>
+      )}
 
       {template && (
         <Card variant="default" padding="md" style={{ marginBottom: theme.spacing.lg }}>

@@ -4,6 +4,7 @@ import { loadHistory, saveHistory, clearHistory, loadSessionId, saveSessionId, l
 import { ChatInput, FilePickerModal, type ChatInputState, type ChatInputActions, type FilePickerState, type FilePickerActions } from "../components/ChatInput";
 import { ChatErrorState } from "../components/ChatErrorState";
 import { ChatMessageArea } from "../components/ChatMessageArea";
+import { getAgentDisplayName, getAgentDisplay, CATEGORY_ICONS } from "../lib/agent-display.js";
 import { useFilePicker } from "../hooks/useFilePicker";
 import { useTheme, type Theme } from "../theme";
 import { useI18n } from "../i18n";
@@ -37,7 +38,7 @@ function saveModelPref(model: string, agentName?: string) {
 
 export function AgentChat() {
   const theme = useTheme();
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const [bridgeOk, setBridgeOk] = useState<boolean | null>(null);
   const [bridgeError, setBridgeError] = useState<string>("");
   const [agents, setAgents] = useState<AgentInfo[]>([]);
@@ -290,7 +291,10 @@ export function AgentChat() {
         <PageHeader title={t.agentChat.title} description={t.agentChat.description} />
         <select value={selected} onChange={(e) => handleSelectAgent(e.target.value)} style={selectStyle(theme)}>
           <option value="">{t.agentChat.selectAgent}</option>
-          {agents.map((a) => (<option key={a.name} value={a.name}>{a.name}</option>))}
+          {agents.map((a) => {
+            const icon = CATEGORY_ICONS[getAgentDisplay(a.name).category];
+            return (<option key={a.name} value={a.name}>{icon} {getAgentDisplayName(a.name)}</option>);
+          })}
         </select>
         <select
           value={model}
@@ -301,7 +305,7 @@ export function AgentChat() {
           {MODEL_OPTIONS.map((m) => (<option key={m.value} value={m.value}>{m.label}</option>))}
         </select>
         {selectedAgent && (
-          <span style={{ fontSize: theme.font.sizes.base, color: theme.colors.text.tertiary }}>{t.agentChat.chatWith(selectedAgent.name)}</span>
+          <span style={{ fontSize: theme.font.sizes.base, color: theme.colors.text.tertiary }}>{t.agentChat.chatWith(getAgentDisplayName(selectedAgent.name))}</span>
         )}
         {messages.length > 0 && !streaming && (
           <div style={{ marginLeft: "auto", display: "flex", gap: theme.spacing.xs }}>
@@ -316,8 +320,9 @@ export function AgentChat() {
       <ChatMessageArea
         messages={messages} activeTools={activeTools} thinking={thinking}
         streaming={streaming} activeJobId={activeJobId} jobStatus={jobStatus}
-        selectedAgent={selected} agents={agents} theme={theme} t={t}
+        selectedAgent={selected} agents={agents} theme={theme} t={t} locale={locale}
         onSendMessage={(prompt) => { setInput(""); runStream(selected, prompt); }}
+        onSelectAgent={handleSelectAgent}
       />
       <div ref={chatEndRef} />
 

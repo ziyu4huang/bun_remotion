@@ -15,6 +15,8 @@ interface JobListSectionProps {
   t: any;
   onFilterChange: (filter: string) => void;
   onClearCompleted: () => void;
+  onClearFailed: () => void;
+  onClearAllTerminal: () => void;
   onRunDemo: () => void;
   onCancel: (id: string) => void;
   onDelete: (id: string) => void;
@@ -26,20 +28,32 @@ interface JobListSectionProps {
 export function JobListSection({
   jobs, trees, filter, counts, expandedJobs, streamProgress,
   theme, t,
-  onFilterChange, onClearCompleted, onRunDemo, onCancel, onDelete,
+  onFilterChange, onClearCompleted, onClearFailed, onClearAllTerminal, onRunDemo, onCancel, onDelete,
   onToggleExpand, onRefreshTree, onRetryNode,
 }: JobListSectionProps) {
-  const hasCompleted = jobs.some((j) => j.status === "completed" || j.status === "failed");
+  const hasTerminal = counts.completed > 0 || counts.failed > 0;
 
   return (
     <section style={{ marginBottom: theme.spacing.xxl }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: theme.spacing.md, flexWrap: "wrap", gap: theme.spacing.sm }}>
         <h3 style={{ margin: 0, fontSize: theme.font.sizes.lg, fontWeight: theme.font.weights.semibold }}>{t.dashboard.jobQueue}</h3>
         <div style={{ display: "flex", gap: theme.spacing.sm }}>
-          {hasCompleted && (
-            <Button variant="outline" size="sm" onClick={onClearCompleted}>
-              {t.dashboard.clearCompleted}
-            </Button>
+          {hasTerminal && (
+            <>
+              {counts.completed > 0 && (
+                <Button variant="outline" size="sm" onClick={onClearCompleted}>
+                  {t.dashboard.clearCompleted} ({counts.completed})
+                </Button>
+              )}
+              {counts.failed > 0 && (
+                <Button variant="outline" size="sm" onClick={onClearFailed}>
+                  {t.dashboard.clearFailed} ({counts.failed})
+                </Button>
+              )}
+              <Button variant="outline" size="sm" onClick={onClearAllTerminal}>
+                {t.dashboard.clearAllTerminal} ({counts.completed + counts.failed})
+              </Button>
+            </>
           )}
           <Button variant="primary" size="md" onClick={onRunDemo} disabled={streamProgress !== null}>
             {streamProgress !== null ? t.dashboard.running(streamProgress) : t.dashboard.runDemoJob}
@@ -90,12 +104,12 @@ export function JobListSection({
               background: theme.colors.bg.surface,
               marginBottom: theme.spacing.sm,
             }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: theme.spacing.xs }}>
-                <div style={{ display: "flex", alignItems: "center", gap: theme.spacing.sm }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: theme.spacing.xs, flexWrap: "wrap", gap: theme.spacing.xs }}>
+                <div style={{ display: "flex", alignItems: "center", gap: theme.spacing.sm, minWidth: 0, overflow: "hidden" }}>
                   <span style={{ fontWeight: theme.font.weights.semibold, fontSize: theme.font.sizes.base }}>
                     {wfResult?.templateId ?? j.type}
                   </span>
-                  <span style={{ fontSize: theme.font.sizes.xs, color: theme.colors.text.muted }}>
+                  <span style={{ fontSize: theme.font.sizes.xs, color: theme.colors.text.muted, whiteSpace: "nowrap" }}>
                     {j.id.slice(-6)} · {relativeTime(j.createdAt, t)}
                   </span>
                   {duration !== null && (
@@ -140,7 +154,7 @@ export function JobListSection({
                   marginBottom: theme.spacing.sm,
                   overflow: "hidden",
                   textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
+                  wordBreak: "break-word",
                 }}>
                   {j.error}
                 </div>

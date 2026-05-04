@@ -1,12 +1,15 @@
 {
   "name": "storygraph",
-  "version": "0.40.0",
+  "version": "0.42.0",
   "private": true,
   "type": "module",
   "main": "src/cli.ts",
   "types": "src/cli.ts",
   "exports": {
-    ".": "./src/cli.ts"
+    ".": "./src/cli.ts",
+    "./pipeline-api": "./src/pipeline-api.ts",
+    "./plan-parser": "./src/scripts/plan-parser.ts",
+    "./types": "./src/types.ts"
   },
   "bin": {
     "storygraph": "src/cli.ts"

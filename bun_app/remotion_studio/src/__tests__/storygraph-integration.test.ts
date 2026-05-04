@@ -8,7 +8,7 @@ import {
   type SuggestResult,
   type HealthResult,
   type SuggestionCategory,
-} from "../../../storygraph/src/pipeline-api";
+} from "storygraph/pipeline-api";
 
 const REPO_ROOT = resolve(import.meta.dir, "../../../..");
 const WEAPON_FORGER = resolve(REPO_ROOT, "bun_remotion_proj/weapon-forger");

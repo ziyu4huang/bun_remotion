@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { Button } from "./Button";
 import { Card } from "./Card";
 import type { AgentInfo } from "../../shared/types";
 import type { Theme } from "../theme";
 import type { useI18n } from "../i18n";
+import { getAgentDisplay, getAgentDisplayName, CATEGORY_ORDER, CATEGORY_LABELS, CATEGORY_ICONS, CATEGORY_COLORS, type AgentCategory } from "../lib/agent-display.js";
 
 export const CONVERSATION_STARTERS: Record<string, string[]> = {
   "studio-tts": [
@@ -43,60 +45,138 @@ export const CONVERSATION_STARTERS: Record<string, string[]> = {
   ],
 };
 
-export function AgentDirectory({ agents: agentList, onSelect, theme: th, t: tt }: {
+function categorizeAgents(agents: AgentInfo[]): Map<AgentCategory, AgentInfo[]> {
+  const map = new Map<AgentCategory, AgentInfo[]>();
+  for (const agent of agents) {
+    const { category } = getAgentDisplay(agent.name);
+    const list = map.get(category) ?? [];
+    list.push(agent);
+    map.set(category, list);
+  }
+  return map;
+}
+
+export function AgentDirectory({ agents: agentList, onSelect, theme: th, t: tt, locale }: {
   agents: AgentInfo[];
   onSelect: (name: string) => void;
   theme: Theme;
   t: ReturnType<typeof useI18n>["t"];
+  locale?: string;
 }) {
+  const lang = locale === "zh_TW" ? "zh_TW" : "en";
+  const [search, setSearch] = useState("");
+
+  const filtered = search.trim()
+    ? agentList.filter((a) => {
+        const q = search.toLowerCase();
+        const display = getAgentDisplay(a.name);
+        return (
+          display.displayName.toLowerCase().includes(q) ||
+          (a.description ?? "").toLowerCase().includes(q) ||
+          CATEGORY_LABELS[display.category][lang].toLowerCase().includes(q) ||
+          a.name.toLowerCase().includes(q)
+        );
+      })
+    : agentList;
+
+  const grouped = categorizeAgents(filtered);
+
   return (
-    <div style={{ maxWidth: 640, margin: "0 auto" }}>
+    <div style={{ maxWidth: 720, margin: "0 auto" }}>
       <div style={{ fontSize: th.font.sizes.lg, fontWeight: th.font.weights.semibold, color: th.colors.text.primary, marginBottom: th.spacing.lg }}>
         {tt.agentChat.selectAgentPrompt}
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: th.spacing.md, textAlign: "left" as const }}>
-        {agentList.map((agent) => (
-          <Button
-            key={agent.name}
-            variant="ai"
-            onClick={() => onSelect(agent.name)}
-            style={{
-              padding: th.spacing.lg,
-              textAlign: "left" as const,
-              transition: "border-color 0.15s, box-shadow 0.15s",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = th.colors.aiAccent;
-              e.currentTarget.style.boxShadow = `0 0 0 1px ${th.colors.aiAccent}`;
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = th.colors.border.default;
-              e.currentTarget.style.boxShadow = "none";
-            }}
-          >
-            <div style={{ fontSize: th.font.sizes.md, fontWeight: th.font.weights.semibold, color: th.colors.aiAccent, marginBottom: 4 }}>
-              {agent.name}
-            </div>
+      <input
+        type="text"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder={tt.agentChat.searchPlaceholder}
+        data-testid="agent-search"
+        style={{
+          width: "100%", maxWidth: 400, padding: `${th.spacing.sm}px ${th.spacing.md}px`,
+          fontSize: th.font.sizes.md, borderRadius: th.radii.lg,
+          border: `1px solid ${th.colors.border.medium}`, marginBottom: th.spacing.lg,
+          outline: "none",
+        }}
+      />
+      {filtered.length === 0 && search.trim() && (
+        <div style={{ color: th.colors.text.muted, fontSize: th.font.sizes.md, textAlign: "center", padding: th.spacing.xl }}>
+          {tt.agentChat.noResults}
+        </div>
+      )}
+      {CATEGORY_ORDER.map((cat) => {
+        const agents = grouped.get(cat);
+        if (!agents || agents.length === 0) return null;
+        const label = CATEGORY_LABELS[cat][lang];
+        const icon = CATEGORY_ICONS[cat];
+        const colors = CATEGORY_COLORS[cat];
+        return (
+          <div key={cat} style={{ marginBottom: th.spacing.lg }}>
             <div style={{
-              fontSize: th.font.sizes.xs,
-              color: th.colors.text.muted,
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              display: "-webkit-box",
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: "vertical" as const,
-              lineHeight: 1.4,
+              fontSize: th.font.sizes.sm, fontWeight: th.font.weights.semibold,
+              color: colors.text, marginBottom: th.spacing.sm,
+              display: "flex", alignItems: "center", gap: th.spacing.xs,
+              borderBottom: `2px solid ${colors.border}`,
+              paddingBottom: th.spacing.xs,
             }}>
-              {agent.description ?? "Specialized AI agent"}
+              <span>{icon}</span>
+              <span style={{ textTransform: "uppercase" as const, letterSpacing: "0.05em" }}>{label}</span>
             </div>
-            {(agent.tools?.length ?? 0) > 0 && (
-              <div style={{ marginTop: th.spacing.sm, fontSize: th.font.sizes.xs, color: th.colors.text.faint }}>
-                {agent.tools!.length} tools
-              </div>
-            )}
-          </Button>
-        ))}
-      </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: th.spacing.md, textAlign: "left" as const }}>
+              {agents.map((agent) => {
+                const displayName = getAgentDisplayName(agent.name);
+                return (
+                  <Button
+                    key={agent.name}
+                    variant="ai"
+                    onClick={() => onSelect(agent.name)}
+                    style={{
+                      padding: th.spacing.lg,
+                      textAlign: "left" as const,
+                      borderLeft: `3px solid ${colors.border}`,
+                      transition: "border-color 0.15s, box-shadow 0.15s",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = th.colors.aiAccent;
+                      e.currentTarget.style.borderLeftColor = colors.border;
+                      e.currentTarget.style.boxShadow = `0 0 0 1px ${th.colors.aiAccent}`;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = th.colors.border.default;
+                      e.currentTarget.style.borderLeftColor = colors.border;
+                      e.currentTarget.style.boxShadow = "none";
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
+                      <span style={{ fontSize: th.font.sizes.lg }}>{icon}</span>
+                      <span style={{ fontSize: th.font.sizes.md, fontWeight: th.font.weights.semibold, color: th.colors.aiAccent }}>
+                        {displayName}
+                      </span>
+                    </div>
+                    <div style={{
+                      fontSize: th.font.sizes.xs,
+                      color: th.colors.text.muted,
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      display: "-webkit-box",
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: "vertical" as const,
+                      lineHeight: 1.4,
+                    }}>
+                      {agent.description ?? "Specialized AI agent"}
+                    </div>
+                    {(agent.tools?.length ?? 0) > 0 && (
+                      <div style={{ marginTop: th.spacing.sm, fontSize: th.font.sizes.xs, color: th.colors.text.faint }}>
+                        {agent.tools!.length} tools
+                      </div>
+                    )}
+                  </Button>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 {
   "name": "remotion_studio",
-  "version": "0.48.0",
+  "version": "0.69.0",
   "private": true,
   "type": "module",
   "main": "src/server/index.ts",
@@ -19,6 +19,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "remotion_types": "workspace:*",
+    "storygraph": "workspace:*",
     "bun_tts": "workspace:*",
     "bun_image": "workspace:*"
   },

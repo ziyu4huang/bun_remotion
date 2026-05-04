@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { resolve } from "node:path";
 import { existsSync, readdirSync, readFileSync, mkdirSync } from "node:fs";
 import { generateTTS } from "bun_tts";
-import { createJob } from "../middleware/job-queue";
+import { jobService } from "../middleware/job-service";
 import { listVoices } from "../services/voice-registry";
 import { getCharacterProfiles, updateCharacterVoice } from "../services/character-profiles";
 import type { ApiResponse, Job, TTSStatus, VoiceInfo, CharacterProfile } from "../../shared/types";
@@ -74,7 +74,7 @@ router.post("/generate", async (c) => {
     return c.json<ApiResponse>({ ok: false, error: "Episode not found" }, 404);
   }
 
-  const job = createJob("tts", async (progress) => {
+  const job = jobService.create("tts", async (progress) => {
     progress(5, "Starting TTS generation");
     const result = await generateTTS({
       episodePath,

@@ -125,6 +125,8 @@ export function Storygraph() {
           blended: t.storygraph.blended, nodes: t.storygraph.nodes,
           edges: t.storygraph.edges, html: t.storygraph.html,
           viewGraph: t.storygraph.viewGraph, kgStatus: t.storygraph.kgStatus,
+          errorCode: t.storygraph.errorCode, failedStep: t.storygraph.failedStep,
+          retryable: t.storygraph.retryable, suggestedFix: t.storygraph.suggestedFix,
         }}
       />
     </div>

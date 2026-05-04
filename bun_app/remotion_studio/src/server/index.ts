@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { createJob, listJobs, getJob, sseStream, cancelJob, deleteJob, markInterruptedJobs, listJobHistory } from "./middleware/job-queue";
+import { jobService } from "./middleware/job-service";
 import { requestTimeout } from "./middleware/request-timeout";
 import { projectRoutes } from "./routes/projects";
 import { scaffoldRoutes } from "./routes/scaffold";
@@ -22,7 +22,10 @@ import { agentRoutes } from "./routes/agent";
 import { episodeProgressRoutes } from "./routes/episode-progress";
 import { batchRoutes } from "./routes/batch";
 import { configRoutes } from "./routes/config";
-import type { ApiResponse, Job } from "../shared/types";
+import { styleGuideRoutes } from "./routes/style-guide";
+import { continuityRoutes } from "./routes/continuity";
+import type { ApiResponse, Job, JobStatus } from "../shared/types";
+import { PipelineError } from "./pipeline-error";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -34,6 +37,13 @@ app.use("/api/*", requestTimeout());
 
 // Global error handler — prevents unhandled errors from crashing the process
 app.onError((err, c) => {
+  if (err instanceof PipelineError) {
+    const status = err.code === "TIMEOUT" ? 504
+      : err.code === "SCHEMA_VALIDATION" || err.code === "PARSE_ERROR" ? 422
+      : err.code === "MISSING_ARTIFACT" ? 404
+      : 500;
+    return c.json({ ok: false, error: err.toJSON() }, status);
+  }
   console.error(`[remotion_studio] Request error:`, err);
   return c.json({ ok: false, error: err.message }, 500);
 });
@@ -60,36 +70,44 @@ app.get("/api/version", (c) =>
 
 app.get("/api/jobs", (c) => {
   const status = c.req.query("status");
-  const jobs = listJobs(status);
+  const jobs = jobService.list(status);
   return c.json<ApiResponse<Job[]>>({ ok: true, data: jobs });
 });
 
 app.get("/api/jobs/history", (c) => {
   const olderThanParam = c.req.query("olderThan");
   const olderThanMs = olderThanParam ? parseOlderThan(olderThanParam) : undefined;
-  const history = listJobHistory(olderThanMs);
+  const history = jobService.listHistory(olderThanMs);
   return c.json<ApiResponse<Job[]>>({ ok: true, data: history });
 });
 
 app.post("/api/jobs/:id/cancel", (c) => {
-  const job = cancelJob(c.req.param("id"));
+  const job = jobService.cancel(c.req.param("id"));
   if (!job) return c.json<ApiResponse>({ ok: false, error: "Job not found or not cancellable" }, 400);
   return c.json<ApiResponse<Job>>({ ok: true, data: job });
 });
 
+app.delete("/api/jobs/clear", (c) => {
+  const statusParam = c.req.query("status") ?? "";
+  const statuses = statusParam.split(",").filter(Boolean) as JobStatus[];
+  if (statuses.length === 0) return c.json<ApiResponse>({ ok: false, error: "Missing status parameter" }, 400);
+  const deleted = jobService.clearByStatus(statuses);
+  return c.json<ApiResponse<{ deleted: number }>>({ ok: true, data: { deleted } });
+});
+
 app.delete("/api/jobs/:id", (c) => {
-  const ok = deleteJob(c.req.param("id"));
+  const ok = jobService.delete(c.req.param("id"));
   if (!ok) return c.json<ApiResponse>({ ok: false, error: "Job not found" }, 404);
   return c.json<ApiResponse<{ deleted: boolean }>>({ ok: true, data: { deleted: true } });
 });
 
 app.get("/api/jobs/:id", (c) => {
-  const job = getJob(c.req.param("id"));
+  const job = jobService.get(c.req.param("id"));
   if (!job) return c.json<ApiResponse>({ ok: false, error: "Not found" }, 404);
   return c.json<ApiResponse<Job>>({ ok: true, data: job });
 });
 
-app.get("/api/jobs/:id/stream", (c) => sseStream(c.req.param("id")));
+app.get("/api/jobs/:id/stream", (c) => jobService.stream(c.req.param("id")));
 
 function parseOlderThan(val: string): number {
   const num = parseInt(val, 10);
@@ -101,7 +119,7 @@ function parseOlderThan(val: string): number {
 // ── Demo job (remove after Phase 36) ──
 
 app.post("/api/jobs/demo", async (c) => {
-  const job = createJob("demo", async (progress) => {
+  const job = jobService.create("demo", async (progress) => {
     for (let i = 0; i <= 100; i += 10) {
       await new Promise((r) => setTimeout(r, 200));
       progress(i, `Step ${i / 10}/10`);
@@ -133,6 +151,8 @@ app.route("/api/agent", agentRoutes);
 app.route("/api/episode-progress", episodeProgressRoutes);
 app.route("/api/batch", batchRoutes);
 app.route("/api/config", configRoutes);
+app.route("/api/style-guide", styleGuideRoutes);
+app.route("/api/continuity", continuityRoutes);
 
 // ── Serve built client (production) ──
 
@@ -175,7 +195,7 @@ if (import.meta.main) {
   const port = Number(process.env.PORT) || 5173;
 
   // Restart recovery: mark interrupted jobs as failed
-  const interrupted = markInterruptedJobs();
+  const interrupted = jobService.markInterrupted();
   if (interrupted > 0) {
     console.log(`[remotion_studio] Marked ${interrupted} interrupted job(s) as failed`);
   }

@@ -35,7 +35,7 @@ export function Projects() {
     <div>
       <PageHeader title={t.projects.title} description={t.projects.description} />
       <div style={{ overflowX: "auto" }}>
-      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: theme.font.sizes.md }}>
+      <table aria-label="Projects list" style={{ width: "100%", borderCollapse: "collapse", fontSize: theme.font.sizes.md }}>
         <thead>
           <tr style={{ borderBottom: `2px solid ${theme.colors.border.default}`, textAlign: "left" }}>
             <th style={{ padding: `${theme.spacing.sm}px ${theme.spacing.md}px` }}>Series</th>
@@ -111,7 +111,7 @@ function ProjectTable({ projects, onSelect }: { projects: Project[]; onSelect: (
   const { t } = useI18n();
   return (
     <div style={{ overflowX: "auto" }}>
-    <table style={{ width: "100%", borderCollapse: "collapse", fontSize: theme.font.sizes.md }}>
+    <table aria-label="Project details" style={{ width: "100%", borderCollapse: "collapse", fontSize: theme.font.sizes.md }}>
       <thead>
         <tr style={{ borderBottom: `2px solid ${theme.colors.border.default}`, textAlign: "left" }}>
           <th style={{ padding: `${theme.spacing.sm}px ${theme.spacing.md}px` }}>Series</th>
@@ -245,7 +245,7 @@ function ProjectDetail({ project, onBack, onNewEpisode }: { project: Project; on
         ) : (
           <>
             <div style={{ overflowX: "auto" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: theme.font.sizes.md }}>
+            <table aria-label="Project settings" style={{ width: "100%", borderCollapse: "collapse", fontSize: theme.font.sizes.md }}>
               <thead>
                 <tr style={{ borderBottom: `2px solid ${theme.colors.border.default}`, textAlign: "left" }}>
                   <th style={{ padding: `${theme.spacing.sm}px ${theme.spacing.md}px` }}>Episode</th>

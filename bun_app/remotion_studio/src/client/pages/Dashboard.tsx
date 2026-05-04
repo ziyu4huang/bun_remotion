@@ -27,6 +27,8 @@ export function Dashboard() {
   const [showHistory, setShowHistory] = useState(false);
   const [series, setSeries] = useState<Project[]>([]);
   const [version, setVersion] = useState<string>("");
+  const [advisorSeries, setAdvisorSeries] = useState<string>("");
+  const [advisorActive, setAdvisorActive] = useState<"story" | "quality" | null>(null);
   const { task: agentTask, start: handleAskAgent } = useAgentTask("studio-advisor", { mode: "stream" });
   const { task: testTask, start: handleTestReview } = useAgentTask("test-reviewer", { mode: "stream" });
 
@@ -117,12 +119,30 @@ export function Dashboard() {
   };
 
   const handleClearCompleted = async () => {
-    if (!jobs) return;
-    const toDelete = jobs.filter((j) => j.status === "completed" || j.status === "failed");
-    await Promise.all(toDelete.map((j) => api.deleteJob(j.id)));
-    setJobs((prev) => prev?.filter((j) => j.status === "running" || j.status === "pending") ?? null);
-    setExpandedJobs(new Set());
-    toast("info", t.dashboard.cleared(toDelete.length));
+    const r = await api.clearJobs("completed");
+    if (r.ok && r.data) {
+      setJobs((prev) => prev?.filter((j) => j.status !== "completed") ?? null);
+      setExpandedJobs(new Set());
+      toast("info", t.dashboard.cleared(r.data.deleted));
+    }
+  };
+
+  const handleClearFailed = async () => {
+    const r = await api.clearJobs("failed");
+    if (r.ok && r.data) {
+      setJobs((prev) => prev?.filter((j) => j.status !== "failed") ?? null);
+      setExpandedJobs(new Set());
+      toast("info", t.dashboard.cleared(r.data.deleted));
+    }
+  };
+
+  const handleClearAllTerminal = async () => {
+    const r = await api.clearJobs("completed,failed");
+    if (r.ok && r.data) {
+      setJobs((prev) => prev?.filter((j) => j.status === "running" || j.status === "pending") ?? null);
+      setExpandedJobs(new Set());
+      toast("info", t.dashboard.cleared(r.data.deleted));
+    }
   };
 
   const toggleExpand = (jobId: string) => {
@@ -180,7 +200,7 @@ export function Dashboard() {
   const filteredJobs = filter === "all" ? jobs : jobs.filter((j) => j.status === filter);
 
   return (
-    <div>
+    <div style={{ maxWidth: 1200, overflow: "hidden" }}>
       <PageHeader title={t.dashboard.title} description={t.dashboard.description} />
 
       {/* System Status */}
@@ -192,62 +212,74 @@ export function Dashboard() {
       {/* What's Next */}
       <WhatsNext />
 
-      {/* Ask advisor */}
+      {/* Unified AI Advisor */}
       <Card variant="default" padding="md" style={{ marginBottom: theme.spacing.xxl }}>
         <div style={{
-          display: "flex", alignItems: "center", gap: theme.spacing.sm, marginBottom: theme.spacing.md,
-          fontSize: theme.font.sizes.sm, fontWeight: theme.font.weights.semibold, color: theme.colors.text.primary,
+          display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: theme.spacing.md,
         }}>
-          {t.dashboard.agentAdvisor}
-          {agentTask.bridgeDown && <StatusBadge status="warn" label={t.dashboard.agentOffline} />}
+          <div style={{ display: "flex", alignItems: "center", gap: theme.spacing.sm, fontSize: theme.font.sizes.sm, fontWeight: theme.font.weights.semibold, color: theme.colors.text.primary }}>
+            {t.dashboard.aiAdvisor}
+            {(agentTask.bridgeDown || testTask.bridgeDown) && <StatusBadge status="warn" label={t.dashboard.agentOffline} />}
+          </div>
+          <select
+            value={advisorSeries}
+            onChange={(e) => setAdvisorSeries(e.target.value)}
+            style={{ padding: `4px ${theme.spacing.sm}px`, borderRadius: theme.radii.lg, border: `1px solid ${theme.colors.border.medium}`, fontSize: theme.font.sizes.sm, fontFamily: "inherit" }}
+          >
+            <option value="">{t.dashboard.advisorAllSeries}</option>
+            {series.map((s) => (
+              <option key={s.seriesId} value={s.seriesId}>{s.name || s.seriesId}</option>
+            ))}
+          </select>
         </div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: theme.spacing.sm }}>
-          <DashboardAgentBtn label={t.dashboard.healthCheck}
-            prompt={series.length > 0
-              ? `Analyze the story health of these Remotion series: ${series.map(s => s.name || s.id).join(", ")}. Use sg_health and sg_suggest on each series. Prioritize: which series needs the most attention and what specific fixes are needed? Respond in zh_TW for story content.`
-              : `List the Remotion series under bun_remotion_proj/ and analyze their story health. Use sg_health and sg_suggest. Which series needs the most attention? Prioritize actionable fixes. Respond in zh_TW for story content.`}
-            onClick={handleAskAgent} variant="primary"
-          />
-          <DashboardAgentBtn label={t.dashboard.contentGaps}
-            prompt={series.length > 0
-              ? `For these series: ${series.map(s => s.name || s.id).join(", ")}, use rm_suggest to find content gaps and story opportunities. What character moments, plot developments, or new episodes would best improve each series? Rank by impact. Respond in zh_TW for story content.`
-              : `Use rm_suggest to analyze series under bun_remotion_proj/ for content gaps. What character moments, plot developments, or new episodes would best improve each series? Rank by impact. Respond in zh_TW for story content.`}
-            onClick={handleAskAgent}
-          />
-          <DashboardAgentBtn label={t.dashboard.qualityAudit}
-            prompt={series.length > 0
-              ? `Run a comprehensive quality audit on: ${series.map(s => s.name || s.id).join(", ")}. Use rm_analyze on each series. Check: foreshadowing debt, character arc flatness, gag stagnation, missing interactions, pacing issues, trait gaps, duplicate risk. Compare across series. Respond in zh_TW for story content.`
-              : `Run a comprehensive quality audit on all series under bun_remotion_proj/. Use rm_analyze. Check: foreshadowing debt, character arcs, gag stagnation, missing interactions, pacing, trait gaps. Compare across series. Respond in zh_TW for story content.`}
-            onClick={handleAskAgent}
-          />
-        </div>
-        {agentTask.status !== "idle" && <AgentResultPanel task={agentTask} theme={theme} />}
-      </Card>
 
-      {/* Test Review */}
-      <Card variant="default" padding="md" style={{ marginBottom: theme.spacing.xl }}>
-        <div style={{
-          display: "flex", alignItems: "center", gap: theme.spacing.sm, marginBottom: theme.spacing.md,
-          fontSize: theme.font.sizes.sm, fontWeight: theme.font.weights.semibold, color: theme.colors.text.primary,
-        }}>
-          {t.dashboard.testReview}
-          {testTask.bridgeDown && <StatusBadge status="warn" label={t.dashboard.agentOffline} />}
+        {/* Story group */}
+        <div style={{ marginBottom: theme.spacing.sm }}>
+          <span style={{ fontSize: theme.font.sizes.xs, color: theme.colors.text.tertiary, textTransform: "uppercase", letterSpacing: "0.05em" }}>{t.dashboard.advisorStoryGroup}</span>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: theme.spacing.sm, marginTop: theme.spacing.xs }}>
+            <DashboardAgentBtn label={t.dashboard.healthCheck}
+              prompt={advisorSeries
+                ? `Analyze the story health of the Remotion series: ${series.find(s => s.seriesId === advisorSeries)?.name || advisorSeries}. Use sg_health and sg_suggest. Prioritize: what specific fixes are needed? Respond in zh_TW for story content.`
+                : `List the Remotion series under bun_remotion_proj/ and analyze their story health. Use sg_health and sg_suggest. Which series needs the most attention? Prioritize actionable fixes. Respond in zh_TW for story content.`}
+              onClick={(p) => { setAdvisorActive("story"); handleAskAgent(p); }} variant="primary"
+            />
+            <DashboardAgentBtn label={t.dashboard.contentGaps}
+              prompt={advisorSeries
+                ? `For series ${series.find(s => s.seriesId === advisorSeries)?.name || advisorSeries}, use rm_suggest to find content gaps and story opportunities. What character moments, plot developments, or new episodes would best improve the series? Rank by impact. Respond in zh_TW for story content.`
+                : `Use rm_suggest to analyze series under bun_remotion_proj/ for content gaps. What character moments, plot developments, or new episodes would best improve each series? Rank by impact. Respond in zh_TW for story content.`}
+              onClick={(p) => { setAdvisorActive("story"); handleAskAgent(p); }}
+            />
+            <DashboardAgentBtn label={t.dashboard.qualityAudit}
+              prompt={advisorSeries
+                ? `Run a comprehensive quality audit on: ${series.find(s => s.seriesId === advisorSeries)?.name || advisorSeries}. Use rm_analyze. Check: foreshadowing debt, character arc flatness, gag stagnation, missing interactions, pacing issues, trait gaps, duplicate risk. Respond in zh_TW for story content.`
+                : `Run a comprehensive quality audit on all series under bun_remotion_proj/. Use rm_analyze. Check: foreshadowing debt, character arcs, gag stagnation, missing interactions, pacing, trait gaps. Compare across series. Respond in zh_TW for story content.`}
+              onClick={(p) => { setAdvisorActive("story"); handleAskAgent(p); }}
+            />
+          </div>
         </div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: theme.spacing.sm }}>
-          <DashboardAgentBtn label={t.dashboard.runTests}
-            prompt="Run bun test across all apps (bun_app/remotion_studio, bun_app/bun_pi_agent, bun_app/storygraph, bun_app/remotion_types). Capture the full output. Summarize: total tests, pass/fail/skip by app, any failures with root cause analysis. If all pass, confirm with metrics."
-            onClick={handleTestReview} variant="primary"
-          />
-          <DashboardAgentBtn label="Analyze failures"
-            prompt="Find and read the most recent test results across bun_app/. Look for .last-run.json, test-results/, or run bun test to get fresh results. Identify all failures, group by root cause, and suggest specific fixes with file paths and line numbers."
-            onClick={handleTestReview}
-          />
-          <DashboardAgentBtn label="Flaky test check"
-            prompt="Run bun test twice across all apps in bun_app/. Compare the results — any test that passes in one run but fails in another is flaky. List all flaky tests with their failure patterns and suggest stabilization fixes."
-            onClick={handleTestReview}
-          />
+
+        {/* Quality group */}
+        <div>
+          <span style={{ fontSize: theme.font.sizes.xs, color: theme.colors.text.tertiary, textTransform: "uppercase", letterSpacing: "0.05em" }}>{t.dashboard.advisorQualityGroup}</span>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: theme.spacing.sm, marginTop: theme.spacing.xs }}>
+            <DashboardAgentBtn label={t.dashboard.runTests}
+              prompt="Run bun test across all apps (bun_app/remotion_studio, bun_app/bun_pi_agent, bun_app/storygraph, bun_app/remotion_types). Capture the full output. Summarize: total tests, pass/fail/skip by app, any failures with root cause analysis. If all pass, confirm with metrics."
+              onClick={(p) => { setAdvisorActive("quality"); handleTestReview(p); }} variant="primary"
+            />
+            <DashboardAgentBtn label={t.dashboard.analyzeFailures}
+              prompt="Find and read the most recent test results across bun_app/. Look for .last-run.json, test-results/, or run bun test to get fresh results. Identify all failures, group by root cause, and suggest specific fixes with file paths and line numbers."
+              onClick={(p) => { setAdvisorActive("quality"); handleTestReview(p); }}
+            />
+            <DashboardAgentBtn label={t.dashboard.flakyCheck}
+              prompt="Run bun test twice across all apps in bun_app/. Compare the results — any test that passes in one run but fails in another is flaky. List all flaky tests with their failure patterns and suggest stabilization fixes."
+              onClick={(p) => { setAdvisorActive("quality"); handleTestReview(p); }}
+            />
+          </div>
         </div>
-        {testTask.status !== "idle" && <AgentResultPanel task={testTask} theme={theme} />}
+
+        {/* Unified result panel */}
+        {advisorActive === "story" && agentTask.status !== "idle" && <AgentResultPanel task={agentTask} theme={theme} />}
+        {advisorActive === "quality" && testTask.status !== "idle" && <AgentResultPanel task={testTask} theme={theme} />}
       </Card>
 
       {/* Job Queue */}
@@ -256,6 +288,7 @@ export function Dashboard() {
         expandedJobs={expandedJobs} streamProgress={streamProgress}
         theme={theme} t={t}
         onFilterChange={setFilter} onClearCompleted={handleClearCompleted}
+        onClearFailed={handleClearFailed} onClearAllTerminal={handleClearAllTerminal}
         onRunDemo={runDemo} onCancel={handleCancel} onDelete={handleDelete}
         onToggleExpand={toggleExpand} onRefreshTree={refreshTree}
         onRetryNode={handleRetryNode}

@@ -4,7 +4,7 @@ import { existsSync } from "node:fs";
 import { generateTTS } from "bun_tts";
 import { getRenderStatus, renderVideo } from "../services/remotion-renderer";
 import { scanProjects } from "../services/project-scanner";
-import { createJob } from "../middleware/job-queue";
+import { jobService } from "../middleware/job-service";
 import type { ApiResponse, Job, BatchRequest, BatchResult, BatchEpisodeResult } from "../../shared/types";
 
 const router = new Hono();
@@ -50,7 +50,7 @@ router.post("/", async (c) => {
     return c.json<ApiResponse>({ ok: false, error: "No matching episodes found" }, 404);
   }
 
-  const job = createJob<BatchResult>(`batch-${body.operation}`, async (progress, signal) => {
+  const job = jobService.create<BatchResult>(`batch-${body.operation}`, async (progress, signal) => {
     const startedAt = Date.now();
     const results: BatchEpisodeResult[] = [];
     let completed = 0;
@@ -115,6 +115,32 @@ router.post("/", async (c) => {
   });
 
   return c.json<ApiResponse<Job<BatchResult>>>({ ok: true, data: job }, 201);
+});
+
+router.post("/cancel", async (c) => {
+  const body = await c.req.json<{ episodeIds: string[] }>();
+  if (!body.episodeIds?.length) {
+    return c.json<ApiResponse>({ ok: false, error: "Provide episodeIds" }, 400);
+  }
+
+  const targets = jobService.list().filter(
+    (j) => (j.status === "running" || j.status === "pending") &&
+           (j.type === "batch-tts" || j.type === "batch-render"),
+  );
+
+  const cancelled: string[] = [];
+  for (const job of targets) {
+    const result = jobService.cancel(job.id);
+    if (result) cancelled.push(job.id);
+  }
+
+  return c.json<ApiResponse<{ cancelled: string[]; notFound: string[] }>>({
+    ok: true,
+    data: {
+      cancelled,
+      notFound: cancelled.length === 0 ? body.episodeIds : [],
+    },
+  });
 });
 
 export const batchRoutes = router;

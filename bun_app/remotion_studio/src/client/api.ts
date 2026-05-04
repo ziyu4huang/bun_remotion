@@ -1,4 +1,4 @@
-import type { ApiResponse, Job, JobProgress, Project, AssetSummary, SeriesAssets, TTSStatus, VoiceInfo, RenderStatus, WorkflowTemplate, WorkflowResult, MonitoringOverview, SeriesHealth, SeriesQualitySnapshot, RegressionAlert, ScoreHistoryPoint, ImageStatus, ImageGenerateRequest, CharacterProfile, BenchmarkResult, BaselineInfo, AgentInfo, AgentStreamEvent, AgentTaskResult, AgentSession, TaskTree, TaskNode, EpisodeProgress, EpisodeProgressSummary, BatchRequest, BatchResult } from "../shared/types";
+import type { ApiResponse, Job, JobProgress, Project, AssetSummary, SeriesAssets, TTSStatus, VoiceInfo, RenderStatus, WorkflowTemplate, WorkflowResult, MonitoringOverview, SeriesHealth, SeriesQualitySnapshot, RegressionAlert, ScoreHistoryPoint, ImageStatus, ImageGenerateRequest, CharacterProfile, BenchmarkResult, BaselineInfo, AgentInfo, AgentStreamEvent, AgentTaskResult, AgentSession, TaskTree, TaskNode, EpisodeProgress, EpisodeProgressSummary, BatchRequest, BatchResult, ContinuityReport } from "../shared/types";
 
 const BASE = "/api";
 
@@ -20,6 +20,7 @@ export const api = {
   createDemoJob: () => request<Job>("/jobs/demo", { method: "POST" }),
   cancelJob: (id: string) => request<Job>(`/jobs/${id}/cancel`, { method: "POST" }),
   deleteJob: (id: string) => request<{ deleted: boolean }>(`/jobs/${id}`, { method: "DELETE" }),
+  clearJobs: (status: string) => request<{ deleted: number }>(`/jobs/clear?status=${encodeURIComponent(status)}`, { method: "DELETE" }),
   listJobHistory: (olderThan?: string) => request<Job[]>(`/jobs/history${olderThan ? `?olderThan=${olderThan}` : ""}`),
 
   /** Subscribe to job progress via SSE. Returns unsubscribe function. */
@@ -106,6 +107,7 @@ export const api = {
 
   // Workflows
   listWorkflowTemplates: () => request<WorkflowTemplate[]>("/workflows"),
+  getWorkflowCategories: () => request<Array<{ id: string; label: { en: string; zh_TW: string }; templates: Array<{ templateId: string; reason: string; defaults?: Record<string, unknown> }> }>("/workflows/categories"),
   triggerWorkflow: (body: {
     templateId: string;
     seriesId?: string;
@@ -156,6 +158,11 @@ export const api = {
   // Batch
   batch: {
     trigger: (body: BatchRequest) => request<Job<BatchResult>>("/batch", { method: "POST", body: JSON.stringify(body) }),
+    cancel: (episodeIds: string[]) =>
+      request<{ cancelled: string[]; notFound: string[] }>("/batch/cancel", {
+        method: "POST",
+        body: JSON.stringify({ episodeIds }),
+      }),
   },
 
   // Benchmark
@@ -295,6 +302,19 @@ export const api = {
 
   saveDefaultModelToServer: (model: string) =>
     request("/api/config/default-model", { method: "POST", body: JSON.stringify({ model }) }),
+
+  /** Style guide per series. */
+  getStyleGuide: (seriesId: string) =>
+    request(`/api/style-guide/${seriesId}`),
+
+  saveStyleGuide: (seriesId: string, data: Record<string, string>) =>
+    request(`/api/style-guide/${seriesId}`, { method: "PUT", body: JSON.stringify(data) }),
+
+  deleteStyleGuide: (seriesId: string) =>
+    request(`/api/style-guide/${seriesId}`, { method: "DELETE" }),
+
+  getContinuityReport: (seriesId: string) =>
+    request<ContinuityReport>(`/continuity/${seriesId}`),
 };
 
 /** Parse episode ID like "weapon-forger-ch1-ep3" into components. */
